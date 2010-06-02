@@ -1,0 +1,83 @@
+/*******************************************************************************
+ * Copyright (c) 2010 Denis Solonenko.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Denis Solonenko - initial API and implementation
+ ******************************************************************************/
+package ru.orangesoftware.financisto.activity;
+
+import java.util.ArrayList;
+
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.MyEntityManager;
+import ru.orangesoftware.financisto.model.MultiChoiceItem;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
+public abstract class AbstractActivity extends Activity implements ActivityLayoutListener {
+
+	protected DatabaseAdapter db;
+	protected MyEntityManager em;
+	
+	protected ActivityLayout x;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		x = new ActivityLayout(this, this);
+		db = new DatabaseAdapter(this);
+		db.open();
+		em = new MyEntityManager(this, db.db());
+	}
+	
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		onClick(v, id);
+	}
+
+	protected abstract void onClick(View v, int id);
+
+
+	@Override
+	public void onSelected(int id, ArrayList<? extends MultiChoiceItem> items) {
+	}
+
+	@Override
+	public void onSelectedId(int id, long selectedId) {
+	}
+
+	@Override
+	public void onSelectedPos(int id, int selectedPos) {
+	}
+
+	protected boolean checkSelectedId(long value, int messageResId) {
+		if (value <= 0) {
+			Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		return true;
+	}
+
+	protected void setVisibility(View v, int visibility) {
+		v.setVisibility(visibility);
+		Object o = v.getTag();
+		if (o instanceof View) {
+			((View)o).setVisibility(visibility);
+		}
+	}
+		
+	@Override
+	protected void onDestroy() {
+		db.close();
+		super.onDestroy();		
+	}
+	
+}

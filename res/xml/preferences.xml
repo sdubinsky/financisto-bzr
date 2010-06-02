@@ -1,0 +1,89 @@
+<!--
+  Copyright (c) 2010 Denis Solonenko.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v2.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  
+  Contributors:
+      Denis Solonenko - initial API and implementation
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/user_interface">
+		<ListPreference android:key="sort_accounts"
+			android:title="@string/sort_accounts" android:summary="@string/sort_accounts_summary"
+			android:entries="@array/sort_accounts_entities" android:entryValues="@array/sort_accounts_values"
+			android:defaultValue="SORT_ORDER_DESC" />
+		<ListPreference android:key="sort_locations"
+			android:title="@string/sort_locations" android:summary="@string/sort_locations_summary"
+			android:entries="@array/sort_locations_entities" android:entryValues="@array/sort_locations_values"
+			android:defaultValue="NAME" />
+		<PreferenceScreen android:title="@string/transaction_screen"
+			android:summary="@string/transaction_screen_summary">
+			<PreferenceCategory android:title="@string/remember_selection">
+				<CheckBoxPreference android:key="remember_last_account"
+					android:title="@string/remember_last_account" android:summary="@string/remember_last_account_summary"
+					android:defaultValue="true" />
+				<CheckBoxPreference android:key="remember_last_category"
+					android:title="@string/remember_last_category" android:summary="@string/remember_last_category_summary"
+					android:defaultValue="false" android:dependency="remember_last_account" />
+				<CheckBoxPreference android:key="remember_last_location"
+					android:title="@string/remember_last_location" android:summary="@string/remember_last_location_summary"
+					android:defaultValue="false" android:dependency="remember_last_category" />
+				<CheckBoxPreference android:key="remember_last_project"
+					android:title="@string/remember_last_project" android:summary="@string/remember_last_project_summary"
+					android:defaultValue="false" android:dependency="remember_last_category" />
+			</PreferenceCategory>
+			<PreferenceCategory android:title="@string/screen_layout">
+				<CheckBoxPreference android:defaultValue="true" android:key="ntsl_use_fixed_layout" android:title="@string/use_fixed_layout" android:summary="@string/use_fixed_layout_summary"/><CheckBoxPreference android:key="ntsl_show_location"
+					android:title="@string/show_location" android:summary="@string/show_location_summary"
+					android:defaultValue="true" />
+				<ListPreference android:key="ntsl_show_location_order"
+					android:title="@string/show_location_order" android:summary="@string/show_location_order_summary"
+					android:entries="@array/sort_order_entities" android:entryValues="@array/sort_order_entities"
+					android:dependency="ntsl_show_location" android:defaultValue="1" />
+				<CheckBoxPreference android:key="ntsl_show_note"
+					android:title="@string/show_note" android:summary="@string/show_note_summary"
+					android:defaultValue="true" />
+				<ListPreference android:key="ntsl_show_note_order"
+					android:title="@string/show_note_order" android:summary="@string/show_note_order_summary"
+					android:entries="@array/sort_order_entities" android:entryValues="@array/sort_order_entities"
+					android:dependency="ntsl_show_note" android:defaultValue="2" />
+				<CheckBoxPreference android:key="ntsl_show_project"
+					android:title="@string/show_project" android:summary="@string/show_project_summary"
+					android:defaultValue="true" />
+				<ListPreference android:key="ntsl_show_project_order"
+					android:title="@string/show_project_order" android:summary="@string/show_project_order_summary"
+					android:entries="@array/sort_order_entities" android:entryValues="@array/sort_order_entities"
+					android:dependency="ntsl_show_project" android:defaultValue="3" />
+			</PreferenceCategory>
+		</PreferenceScreen>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/protection">
+		<CheckBoxPreference android:key="pin_protection"
+			android:title="@string/pin_protection" android:summary="@string/pin_protection_summary"
+			android:defaultValue="false" />
+		<ru.orangesoftware.financisto.dialog.PinDialogPreference
+			android:key="pin" android:title="@string/change_pin" android:summary="@string/change_pin_summary"
+			android:dependency="pin_protection" android:dialogLayout="@layout/lock" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/home_screen">
+		<Preference android:title="@string/shortcut_new_transaction"
+			android:key="shortcut_new_transaction" android:summary="@string/shortcut_summary"></Preference>
+		<Preference android:title="@string/shortcut_new_transfer"
+			android:key="shortcut_new_transfer" android:summary="@string/shortcut_summary"></Preference>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/location">
+		<CheckBoxPreference android:key="use_gps"
+			android:title="@string/use_gps" android:summary="@string/use_gps_summary"
+			android:defaultValue="true" />
+		<CheckBoxPreference android:key="use_my_location"
+			android:title="@string/use_my_location" android:summary="@string/use_my_location_summary"
+			android:defaultValue="true" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/other">
+		<CheckBoxPreference android:key="send_error_reports"
+			android:title="@string/send_error_reports" android:summary="@string/send_error_reports_summary"
+			android:defaultValue="true" />
+	</PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2010 Denis Solonenko.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v2.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  
+  Contributors:
+      Denis Solonenko - initial API and implementation
+-->
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/flipper" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_height="fill_parent" android:layout_width="fill_parent"
+		android:orientation="vertical">
+		<ListView android:id="@+id/list1" android:layout_width="fill_parent"
+			android:layout_weight="1" android:layout_height="wrap_content">
+		</ListView>
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:background="#FFF"
+			android:paddingTop="2dp">
+			<ImageView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:src="@drawable/wallet_open"
+				android:layout_gravity="center_vertical" android:paddingLeft="5dip"></ImageView>
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/bAddAccount"
+				android:src="@drawable/ic_input_add" />
+			<ImageView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:layout_gravity="center_vertical"
+				android:src="@drawable/coins" android:paddingLeft="5dip"></ImageView>
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/bAddTransaction2"
+				android:src="@drawable/ic_input_add" />
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/bAddTransfer2"
+				android:src="@drawable/ic_input_transfer" />
+			<ImageView android:layout_height="wrap_content"
+				android:src="@drawable/divider_vertical_light" android:layout_width="wrap_content"
+				android:scaleType="fitStart" android:layout_weight="1" />
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/bMenu"
+				android:src="@drawable/btn_menu" />
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_height="fill_parent" android:layout_width="fill_parent"
+		android:orientation="vertical">
+		<ListView android:id="@+id/list2" android:layout_width="fill_parent"
+			android:layout_weight="1" android:layout_height="wrap_content">
+		</ListView>
+		<LinearLayout android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:background="#FFF"
+			android:paddingTop="2dp">
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:src="@drawable/ic_input_add"
+				android:id="@+id/bAddTransaction" />
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:src="@drawable/ic_input_transfer"
+				android:id="@+id/bAddTransfer" />
+			<LinearLayout android:layout_width="wrap_content"
+				android:layout_weight="1" android:layout_height="fill_parent"
+				android:orientation="vertical" android:padding="3dp">
+				<TextView android:layout_height="wrap_content"
+					android:textStyle="bold" android:gravity="right"
+					android:layout_width="fill_parent" android:text="@string/total"
+					android:textColor="#000000" />
+				<ViewFlipper  android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1"
+					android:gravity="right|center_vertical" android:id="@+id/flipperTotal"/>
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+</ViewFlipper>	

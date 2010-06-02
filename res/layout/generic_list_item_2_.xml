@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2010 Denis Solonenko.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v2.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  
+  Contributors:
+      Denis Solonenko - initial API and implementation
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:paddingLeft="0dip" android:paddingRight="12dip"
+	android:layout_height="wrap_content" android:layout_width="fill_parent">
+
+	<ImageView android:id="@+id/icon" android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:paddingLeft="10dp" android:paddingRight="10dp" android:src="@drawable/account_type_card_visa" android:layout_marginTop="15dp"/>
+
+	<ImageView android:id="@+id/active_icon" android:src="@drawable/icon_lock"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:paddingLeft="10dp" android:paddingRight="10dp" android:layout_marginTop="5dp"/>
+
+	<View android:id="@+id/divider" android:layout_width="1dip"
+		android:layout_toRightOf="@id/icon" android:background="@drawable/divider_vertical_dark"
+		android:layout_height="fill_parent" android:layout_marginRight="10dp"/>
+
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@id/divider"
+		android:singleLine="true" android:id="@+id/top" android:text="top"
+		android:paddingTop="4dp" android:textSize="10dp" android:ellipsize="marquee"/>
+
+	<TextView android:layout_height="wrap_content" android:id="@+id/center"
+		android:layout_width="fill_parent" android:text="center"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:singleLine="true" android:layout_alignLeft="@id/top"
+		android:minHeight="40dp" android:paddingTop="14dp" android:ellipsize="marquee" android:layout_toLeftOf="@+id/right_center" android:layout_alignWithParentIfMissing="true"/>
+
+	<TextView android:text="bottom" android:id="@+id/bottom"
+		android:layout_below="@id/center" android:layout_width="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:singleLine="true" android:layout_height="wrap_content"
+		android:layout_alignLeft="@id/center" android:paddingBottom="2dp" android:layout_marginTop="-5dp" android:layout_toLeftOf="@+id/right"/>
+
+	<TextView android:text="right" android:id="@+id/right"
+		android:layout_below="@id/center" android:layout_width="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:singleLine="true" android:layout_height="wrap_content"
+		android:paddingBottom="5dp" android:layout_alignTop="@id/bottom"
+		android:layout_alignParentRight="true" /><TextView android:layout_width="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:singleLine="true" android:layout_height="wrap_content"
+		android:paddingBottom="5dp" android:layout_alignParentRight="true" android:layout_alignBottom="@id/center" android:id="@+id/right_center" android:text="right_center"/>
+
+	<ProgressBar android:id="@+id/progress"  
+		android:max="100" android:layout_below="@id/bottom" android:layout_alignLeft="@id/bottom" 
+		android:layout_alignParentRight="true"
+		android:layout_width="fill_parent"
+		android:progress="50" android:paddingBottom="4dp" android:layout_height="12dp" style="@style/ProgressBarBudget"/>
+
+	<TextView android:id="@+id/progress_text" android:text="progress / text"
+		android:layout_below="@id/bottom" android:layout_alignLeft="@id/bottom" 
+		android:layout_alignParentRight="true"
+		android:layout_width="fill_parent"
+		android:gravity="center" android:textAppearance="?android:attr/textAppearanceSmall" android:layout_height="24dp"/>
+		
+</RelativeLayout>
