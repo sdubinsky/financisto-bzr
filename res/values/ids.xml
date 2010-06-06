@@ -56,5 +56,6 @@
 	<item type="id" name="notification_sound" />
 	<item type="id" name="notification_vibra" />
 	<item type="id" name="notification_led" />	
-	<item type="id" name="include_credit" />		
+	<item type="id" name="include_credit" />	
+	<item type="id" name="status_clear"/>	
 </resources>

@@ -26,7 +26,9 @@ import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.MyEntity;
 import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.model.Project;
+import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
 import ru.orangesoftware.financisto.utils.DateUtils.Period;
 import android.content.Intent;
@@ -45,6 +47,8 @@ import android.widget.TextView;
 
 public class BlotterFilterActivity extends AbstractActivity {	
 	
+	private static final TransactionStatus[] statuses = TransactionStatus.values();
+
 	private WhereFilter filter = WhereFilter.empty();
 	
 	private TextView period;
@@ -54,6 +58,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 	private TextView project;
 	private TextView location;
 	private TextView sortOrder;
+	private TextView status;
 	
 	private DateFormat df;
 	private String[] sortBlotterEntries;
@@ -75,6 +80,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 		project = x.addListNodeMinus(layout, R.id.project, R.id.project_clear, R.string.project, R.string.no_filter);
 		location = x.addListNodeMinus(layout, R.id.location, R.id.location_clear, R.string.location, R.string.no_filter);
 		sortOrder = x.addListNodeMinus(layout, R.id.sort_order, R.id.sort_order_clear, R.string.sort_order, sortBlotterEntries[0]);
+		status = x.addListNodeMinus(layout, R.id.status, R.id.status_clear, R.string.transaction_status, R.string.no_filter);
 		
 		Button bOk = (Button)findViewById(R.id.bOK);
 		bOk.setOnClickListener(new OnClickListener(){
@@ -115,6 +121,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			updateProjectFromFilter();
 			updateLocationFromFilter();
 			updateSortOrderFromFilter();
+			updateStatusFromFilter();
 		}
 		
 	}
@@ -193,6 +200,16 @@ public class BlotterFilterActivity extends AbstractActivity {
 			currency.setText(cur.name);
 		} else {
 			currency.setText(R.string.no_filter);
+		}
+	}
+
+	private void updateStatusFromFilter() {
+		Criteria c = filter.get(BlotterFilter.STATUS);
+		if (c != null) {
+			TransactionStatus s = TransactionStatus.valueOf(c.getStringValue());
+			status.setText(getString(s.titleId));
+		} else {
+			status.setText(R.string.no_filter);
 		}
 	}
 
@@ -275,6 +292,15 @@ public class BlotterFilterActivity extends AbstractActivity {
 			filter.desc(BlotterFilter.DATETIME);
 			updateSortOrderFromFilter();
 			break;
+		case R.id.status: {
+			ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, statuses);
+			Criteria c = filter.get(BlotterFilter.STATUS);
+			int selectedPos = c != null ? TransactionStatus.valueOf(c.getStringValue()).ordinal() : -1;
+			x.select(R.id.status, R.string.transaction_status, adapter, selectedPos);
+		} break;
+		case R.id.status_clear:
+			clear(BlotterFilter.STATUS, status);
+			break;
 		}
 	}
 
@@ -315,6 +341,16 @@ public class BlotterFilterActivity extends AbstractActivity {
 				filter.desc(BlotterFilter.DATETIME);
 			}
 			updateSortOrderFromFilter();
+			break;
+		}
+	}
+	
+	@Override
+	public void onSelectedPos(int id, int selectedPos) {
+		switch (id) {
+		case R.id.status:
+			filter.put(Criteria.eq(BlotterFilter.STATUS, statuses[selectedPos].name()));
+			updateStatusFromFilter();			
 			break;
 		}
 	}

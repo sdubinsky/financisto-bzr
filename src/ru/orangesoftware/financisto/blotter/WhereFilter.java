@@ -383,6 +383,10 @@ public class WhereFilter {
 	    	return columnName;
 	    }
 	    
+	    public String getStringValue() {
+	    	return values[0];
+	    }
+
 	    public int getIntValue() {
 	    	return Integer.parseInt(values[0]);
 	    }

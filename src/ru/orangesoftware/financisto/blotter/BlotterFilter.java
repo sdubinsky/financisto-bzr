@@ -23,6 +23,7 @@ public interface BlotterFilter {
 	String DATETIME = BlotterColumns.DATETIME;
 	String BUDGET_ID = "budget_id";
 	String IS_TEMPLATE = BlotterColumns.IS_TEMPLATE;
+	String STATUS = BlotterColumns.STATUS;
 	
 	String SORT_NEWER_TO_OLDER = BlotterColumns.DATETIME+" desc";//
 	String SORT_OLDER_TO_NEWER = BlotterColumns.DATETIME+" asc";//
