@@ -11,6 +11,7 @@
 package ru.orangesoftware.financisto.activity;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,8 +19,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
@@ -160,7 +159,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		df = DateUtils.getShortDateFormat(this);
+		df = new SimpleDateFormat("dd MMM yy"); //TODO ds: DateUtils.getShortDateFormat(this);
 		tf = DateUtils.getTimeFormat(this);
 		
 		long t0 = System.currentTimeMillis();
