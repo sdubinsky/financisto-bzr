@@ -11,9 +11,6 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.adapter.AccountTypeAdapter;
 import ru.orangesoftware.financisto.adapter.CardIssuerAdapter;
 import ru.orangesoftware.financisto.model.Account;

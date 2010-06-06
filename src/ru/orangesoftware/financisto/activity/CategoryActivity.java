@@ -16,10 +16,6 @@ import static ru.orangesoftware.financisto.utils.Utils.text;
 import java.util.ArrayList;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.array;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.adapter.CategoryListAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AttributeColumns;

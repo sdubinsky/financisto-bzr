@@ -14,8 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;

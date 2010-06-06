@@ -16,10 +16,6 @@ import static ru.orangesoftware.financisto.utils.Utils.text;
 import java.text.DecimalFormatSymbols;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.array;
-import ru.orangesoftware.financisto.R.drawable;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.Currency;

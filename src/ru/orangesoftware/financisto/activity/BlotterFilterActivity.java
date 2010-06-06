@@ -15,10 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.array;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;

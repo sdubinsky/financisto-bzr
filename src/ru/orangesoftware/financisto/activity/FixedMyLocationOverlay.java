@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.drawable;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;

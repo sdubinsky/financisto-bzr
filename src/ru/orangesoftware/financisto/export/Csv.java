@@ -10,13 +10,13 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.export;
 
+import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Flushable;
-import java.io.Closeable;
-import java.io.BufferedReader;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * These Csv.Reader and Csv.Writer implementations are based on the following description
@@ -228,13 +228,15 @@ public class Csv {
 
 
     public static class Exception extends RuntimeException {
-        public Exception() { }
+		private static final long serialVersionUID = 1L;
+		public Exception() { }
         public Exception(String message) { super(message); }
         public Exception(String message, Throwable cause) { super(message, cause); }
         public Exception(Throwable cause) { super(cause); }
     }
 
     public static class IOException extends Exception {
+		private static final long serialVersionUID = 1L;
         public IOException() { }
         public IOException(String message) { super(message); }
         public IOException(String message, Throwable cause) { super(message, cause); }
@@ -242,6 +244,7 @@ public class Csv {
     }
 
     public static class FormatException extends Exception {
+		private static final long serialVersionUID = 1L;
         public FormatException() { }
         public FormatException(String message) { super(message); }
         public FormatException(String message, Throwable cause) { super(message, cause); }

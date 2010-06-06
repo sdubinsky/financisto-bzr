@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.model.Budget;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;

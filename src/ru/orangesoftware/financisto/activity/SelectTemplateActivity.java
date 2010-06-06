@@ -11,8 +11,6 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;

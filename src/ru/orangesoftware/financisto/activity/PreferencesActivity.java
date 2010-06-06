@@ -11,9 +11,6 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.drawable;
-import ru.orangesoftware.financisto.R.string;
-import ru.orangesoftware.financisto.R.xml;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.Intent.ShortcutIconResource;

@@ -14,9 +14,6 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.utils.DateUtils;

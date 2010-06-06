@@ -23,7 +23,6 @@ import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Category;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.os.Bundle;
 
 public class SubCategoryReport extends AbstractReport {

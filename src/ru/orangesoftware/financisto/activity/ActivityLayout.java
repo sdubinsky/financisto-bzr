@@ -13,9 +13,6 @@ package ru.orangesoftware.financisto.activity;
 import java.util.ArrayList;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.model.MultiChoiceItem;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.view.NodeInflater;

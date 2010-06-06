@@ -13,10 +13,6 @@ package ru.orangesoftware.financisto.activity;
 import java.util.HashMap;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.drawable;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.backup.Backup;
 import ru.orangesoftware.financisto.backup.DatabaseExport;
 import ru.orangesoftware.financisto.backup.DatabaseImport;

@@ -21,9 +21,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Currency;

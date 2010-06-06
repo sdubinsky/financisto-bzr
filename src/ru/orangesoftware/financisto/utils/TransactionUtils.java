@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import ru.orangesoftware.financisto.adapter.CategoryListAdapter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.ProjectColumns;
 import ru.orangesoftware.financisto.model.Project;
 import android.content.Context;
 import android.database.Cursor;

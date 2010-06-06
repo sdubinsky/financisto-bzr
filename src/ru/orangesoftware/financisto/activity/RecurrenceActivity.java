@@ -15,14 +15,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.recur.Recurrence;
-import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
 import ru.orangesoftware.financisto.recur.RecurrenceFrequency;
 import ru.orangesoftware.financisto.recur.RecurrencePattern;
 import ru.orangesoftware.financisto.recur.RecurrencePeriod;
+import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
 import ru.orangesoftware.financisto.recur.RecurrenceUntil;
 import ru.orangesoftware.financisto.recur.RecurrenceView;
 import ru.orangesoftware.financisto.recur.RecurrenceViewFactory;

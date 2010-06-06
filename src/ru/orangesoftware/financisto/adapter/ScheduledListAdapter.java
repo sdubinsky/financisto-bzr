@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.adapter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 import ru.orangesoftware.financisto.R;
@@ -196,8 +195,6 @@ public class ScheduledListAdapter extends BaseAdapter {
 		return convertView;
 	}
 	
-	private final Calendar c = Calendar.getInstance();
-
 	public static class Holder {
 		public RelativeLayout layout;
 		public TextView indicator;

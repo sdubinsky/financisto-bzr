@@ -68,7 +68,7 @@ public class RecurrencePattern {
 			break;
 		case MONTHLY:
 			r.setFreq(Frequency.MONTHLY);
-			int count = Integer.parseInt(state.get(RecurrenceViewFactory.P_COUNT));
+			//int count = Integer.parseInt(state.get(RecurrenceViewFactory.P_COUNT));
 			MonthlyPattern pattern = MonthlyPattern.valueOf(state.get(RecurrenceViewFactory.P_MONTHLY_PATTERN+"_0"));
 			switch (pattern) {
 			case EVERY_NTH_DAY:

@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.layout;
 import ru.orangesoftware.financisto.adapter.ReportListAdapter;
 import ru.orangesoftware.financisto.report.Report;
 import ru.orangesoftware.financisto.report.ReportType;

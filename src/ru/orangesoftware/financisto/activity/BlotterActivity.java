@@ -13,10 +13,6 @@ package ru.orangesoftware.financisto.activity;
 import java.util.List;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.drawable;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.adapter.BlotterListAdapter;
 import ru.orangesoftware.financisto.adapter.TransactionsListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;

@@ -13,10 +13,8 @@ package ru.orangesoftware.financisto.adapter;
 import java.util.ArrayList;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper.ProjectColumns;
 import ru.orangesoftware.financisto.model.Project;
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

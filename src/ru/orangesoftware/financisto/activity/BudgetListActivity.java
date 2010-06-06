@@ -15,10 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.drawable;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.adapter.BudgetListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;

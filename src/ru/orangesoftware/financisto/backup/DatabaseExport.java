@@ -10,7 +10,8 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.backup;
 
-import static ru.orangesoftware.financisto.backup.Backup.*;
+import static ru.orangesoftware.financisto.backup.Backup.BACKUP_TABLES;
+import static ru.orangesoftware.financisto.backup.Backup.BACKUP_TABLES_WITH_SYSTEM_IDS;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

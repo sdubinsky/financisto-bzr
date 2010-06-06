@@ -13,8 +13,6 @@ package ru.orangesoftware.financisto.activity;
 import java.util.ArrayList;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.adapter.ScheduledListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;

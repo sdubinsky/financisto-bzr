@@ -16,10 +16,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.R.drawable;
-import ru.orangesoftware.financisto.R.id;
-import ru.orangesoftware.financisto.R.layout;
-import ru.orangesoftware.financisto.R.string;
 import ru.orangesoftware.financisto.adapter.CategoryListAdapter2;
 import ru.orangesoftware.financisto.model.Category;
 import android.app.AlertDialog;
