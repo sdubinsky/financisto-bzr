@@ -150,5 +150,10 @@ public class MyPreferences {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getBoolean("send_error_reports", true);
 	}	
+	
+	public static boolean isWidgetEnabled(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("enable_widget", true);
+	}		
 
 }

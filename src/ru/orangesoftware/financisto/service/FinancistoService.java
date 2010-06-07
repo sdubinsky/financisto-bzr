@@ -21,6 +21,7 @@ import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -50,18 +51,22 @@ public class FinancistoService extends Service {
 			if (intent != null) {
 				String action = intent.getAction();
 				if (WIDGET_UPDATE_ACTION.equals(action)) {
-		        	long accountId = -1;
-		        	if (intent != null) {
-		        		accountId = intent.getLongExtra(AccountWidget.WIDGET_ACCOUNT_ID, -1);
-		        		if (accountId == -1) {
-		        			accountId = intent.getLongExtra(AccountWidget.TRANSACTION_ACCOUNT_ID, -1);
-		        			if (accountId != -1) {
-		        				updateWidget(AccountWidget.buildUpdatesForAccount(this, accountId));
-		        				return;
-		        			}
-		        		}
-		        	}
-		        	updateWidget(AccountWidget.buildUpdate(this, accountId));
+					if (MyPreferences.isWidgetEnabled(this)) {
+			        	long accountId = -1;
+			        	if (intent != null) {
+			        		accountId = intent.getLongExtra(AccountWidget.WIDGET_ACCOUNT_ID, -1);
+			        		if (accountId == -1) {
+			        			accountId = intent.getLongExtra(AccountWidget.TRANSACTION_ACCOUNT_ID, -1);
+			        			if (accountId != -1) {
+			        				updateWidget(AccountWidget.buildUpdatesForAccount(this, accountId));
+			        				return;
+			        			}
+			        		}
+			        	}
+			        	updateWidget(AccountWidget.buildUpdate(this, accountId));
+					} else {
+			        	updateWidget(AccountWidget.noDataUpdate(this));						
+					}
 				} else {
 					if (intent.getBooleanExtra(RecurrenceScheduler.SCHEDULE_ALL, false)) {
 						scheduleAll(this, em);

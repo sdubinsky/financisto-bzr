@@ -440,4 +440,7 @@
 	
 	<string name="include_credit">Include credits</string>	
 	<string name="include_credit_summary">Include credits (income or returns) into budget total</string>	
+	
+	<string name="enable_widget">Enable widget</string>
+	<string name="enable_widget_summary">Show account total on the widget</string>		
 </resources>

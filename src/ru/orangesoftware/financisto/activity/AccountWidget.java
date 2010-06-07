@@ -132,9 +132,12 @@ public class AccountWidget extends AppWidgetProvider {
 		} finally {
 			db.close();
 		}
-		RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_2x1_no_data);
-		return updateViews;
+		return noDataUpdate(context);
     }
 
+	public static RemoteViews noDataUpdate(Context context) {
+		RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_2x1_no_data);
+		return updateViews;
+	}
 
 }

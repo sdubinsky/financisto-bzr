@@ -60,6 +60,9 @@
 		</PreferenceScreen>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/protection">
+		<CheckBoxPreference android:key="enable_widget"
+			android:title="@string/enable_widget" android:summary="@string/enable_widget_summary"
+			android:defaultValue="true" />
 		<CheckBoxPreference android:key="pin_protection"
 			android:title="@string/pin_protection" android:summary="@string/pin_protection_summary"
 			android:defaultValue="false" />
