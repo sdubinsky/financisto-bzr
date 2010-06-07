@@ -19,9 +19,9 @@ public enum CardIssuer {
 	MAESTRO(R.string.card_issuer_maestro, R.drawable.account_type_card_maestro), 
 	AMEX(R.string.card_issuer_amex, R.drawable.account_type_card_amex),
 	JCB(R.string.card_issuer_jcb, R.drawable.account_type_card_jcb),
-	DINERS(R.string.card_issuer_diners, R.drawable.account_type_card_diners),
-	
-	DISCOVER(R.string.card_issuer_discover, R.drawable.account_type_card_discover);
+	DINERS(R.string.card_issuer_diners, R.drawable.account_type_card_diners),	
+	DISCOVER(R.string.card_issuer_discover, R.drawable.account_type_card_discover),
+	NETS(R.string.card_issuer_nets, R.drawable.account_type_card_nets);
 	
 	public final int titleId;
 	public final int iconId;
