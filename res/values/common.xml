@@ -11,8 +11,8 @@
 -->
 <resources>
     <string name="app_name">Financisto</string>
-    <string name="app_description">Personal budget manager</string>
-    <string name="about_copyright1">Copyright© 2009-2010 Denis Solonenko</string>
+    <string name="app_description">Open-source personal budget manager</string>
+    <string name="about_copyright1">Released under GNU GPL v2</string>
 	<color name="scheduled">#7cc623</color>
 	<color name="pending">#303030</color>    	
 	<color name="positive_amount">#39b54a</color>
