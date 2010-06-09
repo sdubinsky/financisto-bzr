@@ -26,6 +26,10 @@
 		android:layout_height="wrap_content" android:layout_gravity="center"
 		android:autoLink="web" android:textSize="16sp"
 		android:text="Blog: http://orangesoftware.ru" />
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_gravity="center"
+		android:autoLink="web" android:textSize="16sp"
+		android:text="中譯: http://but.tw" />
 	<TextView android:layout_height="wrap_content"
 		android:layout_gravity="center" android:layout_width="wrap_content"
 		android:text="@string/about_copyright1" />
