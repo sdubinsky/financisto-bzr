@@ -29,7 +29,7 @@ public class PreferencesActivity extends PreferenceActivity {
 		pNewTransactionShortcut.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
 			public boolean onPreferenceClick(Preference arg0) {
-				addShortcut(".TransactionActivity", R.string.transaction, R.drawable.icon_transaction);
+				addShortcut(".activity.TransactionActivity", R.string.transaction, R.drawable.icon_transaction);
 				return true;
 			}
 			
@@ -38,7 +38,7 @@ public class PreferencesActivity extends PreferenceActivity {
 		pNewTransferShortcut.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
 			public boolean onPreferenceClick(Preference arg0) {
-				addShortcut(".TransferActivity", R.string.transfer, R.drawable.icon_transfer);
+				addShortcut(".activity.TransferActivity", R.string.transfer, R.drawable.icon_transfer);
 				return true;
 			}
 			
