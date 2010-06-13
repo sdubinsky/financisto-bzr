@@ -143,6 +143,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String CATEGORY_LEFT = "category_left";
 		public static final String CATEGORY_RIGHT = "category_right";
 		public static final String PROJECT_ID = "project_id";
+		public static final String PROJECT = "project";
 		public static final String LOCATION_ID = "location_id";
 		public static final String LOCATION = "location";
 		public static final String NOTE = "note";
@@ -168,6 +169,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			CATEGORY_LEFT,
 			CATEGORY_RIGHT,
 			PROJECT_ID,
+			PROJECT,
 			LOCATION_ID,
 			LOCATION,
 			NOTE,
@@ -201,17 +203,18 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			public static final int CATEGORY_LEFT = 9;
 			public static final int CATEGORY_RIGHT = 10;
 			public static final int PROJECT_ID = 11;
-			public static final int LOCATION_ID = 12;
-			public static final int LOCATION = 13;
-			public static final int NOTE = 14;
-			public static final int FROM_AMOUNT = 15;
-			public static final int TO_AMOUNT = 16;
-			public static final int DATETIME = 17;
-			public static final int IS_TEMPLATE = 18;		
-			public static final int TEMPLATE_NAME = 19;
-			public static final int RECURRENCE = 20;
-			public static final int NOTIFICATION_OPTIONS = 21;
-			public static final int STATUS = 22;
+			public static final int PROJECT = 12;
+			public static final int LOCATION_ID = 13;
+			public static final int LOCATION = 14;
+			public static final int NOTE = 15;
+			public static final int FROM_AMOUNT = 16;
+			public static final int TO_AMOUNT = 17;
+			public static final int DATETIME = 18;
+			public static final int IS_TEMPLATE = 19;		
+			public static final int TEMPLATE_NAME = 20;
+			public static final int RECURRENCE = 21;
+			public static final int NOTIFICATION_OPTIONS = 22;
+			public static final int STATUS = 23;
 		};
 	}		
 

@@ -11,6 +11,7 @@
 package ru.orangesoftware.financisto.export;
 
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_DATE_ISO_8601;
+import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_TIME_ISO_8601;
 
 import java.io.BufferedWriter;
 import java.math.BigDecimal;
@@ -46,7 +47,7 @@ public class CSVExport extends Export {
 
 	@Override
 	protected void writeHeader(BufferedWriter bw) throws Exception {
-		bw.write("date/time,account,amount,currency,category,parent,location,note\n");
+		bw.write("date,time,account,amount,currency,category,parent,location,project,note\n");
 	}
 
 	@Override
@@ -74,6 +75,7 @@ public class CSVExport extends Export {
 		long categoryId = cursor.getLong(BlotterColumns.Indicies.CATEGORY_ID);
 		Category category = categories.getById(categoryId);
 		long toAccountId = cursor.getLong(BlotterColumns.Indicies.TO_ACCOUNT_ID);
+		String project = cursor.getString(BlotterColumns.Indicies.PROJECT);
 		if (toAccountId > 0) {
 			String fromAccountTitle = cursor.getString(BlotterColumns.Indicies.FROM_ACCOUNT_TITLE);
 			String toAccountTitle = cursor.getString(BlotterColumns.Indicies.TO_ACCOUNT_TITLE);
@@ -82,20 +84,22 @@ public class CSVExport extends Export {
 			long fromAmount = cursor.getLong(BlotterColumns.Indicies.FROM_AMOUNT);
 			long toAmount = cursor.getLong(BlotterColumns.Indicies.TO_AMOUNT);
 			String note = cursor.getString(BlotterColumns.Indicies.NOTE);
-			writeLine(w, dt, fromAccountTitle, fromAmount, fromCurrencyId, category, "Transfer Out", note);
-			writeLine(w, dt, toAccountTitle, toAmount, toCurrencyId, category, "Transfer In", note);
+			writeLine(w, dt, fromAccountTitle, fromAmount, fromCurrencyId, category, "Transfer Out", project, note);
+			writeLine(w, dt, toAccountTitle, toAmount, toCurrencyId, category, "Transfer In", project, note);
 		} else {
 			String fromAccountTitle = cursor.getString(BlotterColumns.Indicies.FROM_ACCOUNT_TITLE);
 			String note = cursor.getString(BlotterColumns.Indicies.NOTE);
 			String location = cursor.getString(BlotterColumns.Indicies.LOCATION);
 			long fromCurrencyId = cursor.getLong(BlotterColumns.Indicies.FROM_ACCOUNT_CURRENCY_ID);
 			long amount = cursor.getLong(BlotterColumns.Indicies.FROM_AMOUNT);
-			writeLine(w, dt, fromAccountTitle, amount, fromCurrencyId, category, location, note);
+			writeLine(w, dt, fromAccountTitle, amount, fromCurrencyId, category, location, project, note);
 		}
 	}
 	
-	private void writeLine(Csv.Writer w, Date dt, String account, long amount, long currencyId, Category category, String location, String note) {
+	private void writeLine(Csv.Writer w, Date dt, String account, long amount, long currencyId, 
+			Category category, String location, String project, String note) {
 		w.value(FORMAT_DATE_ISO_8601.format(dt));
+		w.value(FORMAT_TIME_ISO_8601.format(dt));
 		w.value(account);
 		w.value(f.format(new BigDecimal(amount).divide(Utils.HUNDRED)));
 		Currency c = CurrencyCache.getCurrency(currencyId);
@@ -103,6 +107,7 @@ public class CSVExport extends Export {
 		w.value(category != null ? category.title : "");
 		w.value(category != null ? (category.parent != null ? category.parent.title : "") : "");
 		w.value(location);
+		w.value(project);
 		w.value(note);
 		w.newLine();
 	}

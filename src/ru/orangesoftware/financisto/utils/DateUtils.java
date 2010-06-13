@@ -20,7 +20,9 @@ import android.provider.Settings;
 
 public class DateUtils {
 	
-	public static final DateFormat FORMAT_DATE_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	public static final DateFormat FORMAT_TIMESTAMP_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	public static final DateFormat FORMAT_DATE_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
+	public static final DateFormat FORMAT_TIME_ISO_8601 = new SimpleDateFormat("HH:mm:ss");
 	public static final DateFormat FORMAT_DATE_RFC_2445 = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
 	
 	private static final Calendar c = Calendar.getInstance();	
