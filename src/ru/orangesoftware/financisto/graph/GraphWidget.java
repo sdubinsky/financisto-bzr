@@ -15,42 +15,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.graphics.Paint.Align;
-import android.graphics.Paint.Style;
 import android.view.View;
 
 public class GraphWidget extends View {
 
-	public static final Paint NAME_PAINT = new Paint();
-	public static final Paint AMOUNT_PAINT = new Paint();
-	public static final Paint LINE_PAINT = new Paint();
-	public static final int NAME_HEIGHT;
-	
-	static {
-		Rect rect = new Rect();
-		NAME_PAINT.setColor(Color.WHITE);
-		NAME_PAINT.setAntiAlias(true);
-		NAME_PAINT.setTextAlign(Align.LEFT);
-		NAME_PAINT.setTextSize(14);
-		NAME_PAINT.setTypeface(Typeface.DEFAULT_BOLD);
-		NAME_PAINT.getTextBounds("AAA", 0, 3, rect);		
-		NAME_HEIGHT = rect.height();
-		AMOUNT_PAINT.setColor(Color.WHITE);
-		AMOUNT_PAINT.setAntiAlias(true);
-		AMOUNT_PAINT.setTextSize(12);
-		AMOUNT_PAINT.setTextAlign(Align.CENTER);
-		LINE_PAINT.setStyle(Style.FILL);		
-	}
-
 	private static final int zeroColor = Resources.getSystem().getColor(android.R.color.secondary_text_dark);
 	private static final int zeroLineColor = zeroColor;
 
-	private static final int DY = 6;
-	private static final int LINE_HEIGHT = 30;
-	
 	private final int positiveColor;
 	private final int negativeColor;	
 	private final int positiveLineColor = Color.argb(255, 124, 198, 35);
@@ -73,33 +44,35 @@ public class GraphWidget extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		int x = getPaddingLeft();
+		GraphStyle style = this.unit.style;
+		int x = getPaddingLeft()+style.indent;
 		int y = getPaddingTop();
-		int w = getWidth()-getPaddingLeft()-getPaddingRight();
+		int w = getWidth()-getPaddingLeft()-getPaddingRight()-style.indent;
 		GraphUnit u = this.unit;
 		String name = u.name;
-		canvas.drawText(name, x, y+NAME_HEIGHT, NAME_PAINT);
-		y += NAME_HEIGHT+DY;
+		canvas.drawText(name, x, y+style.nameHeight, style.namePaint);
+		y += style.nameHeight+style.textDy;
 		for (Amount a : u.amounts.values()) {
 			long amount = a.getAmount();				
-			int lineWidth = Math.max(1, (int)(1.0*Math.abs(amount)/maxAmount*(w-DY-maxAmountWidth)));
-			LINE_PAINT.setColor(amount == 0 ? zeroLineColor : (amount > 0 ? positiveLineColor : negativeLineColor));
-			canvas.drawRect(x, y, x+lineWidth, y+LINE_HEIGHT, LINE_PAINT);
-			AMOUNT_PAINT.setColor(amount == 0 ? zeroColor : (amount > 0 ? positiveColor : negativeColor));
+			int lineWidth = Math.max(1, (int)(1.0*Math.abs(amount)/maxAmount*(w-style.textDy-maxAmountWidth)));
+			style.linePaint.setColor(amount == 0 ? zeroLineColor : (amount > 0 ? positiveLineColor : negativeLineColor));
+			canvas.drawRect(x, y, x+lineWidth, y+style.lineHeight, style.linePaint);
+			style.amountPaint.setColor(amount == 0 ? zeroColor : (amount > 0 ? positiveColor : negativeColor));
 			canvas.drawText(a.getAmountText(), 
-					x+lineWidth+DY+a.amountTextWidth/2, 
-					y+LINE_HEIGHT/2+2, 
-					AMOUNT_PAINT);
-			y += LINE_HEIGHT+DY;
+					x+lineWidth+style.textDy+a.amountTextWidth/2, 
+					y+style.lineHeight/2+style.amountHeight/2, 
+					style.amountPaint);
+			y += style.lineHeight+style.dy;
 		}
 	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		GraphStyle style = this.unit.style;
 		int specWidth = MeasureSpec.getSize(widthMeasureSpec);
 		int h = 0;
-		h += NAME_HEIGHT + DY;
-		h += (LINE_HEIGHT+DY)*unit.amounts.size();
+		h += style.nameHeight + style.textDy;
+		h += (style.lineHeight+style.dy)*unit.amounts.size();
 		setMeasuredDimension(specWidth, getPaddingTop()+h+getPaddingBottom());
 	}
 

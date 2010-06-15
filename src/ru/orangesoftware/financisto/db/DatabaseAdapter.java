@@ -43,6 +43,7 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionAttributeColumn
 import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.CategoryTree;
 import ru.orangesoftware.financisto.model.SystemAttribute;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.Transaction;
@@ -464,31 +465,18 @@ public class DatabaseAdapter {
 	}
 
 	public ArrayList<Category> getAllCategoriesTree(boolean includeNoCategory) {
-		ArrayList<Category> list = new ArrayList<Category>();
 		Cursor c = getAllCategories(includeNoCategory);
 		try { 
-			Category parent = null;
-			while (c.moveToNext()) {
-				Category category = Category.formCursor(c);
-				while (parent != null) {
-					if (category.left > parent.left && category.right < parent.right) {
-						parent.addChild(category);
-						break;
-					} else {
-						parent = parent.parent;
-					}										
+			ArrayList<Category> list = new CategoryTree<Category>(){
+				@Override
+				protected Category createNode(Cursor c) {
+					return Category.formCursor(c);
 				}
-				if (parent == null) {
-					list.add(category);
-				}
-				if (category.id > 0 && (category.right - category.left > 1)) {
-					parent = category;
-				}
-			}
+			}.create(c);
+			return list;
 		} finally {
 			c.close();
 		}
-		return list;
 	}
 	
 	public ArrayList<Category> getAllCategoriesList(boolean includeNoCategory) {

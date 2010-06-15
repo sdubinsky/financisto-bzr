@@ -26,6 +26,19 @@ import com.google.ical.values.WeekdayNum;
 
 public class RecurrencePattern {
 	
+	private static final LinkedList<WeekdayNum> WEEKDAYS = new LinkedList<WeekdayNum>();
+	private static final LinkedList<WeekdayNum> WEEKENDS = new LinkedList<WeekdayNum>();
+	
+	static {
+		WEEKDAYS.add(new WeekdayNum(0, Weekday.MO));
+		WEEKDAYS.add(new WeekdayNum(0, Weekday.TU));
+		WEEKDAYS.add(new WeekdayNum(0, Weekday.WE));
+		WEEKDAYS.add(new WeekdayNum(0, Weekday.TH));
+		WEEKDAYS.add(new WeekdayNum(0, Weekday.FR));		
+		WEEKENDS.add(new WeekdayNum(0, Weekday.SU));
+		WEEKENDS.add(new WeekdayNum(0, Weekday.SA));
+	}
+	
 	public final RecurrenceFrequency frequency;
 	public final String params;
 
@@ -86,20 +99,11 @@ public class RecurrencePattern {
 						r.setByMonthDay(new int[]{num});
 						break;
 					case WEEKDAY:
-						r.setByDay(new LinkedList<WeekdayNum>(){{
-							add(new WeekdayNum(0, Weekday.MO));
-							add(new WeekdayNum(0, Weekday.TU));
-							add(new WeekdayNum(0, Weekday.WE));
-							add(new WeekdayNum(0, Weekday.TH));
-							add(new WeekdayNum(0, Weekday.FR));
-						}});
+						r.setByDay(WEEKDAYS);
 						r.setBySetPos(new int[]{num});
 						break;
 					case WEEKEND_DAY:
-						r.setByDay(new LinkedList<WeekdayNum>(){{
-							add(new WeekdayNum(0, Weekday.SU));
-							add(new WeekdayNum(0, Weekday.SA));
-						}});
+						r.setByDay(WEEKENDS);
 						r.setBySetPos(new int[]{num});
 						break;
 					default:

@@ -16,14 +16,16 @@ import ru.orangesoftware.financisto.model.Currency;
 
 public class GraphUnit implements Comparable<GraphUnit> {
 
-	public long id;
-	public String name;
-	public final HashMap<String, Amount> amounts = new HashMap<String, Amount>();
+	public final long id;
+	public final String name;
+	public final GraphStyle style;
+	public final HashMap<String, Amount> amounts = new HashMap<String, Amount>(2);
 	long sum = 0;
 	
-	public GraphUnit(long id, String name) {
+	public GraphUnit(long id, String name, GraphStyle style) {
 		this.id = id;
 		this.name = name;
+		this.style = style;
 	}
 	
 	public void addAmount(Currency currency, long amount) {

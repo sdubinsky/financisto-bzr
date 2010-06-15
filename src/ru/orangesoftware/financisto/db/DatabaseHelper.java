@@ -371,7 +371,15 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String AMOUNT = "amount";
 		public static final String DATETIME = "datetime";
 		
-		public static String[] NORMAL_PROJECTION = {ID, NAME, CURRENCY_ID, AMOUNT, DATETIME};
-		
+		public static String[] NORMAL_PROJECTION = {ID, NAME, CURRENCY_ID, AMOUNT, DATETIME};		
 	}
+
+	public static class SubCategoryReportColumns extends ReportColumns {
+
+		public static final String LEFT = "left";
+		public static final String RIGHT = "right";
+
+		public static String[] NORMAL_PROJECTION = {ID, NAME, CURRENCY_ID, AMOUNT, LEFT, RIGHT};		
+	}
+	
 }

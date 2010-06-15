@@ -56,7 +56,6 @@ public class PeriodReport extends AbstractReport {
 					newFilter.getSelection(), newFilter.getSelectionArgs(), null, null, null);
 			GraphUnit u = getUnitFromCursor(c, i);
 			if (u.amounts.size() > 0) {
-				u.name = context.getString(p.type.titleId);
 				units.add(u);
 			}
 		}
@@ -65,7 +64,8 @@ public class PeriodReport extends AbstractReport {
 
 	@Override
 	protected String alterName(long id, String name) {
-		return null;
+		Period p = periods[(int)id];
+		return context.getString(p.type.titleId);
 	}
 
 	@Override

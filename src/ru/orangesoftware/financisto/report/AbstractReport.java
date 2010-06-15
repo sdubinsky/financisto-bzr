@@ -20,6 +20,7 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
@@ -28,6 +29,8 @@ import android.content.Intent;
 import android.database.Cursor;
 
 public abstract class AbstractReport implements Report {
+	
+	protected static final GraphStyle DEFAULT_STYLE = new GraphStyle.Builder().build();
 	
 	protected final Context context;
 	
@@ -61,7 +64,7 @@ public abstract class AbstractReport implements Report {
 					if (u != null) {
 						units.add(u);
 					}
-					u = new GraphUnit(id, alterName(id, name));
+					u = new GraphUnit(id, alterName(id, name), DEFAULT_STYLE);
 					lastId = id;
 				}
 				Currency currency = CurrencyCache.getCurrency(currencyId);
@@ -78,7 +81,7 @@ public abstract class AbstractReport implements Report {
 	
 	protected GraphUnit getUnitFromCursor(Cursor c, long id) {
 		try {
-			GraphUnit u = new GraphUnit(id, null);
+			GraphUnit u = new GraphUnit(id, alterName(id, null), DEFAULT_STYLE);
 			while (c.moveToNext()) {				
 				long currencyId = c.getLong(2);
 				long amount = c.getLong(3);

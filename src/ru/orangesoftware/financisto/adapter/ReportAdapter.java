@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class ReportAdapter extends BaseAdapter {
-	
+		
 	private final Context context; 
 	private final ArrayList<GraphUnit> units;
 
@@ -36,7 +36,7 @@ public class ReportAdapter extends BaseAdapter {
 		for (GraphUnit u : units) {
 			for (Amount a : u.amounts.values()) {
 				String amountText = a.getAmountText();
-				GraphWidget.AMOUNT_PAINT.getTextBounds(amountText, 0, amountText.length(), rect);
+				u.style.amountPaint.getTextBounds(amountText, 0, amountText.length(), rect);
 				a.amountTextWidth = (int)rect.width();
 				a.amountTextHeight = (int)rect.height();
 				maxAmount = Math.max(maxAmount, Math.abs(a.getAmount()));

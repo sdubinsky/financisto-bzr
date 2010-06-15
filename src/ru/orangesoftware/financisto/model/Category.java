@@ -24,15 +24,9 @@ import android.database.Cursor;
 
 @Entity
 @Table(name = "category")
-public class Category extends MyEntity {
+public class Category extends CategoryEntity<Category> {
 	
 	public static final String NO_CATEGORY = "<NO_CATEGORY>";
-	
-	@Column(name = "left")
-	public int left;
-	
-	@Column(name = "right")
-	public int right;
 	
 	@Column(name = "last_location_id")
 	public long lastLocationId;
@@ -44,12 +38,6 @@ public class Category extends MyEntity {
 	public int sortOrder;
 
 	@Transient
-	public Category parent;
-	
-	@Transient
-	public ArrayList<Category> children;
-
-	@Transient
 	public int level;
 	
 	@Transient
@@ -59,22 +47,6 @@ public class Category extends MyEntity {
 	
 	public Category(long id){
 		this.id = id;
-	}
-	
-	public long getParentId() {
-		return parent != null ? parent.id : 0;
-	}
-	
-	public void addChild(Category category) {
-		if (children == null) {
-			children = new ArrayList<Category>();
-		}
-		category.parent = this;
-		children.add(category);
-	}
-	
-	public boolean hasChildren() {
-		return children != null && !children.isEmpty();
 	}
 	
 	public ContentValues toValues() {
