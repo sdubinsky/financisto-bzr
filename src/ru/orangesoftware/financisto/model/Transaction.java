@@ -87,6 +87,9 @@ public class Transaction {
 	@Column(name = "status")
 	public TransactionStatus status = TransactionStatus.UR;	
 	
+	@Column(name = "attached_picture")
+	public String attachedPicture;
+
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
 
@@ -110,6 +113,7 @@ public class Transaction {
 		values.put(TransactionColumns.RECURRENCE, recurrence);
 		values.put(TransactionColumns.NOTIFICATION_OPTIONS, notificationOptions);
 		values.put(TransactionColumns.STATUS, status.name());
+		values.put(TransactionColumns.ATTACHED_PICTURE, attachedPicture);
 		return values;
 	}
 
@@ -135,6 +139,7 @@ public class Transaction {
 		t.recurrence = c.getString(TransactionColumns.Indicies.RECURRENCE);
 		t.notificationOptions = c.getString(TransactionColumns.Indicies.NOTIFICATION_OPTIONS);	
 		t.status = TransactionStatus.valueOf(c.getString(TransactionColumns.Indicies.STATUS));
+		t.attachedPicture = c.getString(TransactionColumns.Indicies.ATTACHED_PICTURE);
 		return t;
 	}		
 	

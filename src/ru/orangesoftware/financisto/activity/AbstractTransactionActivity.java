@@ -10,6 +10,12 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import static ru.orangesoftware.financisto.utils.ThumbnailUtil.PICTURES_DIR;
+import static ru.orangesoftware.financisto.utils.ThumbnailUtil.PICTURES_THUMB_DIR;
+import static ru.orangesoftware.financisto.utils.ThumbnailUtil.PICTURE_FILE_NAME_FORMAT;
+import static ru.orangesoftware.financisto.utils.ThumbnailUtil.createAndStoreImageThumbnail;
+
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,11 +61,14 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -69,6 +78,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -87,6 +97,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private static final int NEW_LOCATION_REQUEST = 4002;
 	private static final int RECURRENCE_REQUEST = 4003;
 	private static final int NOTIFICATION_REQUEST = 4004;
+	private static final int PICTURE_REQUEST = 4005;	
 	
 	private static final TransactionStatus[] statuses = TransactionStatus.values();
 	
@@ -118,6 +129,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected EditText noteText;
 	protected TextView recurText;	
 	protected TextView notificationText;	
+	
+	private ImageView pictureView;
+	private String pictureFileName;
 	
 	protected long selectedAccountId = -1;
 	protected long selectedCategoryId = 0;
@@ -502,6 +516,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				}
 			}
 		}
+		if (transaction.isNotTemplateLike()) {
+			pictureView = x.addPictureNodeMinus(layout, R.id.attach_picture, R.id.delete_picture, R.string.attach_picture, R.string.new_picture);
+		}
 	}
 
 	protected abstract void createListNodes(LinearLayout layout);
@@ -552,6 +569,20 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				Intent intent = new Intent(this, NotificationOptionsActivity.class);
 				intent.putExtra(NotificationOptionsActivity.NOTIFICATION_OPTIONS, notificationOptions);
 				startActivityForResult(intent, NOTIFICATION_REQUEST);				
+				break;
+			}
+			case R.id.attach_picture: {
+				PICTURES_DIR.mkdirs();
+				PICTURES_THUMB_DIR.mkdirs();				
+				pictureFileName = PICTURE_FILE_NAME_FORMAT.format(new Date())+".jpg";
+				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, 
+						Uri.fromFile(new File(PICTURES_DIR, pictureFileName)));
+				startActivityForResult(intent, PICTURE_REQUEST);
+				break;
+			}
+			case R.id.delete_picture: {
+				removePicture();
 				break;
 			}
 		}
@@ -719,12 +750,47 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 					String notificationOptions = data.getStringExtra(NotificationOptionsActivity.NOTIFICATION_OPTIONS);
 					setNotification(notificationOptions);
 					break;
+				case PICTURE_REQUEST:
+					selectPicture(pictureFileName);	
+					break;
 				default:
 					break;
+			}
+		} else {
+			if (requestCode == PICTURE_REQUEST) {
+				removePicture();
 			}
 		}
 	}
 	
+	private void selectPicture(String pictureFileName) {
+		if (pictureFileName == null) {
+			return;
+		}
+		File pictureFile = new File(PICTURES_DIR, pictureFileName);
+		if (pictureFile.exists()) {
+			Bitmap thumb = createThumbnail(pictureFile);					
+			pictureView.setImageBitmap(thumb);
+			pictureView.setTag(pictureFileName);
+			transaction.attachedPicture = pictureFileName;
+		}				
+	}
+	
+	private void removePicture() {
+		if (pictureFileName != null) {
+			new File(PICTURES_DIR, pictureFileName).delete();
+			new File(PICTURES_THUMB_DIR, pictureFileName).delete();
+		}		
+		pictureFileName = null;
+		transaction.attachedPicture = null;
+		pictureView.setImageBitmap(null);		
+		pictureView.setTag(null);
+	}
+
+	private Bitmap createThumbnail(File pictureFile) {
+		return createAndStoreImageThumbnail(getContentResolver(), pictureFile);
+	}
+
 	protected void setDateTime(long date) {
 		Date d = new Date(date);
 		dateTime.setTime(d);
@@ -752,6 +818,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			setRecurrence(transaction.recurrence);
 			setNotification(transaction.notificationOptions);
 		}
+		selectPicture(transaction.attachedPicture);
 	}
 
 	private void setLocation(String provider, float accuracy, double latitude, double longitude) {

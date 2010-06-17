@@ -82,6 +82,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String RECURRENCE = "recurrence";
 		public static final String NOTIFICATION_OPTIONS = "notification_options";		
 		public static final String STATUS = "status";		
+		public static final String ATTACHED_PICTURE = "attached_picture";		
 		
 		public static String[] NORMAL_PROJECTION = {
 			ID, 
@@ -102,7 +103,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			TEMPLATE_NAME,
 			RECURRENCE,
 			NOTIFICATION_OPTIONS,
-			STATUS};
+			STATUS,
+			ATTACHED_PICTURE};
 
 		public static class Indicies {
 			public static final int ID = 0;
@@ -124,6 +126,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			public static final int RECURRENCE = 16;
 			public static final int NOTIFICATION_OPTIONS = 17;
 			public static final int STATUS = 18;
+			public static final int ATTACHED_PICTURE = 19;
 		}
 		
 		private TransactionColumns() {}

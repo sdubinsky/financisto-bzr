@@ -10,8 +10,14 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.view;
 
+import java.io.File;
+
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.ThumbnailUtil;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -140,5 +146,39 @@ public class NodeInflater {
 		}
 		
 	}
-	
+
+	public class PictureBuilder extends ListBuilder {
+
+		public PictureBuilder(LinearLayout layout) {
+			super(layout, R.layout.select_entry_picture);
+		}
+		
+		@Override
+		public ListBuilder withButtonId(int buttonId, OnClickListener listener) {
+			ImageView plusImageView = (ImageView)v.findViewById(R.id.plus_minus);
+			plusImageView.setVisibility(View.VISIBLE);
+			return super.withButtonId(buttonId, listener);
+		}
+
+		public PictureBuilder withPicture(final Context context, Bitmap picture) {
+			final ImageView imageView = (ImageView)v.findViewById(R.id.picture);
+			imageView.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+					String pictureFileName = (String)imageView.getTag();
+					if (pictureFileName != null) {
+						Uri target = Uri.fromFile(new File(ThumbnailUtil.PICTURES_DIR, pictureFileName)); 
+						Intent intent = new Intent(Intent.ACTION_VIEW, target); 
+						intent.putExtra(Intent.EXTRA_STREAM, target); 
+						intent.setDataAndType(target, "image/jpeg"); 
+						context.startActivity(intent);
+					}
+				}
+			});
+			imageView.setImageBitmap(picture);
+			return this;
+		}
+		
+	}
+
 }

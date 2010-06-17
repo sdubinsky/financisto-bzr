@@ -443,4 +443,8 @@
 	
 	<string name="enable_widget">Enable widget</string>
 	<string name="enable_widget_summary">Show account total on the widget</string>		
+	
+	<string name="attach_picture">Attach picture</string>		
+	<string name="new_picture">Take a picture</string>		
+	
 </resources>

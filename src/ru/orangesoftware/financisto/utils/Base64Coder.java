@@ -1,28 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 2010 Denis Solonenko.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v2.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
- * Contributors:
- *     Denis Solonenko - initial API and implementation
- ******************************************************************************/
+* Copyright 2003-2009 Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland
+* www.source-code.biz, www.inventec.ch/chdh
+* 
+* This module is multi-licensed and may be used under the terms
+* of any of the following licenses:
+* 
+* EPL, Eclipse Public License, http://www.eclipse.org/legal
+* LGPL, GNU Lesser General Public License, http://www.gnu.org/licenses/lgpl.html
+* AL, Apache License, http://www.apache.org/licenses
+* BSD, BSD License, http://www.opensource.org/licenses/bsd-license.php
+* 
+* Please contact the author if you need another license.
+* This module is provided "as is", without warranties of any kind.
+******************************************************************************/
 package ru.orangesoftware.financisto.utils;
-
-//Copyright 2003-2009 Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland
-//www.source-code.biz, www.inventec.ch/chdh
-//
-//This module is multi-licensed and may be used under the terms
-//of any of the following licenses:
-//
-//EPL, Eclipse Public License, http://www.eclipse.org/legal
-//LGPL, GNU Lesser General Public License, http://www.gnu.org/licenses/lgpl.html
-//AL, Apache License, http://www.apache.org/licenses
-//BSD, BSD License, http://www.opensource.org/licenses/bsd-license.php
-//
-//Please contact the author if you need another license.
-//This module is provided "as is", without warranties of any kind.
 
 /**
  * A Base64 Encoder/Decoder.

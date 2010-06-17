@@ -93,6 +93,9 @@ public class TransactionInfo {
 	@Column(name = "status")
 	public String status;		
 
+	@Column(name = "attached_picture")
+	public String attachedPicture;		
+
 	@Transient
 	public Date nextDateTime;
 	

@@ -438,5 +438,9 @@
 	<string name="include_credit_summary">Включить приход в общую сумму бюджета</string>	
 	
 	<string name="enable_widget">Разрешить виджет</string>
-	<string name="enable_widget_summary">Показывать баланс на виджете</string>		
+	<string name="enable_widget_summary">Показывать баланс на виджете</string>	
+	
+	<string name="attach_picture">Прикрепить фотку</string>		
+	<string name="new_picture">Сфотографировать</string>		
+		
 </resources>

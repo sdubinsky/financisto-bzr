@@ -22,16 +22,19 @@ import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
 import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.Recurrence;
+import ru.orangesoftware.financisto.utils.ThumbnailUtil;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.view.NodeInflater;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -77,7 +80,8 @@ public class TransactionInfoDialog {
 				add(layout, R.string.recur, r.toInfoString(parentActivity));								
 			} else {
 				add(layout, R.string.date, DateUtils.formatDateTime(parentActivity, ti.dateTime, 
-						DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_SHOW_YEAR));				
+						DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_SHOW_YEAR),
+						ti.attachedPicture);				
 			}
 		}
 		TransactionStatus status = TransactionStatus.valueOf(ti.status);
@@ -162,6 +166,19 @@ public class TransactionInfoDialog {
 	private void add(LinearLayout layout, int labelId, String data) {
 		inflater.new Builder(layout, R.layout.select_entry_simple).withLabel(labelId)
 			.withData(data).create();
+	}
+
+	private void add(LinearLayout layout, int labelId, String data, String pictureFileName) {
+		Bitmap thumb = ThumbnailUtil.loadThumbnail(pictureFileName);
+		View v = inflater.new PictureBuilder(layout)
+			.withPicture(parentActivity, thumb)
+			.withLabel(labelId)
+			.withData(data).create();
+		v.setClickable(false);
+		v.setFocusable(false);
+		v.setFocusableInTouchMode(false);
+		ImageView pictureView = (ImageView)v.findViewById(R.id.picture);
+		pictureView.setTag(pictureFileName);
 	}
 
 	private void add(LinearLayout layout, String label, String data) {

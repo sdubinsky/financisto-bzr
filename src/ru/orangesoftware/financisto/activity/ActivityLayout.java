@@ -20,12 +20,14 @@ import ru.orangesoftware.financisto.view.NodeInflater.Builder;
 import ru.orangesoftware.financisto.view.NodeInflater.CheckBoxBuilder;
 import ru.orangesoftware.financisto.view.NodeInflater.EditBuilder;
 import ru.orangesoftware.financisto.view.NodeInflater.ListBuilder;
+import ru.orangesoftware.financisto.view.NodeInflater.PictureBuilder;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -151,6 +153,13 @@ public class ActivityLayout {
 		ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);
 		View v = b.withButtonId(minusId, listener).withId(id, listener).withLabel(labelId).withData(defaultValue).create();
 		return (TextView)v.findViewById(R.id.data);
+	}
+
+	public ImageView addPictureNodeMinus(LinearLayout layout, int id, int minusId, int labelId, int defaultLabelResId) {
+		PictureBuilder b = inflater.new PictureBuilder(layout);
+		View v = b.withPicture(context, null).withButtonId(minusId, listener).withId(id, listener)
+				  .withLabel(labelId).withData(defaultLabelResId).create();
+		return (ImageView)v.findViewById(R.id.picture);
 	}
 
 	public View addEditNode(LinearLayout layout, View view) {
