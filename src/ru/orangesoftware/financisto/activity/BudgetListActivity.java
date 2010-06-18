@@ -287,6 +287,7 @@ public class BudgetListActivity extends AbstractListActivity {
 				Log.e("BudgetTotals", "Unexpected error", ex);
 				return new Total[0];
 			}
+
 		}
 
 		private <T extends MyEntity> String getChecked(HashMap<Long, T> entities, String s) {

@@ -20,6 +20,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.service.FinancistoService;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import ru.orangesoftware.financisto.view.NodeInflater;
 import android.app.AlertDialog;
@@ -233,6 +234,7 @@ public class BlotterActivity extends AbstractListActivity {
 			public void onClick(DialogInterface arg0, int arg1) {
 				db.deleteTransaction(id);
 				requeryCursor();
+				FinancistoService.updateWidget(BlotterActivity.this);
 			}
 		})
 		.setNegativeButton(R.string.no, null)

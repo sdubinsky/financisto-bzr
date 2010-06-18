@@ -104,6 +104,7 @@ public class FinancistoService extends Service {
 				deleteTransactionIfNeeded(transaction);
 				Log.i("FinancistoService", "Expired transaction "+transaction.id+" has been deleted");
 			}
+			updateWidget(this);
 		}
 	}
 
