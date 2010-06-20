@@ -447,4 +447,7 @@
 	<string name="attach_picture">Attach picture</string>		
 	<string name="new_picture">Take a picture</string>		
 	
+	<string name="report_by_sub_category">By Sub-Category</string>
+	<string name="report_by_sub_category_summary">Transactions report by sub-category</string>
+	
 </resources>

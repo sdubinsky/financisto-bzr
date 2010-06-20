@@ -443,4 +443,7 @@
 	<string name="attach_picture">Прикрепить фотку</string>		
 	<string name="new_picture">Сфотографировать</string>		
 		
+	<string name="report_by_sub_category">По под-категориям</string>
+	<string name="report_by_sub_category_summary">Отчет по под-категориям</string>
+		
 </resources>

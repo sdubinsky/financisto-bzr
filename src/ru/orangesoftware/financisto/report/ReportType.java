@@ -25,6 +25,12 @@ public enum ReportType {
 	BY_CATEGORY(R.string.report_by_category, R.string.report_by_category_summary, R.drawable.report_icon_default){
 		@Override
 		public Report createReport(Context context, Bundle extra) {
+			return new CategoryReport(context);
+		}
+	},
+	BY_SUB_CATEGORY_ROOTS(R.string.report_by_sub_category, R.string.report_by_sub_category_summary, R.drawable.report_icon_default){
+		@Override
+		public Report createReport(Context context, Bundle extra) {
 			return new CategoryReport2(context, extra);
 		}
 	},
