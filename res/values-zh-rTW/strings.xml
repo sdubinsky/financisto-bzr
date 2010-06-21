@@ -443,4 +443,11 @@
 	
 	<string name="enable_widget">啟用小工具</string>
 	<string name="enable_widget_summary">在小工具顯示帳戶總額</string>
+
+	<string name="attach_picture">附加照片</string>		
+	<string name="new_picture">拍攝照片</string>		
+	
+	<string name="report_by_sub_category">以子分類統計</string>
+	<string name="report_by_sub_category_summary">以子分類分別統計的交易報告</string>
+
 </resources>
