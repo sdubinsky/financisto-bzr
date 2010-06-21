@@ -192,11 +192,11 @@ public class CategoryActivity extends AbstractActivity {
 	protected void onClick(View v, int id) {
 		switch(id) {
 			case R.id.category:				
-				x.select(R.id.category, R.string.parent, categoryCursor, categoryAdapter, 
+				x.select(this, R.id.category, R.string.parent, categoryCursor, categoryAdapter, 
 						CategoryColumns.ID, category.getParentId());
 				break;
 			case R.id.new_attribute:				
-				x.select(R.id.new_attribute, R.string.attribute, attributeCursor, attributeAdapter, 
+				x.select(this, R.id.new_attribute, R.string.attribute, attributeCursor, attributeAdapter, 
 						AttributeColumns.ID, -1);
 				break;
 			case R.id.add_attribute: {

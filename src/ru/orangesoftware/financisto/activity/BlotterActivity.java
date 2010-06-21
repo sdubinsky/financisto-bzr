@@ -24,11 +24,13 @@ import ru.orangesoftware.financisto.service.FinancistoService;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import ru.orangesoftware.financisto.view.NodeInflater;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -95,7 +97,8 @@ public class BlotterActivity extends AbstractListActivity {
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
 
-		inflater = new NodeInflater(this);
+		LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater = new NodeInflater(layoutInflater);
 
 		bTransfer = (ImageButton)findViewById(R.id.bTransfer);
 		bTransfer.setOnClickListener(new OnClickListener(){

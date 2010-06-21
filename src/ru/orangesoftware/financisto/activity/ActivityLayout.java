@@ -34,13 +34,11 @@ import android.widget.TextView;
 
 public class ActivityLayout {
 
-	private final Context context;
-	private final ActivityLayoutListener listener;
 	public final NodeInflater inflater;
+	private final ActivityLayoutListener listener;
 
-	public ActivityLayout(Context context, ActivityLayoutListener listener) {
-		this.context = context;
-		this.inflater = new NodeInflater(context);
+	public ActivityLayout(NodeInflater inflater, ActivityLayoutListener listener) {
+		this.inflater = inflater;
 		this.listener = listener;
 	}
 	
@@ -155,7 +153,7 @@ public class ActivityLayout {
 		return (TextView)v.findViewById(R.id.data);
 	}
 
-	public ImageView addPictureNodeMinus(LinearLayout layout, int id, int minusId, int labelId, int defaultLabelResId) {
+	public ImageView addPictureNodeMinus(Context context, LinearLayout layout, int id, int minusId, int labelId, int defaultLabelResId) {
 		PictureBuilder b = inflater.new PictureBuilder(layout);
 		View v = b.withPicture(context, null).withButtonId(minusId, listener).withId(id, listener)
 				  .withLabel(labelId).withData(defaultLabelResId).create();
@@ -182,7 +180,7 @@ public class ActivityLayout {
 		return b.withLabel(labelId).withNoDivider().create();
 	}
 	
-	private void selectSingleChoice(int titleId, ListAdapter adapter, int checkedItem, 
+	private void selectSingleChoice(Context context, int titleId, ListAdapter adapter, int checkedItem, 
 			DialogInterface.OnClickListener onClickListener) {
 		new AlertDialog.Builder(context)
 		.setSingleChoiceItems(adapter, checkedItem, onClickListener)
@@ -190,7 +188,7 @@ public class ActivityLayout {
 		.show();
 	}
 	
-	public void selectMultiChoice(final int id, int titleId, final ArrayList<? extends MultiChoiceItem> items) {
+	public void selectMultiChoice(Context context, final int id, int titleId, final ArrayList<? extends MultiChoiceItem> items) {
 		int count = items.size();
 		String[] titles = new String[count];
 		boolean[] checked = new boolean[count];
@@ -221,9 +219,9 @@ public class ActivityLayout {
 		.show();
 	}
 	
-	public void select(final int id, int titleId, 
+	public void select(Context context, final int id, int titleId, 
 			final ListAdapter adapter, int selectedPosition) {		
-		selectSingleChoice(titleId, adapter, selectedPosition, 
+		selectSingleChoice(context, titleId, adapter, selectedPosition, 
 				new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -233,11 +231,11 @@ public class ActivityLayout {
 		});
 	}
 
-	public void select(final int id, int titleId, 
+	public void select(Context context, final int id, int titleId, 
 			final Cursor cursor, final ListAdapter adapter, 
 			final String idColumn, long valueId) {		
 		int pos = Utils.moveCursor(cursor, idColumn, valueId);
-		selectSingleChoice(titleId, adapter, pos, 
+		selectSingleChoice(context, titleId, adapter, pos, 
 				new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which) {

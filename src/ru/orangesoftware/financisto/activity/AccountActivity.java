@@ -198,14 +198,14 @@ public class AccountActivity extends AbstractActivity {
 				isIncludedIntoTotals.performClick();
 				break;
 			case R.id.account_type:				
-				x.select(R.id.account_type, R.string.account_type, accountTypeAdapter, AccountType.valueOf(account.type).ordinal());
+				x.select(this, R.id.account_type, R.string.account_type, accountTypeAdapter, AccountType.valueOf(account.type).ordinal());
 				break;
 			case R.id.card_issuer:				
-				x.select(R.id.card_issuer, R.string.card_issuer, cardIssuerAdapter, 
+				x.select(this, R.id.card_issuer, R.string.card_issuer, cardIssuerAdapter, 
 						account.cardIssuer != null ? CardIssuer.valueOf(account.cardIssuer).ordinal() : 0);
 				break;
 			case R.id.currency:				
-				x.select(R.id.currency, R.string.currency, currencyCursor, currencyAdapter, 
+				x.select(this, R.id.currency, R.string.currency, currencyCursor, currencyAdapter, 
 						"_id", account.currency != null ? account.currency.id : -1);
 				break;
 			case R.id.currency_add:

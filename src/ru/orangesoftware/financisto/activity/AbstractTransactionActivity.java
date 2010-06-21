@@ -241,7 +241,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			@Override
 			public void onClick(View v) {
 				ArrayAdapter<String> adapter = EnumUtils.getAdapter(AbstractTransactionActivity.this, statuses);
-				x.select(R.id.status, R.string.transaction_status, adapter, transaction.status.ordinal());
+				x.select(AbstractTransactionActivity.this, R.id.status, R.string.transaction_status, adapter, transaction.status.ordinal());
 			}
 		});
 		
@@ -517,7 +517,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			}
 		}
 		if (transaction.isNotTemplateLike()) {
-			pictureView = x.addPictureNodeMinus(layout, R.id.attach_picture, R.id.delete_picture, R.string.attach_picture, R.string.new_picture);
+			pictureView = x.addPictureNodeMinus(this, layout, R.id.attach_picture, R.id.delete_picture, R.string.attach_picture, R.string.new_picture);
 		}
 	}
 
@@ -529,11 +529,11 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected void onClick(View v, int id) {
 		switch(id) {
 			case R.id.account:				
-				x.select(R.id.account, R.string.account, accountCursor, accountAdapter, 
+				x.select(this, R.id.account, R.string.account, accountCursor, accountAdapter, 
 						AccountColumns.ID, selectedAccountId);
 				break;
 			case R.id.category:
-				x.select(R.id.category, R.string.category, categoryCursor, categoryAdapter, 
+				x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter, 
 						CategoryViewColumns.ID, selectedCategoryId);				
 				break;
 			case R.id.category_add: {
@@ -543,7 +543,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			} 
 			case R.id.project:
 				int selectedProjectPos = MyEntity.indexOf(projects, selectedProjectId);
-				x.select(R.id.project, R.string.project,  projectAdapter, selectedProjectPos);
+				x.select(this, R.id.project, R.string.project,  projectAdapter, selectedProjectPos);
 				break;
 			case R.id.project_add: {
 				Intent intent = new Intent(this, ProjectActivity.class);
@@ -551,7 +551,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				break;
 			}
 			case R.id.location: {
-				x.select(R.id.location, R.string.location, locationCursor, locationAdapter, "_id", selectedLocationId);
+				x.select(this, R.id.location, R.string.location, locationCursor, locationAdapter, "_id", selectedLocationId);
 				break;
 			}
 			case R.id.location_add: {

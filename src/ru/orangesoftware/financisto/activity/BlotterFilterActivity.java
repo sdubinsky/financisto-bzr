@@ -231,7 +231,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ListAdapter adapter = TransactionUtils.createAccountAdapter(this, cursor);
 			Criteria c = filter.get(BlotterFilter.FROM_ACCOUNT_ID);
 			long selectedId = c != null ? c.getLongValue1() : -1;
-			x.select(R.id.account, R.string.account, cursor, adapter, "_id", selectedId);
+			x.select(this, R.id.account, R.string.account, cursor, adapter, "_id", selectedId);
 		} break;
 		case R.id.account_clear:
 			clear(BlotterFilter.FROM_ACCOUNT_ID, account);
@@ -242,7 +242,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ListAdapter adapter = TransactionUtils.createCurrencyAdapter(this, cursor);
 			Criteria c = filter.get(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID);
 			long selectedId = c != null ? c.getLongValue1() : -1;
-			x.select(R.id.currency, R.string.currency, cursor, adapter, "_id", selectedId);
+			x.select(this, R.id.currency, R.string.currency, cursor, adapter, "_id", selectedId);
 		} break;
 		case R.id.currency_clear:
 			clear(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID, currency);
@@ -253,7 +253,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ListAdapter adapter = TransactionUtils.createCategoryAdapter(db, this, cursor);
 			Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
 			long selectedId = c != null ? c.getLongValue1() : -1;
-			x.select(R.id.category, R.string.category, cursor, adapter, CategoryViewColumns.LEFT, selectedId);
+			x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns.LEFT, selectedId);
 		} break;
 		case R.id.category_clear:
 			clear(BlotterFilter.CATEGORY_LEFT, category);
@@ -266,7 +266,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			Criteria c = filter.get(BlotterFilter.PROJECT_ID);
 			long selectedId = c != null ? c.getLongValue1() : -1;
 			int selectedPos = MyEntity.indexOf(projects, selectedId);
-			x.select(R.id.project, R.string.project, adapter, selectedPos);
+			x.select(this, R.id.project, R.string.project, adapter, selectedPos);
 		} break;
 		case R.id.project_clear:
 			clear(BlotterFilter.PROJECT_ID, project);
@@ -277,7 +277,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ListAdapter adapter = TransactionUtils.createLocationAdapter(this, cursor);
 			Criteria c = filter.get(BlotterFilter.LOCATION_ID);
 			long selectedId = c != null ? c.getLongValue1() : -1;
-			x.select(R.id.location, R.string.location, cursor, adapter, "_id", selectedId);
+			x.select(this, R.id.location, R.string.location, cursor, adapter, "_id", selectedId);
 		} break;
 		case R.id.location_clear:
 			clear(BlotterFilter.LOCATION_ID, location);
@@ -285,7 +285,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 		case R.id.sort_order: {
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, sortBlotterEntries);
 			int selectedId = BlotterFilter.SORT_OLDER_TO_NEWER.equals(filter.getSortOrder()) ? 1 : 0;
-			x.select(R.id.sort_order, R.string.sort_order, adapter, selectedId);
+			x.select(this, R.id.sort_order, R.string.sort_order, adapter, selectedId);
 		} break;
 		case R.id.sort_order_clear:
 			filter.resetSort();
@@ -296,7 +296,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, statuses);
 			Criteria c = filter.get(BlotterFilter.STATUS);
 			int selectedPos = c != null ? TransactionStatus.valueOf(c.getStringValue()).ordinal() : -1;
-			x.select(R.id.status, R.string.transaction_status, adapter, selectedPos);
+			x.select(this, R.id.status, R.string.transaction_status, adapter, selectedPos);
 		} break;
 		case R.id.status_clear:
 			clear(BlotterFilter.STATUS, status);

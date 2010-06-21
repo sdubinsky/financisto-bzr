@@ -19,6 +19,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -36,7 +37,8 @@ public abstract class AttributeView implements OnClickListener {
 	public AttributeView(Context context, Attribute attribute) {
 		this.context = context;
 		this.attribute = attribute;
-		this.inflater = new NodeInflater(context);
+		LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.inflater = new NodeInflater(layoutInflater);
 	}
 
 	@Override

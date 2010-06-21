@@ -161,11 +161,11 @@ public class RecurrenceActivity extends AbstractActivity {
 		switch (id) {
 			case R.id.recurrence_pattern: {
 				ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, frequencies);
-				x.select(R.id.recurrence_pattern, R.string.recurrence_pattern, adapter, recurrence.pattern.frequency.ordinal());
+				x.select(this, R.id.recurrence_pattern, R.string.recurrence_pattern, adapter, recurrence.pattern.frequency.ordinal());
 			} break;
 			case R.id.recurrence_period: {
 				ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, untils);
-				x.select(R.id.recurrence_period, R.string.recurrence_period, adapter, recurrence.period.until.ordinal());
+				x.select(this, R.id.recurrence_period, R.string.recurrence_period, adapter, recurrence.period.until.ordinal());
 			} break;
 			case R.id.start_date: {
 				final Calendar c = recurrence.getStartDate();

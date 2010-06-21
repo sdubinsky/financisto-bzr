@@ -32,8 +32,8 @@ public class NodeInflater {
 	
 	private final LayoutInflater inflater;
 	
-	public NodeInflater(Context context) {
-		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	public NodeInflater(LayoutInflater inflater) {
+		this.inflater = inflater;
 	}
 
 	public class Builder {

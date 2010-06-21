@@ -294,11 +294,11 @@ public class TransferActivity extends AbstractTransactionActivity {
 		super.onClick(v, id);
 		switch (id) {
 			case R.id.account_from:				
-				x.select(R.id.account_from, R.string.account, accountCursor, accountAdapter, 
+				x.select(this, R.id.account_from, R.string.account, accountCursor, accountAdapter, 
 						AccountColumns.ID, selectedAccountFromId);
 				break;
 			case R.id.account_to:				
-				x.select(R.id.account_to, R.string.account, accountCursor, accountAdapter, 
+				x.select(this, R.id.account_to, R.string.account, accountCursor, accountAdapter, 
 						AccountColumns.ID, selectedAccountToId);
 				break;
 		}

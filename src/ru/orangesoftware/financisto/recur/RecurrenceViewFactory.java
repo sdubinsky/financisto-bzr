@@ -27,10 +27,12 @@ import ru.orangesoftware.financisto.utils.DateUtils;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.LocalizableEnum;
 import ru.orangesoftware.financisto.utils.Utils;
+import ru.orangesoftware.financisto.view.NodeInflater;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.Context;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -97,7 +99,9 @@ public class RecurrenceViewFactory {
 		
 		public AbstractView(LocalizableEnum r) {
 			this.r = r;
-			this.x = new ActivityLayout(activity, this);
+			LayoutInflater layoutInflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			NodeInflater nodeInflater = new NodeInflater(layoutInflater);
+			this.x = new ActivityLayout(nodeInflater, this);
 		}
 		
 		@Override
@@ -355,7 +359,7 @@ public class RecurrenceViewFactory {
 					i.setChecked(days.contains(d));
 					items.add(i);
 				}
-				x.selectMultiChoice(R.id.recurrence_pattern, R.string.recur_interval_every_x_week, items);
+				x.selectMultiChoice(activity, R.id.recurrence_pattern, R.string.recur_interval_every_x_week, items);
 			}
 		}
 		
@@ -554,11 +558,11 @@ public class RecurrenceViewFactory {
 				}
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_dropdown_item, items);
 				int selected = prefix[k].ordinal()*postfixesLength+postfix[k].ordinal();
-				x.select(id, R.string.recurrence_period, adapter, selected);				
+				x.select(activity, id, R.string.recurrence_period, adapter, selected);				
 			} else {
 				int k = id-100;
 				ArrayAdapter<String> adapter = EnumUtils.getAdapter(activity, MonthlyPattern.values());
-				x.select(id, R.string.recurrence_period, adapter, pattern[k].ordinal());				
+				x.select(activity, id, R.string.recurrence_period, adapter, pattern[k].ordinal());				
 			}
 		}
 

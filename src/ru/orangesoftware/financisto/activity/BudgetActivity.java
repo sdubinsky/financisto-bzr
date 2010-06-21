@@ -206,21 +206,21 @@ public class BudgetActivity extends AbstractActivity {
 			cbMode.performClick();
 			break;
 		case R.id.category:
-			x.selectMultiChoice(R.id.category, R.string.categories, categories);
+			x.selectMultiChoice(this, R.id.category, R.string.categories, categories);
 			break;
 		case R.id.category_add: {
 			Intent intent = new Intent(this, CategoryActivity.class);
 			startActivityForResult(intent, NEW_CATEGORY_REQUEST);
 			} break;
 		case R.id.project:
-			x.selectMultiChoice(R.id.project, R.string.projects, projects);
+			x.selectMultiChoice(this, R.id.project, R.string.projects, projects);
 			break;
 		case R.id.project_add: {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivityForResult(intent, NEW_PROJECT_REQUEST);
 			} break;
 		case R.id.currency:
-			x.select(R.id.currency, R.string.currency, currencyCursor,
+			x.select(this, R.id.currency, R.string.currency, currencyCursor,
 					currencyAdapter, "_id", budget.currencyId);
 			break;
 		case R.id.currency_add: {
