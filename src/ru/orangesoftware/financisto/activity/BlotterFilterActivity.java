@@ -333,15 +333,6 @@ public class BlotterFilterActivity extends AbstractActivity {
 			filter.put(Criteria.eq(BlotterFilter.LOCATION_ID, String.valueOf(selectedId)));
 			updateLocationFromFilter();
 			break;
-		case R.id.sort_order:
-			filter.resetSort();
-			if (selectedId == 1) {
-				filter.asc(BlotterFilter.DATETIME);
-			} else {
-				filter.desc(BlotterFilter.DATETIME);
-			}
-			updateSortOrderFromFilter();
-			break;
 		}
 	}
 	
@@ -351,6 +342,15 @@ public class BlotterFilterActivity extends AbstractActivity {
 		case R.id.status:
 			filter.put(Criteria.eq(BlotterFilter.STATUS, statuses[selectedPos].name()));
 			updateStatusFromFilter();			
+			break;
+		case R.id.sort_order:
+			filter.resetSort();
+			if (selectedPos == 1) {
+				filter.asc(BlotterFilter.DATETIME);
+			} else {
+				filter.desc(BlotterFilter.DATETIME);
+			}
+			updateSortOrderFromFilter();
 			break;
 		}
 	}
