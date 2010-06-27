@@ -10,9 +10,14 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.utils;
 
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
+import android.util.Log;
 
 public class MyPreferences {
 	
@@ -154,6 +159,15 @@ public class MyPreferences {
 	public static boolean isWidgetEnabled(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getBoolean("enable_widget", true);
-	}		
+	}	
+	
+	public static void switchLocale(Context context, String language, String country) {
+    	Resources res = context.getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        android.content.res.Configuration conf = res.getConfiguration();
+        conf.locale = country != null ? new Locale(language, country) : new Locale(language);
+        Log.i("MyPreferences", "Switching locale to "+conf.locale.getDisplayName());
+        res.updateConfiguration(conf, dm);
+	}
 
 }
