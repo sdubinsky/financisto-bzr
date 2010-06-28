@@ -24,7 +24,7 @@ public class GraphUnit implements Comparable<GraphUnit> {
 	
 	public GraphUnit(long id, String name, GraphStyle style) {
 		this.id = id;
-		this.name = name;
+		this.name = name != null ? name : "";
 		this.style = style;
 	}
 	
@@ -42,7 +42,11 @@ public class GraphUnit implements Comparable<GraphUnit> {
 	
 	@Override
 	public int compareTo(GraphUnit another) {
-		return another.sum == this.sum ? 0 : (another.sum > this.sum ? 1 : -1);
+		return another.sum == this.sum 
+		? (another.id == this.id ? 0 : (this.name.compareTo(another.name))) 
+		: (another.sum > this.sum ? 1 : -1);
 	}
+	
+	
 	
 }
