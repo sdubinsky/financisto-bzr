@@ -145,10 +145,7 @@ public class DatabaseAdapter {
 	public Cursor getBlotter(WhereFilter filter) {
 		long t0 = System.currentTimeMillis();
 		try {
-			String sortOrder = filter.getSortOrder();
-			if (sortOrder == null || sortOrder.length() == 0) {
-				sortOrder = BlotterFilter.SORT_NEWER_TO_OLDER;
-			}
+			String sortOrder = getBlotterSortOrder(filter);
 			return db.query(V_BLOTTER, BlotterColumns.NORMAL_PROJECTION, 
 				filter.getSelection(), filter.getSelectionArgs(), null, null, 
 				sortOrder);
@@ -156,6 +153,14 @@ public class DatabaseAdapter {
 			long t1 = System.currentTimeMillis();
 			Log.i("DB", "getBlotter "+(t1-t0)+"ms");
 		}
+	}
+
+	private String getBlotterSortOrder(WhereFilter filter) {
+		String sortOrder = filter.getSortOrder();
+		if (sortOrder == null || sortOrder.length() == 0) {
+			sortOrder = BlotterFilter.SORT_NEWER_TO_OLDER;
+		}
+		return sortOrder;
 	}
 
 	public Cursor getAllTemplates(WhereFilter filter) {
@@ -176,9 +181,10 @@ public class DatabaseAdapter {
 	}
 
 	public Cursor getTransactions(WhereFilter filter) {
+		String sortOrder = getBlotterSortOrder(filter);
 		return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION, 
 				filter.getSelection(), filter.getSelectionArgs(), null, null, 
-				BlotterColumns.DATETIME+" DESC");
+				sortOrder);
 	}
 	
 	public Total[] getTransactionsBalance(WhereFilter filter) {
