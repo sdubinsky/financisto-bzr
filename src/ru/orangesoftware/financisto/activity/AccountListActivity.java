@@ -235,6 +235,14 @@ public class AccountListActivity extends AbstractListActivity {
 			super.onActivityResult(requestCode, resultCode, data);
 		}
 	}
-	
+
+	@Override
+	protected void onDestroy() {
+		ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
+		if (totalTextFlipper != null) {
+			totalTextFlipper.stopFlipping();
+		}
+		super.onDestroy();
+	}
 	
 }

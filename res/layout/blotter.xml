@@ -38,7 +38,7 @@
 				android:textStyle="bold" android:gravity="right"
 				android:layout_width="fill_parent" android:text="@string/total"
 				android:textColor="#000000" />
-			<ViewFlipper android:layout_height="wrap_content"
+			<ru.orangesoftware.financisto.widget.MyViewFlipper android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:layout_weight="1"
 				android:gravity="right|center_vertical" android:id="@+id/flipperTotal" />
 			<TextView android:layout_height="wrap_content"
