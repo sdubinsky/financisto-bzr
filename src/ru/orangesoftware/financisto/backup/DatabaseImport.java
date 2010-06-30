@@ -15,8 +15,9 @@ import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOU
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import ru.orangesoftware.financisto.db.Database;
 import ru.orangesoftware.financisto.db.DatabaseSchemaEvolution;
@@ -46,7 +47,9 @@ public class DatabaseImport {
 	}
 	
 	public void importDatabase() throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(new File(Export.EXPORT_PATH, backupFile)), 65535);
+		File file = new File(Export.EXPORT_PATH, backupFile);
+		InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
+		BufferedReader br = new BufferedReader(isr, 65535);
 		try {
 			db.beginTransaction();
 			try {
