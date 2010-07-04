@@ -20,7 +20,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.dialog.WhatsNewDialog;
+import ru.orangesoftware.financisto.dialog.WebViewDialog;
 import ru.orangesoftware.financisto.export.CSVExport;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
@@ -162,7 +162,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		}
 		long t3 = System.currentTimeMillis();
 		Log.d("LOADTIME", (t3 - t0)+"ms = "+(t2-t1)+"ms+"+(t3-t2)+"ms");		
-		appVersion = WhatsNewDialog.checkVersionAndShowWhatsNewIfNeeded(this);			
+		appVersion = WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);			
 	}
 
 	private void updateZero(SQLiteDatabase db, String table, String field, String value) {
@@ -394,7 +394,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			((Button)layout.findViewById(R.id.bWhatsNew)).setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
-					WhatsNewDialog.showWhatsNew(MainActivity.this);
+					WebViewDialog.showWhatsNew(MainActivity.this);
 				}
 			});
 			((ImageButton)layout.findViewById(R.id.bTwitter)).setOnClickListener(new OnClickListener(){
@@ -404,11 +404,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 					startActivity(intent);					
 				}
 			});
-			((Button)layout.findViewById(R.id.bMoreProducts)).setOnClickListener(new OnClickListener(){
+			((Button)layout.findViewById(R.id.bCredits)).setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
-					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:\"Denis Solonenko\""));
-					startActivity(intent);
+					WebViewDialog.showCredits(MainActivity.this);
 				}
 			});
 			Dialog d = new AlertDialog.Builder(this)

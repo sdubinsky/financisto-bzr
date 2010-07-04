@@ -19,7 +19,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.webkit.WebView;
 
-public class WhatsNewDialog {
+public class WebViewDialog {
 
 	public static String checkVersionAndShowWhatsNewIfNeeded(Activity activity) {
 		try {
@@ -38,11 +38,19 @@ public class WhatsNewDialog {
 	}
 	
 	public static void showWhatsNew(Context context) {
+		showHTMDialog(context, "whatsnew.htm", R.string.whats_new);
+	}
+
+	public static void showCredits(Context context) {
+		showHTMDialog(context, "credits.htm", R.string.credits);
+	}
+
+	private static void showHTMDialog(Context context, String fileName, int dialogTitleResId) {
 		WebView webView = new WebView(context);
-		webView.loadUrl("file:///android_asset/whatsnew.htm");
+		webView.loadUrl("file:///android_asset/"+fileName);
 		new AlertDialog.Builder(context)
 			.setView(webView)
-			.setTitle(R.string.whats_new)
+			.setTitle(dialogTitleResId)
 			.setPositiveButton(R.string.ok, null)
 			.show();		
 	}

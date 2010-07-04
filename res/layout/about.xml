@@ -26,25 +26,16 @@
 		android:layout_height="wrap_content" android:layout_gravity="center"
 		android:autoLink="web" android:textSize="16sp"
 		android:text="Blog: http://orangesoftware.ru" />
-	<TextView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:layout_gravity="center"
-		android:autoLink="web" android:textSize="16sp"
-		android:text="中譯: http://but.tw" />
+	
 	<TextView android:layout_height="wrap_content"
 		android:layout_gravity="center" android:layout_width="wrap_content"
-		android:text="@string/about_copyright1" />
+		android:text="@string/about_copyright1" android:layout_marginTop="10dp"/>
 
-	<LinearLayout android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:layout_marginTop="5dp">
-		<Button android:layout_height="wrap_content" android:text="@string/whats_new"
-			android:id="@+id/bWhatsNew" android:layout_width="wrap_content"
-			android:layout_weight="1"></Button>
-		<ImageButton android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/bTwitter"
-			android:src="@drawable/twitter"></ImageButton>
-	</LinearLayout>
+	
 	<Button android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:id="@+id/bMoreProducts"
-		android:text="@string/more_products"></Button>
+		android:layout_width="fill_parent" android:id="@+id/bCredits" android:text="@string/credits"></Button><LinearLayout android:layout_height="wrap_content" android:layout_width="fill_parent">
+		<Button android:layout_height="wrap_content" android:text="@string/whats_new" android:id="@+id/bWhatsNew" android:layout_width="wrap_content" android:layout_weight="1"></Button>
+		<ImageButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/bTwitter" android:src="@drawable/twitter"></ImageButton>
+	</LinearLayout>
 
 </LinearLayout>

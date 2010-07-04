@@ -357,7 +357,6 @@
 	<string name="edit_templates">Edit templates</string>	
 	<string name="scheduled_transactions">Scheduled</string>	
 	<string name="no_scheduled_transactions">No scheduled transactions</string>	
-	
 	<string name="recur_interval_geeky">Geeky</string>
 	<string name="recurrence_pattern">Recurrence pattern</string>
 	<string name="recurrence_period">Recurrence period</string>	
@@ -386,12 +385,10 @@
 	<string name="thursday">Thursday</string>
 	<string name="friday">Friday</string>
 	<string name="saturday">Saturday</string>
-	
 	<string name="transaction_schedule">Transaction (Schedule)</string>	
 	<string name="transfer_schedule">Transfer (Schedule)</string>	
 	<string name="recurrence_period_starts_on_date">Starts on date</string>	
 	<string name="recurrence_period_starts_on_time">Starts on time</string>	
-	
 	<string name="new_scheduled_transfer_title">Scheduled transfer</string>					
 	<string name="new_scheduled_transfer_text">Scheduled transfer has been made</string>					
 	<string name="new_scheduled_transaction_title">Scheduled transaction</string>
@@ -401,7 +398,6 @@
 	<string name="new_scheduled_transaction_credit">credited to</string>					
 	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) has been transferred from %s to %s</string>					
 	<string name="new_scheduled_transfer_notification_same_currency">%s has been transferred from %s to %s</string>		
-	
 	<string name="notification">Notification</string>		
 	<string name="notification_options_on">On</string>	
 	<string name="notification_options_off">Off</string>					
@@ -411,43 +407,36 @@
 	<string name="notification_options_long">Zz</string>					
 	<string name="notification_options_2_long">Zz-Zz</string>					
 	<string name="notification_options_3_long">Zz-Zz-Zz</string>	
-	
 	<string name="notification_options_led_green">Green</string>					
 	<string name="notification_options_led_blue">Blue</string>					
 	<string name="notification_options_led_yellow">Yellow</string>					
 	<string name="notification_options_led_red">Red</string>					
 	<string name="notification_options_led_pink">Pink</string>	
-	
 	<string name="notification_options_text">Sound:%s Vibration:%s Led:%s</string>	
 	<string name="notification_options_custom">Custom</string>	
 	<string name="notification_options_default">Default</string>
 	<string name="notification_sound">Ringtone</string>
 	<string name="notification_vibra">Vibration</string>
 	<string name="notification_led">Led</string>
-		
 	<string name="transaction_status">Status</string>
 	<string name="transaction_status_pending">Pending</string>
 	<string name="transaction_status_unreconciled">Unreconciled</string>
 	<string name="transaction_status_cleared">Cleared</string>
 	<string name="transaction_status_reconciled">Reconciled</string>
-	
 	<string name="scheduled">(scheduled)</string>
 	<string name="expired">(expired)</string>
 	<string name="pending">(pending)</string>
-	
 	<string name="system_attribute_delete_after_expired">Delete after expired</string>
 	<string name="no_transaction_found">No transaction found, please restart Financisto..</string>
-	
 	<string name="include_credit">Include credits</string>	
 	<string name="include_credit_summary">Include credits (income or returns) into budget total</string>	
-	
 	<string name="enable_widget">Enable widget</string>
 	<string name="enable_widget_summary">Show account total on the widget</string>		
-	
 	<string name="attach_picture">Attach picture</string>		
 	<string name="new_picture">Take a picture</string>		
-	
 	<string name="report_by_sub_category">By Sub-Category</string>
 	<string name="report_by_sub_category_summary">Transactions report by sub-category</string>
-	
+
+	<string name="credits">Credits</string>
+
 </resources>
