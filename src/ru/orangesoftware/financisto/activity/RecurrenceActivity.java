@@ -80,7 +80,7 @@ public class RecurrenceActivity extends AbstractActivity {
 				} catch (Exception e) {
 					recurrence = Recurrence.noRecur();
 				}
-				recurrencePatternView = viewFactory.create(recurrence.pattern.frequency);
+				recurrencePatternView = viewFactory.create(recurrence.pattern);
 				recurrencePeriodView = viewFactory.create(recurrence.period.until);
 			}
 		}
@@ -232,7 +232,7 @@ public class RecurrenceActivity extends AbstractActivity {
 			RecurrenceFrequency newFrequency = frequencies[selectedPos];
 			if (recurrence.pattern.frequency != newFrequency) {
 				recurrence.pattern = RecurrencePattern.empty(newFrequency);
-				recurrencePatternView = viewFactory.create(newFrequency);
+				recurrencePatternView = viewFactory.create(recurrence.pattern);
 				createNodes();
 			}
 			break;

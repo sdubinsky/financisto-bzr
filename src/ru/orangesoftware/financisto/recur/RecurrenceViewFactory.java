@@ -49,14 +49,14 @@ public class RecurrenceViewFactory {
 		this.activity = activity;
 	}
 	
-	public RecurrenceView create(RecurrenceFrequency r) {
-		switch (r) {
+	public RecurrenceView create(RecurrencePattern p) {
+		switch (p.frequency) {
 		case DAILY:
 			return new DailyView();
 		case WEEKLY:
 			return new WeeklyView();
 		case MONTHLY:
-			return new MonthlyView();
+			return new MonthlyView(p.params);
 //		case SEMI_MONTHLY:
 //			return new SemiMonthlyView();
 		case GEEKY:
@@ -648,8 +648,12 @@ public class RecurrenceViewFactory {
 
 	class MonthlyView extends AbstractMonthlyView {
 
-		public MonthlyView() {
+		public MonthlyView(String state) {
 			super(RecurrenceFrequency.MONTHLY, 1);
+			HashMap<String, String> map = parseState(state);
+			if (!map.isEmpty()) {
+				pattern[0] = MonthlyPattern.valueOf(map.get(P_MONTHLY_PATTERN+"_0"));	
+			}
 		}
 		
 	}
