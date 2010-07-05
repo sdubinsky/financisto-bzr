@@ -12,7 +12,7 @@
 -->
 <resources>
     <string name="accounts">Konten</string>
-    <string name="blotter">Blotter</string>
+    <string name="blotter">Protokoll</string>
     <string name="currencies">Währungen</string>
     <string name="categories">Kategorien</string>
     <string name="budgets">Budgets</string>
@@ -69,10 +69,10 @@
     <string name="integer_part_title">Anzahl der Kommastellen</string>
     <string name="use_hundredth_title">Nutze 100er</string>
     <string name="project">Projekt</string>
-    <string name="select_account">Bitte Account wählen..</string>
-    <string name="select_currency">Bitte Währung wählen..</string>
-    <string name="select_category">Bitte Kategorie wählen..</string>
-    <string name="select_project">Bitte Projekt wählen..</string>    
+    <string name="select_account">Bitte Account wählen...</string>
+    <string name="select_currency">Bitte Währung wählen...</string>
+    <string name="select_category">Bitte Kategorie wählen...</string>
+    <string name="select_project">Bitte Projekt wählen...</string>    
     <string name="warning">Warnung</string>
     <string name="no_accounts">Es sollte ein Konto angelegt werden (\'+\' drücken). </string>
     <string name="no_budgets">Keine Budgets</string>
@@ -100,7 +100,7 @@
     <string name="use_gps_summary">Nutze GPS um die aktuelle Position der Transaktion zu ermitteln</string>
     <string name="use_my_location">Nutze My Location</string>
     <string name="use_my_location_summary">Nutze My Location um die aktuelle Position zu ermitteln</string>    
-    <string name="select_location">Wähle Ort</string>
+    <string name="select_location">Wähle Position</string>
     <string name="no_fix">Unbekannte Position</string>
     <string name="attribute">Attribut</string>    
     <string name="attributes">Attribute</string>
@@ -125,17 +125,17 @@
     <string name="checkbox_values_yes">Ja</string>
     <string name="checkbox_values_no">Nein</string>
     <string name="checkbox_values_hint">Ja;Nein</string>    
-    <string name="location_name">Ortsname</string>
+    <string name="location_name">Positionsname</string>
     <string name="satellite_on">Satellit an</string>    
     <string name="satellite_off">Satellit aus</string>
-    <string name="my_location">Mein Ort</string>
-    <string name="move_marker_to_center">Marker zentrieren</string>
+    <string name="my_location">Meine Position</string>
+    <string name="move_marker_to_center">Marker setzen</string>
     <string name="move_go_to_marker">Zum Marker</string>
-    <string name="tap_location">Tabe auf \'Meine Orte\' Marker zur manuellen Justage</string>
+    <string name="tap_location">Drücke auf \'Marker setzen\' zur manuellen Justage</string>
     <string name="note">Notiz</string>
     <string name="service_is_not_available">Service ist nicht verfügbar, bitte später versuchen</string>    
     <string name="resolve_address">Löse Adresse auf</string>
-    <string name="resolving_address">Löse Adresse auf..</string>
+    <string name="resolving_address">Löse Adresse auf...</string>
     <string name="report">Report</string>
     <string name="reports">Reporte</string>    
     <string name="no_reports">Keine Reporte</string>
@@ -152,7 +152,7 @@
     <string-array name="report_types">
         <item>Nach Zeitraum</item>
         <item>Nach Kategorie</item>        
-        <item>Nach Ort</item>
+        <item>Nach Position</item>
         <item>Nach Projekt</item>
     </string-array>
     <string name="period_today">Heute</string>
@@ -208,7 +208,7 @@
     <string name="issuer">Herausgeber</string>
     <string name="cash">Bar</string>    
     <string name="sort_order">Sortierung</string>
-    <string name="force_gps_location">Erzwinge GPS # Positionbestimmung</string>
+    <string name="force_gps_location">Erzwinge GPS Positionsbestimmung</string>
     <string name="whats_new">Was ist neu</string>
     <string name="attribute_delete_alert">Dieses Attribut wird in allen Kategorien und Transaktionen gelöscht.</string>
     <string name="user_interface">Benutzer Interface</string>
@@ -219,38 +219,38 @@
         <item>Nach Sortierreihenfolge (absteigend)</item>
         <item>Nach Name</item>
     </string-array>
-    <string name="sort_locations">Orte sortieren</string>
-    <string name="sort_locations_summary">Definiere die Sortierreihenfolge der Orte</string>
+    <string name="sort_locations">Positionen sortieren</string>
+    <string name="sort_locations_summary">Definiere die Sortierreihenfolge der Positionen</string>
     <string-array name="sort_locations_entities">
         <item>Nach Name</item>
         <item>Nach Häufigkeit</item>
     </string-array>
     <string-array name="sort_blotter_entries">
         <item>Neuere zu älteren</item>
-        <item>Älteren zu neuen</item>
+        <item>Ältere zu neuen</item>
     </string-array>
-    <string name="more_products">Mehr Produkte..</string>
+    <string name="more_products">Mehr Produkte...</string>
     <string name="pin_protection">PIN Sicherung</string>    
     <string name="pin_protection_summary">Schützt die Daten mit einer PIN</string>
     <string name="pin_protection_notify">Bitte ein PIN in den Einstellungen setzten</string>
     <string name="change_pin">PIN ändern</string>    
-    <string name="change_pin_summary">Ändere die PIN Nummer.</string>
+    <string name="change_pin_summary">Ändere die PIN Nummer</string>
     <string name="pin">PIN</string>
     <string name="set_pin">PIN setzen</string>
     <string name="confirm_pin">PIN bestätigen</string>            
     <string name="restore">Wiederherstellen</string>
     <string name="backup_database">Datenbank sichern</string>
-    <string name="backup_database_inprogress">Sichere die Datenbank..</string>
-    <string name="csv_export">CSV Export</string>
-    <string name="csv_export_inprogress">Exportiere die Datenbank nach CSV..</string>    
+    <string name="backup_database_inprogress">Sichere die Datenbank...</string>
+    <string name="csv_export">CSV Export...</string>
+    <string name="csv_export_inprogress">Exportiere die Datenbank nach CSV...</string>    
     <string name="restore_database">Datenbank wiederherstellen</string>
     <string name="restore_database_inprogress">Stelle Datenbank wieder her...</string>
-    <string name="restore_database_success">Datenbank wurde vollständig wiederhergestellt..</string>
+    <string name="restore_database_success">Datenbank wurde vollständig wiederhergestellt...</string>
     <string name="success">Erfolg!</string>
-    <string name="fail">Fehlschlag..</string>
+    <string name="fail">Fehlschlag...</string>
     <string name="duplicate">Duplikat</string>
-    <string name="select_from_account">Bitte Ausgangskonto wählen..</string>    
-    <string name="select_to_account">Bitte Eingangskonto wählen..</string>
+    <string name="select_from_account">Bitte Ausgangskonto wählen...</string>    
+    <string name="select_to_account">Bitte Eingangskonto wählen...</string>
     <string name="update_balance">Bilanz aktualisieren</string>
     <string name="close_account">Konto schließen</string>
     <string name="reopen_account">Konto wiedereröffnen</string>
@@ -259,15 +259,15 @@
     <string name="duplicate_success">Transaktionen wurden dupliziert mit dem aktuellen Datum und der aktuellen Zeit</string>    
     <string name="no_category">Keine Kategorie</string>
     <string name="no_project">Kein Projekt</string>
-    <string name="current_location">Aktueller Ort</string>
+    <string name="current_location">Aktuelle Position</string>
     <string name="protection">Schutz</string>
     <string name="transaction_screen">Neuer Transaktionsbildschirm</string>
     <string name="transaction_screen_summary">Einstellungen für den Transaktions/Transferbildschirm</string>
     <string name="screen_layout">Bildschirmlayout</string>
-    <string name="show_location">Zeige Ort</string>    
-    <string name="show_location_summary">Zeige Ort in Drop-Down</string>
+    <string name="show_location">Zeige Position</string>    
+    <string name="show_location_summary">Zeige Position in Drop Down Liste</string>
     <string name="show_location_order">Orte Reihenfolge</string>    
-    <string name="show_location_order_summary">Relative Position für die Orte Drop Down</string>
+    <string name="show_location_order_summary">Relative Position für die Positions Drop Down Liste</string>
     <string name="show_payee">Zeige Empfänger</string>    
     <string name="show_payee_summary">Zeige Empfänger Editbox</string>
     <string name="show_payee_order">Empfänger Reihenfolge</string>    
@@ -285,8 +285,8 @@
     <string name="remember_last_account_summary">Letztes selektiertes Konto merken</string>
     <string name="remember_last_category">Letzte Kategorie</string>    
     <string name="remember_last_category_summary">Letzte Kategorie für das selektierte Konto merken</string>
-    <string name="remember_last_location">Letzter Ort</string>    
-    <string name="remember_last_location_summary">Letzten Ort für die selektierte Kategorie merken</string>
+    <string name="remember_last_location">Letzte Position</string>    
+    <string name="remember_last_location_summary">Letzte Position für die selektierte Kategorie merken</string>
     <string name="remember_last_project">Letztes Projekt</string>    
     <string name="remember_last_project_summary">Letztes Projekt für die selektierte Kategorie merken</string>
     <string name="position_move_top">Nach ganz oben</string>
@@ -340,22 +340,22 @@
     <string name="use_fixed_layout">Nutze fixiertes Layout</string>
     <string name="use_fixed_layout_summary">Repariere OK/Cancel Buttons im Layout</string>
     <string name="no_data">Keine Daten</string>
-    <string name="calculating">Berechne..</string>
+    <string name="calculating">Berechne...</string>
     <string name="budget_mode">Unscharfer Filter</string>
     <string name="budget_mode_summary">Unschärfere Bedingung (Kategorie oder Projekt) zum Filtern der Transaktionen</string>
     <string name="other">Andere</string>
     <string name="send_error_reports">Sende Fehlerreporte</string>
     <string name="send_error_reports_summary">Sende anonyme Fehlerreporte zu orangesoftware.ru (benötigt Neustart)</string>    
-    <string name="template_name">Template Name</string>
-    <string name="transaction_templates">Templates</string>
-    <string name="transaction_template">Transaktion (Template)</string>    
-    <string name="transfer_template">Transfer (Template)</string>    
-    <string name="no_templates">Keine Templates</string>    
-    <string name="template">Template</string>    
-    <string name="delete_template_confirm">Template löschen?</string>    
-    <string name="save_as_template">Speichere als Template</string>    
-    <string name="save_as_template_success">Transaktion als Template gespeichert..</string>        
-    <string name="edit_templates">Templates bearbeiten</string>    
+    <string name="template_name">Vorlagenname</string>
+    <string name="transaction_templates">Vorlagen</string>
+    <string name="transaction_template">Transaktion (Vorlage)</string>    
+    <string name="transfer_template">Transfer (Vorlage)</string>    
+    <string name="no_templates">Keine Vorlagen</string>    
+    <string name="template">Vorlage</string>    
+    <string name="delete_template_confirm">Vorlage löschen?</string>    
+    <string name="save_as_template">Speichere als Vorlage</string>    
+    <string name="save_as_template_success">Transaktion als Vorlage gespeichert...</string>        
+    <string name="edit_templates">Vorlagen bearbeiten</string>    
     <string name="scheduled_transactions">Terminiert</string>    
     <string name="no_scheduled_transactions">Keine terminierten Transaktionen</string>    
     
@@ -370,7 +370,7 @@
     <string name="recur_interval_semi_monthly_1">1ter Tag</string>    
     <string name="recur_interval_semi_monthly_2">2ter Tag</string>    
     <string name="recurrence_none">Keine Wiederholung</string>
-    <string name="specify_value">Spezifischer Wert..</string>        
+    <string name="specify_value">Spezifischer Wert...</string>        
     <string name="recurrence_evaluate">Evaluiere Daten</string>    
     <string name="first">Erster</string>        
     <string name="second">Zweiter</string>        
@@ -427,17 +427,17 @@
     <string name="notification_led">Led</string>
         
     <string name="transaction_status">Status</string>
-    <string name="transaction_status_pending">Bevorstehend</string>
-    <string name="transaction_status_unreconciled">Nicht beigelegz</string>
+    <string name="transaction_status_pending">bevorstehend</string>
+    <string name="transaction_status_unreconciled">nicht beigelegt</string>
     <string name="transaction_status_cleared">bezahlt</string>
-    <string name="transaction_status_reconciled">Beigelegt</string>
+    <string name="transaction_status_reconciled">beigelegt</string>
     
     <string name="scheduled">(terminiert)</string>
     <string name="expired">(abgelaufen)</string>
     <string name="pending">(bevorstehend)</string>
     
     <string name="system_attribute_delete_after_expired">nach Ablauf löschen</string>
-    <string name="no_transaction_found">Keine Transaktion gefunden, bitte Financisto neustarten..</string>
+    <string name="no_transaction_found">Keine Transaktion gefunden, bitte Financisto neustarten...</string>
     
     <string name="include_credit">Kredite miteinbeziehen</string>    
     <string name="include_credit_summary">Bezieht die Überziehungen des Budgets mit in das Gesamtbudget</string>    
@@ -446,7 +446,7 @@
     <string name="enable_widget_summary">Zeige Kontenbilanz im Widget</string>        
     
     <string name="attach_picture">Bild anhängen</string>		
-    <string name="new_picture">Bild aufnehmen</string>		
+    <string name="new_picture">Nimmt ein Bild Auf und hängt es an</string>		
     <string name="report_by_sub_category">Nach Subkategorie</string>
     <string name="report_by_sub_category_summary">Transaktionsberichte nach Subkategorie</string>
 
