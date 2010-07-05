@@ -168,7 +168,7 @@ public class AccountActivity extends AbstractActivity {
 					Transaction t = new Transaction();
 					t.fromAccountId = accountId;
 					t.categoryId = 0;
-					t.note = "Opening amount ("+account.title+")";
+					t.note = getResources().getText(R.string.opening_amount) + " (" +account.title + ")";
 					t.fromAmount = amount;
 					db.insertOrUpdate(t, null);
 				}
