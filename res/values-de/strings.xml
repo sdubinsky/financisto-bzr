@@ -14,7 +14,7 @@
     <string name="accounts">Konten</string>
     <string name="blotter">Blotter</string>
     <string name="currencies">Währungen</string>
-    <string name="categories">Kategorieren</string>
+    <string name="categories">Kategorien</string>
     <string name="budgets">Budgets</string>
     <string name="projects">Projekte</string>
     <string name="ok">OK</string>
@@ -28,14 +28,14 @@
     <string name="payee">Empfänger</string>
     <string name="currency">Währung</string>    
     <string name="add_currency">Währung hinzufügen</string>
-    <string name="opening_amount">Offender Betrag</string>
+    <string name="opening_amount">Aktuelles Guthaben</string>
     <string name="limit_amount">Kontolimit</string>
     <string name="amount_in">Betrag in &lt;b&gt;%s %s&lt;/b&gt;</string>
     <string name="view">Anzeigen</string>
     <string name="edit">Bearbeiten</string>
     <string name="delete">Löschen</string>
     <string name="add_transaction">Transaktion hinzufügen</string>    
-    <string name="account">Account</string>
+    <string name="account">Konto</string>
     <string name="category">Kategorie</string>
     <string name="add_category">Kategorie hinzufügen</string>
     <string name="income">Einahme</string>
@@ -49,13 +49,13 @@
     <string name="no_filter">Keine Filter</string>
     <string name="transfer">Transfer</string>
     <string name="confirmation">Bestätigung</string>    
-    <string name="delete_category_dialog">Das Löschen der Kategorie löscht alle Subkategorieren (wenn vorhanden)?</string>
+    <string name="delete_category_dialog">Das Löschen der Kategorie löscht alle Subkategorien (wenn vorhanden)?</string>
     <string name="currency_delete_alert">Es können keine Währungen gelöscht werden welche in Benutzung sind.</string>    
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="error">Fehler</string>
-    <string name="include_subcategories">Subkategorieren einrechnen</string>
-    <string name="include_subcategories_summary">Transaktionen von Subkategorieren hinzufügen</string>
+    <string name="include_subcategories">Subkategorien einrechnen</string>
+    <string name="include_subcategories_summary">Transaktionen von Subkategorien berücksichtigen</string>
     <string name="start_date">Startdatum</string>
     <string name="end_date">Enddatum</string>
     <string name="budget">Budget</string>
@@ -77,7 +77,7 @@
     <string name="no_accounts">Es sollte ein Konto angelegt werden (\'+\' drücken). </string>
     <string name="no_budgets">Keine Budgets</string>
     <string name="no_transactions">Keine Transaktionen</string>
-    <string name="no_categories">Keine Kategorieren</string>
+    <string name="no_categories">Keine Kategorien</string>
     <string name="no_currencies">Keine Währungen</string>
     <string name="no_projects">Keine Projekte</string>
     <string name="no_recur">Keine Wiederholung</string>
@@ -197,7 +197,7 @@
     <string name="card_issuer">Kartenherausgeber</string>    
     <string name="account_type_cash">Bar</string>
     <string name="account_type_bank">Girokonto</string>
-    <string name="account_type_debit_card">Debit Karte</string>
+    <string name="account_type_debit_card">Debitkarte</string>
     <string name="account_type_credit_card">Kreditkarte</string>
     <string name="account_type_asset">Anlage</string>    
     <string name="account_type_liability">Passivkonto</string>
@@ -210,9 +210,9 @@
     <string name="sort_order">Sortierung</string>
     <string name="force_gps_location">Erzwinge GPS # Positionbestimmung</string>
     <string name="whats_new">Was ist neu</string>
-    <string name="attribute_delete_alert">Dieses Attribut wird in allen Kategorieren und Transaktionen gelöscht.</string>
+    <string name="attribute_delete_alert">Dieses Attribut wird in allen Kategorien und Transaktionen gelöscht.</string>
     <string name="user_interface">Benutzer Interface</string>
-    <string name="sort_accounts">Kontos sortieren</string>
+    <string name="sort_accounts">Konten sortieren</string>
     <string name="sort_accounts_summary">Definiere die Sortierreihenfolge der Konten</string>
     <string-array name="sort_accounts_entities">
         <item>Nach Sortierreihenfolge (aufsteigend)</item>
@@ -262,7 +262,7 @@
     <string name="current_location">Aktueller Ort</string>
     <string name="protection">Schutz</string>
     <string name="transaction_screen">Neuer Transaktionsbildschirm</string>
-    <string name="transaction_screen_summary">Einstellungen fpr den Transaktions/Transferbildschirm</string>
+    <string name="transaction_screen_summary">Einstellungen für den Transaktions/Transferbildschirm</string>
     <string name="screen_layout">Bildschirmlayout</string>
     <string name="show_location">Zeige Ort</string>    
     <string name="show_location_summary">Zeige Ort in Drop-Down</string>
@@ -297,7 +297,7 @@
     <string name="add_child">Kind hinzufügen</string>
     <string name="interval">Interval</string>
     <string name="recur_interval">Wiederholungsinterval</string>
-    <string name="recur_interval_no_recur">Keine Wiederholung recur</string>
+    <string name="recur_interval_no_recur">Keine Wiederholung</string>
     <string name="recur_interval_every_x_day">Alle X Tag(e)</string>
     <string name="recur_interval_every_x_week">Alle X Woche(n)</string>    
     <string name="recur_interval_every_x_month">Alle X Monate</string>    
@@ -305,7 +305,7 @@
     <string name="recur_interval_daily">Täglich</string>
     <string name="recur_interval_weekly">Wöchentlich</string>        
     <string name="recur_interval_monthly">Monatlich</string>
-    <string name="recur_interval_semi_monthly">Semi-Monatlich</string>
+    <string name="recur_interval_semi_monthly">Semi-monatlich</string>
     <string name="recur_interval_yearly">Jährlich</string>
     <string name="recur_stops_on_date">Endet am</string>
     <string name="recur_stops_on_date_summary">Endet um: %s</string>
@@ -341,8 +341,8 @@
     <string name="use_fixed_layout_summary">Repariere OK/Cancel Buttons im Layout</string>
     <string name="no_data">Keine Daten</string>
     <string name="calculating">Berechne..</string>
-    <string name="budget_mode">Ruhekondition</string>
-    <string name="budget_mode_summary">Nutze weniger strenge Konditionen (Kategorie oder Projekt) zum filtern der Transaktionen.</string>
+    <string name="budget_mode">Unscharfer Filter</string>
+    <string name="budget_mode_summary">Unschärfere Bedingung (Kategorie oder Projekt) zum Filtern der Transaktionen</string>
     <string name="other">Andere</string>
     <string name="send_error_reports">Sende Fehlerreporte</string>
     <string name="send_error_reports_summary">Sende anonyme Fehlerreporte zu orangesoftware.ru (benötigt Neustart)</string>    
@@ -439,9 +439,16 @@
     <string name="system_attribute_delete_after_expired">nach Ablauf löschen</string>
     <string name="no_transaction_found">Keine Transaktion gefunden, bitte Financisto neustarten..</string>
     
-    <string name="include_credit">Kredite miteinbeziehen credits</string>    
-    <string name="include_credit_summary">bezieht die Kredite in das Gesamtbudget</string>    
+    <string name="include_credit">Kredite miteinbeziehen</string>    
+    <string name="include_credit_summary">Bezieht die Überziehungen des Budgets mit in das Gesamtbudget</string>    
     
     <string name="enable_widget">Widget aktivieren</string>
     <string name="enable_widget_summary">Zeige Kontenbilanz im Widget</string>        
+    
+    <string name="attach_picture">Bild anhängen</string>		
+    <string name="new_picture">Bild aufnehmen</string>		
+    <string name="report_by_sub_category">Nach Subkategorie</string>
+    <string name="report_by_sub_category_summary">Transaktionsberichte nach Subkategorie</string>
+
+    <string name="credits">Credits</string>
 </resources>
