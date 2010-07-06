@@ -11,13 +11,13 @@
 package ru.orangesoftware.financisto.activity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CategoryListAdapter2;
 import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.CategoryTree;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,7 +43,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 		super(R.layout.category_list);
 	}
 
-	private ArrayList<Category> categories;
+	private CategoryTree<Category> categories;
 	private HashMap<Long, String> attributes;
 	
 	@Override
@@ -123,7 +123,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 		final Category c = (Category)getListAdapter().getItem(position);
 		final ArrayList<PositionAction> actions = new ArrayList<PositionAction>();
 		Category p = c.parent;
-		ArrayList<Category> categories;  
+		CategoryTree<Category> categories;  
 		if (p == null) {
 			categories = this.categories;
 		} else {
@@ -151,11 +151,11 @@ public class CategoryListActivity2 extends AbstractListActivity {
 					switch (action.id) {
 					case 2:
 						// up
-						moveCategory(c, -1);
+						//moveCategory(c, -1);
 						break;
 					case 3:
 						// down
-						moveCategory(c, +1);
+						//moveCategory(c, +1);
 						break;
 					}
 				}
@@ -163,18 +163,18 @@ public class CategoryListActivity2 extends AbstractListActivity {
 			.show();		
 	}	
 	
-	protected void moveCategory(Category c, int k) {
-		boolean recreateCursor = false;
-		if (c.parent == null) {
-			recreateCursor = findAndExchangeSortOrders(this.categories, c, k);
-		} else {
-			recreateCursor = findAndExchangeSortOrders(c.parent.children, c, k);
-		}
-		if (recreateCursor) {
-			sortCategories(categories);
-			updateAdapter();
-		}
-	}
+//	protected void moveCategory(Category c, int k) {
+//		boolean recreateCursor = false;
+//		if (c.parent == null) {
+//			recreateCursor = findAndExchangeSortOrders(this.categories, c, k);
+//		} else {
+//			recreateCursor = findAndExchangeSortOrders(c.parent.children, c, k);
+//		}
+//		if (recreateCursor) {
+//			sortCategories(categories);
+//			updateAdapter();
+//		}
+//	}
 	
 	private boolean findAndExchangeSortOrders(ArrayList<Category> categories, Category c, int k) {
 		int count = categories.size();
@@ -193,14 +193,14 @@ public class CategoryListActivity2 extends AbstractListActivity {
 		return false;
 	}
 
-	private void sortCategories(ArrayList<Category> categories) {
-		Collections.sort(categories, byOrderComaprator);
-		for (Category c : categories) {
-			if (c.hasChildren()) {
-				sortCategories(c.children);
-			}
-		}
-	}
+//	private void sortCategories(ArrayList<Category> categories) {
+//		Collections.sort(categories, byOrderComaprator);
+//		for (Category c : categories) {
+//			if (c.hasChildren()) {
+//				sortCategories(c.children);
+//			}
+//		}
+//	}
 
 	private static final Comparator<Category> byOrderComaprator = new Comparator<Category>() {
 

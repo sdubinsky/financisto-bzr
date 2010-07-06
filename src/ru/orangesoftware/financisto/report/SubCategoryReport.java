@@ -26,6 +26,7 @@ import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryEntity;
 import ru.orangesoftware.financisto.model.CategoryTree;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import android.content.Context;
 import android.database.Cursor;
@@ -41,19 +42,20 @@ public class SubCategoryReport extends AbstractReport {
 	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {
 		Cursor c = db.db().query(V_REPORT_SUB_CATEGORY, DatabaseHelper.SubCategoryReportColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null, "left");
-		ArrayList<CategoryAmount> amounts = new CategoryTree<CategoryAmount>(){
+		CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
 			@Override
-			protected CategoryAmount createNode(Cursor c) {
+			public CategoryAmount createNode(Cursor c) {
 				return new CategoryAmount(c);
 			}
-		}.create(c);
+		});
+
 		ArrayList<GraphUnitTree> roots = createTree(amounts, 0);
 		ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
 		flatenTree(roots, units);
 		return units;
 	}
 	
-	private ArrayList<GraphUnitTree> createTree(ArrayList<CategoryAmount> amounts, int level) {
+	private ArrayList<GraphUnitTree> createTree(CategoryTree<CategoryAmount> amounts, int level) {
 		ArrayList<GraphUnitTree> roots = new ArrayList<GraphUnitTree>();
 		GraphUnitTree u = null;
 		Currency c = null;

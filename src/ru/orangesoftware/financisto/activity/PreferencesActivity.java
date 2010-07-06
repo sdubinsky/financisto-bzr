@@ -51,12 +51,6 @@ public class PreferencesActivity extends PreferenceActivity {
 		sendBroadcast(intent);
 	}
 
-	private void removeShortcut(String activity, int nameId, int iconId) {
-		Intent intent = createShortcutIntent(activity, getString(nameId), Intent.ShortcutIconResource.fromContext(this, iconId), 
-				"com.android.launcher.action.UNINSTALL_SHORTCUT");
-		sendBroadcast(intent);
-	}
-	
 	private Intent createShortcutIntent(String activity, String shortcutName, ShortcutIconResource shortcutIcon, String action) {
 		Intent shortcutIntent = new Intent();
 		shortcutIntent.setComponent(new ComponentName(this.getPackageName(), activity));

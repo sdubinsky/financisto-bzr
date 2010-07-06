@@ -17,11 +17,11 @@ import java.io.BufferedWriter;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
-import ru.orangesoftware.financisto.model.CategoriesTree;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
@@ -54,12 +54,12 @@ public class CSVExport extends Export {
 	protected void writeBody(BufferedWriter bw) throws Exception {
 		Csv.Writer w = new Csv.Writer(bw).delimiter(',');
 		try {
-			CategoriesTree categories = new CategoriesTree(db);
+			HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
 			Cursor c = db.getBlotter(filter);
 			try {			
 				StringBuilder sb = new StringBuilder();
 				while (c.moveToNext()) {
-					writeLine(w, c, categories, sb);			
+					writeLine(w, c, categoriesMap, sb);			
 				}					
 			} finally {
 				c.close();
@@ -69,11 +69,11 @@ public class CSVExport extends Export {
 		}
 	}
 
-	private void writeLine(Csv.Writer w, Cursor cursor, CategoriesTree categories, StringBuilder sb) {
+	private void writeLine(Csv.Writer w, Cursor cursor, HashMap<Long, Category> categoriesMap, StringBuilder sb) {
 		long date = cursor.getLong(BlotterColumns.Indicies.DATETIME);
 		Date dt = new Date(date);
 		long categoryId = cursor.getLong(BlotterColumns.Indicies.CATEGORY_ID);
-		Category category = categories.getById(categoryId);
+		Category category = getCategoryById(categoriesMap, categoryId);
 		long toAccountId = cursor.getLong(BlotterColumns.Indicies.TO_ACCOUNT_ID);
 		String project = cursor.getString(BlotterColumns.Indicies.PROJECT);
 		if (toAccountId > 0) {
@@ -114,6 +114,15 @@ public class CSVExport extends Export {
 
 	@Override
 	protected void writeFooter(BufferedWriter bw) throws Exception {
+	}
+
+	public Category getCategoryById(HashMap<Long, Category> categoriesMap, long id) {
+		return categoriesMap.get(id);
+	}
+	
+	public Category getCategoryParentById(HashMap<Long, Category> categoriesMap, long id) {
+		Category c = categoriesMap.get(id);
+		return c != null ? c.parent : null;
 	}
 
 }

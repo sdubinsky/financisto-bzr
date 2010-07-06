@@ -48,6 +48,7 @@ import ru.orangesoftware.financisto.model.SystemAttribute;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.model.TransactionAttribute;
+import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import android.content.ContentValues;
 import android.content.Context;
@@ -470,21 +471,35 @@ public class DatabaseAdapter {
 		}
 	}
 
-	public ArrayList<Category> getAllCategoriesTree(boolean includeNoCategory) {
+	public CategoryTree<Category> getAllCategoriesTree(boolean includeNoCategory) {
 		Cursor c = getAllCategories(includeNoCategory);
 		try { 
-			ArrayList<Category> list = new CategoryTree<Category>(){
+			CategoryTree<Category> tree = CategoryTree.createFromCursor(c, new NodeCreator<Category>(){
 				@Override
-				protected Category createNode(Cursor c) {
+				public Category createNode(Cursor c) {
 					return Category.formCursor(c);
-				}
-			}.create(c);
-			return list;
+				}				
+			});
+			return tree;
 		} finally {
 			c.close();
 		}
 	}
 	
+	public HashMap<Long, Category> getAllCategoriesMap(boolean includeNoCategory) {
+		Cursor c = getAllCategories(includeNoCategory);
+		try { 
+			HashMap<Long, Category> map = new HashMap<Long, Category>();
+			while (c.moveToNext()) {
+				Category category = Category.formCursor(c);
+				map.put(category.id, category);
+			}
+			return map;
+		} finally {
+			c.close();
+		}
+	}
+
 	public ArrayList<Category> getAllCategoriesList(boolean includeNoCategory) {
 		ArrayList<Category> list = new ArrayList<Category>();
 		Cursor c = getAllCategories(includeNoCategory);

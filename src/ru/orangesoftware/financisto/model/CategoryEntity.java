@@ -10,8 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
-import java.util.ArrayList;
-
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
@@ -27,7 +25,7 @@ public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
 	public int right;
 	
 	@Transient
-	public ArrayList<T> children;
+	public CategoryTree<T> children;
 
 	public long getParentId() {
 		return parent != null ? parent.id : 0;
@@ -36,7 +34,7 @@ public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
 	@SuppressWarnings("unchecked")
 	public void addChild(T category) {
 		if (children == null) {
-			children = new ArrayList<T>();
+			children = new CategoryTree<T>();
 		}
 		category.parent = (T)this;
 		children.add(category);

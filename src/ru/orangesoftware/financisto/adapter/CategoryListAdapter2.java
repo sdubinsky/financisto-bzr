@@ -16,6 +16,7 @@ import java.util.HashSet;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.CategoryTree;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
@@ -33,7 +34,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 	private static final int P = 10;
 	
 	private final Context context;
-	private ArrayList<Category> categories;
+	private CategoryTree<Category> categories;
 
 	private final ArrayList<Category> list = new ArrayList<Category>();
 	private final HashSet<Long> state = new HashSet<Long>();
@@ -41,7 +42,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 	private final Drawable expandedDrawable;
 	private final Drawable collapsedDrawable;
 	
-	public CategoryListAdapter2(Context context, ArrayList<Category> categories) {
+	public CategoryListAdapter2(Context context, CategoryTree<Category> categories) {
 		this.context = context;
 		this.categories = categories;
 		this.expandedDrawable = context.getResources().getDrawable(R.drawable.expander_ic_maximized);
@@ -54,7 +55,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 		addCategories(categories);
 	}
 
-	private void addCategories(ArrayList<Category> categories) {
+	private void addCategories(CategoryTree<Category> categories) {
 		if (categories == null || categories.isEmpty()) {
 			return;
 		}
@@ -121,7 +122,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 		notifyDataSetChanged();
 	}
 
-	public void setCategories(ArrayList<Category> categories) {
+	public void setCategories(CategoryTree<Category> categories) {
 		this.categories = categories;
 		recreatePlainList();
 	}
