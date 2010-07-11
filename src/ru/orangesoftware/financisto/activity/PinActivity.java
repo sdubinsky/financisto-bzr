@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class PinActivity extends Activity implements PinView.PinListener {
 	
@@ -30,14 +29,13 @@ public class PinActivity extends Activity implements PinView.PinListener {
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		String pin = MyPreferences.getPin(this);
 		if (pin == null) {
-			Toast.makeText(this, R.string.pin_protection_notify, Toast.LENGTH_SHORT).show();
-			setResult(RESULT_OK);
-			finish();
+			onSuccess(null);
+		} else {
+			PinView v = new PinView(this, this, pin);
+			setContentView(v.getView());
+			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+			((TextView)findViewById(android.R.id.title)).setText(R.string.pin);
 		}
-		PinView v = new PinView(this, this, pin);
-		setContentView(v.getView());
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
-		((TextView)findViewById(android.R.id.title)).setText(R.string.pin);
 	}
 
 	@Override
