@@ -247,7 +247,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
 		case MENU_CATEGORIES:
-			startActivity(new Intent(this, CategoryListActivity.class));
+			startActivity(new Intent(this, CategoryListActivity2.class));
 			break;
 		case MENU_CURRENCIES:
 			startActivity(new Intent(this, CurrencyListActivity.class));

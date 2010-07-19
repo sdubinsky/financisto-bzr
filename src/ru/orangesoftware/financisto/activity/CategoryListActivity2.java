@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.activity;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import ru.orangesoftware.financisto.R;
@@ -69,7 +68,9 @@ public class CategoryListActivity2 extends AbstractListActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		return new CategoryListAdapter2(this, categories);
+		CategoryListAdapter2 a = new CategoryListAdapter2(this, categories);
+		a.setAttributes(attributes);
+		return a;
 	}
 
 	@Override
@@ -90,7 +91,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	private void updateAdapter() {
 		((CategoryListAdapter2)adapter).setCategories(categories);
 		((CategoryListAdapter2)adapter).setAttributes(attributes);
-		((CategoryListAdapter2)adapter).notifyDataSetChanged();
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -129,7 +130,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 		} else {
 			categories = p.children;
 		}
-		int pos = categories.indexOf(c);
+		final int pos = categories.indexOf(c);
 		if (pos > 0) {
 			actions.add(top);
 			actions.add(up);
@@ -138,101 +139,75 @@ public class CategoryListActivity2 extends AbstractListActivity {
 			actions.add(down);
 			actions.add(bottom);
 		}
-		actions.add(addSibling);
-		actions.add(addChild);
-		actions.add(delete);
+		//actions.add(addSibling);
+		//actions.add(addChild);
 		final ListAdapter a = new CategoryPositionListAdapter(actions);
+		final CategoryTree<Category> tree = categories;  
 		new AlertDialog.Builder(this)
 			.setTitle(c.getTitle())
 			.setAdapter(a, new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					PositionAction action = actions.get(which);
-					switch (action.id) {
-					case 2:
-						// up
-						//moveCategory(c, -1);
-						break;
-					case 3:
-						// down
-						//moveCategory(c, +1);
-						break;
+					if (action.execute(tree, pos)) {
+						db.updateCategoryTree(tree);
+						notifyDataSetChanged();
 					}
 				}
 			})
 			.show();		
 	}	
 	
-//	protected void moveCategory(Category c, int k) {
-//		boolean recreateCursor = false;
-//		if (c.parent == null) {
-//			recreateCursor = findAndExchangeSortOrders(this.categories, c, k);
-//		} else {
-//			recreateCursor = findAndExchangeSortOrders(c.parent.children, c, k);
-//		}
-//		if (recreateCursor) {
-//			sortCategories(categories);
-//			updateAdapter();
-//		}
-//	}
-	
-	private boolean findAndExchangeSortOrders(ArrayList<Category> categories, Category c, int k) {
-		int count = categories.size();
-		for (int i=0; i<count; i++) {				
-			if (categories.get(i) == c) {	
-				int j = i+k;
-				if (j >= 0 && j <count) {
-					Category c2 = categories.get(i+k);
-					int sortOrder = c.sortOrder;
-					c.sortOrder = c2.sortOrder;
-					c2.sortOrder = sortOrder;
-					return true;
-				}
-			}
-		}
-		return false;
+	protected void notifyDataSetChanged() {
+		((CategoryListAdapter2)adapter).notifyDataSetChanged();
 	}
 
-//	private void sortCategories(ArrayList<Category> categories) {
-//		Collections.sort(categories, byOrderComaprator);
-//		for (Category c : categories) {
-//			if (c.hasChildren()) {
-//				sortCategories(c.children);
-//			}
-//		}
-//	}
-
-	private static final Comparator<Category> byOrderComaprator = new Comparator<Category>() {
-
-		@Override
-		public int compare(Category c1, Category c2) {
-			if (c1.sortOrder == c2.sortOrder) {
-				return c1.title.compareTo(c2.title);
-			} else {
-				return c1.sortOrder - c2.sortOrder;
-			}
-		}
-		
-	};
-
-	private static class PositionAction {
-		final int id;
+	private abstract class PositionAction {
 		final int icon;
 		final int title;
-		public PositionAction(int id, int icon, int title) {
-			this.id = id;
+		public PositionAction(int icon, int title) {
 			this.icon = icon;
 			this.title = title;
 		}
+		public abstract boolean execute(CategoryTree<Category> tree, int pos);
 	}
 	
-	private static final PositionAction top = new PositionAction(1, R.drawable.ic_btn_round_top, R.string.position_move_top);
-	private static final PositionAction up = new PositionAction(2, R.drawable.ic_btn_round_up, R.string.position_move_up);
-	private static final PositionAction down = new PositionAction(3, R.drawable.ic_btn_round_down, R.string.position_move_down);
-	private static final PositionAction bottom = new PositionAction(4, R.drawable.ic_btn_round_bottom, R.string.position_move_bottom);
-	private static final PositionAction addSibling = new PositionAction(5, R.drawable.ic_btn_round_plus, R.string.add_sibling);
-	private static final PositionAction addChild = new PositionAction(6, R.drawable.ic_btn_round_plus, R.string.add_child);
-	private static final PositionAction delete = new PositionAction(7, R.drawable.ic_btn_round_minus, R.string.delete);
+	private final PositionAction top = new PositionAction(R.drawable.ic_btn_round_top, R.string.position_move_top){
+		@Override
+		public boolean execute(CategoryTree<Category> tree, int pos) {
+			return tree.moveCategoryToTheTop(pos);
+		}
+	};
+	private final PositionAction up = new PositionAction(R.drawable.ic_btn_round_up, R.string.position_move_up){
+		@Override
+		public boolean execute(CategoryTree<Category> tree, int pos) {
+			return tree.moveCategoryUp(pos);
+		}
+	};
+	private final PositionAction down = new PositionAction(R.drawable.ic_btn_round_down, R.string.position_move_down){
+		@Override
+		public boolean execute(CategoryTree<Category> tree, int pos) {
+			return tree.moveCategoryDown(pos);
+		}
+	};
+	private final PositionAction bottom = new PositionAction(R.drawable.ic_btn_round_bottom, R.string.position_move_bottom){
+		@Override
+		public boolean execute(CategoryTree<Category> tree, int pos) {
+			return tree.moveCategoryToTheBottom(pos);
+		}
+	};
+//	private final PositionAction addSibling = new PositionAction(R.drawable.ic_btn_round_plus, R.string.add_sibling){
+//		@Override
+//		public boolean execute(CategoryTree<Category> tree, int pos) {
+//			return false;
+//		}
+//	};
+//	private final PositionAction addChild = new PositionAction(R.drawable.ic_btn_round_plus, R.string.add_child){
+//		@Override
+//		public boolean execute(CategoryTree<Category> tree, int pos) {
+//			return false;
+//		}
+//	};
 
 	private class CategoryPositionListAdapter extends BaseAdapter {
 		
@@ -254,7 +229,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 
 		@Override
 		public long getItemId(int position) {
-			return actions.get(position).id;
+			return actions.get(position).hashCode();
 		}
 
 		@Override

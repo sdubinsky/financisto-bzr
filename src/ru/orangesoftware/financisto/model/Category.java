@@ -34,9 +34,6 @@ public class Category extends CategoryEntity<Category> {
 	@Column(name = "last_project_id")
 	public long lastProjectId;
 
-	@Column(name = "sort_order")
-	public int sortOrder;
-
 	@Transient
 	public int level;
 	
@@ -68,7 +65,6 @@ public class Category extends CategoryEntity<Category> {
 		sb.append(",level=").append(level);
 		sb.append(",left=").append(left);
 		sb.append(",right=").append(right);
-		sb.append(",order=").append(sortOrder);
 		sb.append("]");
 		return sb.toString();
 	}
@@ -114,7 +110,6 @@ public class Category extends CategoryEntity<Category> {
 		cat.right = c.getInt(CategoryViewColumns.Indicies.RIGHT);
 		cat.lastLocationId = c.getInt(CategoryViewColumns.Indicies.LAST_LOCATION_ID);
 		cat.lastProjectId = c.getInt(CategoryViewColumns.Indicies.LAST_PROJECT_ID);
-		cat.sortOrder = c.getInt(CategoryViewColumns.Indicies.SORT_ORDER);
 		return cat;
 	}
 }

@@ -90,4 +90,75 @@ public class CategoryTree<T extends CategoryEntity<T>> implements Iterable<T> {
 	public int size() {
 		return roots.size();
 	}
+	
+	public T getAt(int pos) {
+		return roots.get(pos);
+	}
+
+	public boolean moveCategoryUp(int pos) {
+		if (pos > 0 && pos < size()) {
+			swap(pos, pos-1);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean moveCategoryDown(int pos) {
+		if (pos >=0 && pos < size()-1) {
+			swap(pos, pos+1);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean moveCategoryToTheTop(int pos) {
+		if (pos > 0 && pos < size()) {
+			T node = roots.remove(pos);
+			roots.add(0, node);
+			reIndex();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean moveCategoryToTheBottom(int pos) {
+		if (pos >= 0 && pos < size()-1) {
+			T node = roots.remove(pos);
+			roots.add(size(), node);
+			reIndex();
+			return true;
+		}
+		return false;
+	}
+
+	private void swap(int from, int to) {
+		T fromNode = roots.get(from);
+		T toNode = roots.set(to, fromNode);
+		roots.set(from, toNode);
+		reIndex();
+	}
+
+	private void reIndex() {
+		int left = Integer.MAX_VALUE;
+		for (T node : roots) {
+			if (node.left < left) {
+				left = node.left;
+			}
+		}
+		reIndex(this, left);
+	}
+
+	private int reIndex(CategoryTree<T> tree, int left) {
+		for (T node : tree.roots) {
+			node.left = left;
+			if (node.hasChildren()) {
+				node.right = reIndex(node.children, left+1);
+			} else {
+				node.right = left+1;
+			}
+			left = node.right+1;
+		}			
+		return left;
+	}
+
 }

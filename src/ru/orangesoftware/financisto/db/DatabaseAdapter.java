@@ -689,6 +689,32 @@ public class DatabaseAdapter {
 		db.update(CATEGORY_TABLE, values, CategoryColumns.ID+"=?", new String[]{String.valueOf(id)});
 	}
 	
+	public void updateCategoryTree(CategoryTree<Category> tree) {
+		db.beginTransaction();
+		try {
+			updateCategoryTreeInTransaction(tree);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+	}
+	
+	private static final String WHERE_CATEGORY_ID = CategoryColumns.ID+"=?";
+	
+	private void updateCategoryTreeInTransaction(CategoryTree<Category> tree) {
+		ContentValues values = new ContentValues();
+		String[] sid = new String[1];
+		for (Category c : tree) {
+			values.put(CategoryColumns.LEFT, c.left);
+			values.put(CategoryColumns.RIGHT, c.right);
+			sid[0] = String.valueOf(c.id);
+			db.update(CATEGORY_TABLE, values, WHERE_CATEGORY_ID, sid);
+			if (c.hasChildren()) {
+				updateCategoryTreeInTransaction(c.children);
+			}
+		}
+	}
+
 	public void moveCategory(long id, long newParentId, String title) {
 		db.beginTransaction();
 		try {
@@ -924,5 +950,6 @@ public class DatabaseAdapter {
 			c.close();
 		}		
 	}
+
 }
 

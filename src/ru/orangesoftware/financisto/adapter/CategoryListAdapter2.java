@@ -19,22 +19,21 @@ import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryTree;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.LinearLayout.LayoutParams;
 
 public class CategoryListAdapter2 extends BaseAdapter {
 
 	private static final int P = 10;
 	
-	private final Context context;
+	private final LayoutInflater inflater;
 	private CategoryTree<Category> categories;
+	private HashMap<Long, String> attributes;
 
 	private final ArrayList<Category> list = new ArrayList<Category>();
 	private final HashSet<Long> state = new HashSet<Long>();
@@ -43,7 +42,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 	private final Drawable collapsedDrawable;
 	
 	public CategoryListAdapter2(Context context, CategoryTree<Category> categories) {
-		this.context = context;
+		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.categories = categories;
 		this.expandedDrawable = context.getResources().getDrawable(R.drawable.expander_ic_maximized);
 		this.collapsedDrawable = context.getResources().getDrawable(R.drawable.expander_ic_minimized);
@@ -84,42 +83,56 @@ public class CategoryListAdapter2 extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
+		Holder h;
+		if (convertView == null) {
+			convertView = inflater.inflate(R.layout.category_list_item2, parent, false);
+			h = Holder.create(convertView);
+		} else {
+			h = (Holder)convertView.getTag();
+		}
+		ImageView span = h.span;
+		TextView title = h.title;
+		TextView label = h.label;
 		final Category c = getItem(position);
-		TextView tv = new TextView(context);
-		tv.setHeight(60);
-		tv.setGravity(Gravity.CENTER_VERTICAL);
-		tv.setText(String.valueOf(c));
+		title.setText(c.title);
 		if (c.hasChildren()) {
-			LinearLayout layout = new LinearLayout(context);
-			ImageView image = new ImageView(context);
-			image.setImageDrawable(state.contains(c.id) ? expandedDrawable : collapsedDrawable);
-			image.setOnClickListener(new OnClickListener(){
+			span.setImageDrawable(state.contains(c.id) ? expandedDrawable : collapsedDrawable);
+			span.setClickable(true);
+			span.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View v) {
 					onListItemClick(position, c.id);
 				}
 			});
-			LinearLayout.LayoutParams p = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			p.gravity = Gravity.CENTER_VERTICAL;
-			layout.addView(image, p);
-			tv.setPadding(3, 0, 0, 0);
-			layout.addView(tv);
-			layout.setPadding(P*(c.level-1), 0, 0, 0);
-			return layout;
+			convertView.setPadding(P*(c.level-1), 0, 0, 0);
+			span.setVisibility(View.VISIBLE);
 		} else {
-			tv.setPadding(P*c.level, 0, 0, 0);
-			return tv;			
+			convertView.setPadding(P*c.level, 0, 0, 0);
+			span.setVisibility(View.GONE);
 		}
+		long id = c.id;
+		if (attributes != null && attributes.containsKey(id)) {
+			label.setText(attributes.get(id));
+			label.setVisibility(View.VISIBLE);
+		} else {
+			label.setVisibility(View.GONE);
+		}		
+	return convertView;
 	}
-
+	
 	public void onListItemClick(int position, long id) {
 		if (state.contains(id)) {
 			state.remove(id);
 		} else {
 			state.add(id);
 		}
-		recreatePlainList();
 		notifyDataSetChanged();
+	}
+	
+	@Override
+	public void notifyDataSetChanged() {
+		recreatePlainList();
+		super.notifyDataSetChanged();		
 	}
 
 	public void setCategories(CategoryTree<Category> categories) {
@@ -128,7 +141,24 @@ public class CategoryListAdapter2 extends BaseAdapter {
 	}
 
 	public void setAttributes(HashMap<Long, String> attributes) {
-		// TODO Auto-generated method stub		
+		this.attributes = attributes;	
 	}
 
+	private static class Holder {
+		
+		public ImageView span;
+		public TextView title;
+		public TextView label;
+
+		public static Holder create(View convertView) {
+			Holder h = new Holder();
+			h.span = (ImageView)convertView.findViewById(R.id.span);
+			h.title = (TextView)convertView.findViewById(R.id.line1);
+			h.label = (TextView)convertView.findViewById(R.id.label);
+			convertView.setTag(h);
+			return h;
+		}
+		
+	}
+	
 }
