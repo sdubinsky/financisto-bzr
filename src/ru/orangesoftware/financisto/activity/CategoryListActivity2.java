@@ -24,6 +24,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -37,6 +39,8 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	
 	private static final int NEW_CATEGORY_REQUEST = 1;
 	private static final int EDIT_CATEGORY_REQUEST = 2;
+	
+	private static final int MENU_SORT_BY_TITLE = Menu.FIRST;
 
 	public CategoryListActivity2() {
 		super(R.layout.category_list);
@@ -50,12 +54,26 @@ public class CategoryListActivity2 extends AbstractListActivity {
 		super.internalOnCreate(savedInstanceState);
 		categories = db.getAllCategoriesTree(false);
 		attributes = db.getAllAttributesMap();
-		ImageButton bAttributes = (ImageButton)findViewById(R.id.bAttributes);
-		bAttributes.setOnClickListener(new OnClickListener(){
+		ImageButton b = (ImageButton)findViewById(R.id.bAttributes);
+		b.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(CategoryListActivity2.this, AttributeListActivity.class);
 				startActivityForResult(intent, 0);
+			}
+		});
+		b = (ImageButton)findViewById(R.id.bCollapseAll);
+		b.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				((CategoryListAdapter2)adapter).collapseAllCategories();
+			}
+		});
+		b = (ImageButton)findViewById(R.id.bExpandAll);
+		b.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				((CategoryListAdapter2)adapter).expandAllCategories();
 			}
 		});
 	}
@@ -139,8 +157,9 @@ public class CategoryListActivity2 extends AbstractListActivity {
 			actions.add(down);
 			actions.add(bottom);
 		}
-		//actions.add(addSibling);
-		//actions.add(addChild);
+		if (c.hasChildren()) {
+			actions.add(sortByTitle);			
+		}
 		final ListAdapter a = new CategoryPositionListAdapter(actions);
 		final CategoryTree<Category> tree = categories;  
 		new AlertDialog.Builder(this)
@@ -158,8 +177,31 @@ public class CategoryListActivity2 extends AbstractListActivity {
 			.show();		
 	}	
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuItem menuItem = menu.add(0, MENU_SORT_BY_TITLE, 0, R.string.sort_all_by_title);
+		menuItem.setIcon(android.R.drawable.ic_menu_sort_alphabetically);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case MENU_SORT_BY_TITLE:
+			if (categories.sortByTitle()) {
+				db.updateCategoryTree(categories);
+				notifyDataSetChanged();				
+			}
+		}
+		return true;
+	}
+
 	protected void notifyDataSetChanged() {
 		((CategoryListAdapter2)adapter).notifyDataSetChanged();
+	}
+
+	protected void notifyDataSetInvalidated() {
+		((CategoryListAdapter2)adapter).notifyDataSetInvalidated();
 	}
 
 	private abstract class PositionAction {
@@ -178,36 +220,34 @@ public class CategoryListActivity2 extends AbstractListActivity {
 			return tree.moveCategoryToTheTop(pos);
 		}
 	};
+	
 	private final PositionAction up = new PositionAction(R.drawable.ic_btn_round_up, R.string.position_move_up){
 		@Override
 		public boolean execute(CategoryTree<Category> tree, int pos) {
 			return tree.moveCategoryUp(pos);
 		}
 	};
+	
 	private final PositionAction down = new PositionAction(R.drawable.ic_btn_round_down, R.string.position_move_down){
 		@Override
 		public boolean execute(CategoryTree<Category> tree, int pos) {
 			return tree.moveCategoryDown(pos);
 		}
 	};
+	
 	private final PositionAction bottom = new PositionAction(R.drawable.ic_btn_round_bottom, R.string.position_move_bottom){
 		@Override
 		public boolean execute(CategoryTree<Category> tree, int pos) {
 			return tree.moveCategoryToTheBottom(pos);
 		}
 	};
-//	private final PositionAction addSibling = new PositionAction(R.drawable.ic_btn_round_plus, R.string.add_sibling){
-//		@Override
-//		public boolean execute(CategoryTree<Category> tree, int pos) {
-//			return false;
-//		}
-//	};
-//	private final PositionAction addChild = new PositionAction(R.drawable.ic_btn_round_plus, R.string.add_child){
-//		@Override
-//		public boolean execute(CategoryTree<Category> tree, int pos) {
-//			return false;
-//		}
-//	};
+	
+	private final PositionAction sortByTitle = new PositionAction(R.drawable.ic_btn_round_sort_by_title, R.string.sort_by_title){
+		@Override
+		public boolean execute(CategoryTree<Category> tree, int pos) {
+			return tree.sortByTitle();
+		}
+	};
 
 	private class CategoryPositionListAdapter extends BaseAdapter {
 		

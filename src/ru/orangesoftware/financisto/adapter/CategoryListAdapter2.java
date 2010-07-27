@@ -117,7 +117,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 		} else {
 			label.setVisibility(View.GONE);
 		}		
-	return convertView;
+		return convertView;
 	}
 	
 	public void onListItemClick(int position, long id) {
@@ -127,6 +127,26 @@ public class CategoryListAdapter2 extends BaseAdapter {
 			state.add(id);
 		}
 		notifyDataSetChanged();
+	}
+	
+	public void collapseAllCategories() {
+		state.clear();
+		notifyDataSetChanged();
+	}
+
+	public void expandAllCategories() {
+		expandAllCategories(categories);
+		notifyDataSetChanged();
+	}
+	
+	private void expandAllCategories(CategoryTree<Category> categories) {
+		if (categories == null || categories.isEmpty()) {
+			return;
+		}
+		for (Category c : categories) {
+			state.add(c.id);
+			expandAllCategories(c.children);
+		}		
 	}
 	
 	@Override

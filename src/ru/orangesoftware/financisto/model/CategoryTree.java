@@ -11,6 +11,8 @@
 package ru.orangesoftware.financisto.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -129,6 +131,36 @@ public class CategoryTree<T extends CategoryEntity<T>> implements Iterable<T> {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean sortByTitle() {
+		sortByTitle(this);
+		reIndex();
+		return true;
+	}
+	
+	private final Comparator<T> byTitleComparator = new Comparator<T>() {
+		@Override
+		public int compare(T c1, T c2) {
+			String t1 = c1.title;
+			String t2 = c2.title;
+			if (t1 == null) {
+				t1 = "";
+			}
+			if (t2 == null) {
+				t2 = "";
+			}
+			return t1.compareTo(t2);
+		}
+	};
+
+	private void sortByTitle(CategoryTree<T> tree) {
+		Collections.sort(tree.roots, byTitleComparator);
+		for (T node : tree) {
+			if (node.hasChildren()) {
+				sortByTitle(node.children);
+			}
+		}
 	}
 
 	private void swap(int from, int to) {

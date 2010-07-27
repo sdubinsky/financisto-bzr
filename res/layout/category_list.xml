@@ -23,6 +23,8 @@
 		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/bAdd"
 			android:src="@drawable/ic_input_add" /><ImageButton android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/bAttributes" android:src="@drawable/btn_tag"/>
+			android:layout_height="wrap_content" android:id="@+id/bAttributes" android:src="@drawable/btn_tag"/><ImageButton android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/bExpandAll" android:src="@drawable/ic_menu_expand_all_categories"/><ImageButton android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/bCollapseAll" android:src="@drawable/ic_menu_collapse_all_categories"/>
 	</LinearLayout>
 </LinearLayout>

@@ -438,5 +438,7 @@
 	<string name="report_by_sub_category_summary">Transactions report by sub-category</string>
 
 	<string name="credits">Credits</string>
+	<string name="sort_by_title">Sort by title</string>
+	<string name="sort_all_by_title">Sort all by title</string>
 
 </resources>
