@@ -257,6 +257,7 @@
 	<string name="difference">Différence</string>
 	<string name="new_balance">Nouvelle balance</string>
 	<string name="duplicate_success">L\'opération a été dupliquée avec la date et l\'heure actuelles</string>	
+	<string name="duplicate_success_with_multiplier">L\'opération a été dupliquée avec la date et l\'heure actuelles (x%d)</string>	
 	<string name="no_category">Aucune catégorie</string>
 	<string name="no_project">Aucun projet</string>
 	<string name="current_location">Position actuelle</string>
@@ -355,7 +356,6 @@
 	<string name="delete_template_confirm">Supprimer le modèle ?</string>	
 	<string name="save_as_template">Enregistrer comme modèle</string>	
 	<string name="save_as_template_success">Opération enregistrée comme modèle..</string>		
-	<string name="edit_templates">Modifier les modèles</string>	
 	<string name="scheduled_transactions">Planification</string>	
 	<string name="no_scheduled_transactions">Aucune opération planifiée</string>	
 	<string name="recur_interval_geeky">Geeky</string>

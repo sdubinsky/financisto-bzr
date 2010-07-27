@@ -247,10 +247,18 @@ public class DatabaseAdapter {
 	}
 	
 	public long duplicateTransaction(long id) {
-		return duplicateTransaction(id, 0);
+		return duplicateTransaction(id, 0, 1);
 	}
 	
-	public long duplicateTransaction(long id, int isTemplate) {
+	public long duplicateTransactionWithMultiplier(long id, int multiplier) {
+		return duplicateTransaction(id, 0, multiplier);
+	}
+	
+	public long duplicateTransactionAsTemplate(long id) {
+		return duplicateTransaction(id, 1, 1);
+	}
+
+	private long duplicateTransaction(long id, int isTemplate, int multiplier) {
 		Transaction transaction = getTransaction(id);
 		transaction.id = -1;
 		transaction.isTemplate = isTemplate;
@@ -258,6 +266,10 @@ public class DatabaseAdapter {
 		if (isTemplate == 0) {
 			transaction.recurrence = null;
 			transaction.notificationOptions = null;
+		}
+		if (multiplier > 1) {
+			transaction.fromAmount *= multiplier;
+			transaction.toAmount *= multiplier;
 		}
 		HashMap<Long, String> attributesMap = getAllAttributesForTransaction(id);
 		LinkedList<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();

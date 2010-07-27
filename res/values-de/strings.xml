@@ -257,6 +257,7 @@
     <string name="difference">Differenz</string>
     <string name="new_balance">Neue Billanz</string>
     <string name="duplicate_success">Transaktionen wurden dupliziert mit dem aktuellen Datum und der aktuellen Zeit</string>    
+    <string name="duplicate_success_with_multiplier">Transaktionen wurden dupliziert mit dem aktuellen Datum und der aktuellen Zeit (x%d)</string>    
     <string name="no_category">Keine Kategorie</string>
     <string name="no_project">Kein Projekt</string>
     <string name="current_location">Aktuelle Position</string>
@@ -355,7 +356,6 @@
     <string name="delete_template_confirm">Vorlage löschen?</string>    
     <string name="save_as_template">Speichere als Vorlage</string>    
     <string name="save_as_template_success">Transaktion als Vorlage gespeichert...</string>        
-    <string name="edit_templates">Vorlagen bearbeiten</string>    
     <string name="scheduled_transactions">Terminiert</string>    
     <string name="no_scheduled_transactions">Keine terminierten Transaktionen</string>    
     

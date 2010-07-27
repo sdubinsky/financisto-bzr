@@ -256,6 +256,7 @@
 	<string name="difference">差異值</string>
 	<string name="new_balance">最新餘額</string>
 	<string name="duplicate_success">已用現在的時間點複製交易項目</string>	
+	<string name="duplicate_success_with_multiplier">已用現在的時間點複製交易項目 (x%d)</string>	
 	<string name="no_category">無分類</string>
 	<string name="no_project">無專案</string>
 	<string name="current_location">現在地點</string>
@@ -354,7 +355,6 @@
 	<string name="delete_template_confirm">確定刪除樣版?</string>
 	<string name="save_as_template">儲存為樣板</string>
 	<string name="save_as_template_success">已將交易儲存為樣板</string>
-	<string name="edit_templates">編輯樣版</string>
 	<string name="scheduled_transactions">定期</string>
 	<string name="no_scheduled_transactions">無定期交易</string>
 	

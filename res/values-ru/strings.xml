@@ -255,6 +255,7 @@
 	<string name="difference">Разница</string>
 	<string name="new_balance">Новый баланс</string>
 	<string name="duplicate_success">Транзакция была скопирована с текущей датой и временем</string>	
+	<string name="duplicate_success_with_multiplier">Транзакция была скопирована с текущей датой и временем (x%d)</string>	
 	<string name="no_category">Без категории</string>
 	<string name="no_project">Без проекта</string>
 	<string name="current_location">Текущее местоположение</string>
@@ -353,7 +354,6 @@
 	<string name="delete_template_confirm">Удалить шаблон?</string>	
 	<string name="save_as_template">Сохранить как шаблон</string>		
 	<string name="save_as_template_success">Транзакция сохранена в шаблонах..</string>		
-	<string name="edit_templates">Редактировать шаблоны</string>
 	<string name="scheduled_transactions">Запланировано</string>
 	<string name="no_scheduled_transactions">Нет запланированных транзакций</string>					
 

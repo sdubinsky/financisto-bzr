@@ -44,7 +44,11 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 	private final Utils u;
 	
 	public BlotterListAdapter(Context context, Cursor c) {
-		super(context, R.layout.blotter_list_item_2, c);
+		this(context, R.layout.blotter_list_item_2, c);
+	}
+
+	public BlotterListAdapter(Context context, int layoutId, Cursor c) {
+		super(context, layoutId, c);
 		transferColor = context.getResources().getColor(R.color.transfer_color);
 		futureColor = context.getResources().getColor(R.color.future_color);
 		pendingColor = context.getResources().getColor(R.color.pending);
@@ -57,12 +61,18 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		View view = super.newView(context, cursor, parent);		
-		return BlotterViewHolder2.create(view);
+		createHolder(view);
+		return view;
+	}
+
+	protected void createHolder(View view) {
+		BlotterViewHolder h = new BlotterViewHolder(view);
+		view.setTag(h);
 	}
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {	
-		BlotterViewHolder2 v = (BlotterViewHolder2)view.getTag();
+		BlotterViewHolder v = (BlotterViewHolder)view.getTag();
 		long toAccountId = cursor.getLong(BlotterColumns.Indicies.TO_ACCOUNT_ID);
 		int isTemplate = cursor.getInt(BlotterColumns.Indicies.IS_TEMPLATE);
 		TextView noteView = isTemplate == 1 ? v.bottomView : v.centerView;
@@ -138,7 +148,6 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 				v.iconView.setImageDrawable(icBlotterExpense);
 			}
 		}
-		v.indicator.setBackgroundColor(Color.TRANSPARENT);			
 		if (isTemplate == 1) {
 			String templateName = cursor.getString(BlotterColumns.Indicies.TEMPLATE_NAME);
 			v.centerView.setText(templateName);
@@ -153,6 +162,8 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 				TransactionStatus status = TransactionStatus.valueOf(cursor.getString(BlotterColumns.Indicies.STATUS));
 				if (status == TransactionStatus.PN) {
 					v.indicator.setBackgroundColor(pendingColor);			
+				} else {
+					v.indicator.setBackgroundColor(Color.TRANSPARENT);			
 				}
 				long date = cursor.getLong(BlotterColumns.Indicies.DATETIME);
 				dt.setTime(date);
@@ -168,26 +179,24 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		}
 	}
 
-	public static class BlotterViewHolder2 {
-		public RelativeLayout layout;
-		public TextView indicator;
-		public TextView topView;
-		public TextView centerView;
-		public TextView bottomView;
-		public TextView rightView;
-		public ImageView iconView;
+	public static class BlotterViewHolder {
 		
-		public static View create(View view) {
-			BlotterViewHolder2 v = new BlotterViewHolder2();
-			v.layout = (RelativeLayout)view.findViewById(R.id.layout);
-			v.indicator = (TextView)view.findViewById(R.id.indicator);
-			v.topView = (TextView)view.findViewById(R.id.top);
-			v.centerView = (TextView)view.findViewById(R.id.center);		
-			v.bottomView = (TextView)view.findViewById(R.id.bottom);
-			v.rightView = (TextView)view.findViewById(R.id.right);
-			v.iconView = (ImageView)view.findViewById(R.id.right_center);
-			view.setTag(v);
-			return view;
+		public final RelativeLayout layout;
+		public final TextView indicator;
+		public final TextView topView;
+		public final TextView centerView;
+		public final TextView bottomView;
+		public final TextView rightView;
+		public final ImageView iconView;
+		
+		public BlotterViewHolder(View view) {
+			layout = (RelativeLayout)view.findViewById(R.id.layout);
+			indicator = (TextView)view.findViewById(R.id.indicator);
+			topView = (TextView)view.findViewById(R.id.top);
+			centerView = (TextView)view.findViewById(R.id.center);		
+			bottomView = (TextView)view.findViewById(R.id.bottom);
+			rightView = (TextView)view.findViewById(R.id.right);
+			iconView = (ImageView)view.findViewById(R.id.right_center);
 		}
 		
 	}

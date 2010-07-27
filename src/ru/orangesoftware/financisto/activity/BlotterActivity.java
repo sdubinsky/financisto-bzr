@@ -170,12 +170,12 @@ public class BlotterActivity extends AbstractListActivity {
 			switch (item.getItemId()) {
 			case MENU_DUPLICATE: {
 				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-				duplicateTransaction(mi.id);
+				duplicateTransaction(mi.id, 1);
 				return true;
 			} 			
 			case MENU_SAVE_AS_TEMPLATE: {
 				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-				db.duplicateTransaction(mi.id, 1);
+				db.duplicateTransactionAsTemplate(mi.id);
 				Toast.makeText(this, R.string.save_as_template_success, Toast.LENGTH_SHORT).show();
 				return true;
 			} 			
@@ -184,9 +184,16 @@ public class BlotterActivity extends AbstractListActivity {
 		return false;
 	}
 
-	private void duplicateTransaction(long id) {
-		db.duplicateTransaction(id);
-		Toast.makeText(this, R.string.duplicate_success, Toast.LENGTH_SHORT).show();
+	private void duplicateTransaction(long id, int multiplier) {
+		String toastText;
+		if (multiplier > 1) {
+			db.duplicateTransactionWithMultiplier(id, multiplier);
+			toastText = getString(R.string.duplicate_success_with_multiplier, multiplier);
+		} else {
+			db.duplicateTransaction(id);
+			toastText = getString(R.string.duplicate_success);
+		}
+		Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
 		requeryCursor();
 	}
 
@@ -279,8 +286,9 @@ public class BlotterActivity extends AbstractListActivity {
 			recreateCursor();			
 		} else if (resultCode == RESULT_OK && requestCode == NEW_TRANSACTION_FROM_TEMPLATE_REQUEST) {
 			long templateId = data.getLongExtra(SelectTemplateActivity.TEMPATE_ID, -1);
+			int multiplier = data.getIntExtra(SelectTemplateActivity.MULTIPLIER, 1);
 			if (templateId > 0) {
-				duplicateTransaction(templateId);
+				duplicateTransaction(templateId, multiplier);
 			}
 		}
 		if (resultCode == RESULT_OK || resultCode == RESULT_FIRST_USER) {
