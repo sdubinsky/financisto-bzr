@@ -72,13 +72,21 @@ public class RecurrenceScheduler {
 		}
 	}
 
+	private static final Date NULL_DATE = new Date(0);
+	
 	private static void sortTransactionsByScheduleDate(ArrayList<TransactionInfo> list, long now) {
 		final Date today = new Date(now);
 		Collections.sort(list, new Comparator<TransactionInfo>(){
 			@Override
 			public int compare(TransactionInfo o1, TransactionInfo o2) {
-				Date d1 = o1.nextDateTime;
-				Date d2 = o2.nextDateTime;
+				Date d1 = o1 != null ? o1.nextDateTime : NULL_DATE;
+				Date d2 = o2 != null ? o2.nextDateTime : NULL_DATE;
+				if (d1 == null) {
+					d1 = NULL_DATE;
+				}
+				if (d2 == null) {
+					d2 = NULL_DATE;
+				}
 				if (d1.after(today)) {
 					if (d2.after(today)) {
 						return o1.nextDateTime.compareTo(o2.nextDateTime);

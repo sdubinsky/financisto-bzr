@@ -764,6 +764,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 	
 	private void selectPicture(String pictureFileName) {
+		if (pictureView == null) {
+			return;
+		}
 		if (pictureFileName == null) {
 			return;
 		}
@@ -777,6 +780,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 	
 	private void removePicture() {
+		if (pictureView == null) {
+			return;
+		}
 		if (pictureFileName != null) {
 			new File(PICTURES_DIR, pictureFileName).delete();
 			new File(PICTURES_THUMB_DIR, pictureFileName).delete();
