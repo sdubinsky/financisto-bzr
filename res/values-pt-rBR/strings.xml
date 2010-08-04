@@ -12,7 +12,7 @@
 -->
 <resources>
     <string name="accounts">Contas</string>
-    <string name="blotter">Registro</string>
+    <string name="blotter">Registros</string>
     <string name="currencies">Moedas</string>
     <string name="categories">Categorias</string>
     <string name="budgets">Orçamentos</string>
