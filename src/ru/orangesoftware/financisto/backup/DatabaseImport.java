@@ -29,6 +29,7 @@ import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -56,6 +57,7 @@ public class DatabaseImport {
 				for (String tableName : Backup.BACKUP_TABLES) {
 					db.execSQL("delete from "+tableName);
 				}
+				//printCurrentSchema();
 				boolean insideEntity = false;
 				ContentValues values = new ContentValues();
 				String line;
@@ -96,6 +98,15 @@ public class DatabaseImport {
 			scheduleAll();
 		} finally {
 			br.close();
+		}
+	}
+
+	private void printCurrentSchema() {
+		Cursor c = db.rawQuery("SELECT * FROM sqlite_master where type='table'", null);
+		try {
+			DatabaseUtils.dumpCursor(c);
+		} finally {
+			c.close();
 		}
 	}
 

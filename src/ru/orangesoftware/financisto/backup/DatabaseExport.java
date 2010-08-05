@@ -50,17 +50,8 @@ public class DatabaseExport extends Export {
 
 	@Override
 	protected void writeBody(BufferedWriter bw) throws Exception {
-		String sql = "SELECT * FROM sqlite_master";
-		Cursor c = db.rawQuery(sql, null);
-		try {
-			while (c.moveToNext()) {
-				String tableName = c.getString(c.getColumnIndex("name"));
-				if (shouldExportTable(tableName)) {
-					exportTable(bw, tableName);
-				}
-			}
-		} finally {
-			c.close();
+		for (String tableName : BACKUP_TABLES) {
+			exportTable(bw, tableName);	
 		}
 	}
 
@@ -79,7 +70,7 @@ public class DatabaseExport extends Export {
 				bw.write("$ENTITY:");bw.write(tableName);bw.write("\n");
 				for (int i=0; i<cols; i++) {					
 					String value = c.getString(i);
-					if (!Utils.isEmpty(value)) {
+					if (value != null) {
 						bw.write(columnNames[i]);bw.write(":");
 						bw.write(value);
 						bw.write("\n");
@@ -92,15 +83,6 @@ public class DatabaseExport extends Export {
 		}
 	}
 
-	private boolean shouldExportTable(String tableName) {
-		for (String table : BACKUP_TABLES) {
-			if (table.equalsIgnoreCase(tableName)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	private boolean shouldIgnoreSystemIds(String tableName) {
 		for (String table : BACKUP_TABLES_WITH_SYSTEM_IDS) {
 			if (table.equalsIgnoreCase(tableName)) {

@@ -149,6 +149,10 @@ public class AccountActivity extends AbstractActivity {
 					Toast.makeText(AccountActivity.this, R.string.select_currency, Toast.LENGTH_SHORT).show();
 					return;	
 				}
+				if (Utils.isEmpty(accountTitle)) {
+					accountTitle.setError(getString(R.string.title));
+					return;
+				}
 				AccountType type = AccountType.valueOf(account.type);
 				if (type.hasIssuer) {
 					account.issuer = Utils.text(issuerName);
