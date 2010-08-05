@@ -11,6 +11,7 @@
 package ru.orangesoftware.financisto.adapter;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
@@ -26,10 +27,13 @@ import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class BlotterListAdapter extends ResourceCursorAdapter {
 	
@@ -44,7 +48,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 	private final Utils u;
 	
 	public BlotterListAdapter(Context context, Cursor c) {
-		this(context, R.layout.blotter_list_item_2, c);
+		this(context, R.layout.blotter_list_item, c);
 	}
 
 	public BlotterListAdapter(Context context, int layoutId, Cursor c) {
@@ -58,6 +62,8 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		u = new Utils(context);
 	}
 
+	private HashMap<Long, Boolean> checkedItems;
+	
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		View view = super.newView(context, cursor, parent);		
@@ -177,6 +183,31 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 				}
 			}
 		}
+		if (v.checkBox != null) {
+			final long id = cursor.getLong(BlotterColumns.Indicies.ID);
+			v.checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+				@Override
+				public void onCheckedChanged(CompoundButton arg0, boolean checked) {
+					updateCheckedState(id, checked);
+				}
+			});
+			v.checkBox.setChecked(getCheckedState(id));
+		}
+	}
+
+	private boolean getCheckedState(long id) {
+		return checkedItems != null && checkedItems.get(id) != null;
+	}
+
+	private void updateCheckedState(long id, boolean checked) {
+		if (checkedItems == null) {
+			checkedItems = new HashMap<Long, Boolean>();
+		}
+		if (checked) {
+			checkedItems.put(id, true);
+		} else {
+			checkedItems.remove(id);
+		}
 	}
 
 	public static class BlotterViewHolder {
@@ -188,6 +219,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		public final TextView bottomView;
 		public final TextView rightView;
 		public final ImageView iconView;
+		public final CheckBox checkBox;
 		
 		public BlotterViewHolder(View view) {
 			layout = (RelativeLayout)view.findViewById(R.id.layout);
@@ -197,6 +229,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 			bottomView = (TextView)view.findViewById(R.id.bottom);
 			rightView = (TextView)view.findViewById(R.id.right);
 			iconView = (ImageView)view.findViewById(R.id.right_center);
+			checkBox = (CheckBox)view.findViewById(R.id.cb);
 		}
 		
 	}

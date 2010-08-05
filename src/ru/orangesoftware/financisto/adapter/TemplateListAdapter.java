@@ -20,7 +20,7 @@ public class TemplateListAdapter extends BlotterListAdapter {
 	private int multiplier = 1;
 
 	public TemplateListAdapter(Context context, Cursor c) {
-		super(context, R.layout.template_list_item_2, c);
+		super(context, R.layout.template_list_item, c);
 	}
 	
 	@Override

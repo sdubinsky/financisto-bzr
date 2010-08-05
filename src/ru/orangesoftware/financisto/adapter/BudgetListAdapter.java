@@ -68,7 +68,7 @@ public class BudgetListAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Holder v;
 		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.budget_list_item_2, parent, false);
+			convertView = inflater.inflate(R.layout.budget_list_item, parent, false);
 			v = Holder.create(convertView);
 		} else {
 			v = (Holder)convertView.getTag();

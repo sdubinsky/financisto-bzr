@@ -289,6 +289,7 @@ public class BlotterActivity extends AbstractListActivity {
 			int multiplier = data.getIntExtra(SelectTemplateActivity.MULTIPLIER, 1);
 			if (templateId > 0) {
 				duplicateTransaction(templateId, multiplier);
+				FinancistoService.updateWidget(BlotterActivity.this);
 			}
 		}
 		if (resultCode == RESULT_OK || resultCode == RESULT_FIRST_USER) {
