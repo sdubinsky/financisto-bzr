@@ -440,5 +440,7 @@
 	<string name="credits">Credits</string>
 	<string name="sort_by_title">Sort by title</string>
 	<string name="sort_all_by_title">Sort all by title</string>
+	<string name="include_transfers_into_reports">Transfers into reports</string>
+	<string name="include_transfers_into_reports_summary">Include transfers into reports</string>
 
 </resources>

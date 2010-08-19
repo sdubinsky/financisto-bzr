@@ -20,12 +20,10 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Category;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 
 public class CategoryReport2 extends AbstractReport {
@@ -42,10 +40,7 @@ public class CategoryReport2 extends AbstractReport {
 	@Override
 	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {
 		filter.eq("parent_id", String.valueOf(parentCategoryId));
-		Cursor c = db.db().query(V_REPORT_CATEGORY, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,
-				filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
-		//DatabaseUtils.dumpCursor(c);
-		return getUnitsFromCursorAndSort(c);
+		return queryReport(db, V_REPORT_CATEGORY, filter);
 	}
 	
 	@Override
@@ -55,6 +50,7 @@ public class CategoryReport2 extends AbstractReport {
 		if (c != null) {
 			filter.put(c);
 		}
+		filterTransfers(filter);
 		Category category = db.getCategory(id);
 		filter.put(Criteria.gte("left", String.valueOf(category.left)));
 		filter.put(Criteria.lte("right", String.valueOf(category.right)));

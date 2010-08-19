@@ -13,12 +13,12 @@ package ru.orangesoftware.financisto.utils;
 import java.util.ArrayList;
 
 import ru.orangesoftware.financisto.adapter.CategoryListAdapter;
+import ru.orangesoftware.financisto.adapter.MyEntityAdapter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.model.Project;
 import android.content.Context;
 import android.database.Cursor;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
 
@@ -43,9 +43,7 @@ public class TransactionUtils {
 	}
 
 	public static ListAdapter createProjectAdapter(Context context, ArrayList<Project> projects) {
-		return new ArrayAdapter<Project>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, projects);
-//		return new SimpleCursorAdapter(context, android.R.layout.simple_spinner_dropdown_item, cursor, 
-//				new String[]{"e_"+ProjectColumns.TITLE}, new int[]{android.R.id.text1});
+		return new MyEntityAdapter<Project>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, projects);
 	}
 
 	public static ListAdapter createLocationAdapter(Context context, Cursor cursor) {

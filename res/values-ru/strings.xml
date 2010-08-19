@@ -356,8 +356,6 @@
 	<string name="save_as_template_success">Транзакция сохранена в шаблонах..</string>		
 	<string name="scheduled_transactions">Запланировано</string>
 	<string name="no_scheduled_transactions">Нет запланированных транзакций</string>					
-
-	
 	<string name="recur_interval_geeky">Занудно</string>
 	<string name="recurrence_pattern">Паттерн повторения</string>
 	<string name="recurrence_period">Период повторения</string>	
@@ -386,12 +384,10 @@
 	<string name="thursday">Четверг</string>
 	<string name="friday">Пятница</string>
 	<string name="saturday">Суббота</string>
-	
 	<string name="transaction_schedule">Транзакция (Запланированная)</string>	
 	<string name="transfer_schedule">Перевод (Запланированный)</string>	
 	<string name="recurrence_period_starts_on_date">Дата начала</string>	
 	<string name="recurrence_period_starts_on_time">Время начала</string>	
-	
 	<string name="new_scheduled_transfer_title">Запланированный перевод</string>					
 	<string name="new_scheduled_transfer_text">Был сделан запланированный перевод</string>					
 	<string name="new_scheduled_transaction_title">Запланированная транзакция</string>
@@ -401,7 +397,6 @@
 	<string name="new_scheduled_transaction_credit">списано с</string>					
 	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) было переведено с %s на %s</string>					
 	<string name="new_scheduled_transfer_notification_same_currency">%s было переведено с %s на %s</string>		
-	
 	<string name="notification">Нотификация</string>		
 	<string name="notification_options_on">Вкл</string>	
 	<string name="notification_options_off">Выкл</string>					
@@ -411,39 +406,37 @@
 	<string name="notification_options_long">Зз</string>					
 	<string name="notification_options_2_long">Зз-Зз</string>					
 	<string name="notification_options_3_long">Зз-Зз-Зз</string>	
-	
 	<string name="notification_options_led_green">Зеленый</string>					
 	<string name="notification_options_led_blue">Синий</string>					
 	<string name="notification_options_led_yellow">Желтый</string>					
 	<string name="notification_options_led_red">Красный</string>					
 	<string name="notification_options_led_pink">Розовый</string>	
-	
 	<string name="notification_options_text">Звук:%s Вибрация:%s Индикатор:%s</string>	
 	<string name="notification_options_custom">Пользовательский</string>	
 	<string name="notification_options_default">По-умолчанию</string>
 	<string name="notification_sound">Мелодия</string>
 	<string name="notification_vibra">Вибрация</string>
 	<string name="notification_led">Индикатор</string>
-		
 	<string name="transaction_status">Статус</string>
 	<string name="transaction_status_pending">Ожидается</string>
 	<string name="transaction_status_unreconciled">Невыверенно</string>
 	<string name="transaction_status_cleared">Занесено</string>
 	<string name="transaction_status_reconciled">Выверенно</string>
-	
 	<string name="system_attribute_delete_after_expired">Удалить после истечения</string>
 	<string name="no_transaction_found">Транзакия не найдена, перезагрузите Financisto..</string>
-	
 	<string name="include_credit">Включить приход</string>	
 	<string name="include_credit_summary">Включить приход в общую сумму бюджета</string>	
-	
 	<string name="enable_widget">Разрешить виджет</string>
 	<string name="enable_widget_summary">Показывать баланс на виджете</string>	
-	
 	<string name="attach_picture">Прикрепить фото</string>		
 	<string name="new_picture">Сфотографировать</string>		
-		
 	<string name="report_by_sub_category">По под-категориям</string>
 	<string name="report_by_sub_category_summary">Отчет по под-категориям</string>
+
+	<string name="credits">Благодарность</string>
+	<string name="sort_by_title">Сортировать по заголовкам</string>
+	<string name="sort_all_by_title">Сортировать все по заголовкам</string>
+	<string name="include_transfers_into_reports">Переводы в репортах</string>
+	<string name="include_transfers_into_reports_summary">Включать переводы в репорты</string>
 		
 </resources>

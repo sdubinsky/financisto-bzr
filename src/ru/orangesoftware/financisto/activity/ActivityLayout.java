@@ -219,14 +219,27 @@ public class ActivityLayout {
 		.show();
 	}
 	
-	public void select(Context context, final int id, int titleId, 
+	public void selectPosition(Context context, final int id, int titleId, 
 			final ListAdapter adapter, int selectedPosition) {		
 		selectSingleChoice(context, titleId, adapter, selectedPosition, 
 				new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();						
+						dialog.cancel();
 						listener.onSelectedPos(id, which);						
+					}
+		});
+	}
+
+	public void selectItemId(Context context, final int id, int titleId, 
+			final ListAdapter adapter, int selectedPosition) {		
+		selectSingleChoice(context, titleId, adapter, selectedPosition, 
+				new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+						long selectedId = adapter.getItemId(which);
+						listener.onSelectedId(id, selectedId);						
 					}
 		});
 	}

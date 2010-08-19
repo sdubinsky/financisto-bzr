@@ -161,6 +161,11 @@ public class MyPreferences {
 		return sharedPreferences.getBoolean("enable_widget", true);
 	}	
 	
+	public static boolean isIncludeTransfersIntoReports(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("include_transfers_into_reports", false);
+	}	
+	
 	public static void switchLocale(Context context, String language, String country) {
     	Resources res = context.getResources();
         DisplayMetrics dm = res.getDisplayMetrics();

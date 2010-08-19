@@ -106,11 +106,11 @@ public class NotificationOptionsActivity extends AbstractActivity {
 			} break;
 			case R.id.notification_vibra: {
 				ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, patterns);
-				x.select(this, R.id.notification_vibra, R.string.notification_vibra, adapter, options.vibration.ordinal());
+				x.selectPosition(this, R.id.notification_vibra, R.string.notification_vibra, adapter, options.vibration.ordinal());
 			} break;
 			case R.id.notification_led:  {
 				ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, colors);
-				x.select(this, R.id.notification_led, R.string.notification_led, adapter, options.ledColor.ordinal());
+				x.selectPosition(this, R.id.notification_led, R.string.notification_led, adapter, options.ledColor.ordinal());
 			} break;
 			case R.id.result1: {
 				options = NotificationOptions.createDefault();

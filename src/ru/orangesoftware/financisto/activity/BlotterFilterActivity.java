@@ -260,13 +260,11 @@ public class BlotterFilterActivity extends AbstractActivity {
 			break;
 		case R.id.project: {
 			ArrayList<Project> projects = em.getAllProjectsList(false);
-//			Cursor cursor = em.getAllProjects(false);
-//			startManagingCursor(cursor);
 			ListAdapter adapter = TransactionUtils.createProjectAdapter(this, projects);
 			Criteria c = filter.get(BlotterFilter.PROJECT_ID);
 			long selectedId = c != null ? c.getLongValue1() : -1;
 			int selectedPos = MyEntity.indexOf(projects, selectedId);
-			x.select(this, R.id.project, R.string.project, adapter, selectedPos);
+			x.selectItemId(this, R.id.project, R.string.project, adapter, selectedPos);
 		} break;
 		case R.id.project_clear:
 			clear(BlotterFilter.PROJECT_ID, project);
@@ -285,7 +283,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 		case R.id.sort_order: {
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, sortBlotterEntries);
 			int selectedId = BlotterFilter.SORT_OLDER_TO_NEWER.equals(filter.getSortOrder()) ? 1 : 0;
-			x.select(this, R.id.sort_order, R.string.sort_order, adapter, selectedId);
+			x.selectPosition(this, R.id.sort_order, R.string.sort_order, adapter, selectedId);
 		} break;
 		case R.id.sort_order_clear:
 			filter.resetSort();
@@ -296,7 +294,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, statuses);
 			Criteria c = filter.get(BlotterFilter.STATUS);
 			int selectedPos = c != null ? TransactionStatus.valueOf(c.getStringValue()).ordinal() : -1;
-			x.select(this, R.id.status, R.string.transaction_status, adapter, selectedPos);
+			x.selectPosition(this, R.id.status, R.string.transaction_status, adapter, selectedPos);
 		} break;
 		case R.id.status_clear:
 			clear(BlotterFilter.STATUS, status);

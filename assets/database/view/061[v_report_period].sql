@@ -4,6 +4,7 @@ select
        null as name,    
        t.from_account_currency_id as currency_id,          
        t.from_amount as amount,
-       t.datetime datetime
+       t.datetime as datetime,
+       t.is_transfer as is_transfer
 from v_blotter_for_currency t;
 	

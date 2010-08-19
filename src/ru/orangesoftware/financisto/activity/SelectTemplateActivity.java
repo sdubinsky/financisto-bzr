@@ -22,12 +22,16 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 
 public class SelectTemplateActivity extends TemplatesListActivity {
 	
 	public static final String TEMPATE_ID = "template_id";
 	public static final String MULTIPLIER = "multiplier";
 
+	private TextView multiplierText;
+	private int multiplier = 1; 
+	
 	public SelectTemplateActivity() {
 		super(R.layout.templates);
 	}
@@ -53,20 +57,34 @@ public class SelectTemplateActivity extends TemplatesListActivity {
 				finish();
 			}
 		});
+		multiplierText = (TextView)findViewById(R.id.multiplier);
 		ImageButton ib = (ImageButton)findViewById(R.id.bPlus);
 		ib.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-				((TemplateListAdapter)getListAdapter()).incrementMultiplier();
+				incrementMultiplier();
 			}
 		});
 		ib = (ImageButton)findViewById(R.id.bMinus);
 		ib.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-				((TemplateListAdapter)getListAdapter()).decrementMultiplier();
+				decrementMultiplier();
 			}
 		});
+	}
+
+	protected void incrementMultiplier() {
+		++multiplier;
+		multiplierText.setText("x"+multiplier);
+	}
+
+	protected void decrementMultiplier() {
+		--multiplier;
+		if (multiplier < 1) {
+			multiplier = 1;
+		}
+		multiplierText.setText("x"+multiplier);		
 	}
 
 	@Override
@@ -82,7 +100,7 @@ public class SelectTemplateActivity extends TemplatesListActivity {
 	protected void viewItem(int position, long id) {
 		Intent data = new Intent();
 		data.putExtra(TEMPATE_ID, id);
-		data.putExtra(MULTIPLIER, ((TemplateListAdapter)getListAdapter()).getMultiplier());
+		data.putExtra(MULTIPLIER, multiplier);
 		setResult(RESULT_OK, data);
 		finish();
 		

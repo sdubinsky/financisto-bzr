@@ -18,10 +18,8 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import android.content.Context;
-import android.database.Cursor;
 
 public class ProjectsReport extends AbstractReport {
 
@@ -31,9 +29,7 @@ public class ProjectsReport extends AbstractReport {
 
 	@Override
 	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {
-		Cursor c = db.db().query(V_REPORT_PROJECTS, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,  
-				filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
-		return getUnitsFromCursorAndSort(c);
+		return queryReport(db, V_REPORT_PROJECTS, filter);
 	}
 
 	@Override

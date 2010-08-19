@@ -48,6 +48,7 @@ public class PeriodReport extends AbstractReport {
 		if (criteria != null) {
 			newFilter.put(criteria);
 		}
+		filterTransfers(newFilter);
 		ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
 		for (int i=0; i<periods.length; i++) {
 			Period p = periods[i];

@@ -241,7 +241,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			@Override
 			public void onClick(View v) {
 				ArrayAdapter<String> adapter = EnumUtils.getAdapter(AbstractTransactionActivity.this, statuses);
-				x.select(AbstractTransactionActivity.this, R.id.status, R.string.transaction_status, adapter, transaction.status.ordinal());
+				x.selectPosition(AbstractTransactionActivity.this, R.id.status, R.string.transaction_status, adapter, transaction.status.ordinal());
 			}
 		});
 		
@@ -543,7 +543,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			} 
 			case R.id.project:
 				int selectedProjectPos = MyEntity.indexOf(projects, selectedProjectId);
-				x.select(this, R.id.project, R.string.project,  projectAdapter, selectedProjectPos);
+				x.selectPosition(this, R.id.project, R.string.project,  projectAdapter, selectedProjectPos);
 				break;
 			case R.id.project_add: {
 				Intent intent = new Intent(this, ProjectActivity.class);

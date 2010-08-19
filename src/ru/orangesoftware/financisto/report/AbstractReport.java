@@ -11,6 +11,7 @@
 package ru.orangesoftware.financisto.report;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -20,28 +21,51 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
 import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.util.Log;
 
 public abstract class AbstractReport implements Report {
 	
 	protected static final GraphStyle DEFAULT_STYLE = new GraphStyle.Builder().build();
 	
 	protected final Context context;
+	protected final boolean includeTransfers;
 	
 	public AbstractReport(Context context) {
 		this.context = context;
+		this.includeTransfers = MyPreferences.isIncludeTransfersIntoReports(context); 
 	}
 	
 	protected String alterName(long id, String name) {
 		return name;
 	}
 	
+	protected ArrayList<GraphUnit> queryReport(DatabaseAdapter db, String table, WhereFilter filter) {
+		filterTransfers(filter);
+		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,  
+				filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
+		Log.i("", filter.getSelection());
+		Log.i("", Arrays.toString(filter.getSelectionArgs()));
+		DatabaseUtils.dumpCursor(c);
+		return getUnitsFromCursorAndSort(c);
+	}
+
+	protected void filterTransfers(WhereFilter filter) {
+		if (!includeTransfers) {
+			filter.put(Criteria.eq(ReportColumns.IS_TRANSFER, "0"));
+		}
+	}
+
 	protected ArrayList<GraphUnit> getUnitsFromCursor(Cursor c) {
 		return getUnitsFromCursor(c, false);
 	}
@@ -57,9 +81,9 @@ public abstract class AbstractReport implements Report {
 			long lastId = -1;
 			while (c.moveToNext()) {
 				long id = getId(c);
-				String name = c.getString(1);
-				long currencyId = c.getLong(2);
-				long amount = c.getLong(3);	
+				String name = c.getString(ReportColumns.Indicies.NAME);
+				long currencyId = c.getLong(ReportColumns.Indicies.CURRENCY_ID);
+				long amount = c.getLong(ReportColumns.Indicies.AMOUNT);	
 				if (id != lastId) {
 					if (u != null) {
 						units.add(u);

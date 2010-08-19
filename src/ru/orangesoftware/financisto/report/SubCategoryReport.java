@@ -40,6 +40,7 @@ public class SubCategoryReport extends AbstractReport {
 
 	@Override
 	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {
+		filterTransfers(filter);
 		Cursor c = db.db().query(V_REPORT_SUB_CATEGORY, DatabaseHelper.SubCategoryReportColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null, "left");
 		CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){

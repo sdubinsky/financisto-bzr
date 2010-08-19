@@ -24,7 +24,8 @@ SELECT
 	t.template_name as template_name,
 	t.recurrence as recurrence,
 	t.notification_options as notification_options,
-	t.status as status
+	t.status as status,
+	t.to_account_id as is_transfer
 FROM 
 	transactions as t		
 	INNER JOIN account as a ON a._id=t.from_account_id
@@ -60,7 +61,8 @@ SELECT
 	t.template_name as template_name,
 	t.recurrence as recurrence,
 	t.notification_options as notification_options,
-	t.status as status
+	t.status as status,
+	1 as is_transfer
 FROM 
 	transactions as t		
 	INNER JOIN account as a ON a._id=t.to_account_id

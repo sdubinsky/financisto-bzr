@@ -558,11 +558,11 @@ public class RecurrenceViewFactory {
 				}
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_dropdown_item, items);
 				int selected = prefix[k].ordinal()*postfixesLength+postfix[k].ordinal();
-				x.select(activity, id, R.string.recurrence_period, adapter, selected);				
+				x.selectPosition(activity, id, R.string.recurrence_period, adapter, selected);				
 			} else {
 				int k = id-100;
 				ArrayAdapter<String> adapter = EnumUtils.getAdapter(activity, MonthlyPattern.values());
-				x.select(activity, id, R.string.recurrence_period, adapter, pattern[k].ordinal());				
+				x.selectPosition(activity, id, R.string.recurrence_period, adapter, pattern[k].ordinal());				
 			}
 		}
 

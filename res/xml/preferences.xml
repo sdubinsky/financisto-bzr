@@ -85,6 +85,9 @@
 			android:defaultValue="true" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/other">
+		<CheckBoxPreference android:key="include_transfers_into_reports"
+			android:title="@string/include_transfers_into_reports" android:summary="@string/include_transfers_into_reports_summary"
+			android:defaultValue="false" />
 		<CheckBoxPreference android:key="send_error_reports"
 			android:title="@string/send_error_reports" android:summary="@string/send_error_reports_summary"
 			android:defaultValue="true" />
