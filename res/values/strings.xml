@@ -442,5 +442,7 @@
 	<string name="sort_all_by_title">Sort all by title</string>
 	<string name="include_transfers_into_reports">Transfers into reports</string>
 	<string name="include_transfers_into_reports_summary">Include transfers into reports</string>
+	<string name="negative_opening_amount">Negative opening amount</string>
+	<string name="negative_opening_amount_summary">Open account with negative opening amount</string>
 
 </resources>

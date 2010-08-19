@@ -60,4 +60,5 @@
 	<item type="id" name="status_clear"/>
 	<item type="id" name="attach_picture"/>	
 	<item type="id" name="delete_picture"/>	
+	<item type="id" name="negative_opening_amount"/>		
 </resources>

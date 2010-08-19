@@ -24,6 +24,7 @@ import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.orb.EntityManager;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -43,6 +44,8 @@ public class AccountActivity extends AbstractActivity {
 	
 	private static final int NEW_CURRENCY_REQUEST = 1;
 	
+	private int negativeAmountColor; 
+	
 	private AmountInput amountInput;
 	private AmountInput limitInput;
 	private View limitAmountView;
@@ -58,6 +61,7 @@ public class AccountActivity extends AbstractActivity {
 	private EditText issuerName;
 	private EditText sortOrderText;
 	private CheckBox isIncludedIntoTotals;
+	private CheckBox isNegativeOpeningAmount;
 	
 	private AccountTypeAdapter accountTypeAdapter;
 	private CardIssuerAdapter cardIssuerAdapter;
@@ -69,6 +73,8 @@ public class AccountActivity extends AbstractActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.account);
+		
+		negativeAmountColor = getResources().getColor(R.color.negative_amount);
 		
 		accountTitle = new EditText(this);
 		accountTitle.setSingleLine();
@@ -130,6 +136,8 @@ public class AccountActivity extends AbstractActivity {
 
 		if (account.id == -1) {
 			x.addEditNode(layout, R.string.opening_amount, amountInput);
+			isNegativeOpeningAmount = x.addCheckboxNode(layout, R.id.negative_opening_amount, 
+					R.string.negative_opening_amount, R.string.negative_opening_amount_summary, false);
 		}
 		
 		x.addEditNode(layout, R.string.sort_order, sortOrderText);
@@ -173,7 +181,7 @@ public class AccountActivity extends AbstractActivity {
 					t.fromAccountId = accountId;
 					t.categoryId = 0;
 					t.note = getResources().getText(R.string.opening_amount) + " (" +account.title + ")";
-					t.fromAmount = amount;
+					t.fromAmount = isNegativeOpeningAmount.isChecked() ? -amount : amount;
 					db.insertOrUpdate(t, null);
 				}
 				Intent intent = new Intent();
@@ -201,6 +209,10 @@ public class AccountActivity extends AbstractActivity {
 			case R.id.is_included_into_totals:
 				isIncludedIntoTotals.performClick();
 				break;
+			case R.id.negative_opening_amount:
+				isNegativeOpeningAmount.performClick();
+				changeColorOfTheAmountInput();
+				break;
 			case R.id.account_type:				
 				x.selectPosition(this, R.id.account_type, R.string.account_type, accountTypeAdapter, AccountType.valueOf(account.type).ordinal());
 				break;
@@ -218,6 +230,10 @@ public class AccountActivity extends AbstractActivity {
 				break;
 		}
 	}	
+
+	private void changeColorOfTheAmountInput() {
+		amountInput.setColor(isNegativeOpeningAmount.isChecked() ? negativeAmountColor : Color.BLACK);
+	}
 
 	@Override
 	public void onSelectedId(int id, long selectedId) {

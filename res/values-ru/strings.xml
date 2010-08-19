@@ -438,5 +438,7 @@
 	<string name="sort_all_by_title">Сортировать все по заголовкам</string>
 	<string name="include_transfers_into_reports">Переводы в репортах</string>
 	<string name="include_transfers_into_reports_summary">Включать переводы в репорты</string>
+	<string name="negative_opening_amount">Отрицательный баланс</string>
+	<string name="negative_opening_amount_summary">Открыть аккаунт с отрицательным балансом</string>
 		
 </resources>

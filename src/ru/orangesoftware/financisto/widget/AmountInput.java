@@ -286,4 +286,9 @@ public class AmountInput extends LinearLayout {
 		return s == null || s.length() == 0 ? 0 : Long.parseLong(s);
 	}
 
+	public void setColor(int color) {
+		primary.setTextColor(color);
+		secondary.setTextColor(color);
+	}
+
 }
