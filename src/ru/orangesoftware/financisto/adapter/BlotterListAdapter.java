@@ -21,6 +21,7 @@ import ru.orangesoftware.financisto.recur.Recurrence;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -41,11 +42,12 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 	private final Date dt = new Date();
 	private final int transferColor;
 	private final int futureColor;
-	private final int pendingColor;
 	private final Drawable icBlotterIncome;
 	private final Drawable icBlotterExpense;
 	private final Drawable icBlotterTransfer;	
 	private final Utils u;
+	
+	private final int colors[];
 	
 	public BlotterListAdapter(Context context, Cursor c) {
 		this(context, R.layout.blotter_list_item, c);
@@ -55,11 +57,22 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		super(context, layoutId, c);
 		transferColor = context.getResources().getColor(R.color.transfer_color);
 		futureColor = context.getResources().getColor(R.color.future_color);
-		pendingColor = context.getResources().getColor(R.color.pending);
 		icBlotterIncome = context.getResources().getDrawable(R.drawable.ic_blotter_income);
 		icBlotterExpense = context.getResources().getDrawable(R.drawable.ic_blotter_expense);
 		icBlotterTransfer = context.getResources().getDrawable(R.drawable.ic_blotter_transfer);
 		u = new Utils(context);
+		colors = initializeColors(context);
+	}
+
+	private int[] initializeColors(Context context) {
+		Resources r = context.getResources();
+		TransactionStatus[] statuses = TransactionStatus.values();
+		int count = statuses.length;
+		int[] colors = new int[count];
+		for (int i=0; i<count; i++) {
+			colors[i] = r.getColor(statuses[i].colorId);
+		}
+		return colors;
 	}
 
 	private HashMap<Long, Boolean> checkedItems;
@@ -166,11 +179,12 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 				v.bottomView.setTextColor(v.topView.getTextColors().getDefaultColor());
 			} else {
 				TransactionStatus status = TransactionStatus.valueOf(cursor.getString(BlotterColumns.Indicies.STATUS));
-				if (status == TransactionStatus.PN) {
-					v.indicator.setBackgroundColor(pendingColor);			
-				} else {
-					v.indicator.setBackgroundColor(Color.TRANSPARENT);			
-				}
+				v.indicator.setBackgroundColor(colors[status.ordinal()]);
+//				if (status == TransactionStatus.PN) {
+//					v.indicator.setBackgroundColor(pendingColor);			
+//				} else {
+//					v.indicator.setBackgroundColor(Color.TRANSPARENT);			
+//				}
 				long date = cursor.getLong(BlotterColumns.Indicies.DATETIME);
 				dt.setTime(date);
 				v.bottomView.setText(DateUtils.formatDateTime(context, dt.getTime(), 
