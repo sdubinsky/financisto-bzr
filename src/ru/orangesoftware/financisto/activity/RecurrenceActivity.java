@@ -33,6 +33,7 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -192,6 +193,7 @@ public class RecurrenceActivity extends AbstractActivity {
 				try {
 					Recurrence r = Recurrence.parse(stateToString());
 					RRule rrule = r.createRRule();
+					Log.d("RRULE", rrule.toIcal());
 					RecurrenceScheduler ri = RecurrenceScheduler.create(rrule, recurrence.getStartDate().getTime());
 					ri.advanceTo(new Date());
 					StringBuilder sb = new StringBuilder();
