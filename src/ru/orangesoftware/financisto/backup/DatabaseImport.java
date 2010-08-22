@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import ru.orangesoftware.financisto.db.Database;
@@ -29,9 +30,10 @@ import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
+//import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import api.wireless.gdata.docs.client.DocsClient;
 
 public class DatabaseImport {
 
@@ -49,7 +51,31 @@ public class DatabaseImport {
 	
 	public void importDatabase() throws IOException {
 		File file = new File(Export.EXPORT_PATH, backupFile);
-		InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
+		FileInputStream inputStream = new FileInputStream(file);
+		recoverDatabase(inputStream);
+	}
+	
+	/**
+	 * Get backup file from Google docs
+	 * 
+	 * @param docsClient The Google Docs connection
+	 * @param resourceId the key of the recovery document on google docs
+	 **/
+	public void importOnlineDatabase(DocsClient docsClient, String resourceId) throws Exception {
+		InputStream inputStream=null;
+		inputStream = docsClient.getDocumentMediaAsTXT(resourceId);
+		recoverDatabase(inputStream);
+		inputStream.close();
+	}
+	
+	/**
+	 * Recover database from a inputStream
+	 * 
+	 * @param inputStream stream with the backup data
+	 **/
+	protected void recoverDatabase(InputStream inputStream) throws IOException
+	{
+		InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
 		BufferedReader br = new BufferedReader(isr, 65535);
 		try {
 			db.beginTransaction();
@@ -101,14 +127,14 @@ public class DatabaseImport {
 		}
 	}
 
-	private void printCurrentSchema() {
+	/*private void printCurrentSchema() {
 		Cursor c = db.rawQuery("SELECT * FROM sqlite_master where type='table'", null);
 		try {
 			DatabaseUtils.dumpCursor(c);
 		} finally {
 			c.close();
 		}
-	}
+	}*/
 
 	private void scheduleAll() {
 		FinancistoService.scheduleAll(context, new MyEntityManager(context, db));

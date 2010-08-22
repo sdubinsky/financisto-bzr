@@ -9,6 +9,7 @@
   Contributors:
       Denis Solonenko - initial API and implementation
       Charles HG Santos - Brazilian translation [http://www.provadigital.com.br]
+      Abdsandryk Souza / Rodrigo Sousa - adding new strings
 -->
 <resources>
     <string name="accounts">Contas</string>
@@ -50,7 +51,7 @@
 	<string name="transfer">Transferência</string>
 	<string name="confirmation">Confirmação</string>	
 	<string name="delete_category_dialog">Apagar esta categoria e todas as sub-categorias (se existirem)?</string>
-	<string name="currency_delete_alert">Não é possível apagar uma moeda em uso...</string>	
+	<string name="currency_delete_alert">Não é possível apagar uma moeda em uso.</string>	
 	<string name="yes">Sim</string>
 	<string name="no">Não</string>
 	<string name="error">Erro</string>
@@ -64,7 +65,7 @@
 	<string name="period_from">Período de</string>
 	<string name="period_to">Período para</string>
 	<string name="period_recur">Período recorrente</string>
-	<string name="preferences">Preferencias</string>
+	<string name="preferences">Preferências</string>
 	<string name="amount_picker">Separador de valor</string>
 	<string name="integer_part_title">Número de dígitos</string>
 	<string name="use_hundredth_title">Usar centésimos</string>
@@ -98,7 +99,7 @@
 	<string name="no_locations">Sem localizações</string>
 	<string name="use_gps">Usar GPS</string>
 	<string name="use_gps_summary">Usar GPS para pegar a localização nas transações</string>
-	<string name="use_my_location">Ussar Minha Localização</string>
+	<string name="use_my_location">Usar Minha Localização</string>
 	<string name="use_my_location_summary">Usar Minha Localização para pegar a localização atual para novas transações</string>	
 	<string name="select_location">Escolher localização</string>
 	<string name="no_fix">Localização desconhecida</string>
@@ -207,7 +208,7 @@
 	<string name="card_number_hint">Os últimos 4 dígitos do cartão</string>
 	<string name="issuer">Emissor</string>
 	<string name="cash">Dinheiro</string>	
-	<string name="sort_order">Ordem de lisgatem</string>
+	<string name="sort_order">Ordem de listagem</string>
 	<string name="force_gps_location">Forçar localização GPS</string>
 	<string name="whats_new">O que tem de novo</string>
 	<string name="attribute_delete_alert">Isto apagará os atributos das categorias e transações também.</string>
@@ -232,7 +233,7 @@
 	<string name="more_products">Mais produtos.</string>
 	<string name="pin_protection">Senha de proteção</string>	
 	<string name="pin_protection_summary">Marque para proteger acesso com senha</string>
-	<string name="pin_protection_notify">Por favor, configure a senha nas Preferências</string>
+	<string name="pin_protection_notify">Favor configurar a senha em Preferências</string>
 	<string name="change_pin">Modificar senha</string>	
 	<string name="change_pin_summary">Modifica a senha.</string>
 	<string name="pin">Senha</string>
@@ -241,11 +242,22 @@
 	<string name="restore">Restaurar</string>
 	<string name="backup_database">Backup dos dados</string>
 	<string name="backup_database_inprogress">Efetuando backup..</string>
+	<string name="backup_database_gdocs">Backup no Google Docs</string>
+	<string name="backup_database_gdocs_inprogress">Efetuando backup..</string>
 	<string name="csv_export">Exportar em CSV</string>
 	<string name="csv_export_inprogress">Exportando dados para formato CSV..</string>	
 	<string name="restore_database">Restaurar dados</string>
 	<string name="restore_database_inprogress">Restaurando dados...</string>
+	<string name="restore_database_gdocs">Restaurar do Google Docs</string>
+	<string name="restore_database_inprogress_gdocs">Restaurando base...</string>
 	<string name="restore_database_success">Os dados foram restaurados com sucesso..</string>
+	<string name="gdocs_connection_failed">Não foi possível conectar ao Google Docs.</string>
+	<string name="gdocs_folder_not_found">A pasta de backup não foi encontrada no Google Docs.</string>
+	<string name="gdocs_credentials_not_configured">Favor configurar login e senha do Google Docs em Preferências.</string>
+	<string name="gdocs_folder_not_configured">Favor configurar a pasta de backup no Google Docs.</string>
+	<string name="gdocs_login_failed">Login ou senha do Google inválido(s).</string>
+	<string name="gdocs_backup_failed">Erro enviando arquivo de backup ao Google Docs. Tente novamente.</string>
+	<string name="gdocs_restore_failed">Erro recuperando arquivo de backup. Tente novamente.</string>
 	<string name="success">Sucesso!</string>
 	<string name="fail">Falha..</string>
 	<string name="duplicate">Duplicatas</string>
@@ -253,7 +265,7 @@
 	<string name="select_to_account">Selecione conta de destino..</string>
 	<string name="update_balance">Atualizar balanço</string>
 	<string name="close_account">Fechar conta</string>
-	<string name="reopen_account">Re-abrir conta</string>
+	<string name="reopen_account">Reabrir conta</string>
 	<string name="difference">Diferença</string>
 	<string name="new_balance">Novo balanço</string>
 	<string name="duplicate_success">Transação duplicada com a mesma data e hora</string>	
@@ -343,6 +355,13 @@
 	<string name="calculating">Calculando..</string>
 	<string name="budget_mode">Condições facilitadas</string>
 	<string name="budget_mode_summary">Use menos condições restritivas (categoria OU projeto) para filtrar transações</string>
+	<string name="gdocs_backup">Backup no Google Docs</string>
+	<string name="user_login">Nome de usuário</string>
+	<string name="user_login_summary">Nome de usuário no Google (usuário)</string>
+	<string name="user_password">Senha</string>
+	<string name="user_password_summary">Senha no Google</string>
+	<string name="backup_folder">Pasta de backup</string>
+	<string name="backup_folder_summary">Pasta no Google Docs para armazenar os arquivos.</string>
 	<string name="other">Outro</string>
 	<string name="send_error_reports">Enviar relatórios de erro</string>
 	<string name="send_error_reports_summary">Enviar relatõrios de erros anônimos para orangesoftware.ru (requer reiníci)</string>	
@@ -364,13 +383,13 @@
 	<string name="recurrence_period_starts_on">Iniciar em</string>	
 	<string name="recurrence_weekly_days">Repetir em</string>
 	<string name="recurrence_monthly_pattern">Padrão mensal</string>	
-	<string name="recurrence_monthly_every_nth_day">Todo Nésimo dia</string>
+	<string name="recurrence_monthly_every_nth_day">Todo N-ésimo dia</string>
 	<string name="recurrence_monthly_specific_day">Especifie o dia</string>
 	<string name="recur_interval_semi_monthly_1">1º dia</string>	
 	<string name="recur_interval_semi_monthly_2">2º dia</string>	
 	<string name="recurrence_none">Sem recorrência</string>
 	<string name="specify_value">Especifique o valor..</string>		
-	<string name="recurrence_evaluate">Previsão das dadas</string>	
+	<string name="recurrence_evaluate">Previsão das datas</string>	
 	<string name="first">Primeiro</string>		
 	<string name="second">Segundo</string>		
 	<string name="third">Terceiro</string>		
@@ -419,7 +438,7 @@
 	<string name="notification_sound">Som</string>
 	<string name="notification_vibra">Vibração</string>
 	<string name="notification_led">Led</string>
-	<string name="transaction_status">Estatus</string>
+	<string name="transaction_status">Estado</string>
 	<string name="transaction_status_pending">Pendente</string>
 	<string name="transaction_status_unreconciled">Não conciliada</string>
 	<string name="transaction_status_cleared">Apurada</string>
@@ -438,4 +457,23 @@
 	<string name="report_by_sub_category">Por Sub-categoria</string>
 	<string name="report_by_sub_category_summary">Transações listadas por sub-categoria</string>
 	<string name="credits">Créditos</string>
+	
+	<string name="payment_day">Dia do pagamento</string>
+	<string name="closing_day">Dia do fechamento</string>
+	<string name="closing_day_hint">Dia em que a fatura é gerada.</string>
+	<string name="ccard_statement">Previsão de Fatura</string>
+	<string name="monthly_view">Balanço Mensal</string>	
+	<string name="credit_card_statement">Fatura do Cartão de Crédito</string>
+	<string name="ccard_statement_title">Fatura &lt;ccard&gt;</string>
+	<string name="ccard_par">&lt;ccard&gt;</string>
+	<string name="bill_on">Fatura em </string>
+	<string name="monthly_result">Resultado do mês</string>
+	<string name="closing_day_error">Dia de fechamento não é válido.</string>
+	<string name="payment_day_error">Dia de pagamento não é válido.</string>
+	<string name="statement_error">Favor registrar dias de pagamento e fechamento da fatura deste cartão nas propriedades da conta.</string>
+	<string name="is_ccard_payment">Pagamento de Fatura</string>
+	<string name="is_ccard_payment_summary">Nao incluir no total da fatura</string>
+	<string name="header_payments">Pagamentos</string>
+	<string name="header_credits">Créditos Diversos</string>
+	<string name="header_expenses">Despesas</string>
 </resources>

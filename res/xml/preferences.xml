@@ -84,6 +84,17 @@
 			android:title="@string/use_my_location" android:summary="@string/use_my_location_summary"
 			android:defaultValue="true" />
 	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/gdocs_backup">
+		<EditTextPreference android:key="user_login"
+			android:title="@string/user_login" android:summary="@string/user_login_summary"/>
+		<EditTextPreference 
+			android:key="user_password"
+			android:title="@string/user_password" 
+			android:password="true"
+			android:summary="@string/user_password_summary"/>
+		<EditTextPreference android:key="backup_folder"
+			android:title="@string/backup_folder" android:summary="@string/backup_folder_summary"/>
+	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/other">
 		<CheckBoxPreference android:key="include_transfers_into_reports"
 			android:title="@string/include_transfers_into_reports" android:summary="@string/include_transfers_into_reports_summary"

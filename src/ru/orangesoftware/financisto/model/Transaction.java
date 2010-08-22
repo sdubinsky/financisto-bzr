@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Abdsandryk - identifying credit card payments
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
@@ -89,6 +90,9 @@ public class Transaction {
 	
 	@Column(name = "attached_picture")
 	public String attachedPicture;
+	
+	@Column(name = "is_ccard_payment")
+	public int isCCardPayment;
 
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
@@ -114,6 +118,7 @@ public class Transaction {
 		values.put(TransactionColumns.NOTIFICATION_OPTIONS, notificationOptions);
 		values.put(TransactionColumns.STATUS, status.name());
 		values.put(TransactionColumns.ATTACHED_PICTURE, attachedPicture);
+		values.put(TransactionColumns.IS_CCARD_PAYMENT, isCCardPayment);
 		return values;
 	}
 
@@ -140,6 +145,7 @@ public class Transaction {
 		t.notificationOptions = c.getString(TransactionColumns.Indicies.NOTIFICATION_OPTIONS);	
 		t.status = TransactionStatus.valueOf(c.getString(TransactionColumns.Indicies.STATUS));
 		t.attachedPicture = c.getString(TransactionColumns.Indicies.ATTACHED_PICTURE);
+		t.isCCardPayment = c.getInt(TransactionColumns.Indicies.IS_CCARD_PAYMENT);
 		return t;
 	}		
 	
@@ -161,6 +167,10 @@ public class Transaction {
 
 	public boolean isNotTemplateLike() {
 		return isTemplate == 0;
+	}
+	
+	public boolean isCreditCardPayment() {
+		return isCCardPayment == 1;
 	}
 	
 	public String getSystemAttribute(SystemAttribute sa) {

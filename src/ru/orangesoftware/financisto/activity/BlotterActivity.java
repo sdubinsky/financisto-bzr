@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Abdsandryk - menu option to call Credit Card Bill functionality
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
@@ -19,6 +20,7 @@ import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.service.FinancistoService;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
@@ -31,6 +33,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,6 +55,9 @@ public class BlotterActivity extends AbstractListActivity {
 	private static final int NEW_TRANSFER_REQUEST = 3;
 	private static final int EDIT_TRANSFER_REQUEST = 4;
 	private static final int NEW_TRANSACTION_FROM_TEMPLATE_REQUEST = 5;
+	private static final int MONTHLY_VIEW_REQUEST = 6;
+	private static final int BILL_PREVIEW_REQUEST = 7;
+	
 		
 	private static final int FILTER_REQUEST = 6;
 	private static final int MENU_DUPLICATE = MENU_ADD+1;
@@ -323,5 +330,82 @@ public class BlotterActivity extends AbstractListActivity {
 		TransactionInfoDialog transactionInfoView = new TransactionInfoDialog(this, position, id, em, inflater);
 		transactionInfoView.show(id);
 	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		long accountId = blotterFilter.getAccountId();
+		
+		// Funcionality available for account blotter
+		if (accountId != -1) {
+	
+			// get account type
+			Account account = em.getAccount(accountId);
+			AccountType type = AccountType.valueOf(account.type);
+			
+			if (type.isCreditCard) {
+				// Show menu for Credit Cards - bill
+				MenuInflater inflater = getMenuInflater();
+				inflater.inflate(R.menu.ccard_blotter_menu, menu);
+			} else {
+				// Show menu for other accounts - monthly view
+				MenuInflater inflater = getMenuInflater();
+				inflater.inflate(R.menu.blotter_menu, menu);
+			}
+			
+			return true;
+		} else {
+			return true;
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+		long accountId = blotterFilter.getAccountId();
+
+		Intent intent = new Intent(this, MonthlyViewActivity.class);
+		intent.putExtra(MonthlyViewActivity.ACCOUNT_EXTRA, accountId);
+		
+		switch (item.getItemId()) {
+        	
+	        case R.id.opt_menu_month:
+	        	// call credit card bill activity sending account id
+	    		intent.putExtra(MonthlyViewActivity.BILL_PREVIEW_EXTRA, false);
+	    		startActivityForResult(intent, MONTHLY_VIEW_REQUEST);
+	            return true;
+
+	        case R.id.opt_menu_bill:
+	    		if (accountId != -1) {
+	    			Account account = em.getAccount(accountId);
+	    		
+		        	// call credit card bill activity sending account id
+		        	if (account.paymentDay>0 && account.closingDay>0) {
+			        	intent.putExtra(MonthlyViewActivity.BILL_PREVIEW_EXTRA, true);
+			    		startActivityForResult(intent, BILL_PREVIEW_REQUEST);
+			            return true;
+					} else {	
+						// display message: need payment and closing day
+						AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+				        dlgAlert.setMessage(R.string.statement_error);
+				        dlgAlert.setTitle(R.string.ccard_statement);
+				        dlgAlert.setPositiveButton(R.string.ok, null);
+				        dlgAlert.setCancelable(true);
+				        dlgAlert.create().show();
+						return true;
+					}
+	    		} else {
+	    			return true;
+	    		}
+	        default:
+	            return super.onOptionsItemSelected(item);
+        }
+    }
 	
 }
