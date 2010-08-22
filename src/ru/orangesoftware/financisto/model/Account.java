@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Abdsandryk - parameters for bill filtering
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
@@ -65,4 +66,12 @@ public class Account {
 
 	@Column(name = "last_category_id")
 	public long lastCategoryId;
+	
+	/** parameters for credit card bills filtering */
+	@Column(name = "closing_day")
+	public int closingDay;
+	
+	@Column(name = "payment_day")
+	public int paymentDay;
+	/***********************************************/
 }

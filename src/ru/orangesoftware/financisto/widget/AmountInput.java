@@ -70,8 +70,12 @@ public class AmountInput extends LinearLayout {
 		initialize(context, null);
 	}
 	
-	public void allowNegativeAmount() {
+	public void setAllowNegativeAmount() {
 		allowNegativeAmount = true;
+	}
+	
+	public boolean allowNegativeAmount() {
+		return allowNegativeAmount;
 	}
 	
 	@Override

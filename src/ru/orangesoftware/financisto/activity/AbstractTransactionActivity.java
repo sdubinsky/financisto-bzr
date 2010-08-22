@@ -75,6 +75,7 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -132,6 +133,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	
 	private ImageView pictureView;
 	private String pictureFileName;
+	
+	private CheckBox ccardPayment;
 	
 	protected long selectedAccountId = -1;
 	protected long selectedCategoryId = 0;
@@ -519,6 +522,12 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		if (transaction.isNotTemplateLike()) {
 			pictureView = x.addPictureNodeMinus(this, layout, R.id.attach_picture, R.id.delete_picture, R.string.attach_picture, R.string.new_picture);
 		}
+		// checkbox to register if the transaction is a credit card payment. 
+		// this will be used to exclude from totals in bill preview
+		ccardPayment = x.addCheckboxNode(layout,
+				R.id.is_ccard_payment, R.string.is_ccard_payment,
+				R.string.is_ccard_payment_summary, false);
+		
 	}
 
 	protected abstract void createListNodes(LinearLayout layout);
@@ -584,6 +593,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			case R.id.delete_picture: {
 				removePicture();
 				break;
+			}
+			case R.id.is_ccard_payment: {
+				ccardPayment.setChecked(!ccardPayment.isChecked());
+				transaction.isCCardPayment = ccardPayment.isChecked()?1:0;
 			}
 		}
 	}	
@@ -825,6 +838,13 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			setNotification(transaction.notificationOptions);
 		}
 		selectPicture(transaction.attachedPicture);
+		setIsCCardPayment(transaction.isCCardPayment);
+	}
+
+	private void setIsCCardPayment(int isCCardPaymentValue) {
+		// TODO Auto-generated method stub
+		transaction.isCCardPayment = isCCardPaymentValue;
+		ccardPayment.setChecked(isCCardPaymentValue==1);
 	}
 
 	private void setLocation(String provider, float accuracy, double latitude, double longitude) {

@@ -82,7 +82,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String RECURRENCE = "recurrence";
 		public static final String NOTIFICATION_OPTIONS = "notification_options";		
 		public static final String STATUS = "status";		
-		public static final String ATTACHED_PICTURE = "attached_picture";		
+		public static final String ATTACHED_PICTURE = "attached_picture";
+		public static final String IS_CCARD_PAYMENT = "is_ccard_payment";
 		
 		public static String[] NORMAL_PROJECTION = {
 			ID, 
@@ -104,7 +105,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			RECURRENCE,
 			NOTIFICATION_OPTIONS,
 			STATUS,
-			ATTACHED_PICTURE};
+			ATTACHED_PICTURE,
+			IS_CCARD_PAYMENT};
 
 		public static class Indicies {
 			public static final int ID = 0;
@@ -127,6 +129,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			public static final int NOTIFICATION_OPTIONS = 17;
 			public static final int STATUS = 18;
 			public static final int ATTACHED_PICTURE = 19;
+			public static final int IS_CCARD_PAYMENT = 20;
 		}
 		
 		private TransactionColumns() {}
@@ -157,7 +160,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String TEMPLATE_NAME = "template_name";
 		public static final String RECURRENCE = "recurrence";
 		public static final String NOTIFICATION_OPTIONS = "notification_options";		
-		public static final String STATUS = "status";		
+		public static final String STATUS = "status";
 
 		public static final String[] NORMAL_PROJECTION = {
 			ID,
@@ -233,6 +236,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String SORT_ORDER = "sort_order";
 		public static final String LAST_CATEGORY_ID = "last_category_id";
 		public static final String LAST_ACCOUNT_ID = "last_account_id";
+		public static final String CLOSING_DAY = "closing_day";
+		public static final String PAYMENT_DAY = "payment_day";
 		
 		private AccountColumns() {}
 
@@ -393,6 +398,21 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String RIGHT = "right";
 
 		public static String[] NORMAL_PROJECTION = {ID, NAME, CURRENCY_ID, AMOUNT, LEFT, RIGHT};		
+	}
+	
+	public static class LocationColumns {
+		
+		public static final String ID = "_id";
+		public static final String NAME = "name";	
+		public static final String DATETIME = "datetime";
+		public static final String PROVIDER = "provider";
+		public static final String ACCURACY = "accuracy";
+		public static final String LATITUDE = "latitude";
+		public static final String LONGITUDE = "longitude";
+		public static final String IS_PAYEE = "is_payee";
+		public static final String RESOLVED_ADDRESS = "resolved_address";
+		
+		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, PROVIDER, ACCURACY, LATITUDE, LONGITUDE, IS_PAYEE, RESOLVED_ADDRESS};		
 	}
 	
 }

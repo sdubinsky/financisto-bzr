@@ -153,6 +153,8 @@
 
 		<activity android:name=".activity.CsvExportActivity" android:label="@string/csv_export" 
 			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
+			
+		<activity android:name=".activity.MonthlyViewActivity" android:label="@string/monthly_view"/>
 
 	</application>
 	

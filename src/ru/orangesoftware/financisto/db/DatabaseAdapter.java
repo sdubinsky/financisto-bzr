@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Abdsandryk - implement getAllExpenses method for bill filtering
  ******************************************************************************/
 package ru.orangesoftware.financisto.db;
 
@@ -39,11 +40,13 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryAttributeColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
+import ru.orangesoftware.financisto.db.DatabaseHelper.LocationColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionAttributeColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryTree;
+import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.model.SystemAttribute;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.Transaction;
@@ -53,6 +56,7 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
@@ -181,6 +185,100 @@ public class DatabaseAdapter {
 				BlotterColumns.DATETIME+" DESC");
 	}
 
+	/**
+	 * [Bill Filtering] Returns all the expenses (negative amount) for a given Account in a given period.
+	 * @param accountId Account id.
+	 * @param start Start date.
+	 * @param end End date.
+	 * @return Transactions (negative amount) of the given Account, from start date to end date.
+	 */
+	public Cursor getAllExpenses(String accountId, String start, String end) {
+		// query
+		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+"<? AND "+
+					   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
+		
+		try {
+			Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   where, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+			return c;
+		} catch(SQLiteException e) {
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * [Bill Filtering] Returns the credits (positive amount) for a given Account in a given period, excluding payments.
+	 * @param accountId Account id.
+	 * @param start Start date.
+	 * @param end End date.
+	 * @return Transactions (positive amount) of the given Account, from start date to end date.
+	 */
+	public Cursor getCredits(String accountId, String start, String end) {
+		// query
+		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
+					   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+					   TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		
+		try {
+			Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   where, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+			return c;
+		} catch(SQLiteException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * [Bill Filtering] Returns all the payments for a given Credit Card Account in a given period.
+	 * @param accountId Account id.
+	 * @param start Start date.
+	 * @param end End date.
+	 * @return Transactions of the given Account, from start date to end date.
+	 */
+	public Cursor getPayments(String accountId, String start, String end) {
+		// query direct payments
+		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
+						TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+						TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		
+		String whereTransfer =  TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
+								TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+								TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		
+		try {
+			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   	where, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+						whereTransfer, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+			Cursor c = new MergeCursor(new Cursor[] {c1, c2});
+			return c;
+		} catch(SQLiteException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * [Monthly view] Returns all the transactions for a given Account in a given period (month).
+	 * @param accountId Account id.
+	 * @param start Start date.
+	 * @param end End date.
+	 * @return Transactions (negative value) of the given Account, from start date to end date.
+	 */
+	public Cursor getAllTransactions(String accountId, String start, String end) {
+		// query
+		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+
+					   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
+		
+		try {
+			Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   where, new String[]{accountId, start, end}, null, null, TransactionColumns.DATETIME);
+			return c;
+		} catch(SQLiteException e) {
+			return null;
+		}
+	}
+	
 	public Cursor getTransactions(WhereFilter filter) {
 		String sortOrder = getBlotterSortOrder(filter);
 		return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION, 
@@ -961,6 +1059,37 @@ public class DatabaseAdapter {
 		} finally {
 			c.close();
 		}		
+	}
+	
+	
+	/**
+	 * Gets the location for a given id.
+	 * @param id
+	 * @return
+	 */
+	public MyLocation getLocation(long id) {
+		Cursor c = db.query(LOCATIONS_TABLE, LocationColumns.NORMAL_PROJECTION, 
+				LocationColumns.ID+"=?", new String[]{String.valueOf(id)}, null, null, null);
+		try {
+			if (c.moveToNext()) {				
+				MyLocation loc = new MyLocation();
+				loc.id = id;
+				loc.accuracy = c.getLong(c.getColumnIndex(LocationColumns.ACCURACY));
+				loc.dateTime = c.getLong(c.getColumnIndex(LocationColumns.DATETIME));
+				loc.isPayee = false;
+				loc.latitude = c.getDouble(c.getColumnIndex(LocationColumns.LATITUDE));
+				loc.longitude = c.getDouble(c.getColumnIndex(LocationColumns.LONGITUDE));
+				loc.name = c.getString(c.getColumnIndex(LocationColumns.NAME));
+				loc.provider = c.getString(c.getColumnIndex(LocationColumns.PROVIDER));
+				loc.resolvedAddress = c.getString(c.getColumnIndex(LocationColumns.RESOLVED_ADDRESS));
+				
+				return loc;
+			} else {
+				return new MyLocation();
+			}
+		} finally {
+			c.close();
+		}
 	}
 
 }

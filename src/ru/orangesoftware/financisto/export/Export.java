@@ -11,32 +11,77 @@
 package ru.orangesoftware.financisto.export;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import api.wireless.gdata.docs.client.DocsClient;
+import api.wireless.gdata.docs.data.DocumentEntry;
+import api.wireless.gdata.docs.data.FolderEntry;
 
 public abstract class Export {
 	
 	public static final String EXPORT_PATH = "/sdcard/financisto/";
 
 	public String export() throws Exception {
-		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd'_'HHmmss'_'SSS");
-		String fileName = df.format(new Date())+getExtension();
+		String fileName = generateFilename();
 		File path = new File(getPath());
 		path.mkdirs();
 		File file = new File(path, fileName);		
-		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+		FileOutputStream outputStream = new FileOutputStream(file);
+		generateBackup(outputStream);
+		return fileName;
+	}
+	
+	/**
+	 * Backup database to google docs
+	 * 
+	 * @param docsClient Google docs connection
+	 * @param folder Google docs folder name 
+	 * */
+	public String exportOnline(DocsClient docsClient, String folder) throws Exception {
+		// generation backup file
+		String fileName = generateFilename();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		generateBackup(outputStream);
+		
+		// transforming streams
+		InputStream backup = new ByteArrayInputStream(outputStream.toByteArray()); 
+		
+		// creating document on Google Docs
+		DocumentEntry entry = new DocumentEntry();
+		entry.setTitle(fileName);
+		FolderEntry fd = docsClient.getFolderByTitle(folder);
+		docsClient.createDocumentInFolder(entry, backup, "text/plain",fd.getKey());
+		
+		return fileName;
+	}
+	
+	private String generateFilename()
+	{
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd'_'HHmmss'_'SSS");
+		return df.format(new Date())+getExtension();
+	}
+	
+	private void generateBackup(OutputStream outputStream) throws Exception 
+	{
+		OutputStreamWriter osw = new OutputStreamWriter(outputStream, "UTF-8");
 		BufferedWriter bw = new BufferedWriter(osw, 65536);
+
 		try {			
 			writeHeader(bw);
 			writeBody(bw);
 			writeFooter(bw);
-			return fileName;
-		} finally {
+		}
+		finally {
 			bw.close();
-		}		
+		}	
 	}
 
 	protected abstract  void writeHeader(BufferedWriter bw) throws Exception;

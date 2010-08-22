@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Abdsandryk - adding bill filtering parameters
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
@@ -67,6 +68,13 @@ public class AccountActivity extends AbstractActivity {
 	private CardIssuerAdapter cardIssuerAdapter;
 	private ListAdapter currencyAdapter;	
 	
+	/** for bill filtering */
+	private EditText closingDayText;
+	private EditText paymentDayText;
+	private View closingDayNode;
+	private View paymentDayNode;
+	/***********************/
+	
 	private Account account = new Account();
 
 	@Override
@@ -90,6 +98,17 @@ public class AccountActivity extends AbstractActivity {
 		sortOrderText.setInputType(InputType.TYPE_CLASS_NUMBER);
 		sortOrderText.setSingleLine();
 		
+		/********** bill filtering **********/
+		closingDayText = new EditText(this);
+		closingDayText.setInputType(InputType.TYPE_CLASS_NUMBER);
+		closingDayText.setHint(R.string.closing_day_hint);
+		closingDayText.setSingleLine();
+		
+		paymentDayText = new EditText(this);
+		paymentDayText.setInputType(InputType.TYPE_CLASS_NUMBER);
+		paymentDayText.setSingleLine();
+		/************************************/
+		
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
 
@@ -110,6 +129,14 @@ public class AccountActivity extends AbstractActivity {
 		
 		numberNode = x.addEditNode(layout, R.string.card_number, numberText);
 		setVisibility(numberNode, View.GONE);
+		
+		/********** bill filtering **********/
+		closingDayNode = x.addEditNode(layout, R.string.closing_day, closingDayText);
+		setVisibility(closingDayNode, View.GONE);
+		
+		paymentDayNode = x.addEditNode(layout, R.string.payment_day, paymentDayText);
+		setVisibility(paymentDayNode, View.GONE);		
+		/************************************/
 
 		currencyCursor = em.getAllCurrencies("name");
 		startManagingCursor(currencyCursor);		
@@ -168,12 +195,36 @@ public class AccountActivity extends AbstractActivity {
 				if (type.hasNumber) {
 					account.number = Utils.text(numberText);
 				}
+				
+				/********** validate closing and payment days **********/
+				if (type.isCreditCard) {
+					String closingDay = Utils.text(closingDayText);
+					account.closingDay = closingDay == null ? 0 : Integer.parseInt(closingDay);
+					if (account.closingDay != 0) {
+						if (account.closingDay>31) {
+							Toast.makeText(AccountActivity.this, R.string.closing_day_error, Toast.LENGTH_SHORT).show();
+							return;	
+						}	
+					}
+					
+					String paymentDay = Utils.text(paymentDayText);
+					account.paymentDay = paymentDay == null ? 0 : Integer.parseInt(paymentDay);	
+					if (account.paymentDay != 0) {
+						if (account.paymentDay>31) {
+							Toast.makeText(AccountActivity.this, R.string.payment_day_error, Toast.LENGTH_SHORT).show();
+							return;	
+						}
+					}
+				}	
+				/************* validate closing and payment days *************/
+				
 				account.title = accountTitle.getText().toString();
 				account.creationDate = System.currentTimeMillis();
 				String sortOrder = Utils.text(sortOrderText);
 				account.sortOrder = sortOrder == null ? 0 : Integer.parseInt(sortOrder);
 				account.isIncludeIntoTotals  = isIncludedIntoTotals.isChecked();
 				account.limitAmount = limitInput.getAmount();
+				
 				long accountId = em.saveAccount(account);
 				long amount = amountInput.getAmount();
 				if (amount != 0) {
@@ -273,6 +324,12 @@ public class AccountActivity extends AbstractActivity {
 		setVisibility(cardIssuerNode, type.isCard ? View.VISIBLE : View.GONE);
 		setVisibility(issuerNode, type.hasIssuer ? View.VISIBLE : View.GONE);
 		setVisibility(numberNode, type.hasNumber ? View.VISIBLE : View.GONE);
+		
+		/******* bill filtering ********/
+		setVisibility(closingDayNode, type.isCreditCard ? View.VISIBLE : View.GONE);
+		setVisibility(paymentDayNode, type.isCreditCard ? View.VISIBLE : View.GONE);
+		/*******************************/
+		
 		setVisibility(limitAmountView, type == AccountType.CREDIT_CARD ? View.VISIBLE : View.GONE);
 		account.type = type.name();
 		selectCardIssuer(account.cardIssuer != null 
@@ -311,6 +368,12 @@ public class AccountActivity extends AbstractActivity {
 		issuerName.setText(account.issuer);
 		numberText.setText(account.number);
 		sortOrderText.setText(String.valueOf(account.sortOrder));
+		
+		/******** bill filtering ********/
+		closingDayText.setText(String.valueOf(account.closingDay));
+		paymentDayText.setText(String.valueOf(account.paymentDay));
+		/********************************/		
+		
 		isIncludedIntoTotals.setChecked(account.isIncludeIntoTotals);
 		if (account.limitAmount > 0) {
 			limitInput.setAmount(account.limitAmount);

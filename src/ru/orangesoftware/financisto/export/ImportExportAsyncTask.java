@@ -51,19 +51,19 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, Void, Obje
 	@Override
 	protected void onPostExecute(Object result) {
 		dialog.dismiss();
-		String message;
-		String title;
-		if (result instanceof Exception) {
-			Exception e = (Exception)result;
-			title = context.getString(R.string.fail);
-			message = e.getClass().getSimpleName()+":"+e.getMessage();
-		} else {
-			title = context.getString(R.string.success);
-			message = getSuccessMessage(result);
-		}
+		String message=null;
+		String title=null;
+
+		if (result instanceof Exception) 
+			return;
+
+		title = context.getString(R.string.success);
+		message = getSuccessMessage(result);
+		
 		if (listener != null) {
 			listener.onCompleted();
 		}
+		
 		new AlertDialog.Builder(context)
 			.setTitle(title)
 			.setMessage(message)

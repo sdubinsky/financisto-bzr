@@ -125,6 +125,30 @@ public class MyPreferences {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return Integer.parseInt(sharedPreferences.getString("ntsl_show_location_order", "1"));
 	}
+	
+	/**
+	 * Get google docs user login registered on preferences
+	 * */
+	public static String getUserLogin(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getString("user_login", null);
+	}
+
+	/**
+	 * Get google docs user password registered on preferences
+	 * */
+	public static String getUserPassword(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getString("user_password", null);
+	}
+
+	/**
+	 * Get google docs backup folder registered on preferences
+	 * */
+	public static String getBackupFolder(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getString("backup_folder", null);
+	}
 
 	public static boolean isShowNote(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
