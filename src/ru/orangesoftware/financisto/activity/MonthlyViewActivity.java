@@ -85,6 +85,19 @@ public class MonthlyViewActivity extends ListActivity {
 		initialize();
     }
     
+    /**
+     * When activity lifecycle ends, release resources
+     */
+    @Override
+    public void onDestroy() {
+    	// close cursor
+    	if (transactionsCursor != null) {
+    		transactionsCursor.close();
+    	}
+    	super.onDestroy();
+    }
+
+    
     
     /**
      * Initialize data and GUI elements.
@@ -306,8 +319,13 @@ public class MonthlyViewActivity extends ListActivity {
 		dbAdapter = new DatabaseAdapter(this);
 		dbAdapter.open();
 		
+		// closing cursor from previous request
+    	if (transactionsCursor != null) {
+    		transactionsCursor.close();
+    	}
+		
 		if (isStatementPreview) {
-			// display expenses and credits separated
+			// display expenses and credits separated	    	
 			Cursor expenses = dbAdapter.getAllExpenses(String.valueOf(accountId), 
     													  String.valueOf(open.getTimeInMillis()), 
     													  String.valueOf(close.getTimeInMillis()));
@@ -320,8 +338,9 @@ public class MonthlyViewActivity extends ListActivity {
 			transactionsCursor = new MergeCursor(new Cursor[] { getHeader(HEADER_PAYMENTS, payments.getCount()), payments, 
 																getHeader(HEADER_CREDITS, credits.getCount()), credits, 
 																getHeader(HEADER_EXPENSES, expenses.getCount()), expenses});
+			
 		} else {
-			// account filtering: credit card expenses (negative value), from open to close date
+			// account filtering: credit card transactions, from open to close date
 			transactionsCursor = dbAdapter.getAllTransactions(String.valueOf(accountId), 
     													  String.valueOf(open.getTimeInMillis()), 
     													  String.valueOf(close.getTimeInMillis()));
@@ -374,6 +393,7 @@ public class MonthlyViewActivity extends ListActivity {
     	}
     	
     	dbAdapter.close();
+    	System.gc();
     }
 	
 	/**
@@ -485,4 +505,6 @@ public class MonthlyViewActivity extends ListActivity {
 		}
 		return header;
 	}
+	
+	
 }
