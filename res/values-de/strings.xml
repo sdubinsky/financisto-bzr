@@ -239,11 +239,15 @@
     <string name="set_pin">PIN setzen</string>
     <string name="confirm_pin">PIN bestätigen</string>            
     <string name="restore">Wiederherstellen</string>
+    <string name="backup_database_gdocs">Datenbank in Google Docs sichern</string>
+    <string name="backup_database_gdocs_inprogress">Sichere die Datenbank...</string>
     <string name="backup_database">Datenbank sichern</string>
     <string name="backup_database_inprogress">Sichere die Datenbank...</string>
     <string name="csv_export">CSV Export...</string>
     <string name="csv_export_inprogress">Exportiere die Datenbank nach CSV...</string>    
     <string name="restore_database">Datenbank wiederherstellen</string>
+    <string name="restore_database_gdocs">Datenbank aus Google Docs wiederherstellen</string>
+    <string name="restore_database_inprogress_gdocs">Stelle Datenbank wieder her...</string>
     <string name="restore_database_inprogress">Stelle Datenbank wieder her...</string>
     <string name="restore_database_success">Datenbank wurde vollständig wiederhergestellt...</string>
     <string name="success">Erfolg!</string>
@@ -451,4 +455,29 @@
     <string name="report_by_sub_category_summary">Transaktionsberichte nach Subkategorie</string>
 
     <string name="credits">Credits</string>
+    <string name="sort_by_title">Nach Name sortieren</string>
+    <string name="sort_all_by_title">Alles nach Name sortieren</string>
+    <string name="include_transfers_into_reports">Transfers in Reporten aufführen</string>
+    <string name="include_transfers_into_reports_summary">Transfers in Reporten aufführen</string>
+    <string name="negative_opening_amount">Negativer Eröffnungskontostand</string>
+    <string name="negative_opening_amount_summary">Konto mit negativen Kontostand eröffnen</string>
+
+    <string name="payment_day">Zahlungstag</string>
+    <string name="closing_day">Letzter Zahltag</string>
+    <string name="closing_day_hint">Tag an welchem die Rechnung bezahlt werden muss</string>
+    <string name="ccard_statement">Abrechnungen</string>
+    <string name="monthly_view">Monatliche Vorschau</string>	
+    <string name="credit_card_statement">Kreditkartenabrechnung</string>
+    <string name="ccard_statement_title">&lt;ccard&gt; Abrechnung</string>
+    <string name="ccard_par">&lt;ccard&gt;</string>
+    <string name="bill_on">Rechnung vom </string>
+    <string name="monthly_result">Monatsbilanz</string>
+    <string name="closing_day_error">Letzter Zahltag ist nicht gültig.</string>
+    <string name="payment_day_error">Tag der Zahlung ist nicht gültig.</string>
+    <string name="statement_error">Bitte den Zahlungstag sowie den letzten Zahlungstag für die Kreditkarte in den Eigenschaften setzen.</string>
+    <string name="is_ccard_payment">Kreditkartenzahlung</string>
+    <string name="is_ccard_payment_summary">Rechnung nicht in Gesamtrechnung einbeziehen</string>
+    <string name="header_payments">Zahlungen</string>
+    <string name="header_credits">Verschiedene Kredite</string>
+    <string name="header_expenses">Ausgaben</string>
 </resources>

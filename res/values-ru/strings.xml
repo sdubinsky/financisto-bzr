@@ -441,4 +441,23 @@
 	<string name="negative_opening_amount">Отрицательный баланс</string>
 	<string name="negative_opening_amount_summary">Открыть аккаунт с отрицательным балансом</string>
 		
+	<string name="payment_day">День погашения</string>
+	<string name="closing_day">Рассчетный день</string>
+	<string name="closing_day_hint">День, в который происходит рассчет процентов</string>
+	<string name="ccard_statement">Выписка</string>
+	<string name="monthly_view">Выписка на месяц</string>	
+	<string name="credit_card_statement">Выписка по кредитной карте</string>
+	<string name="ccard_statement_title">&lt;ccard&gt; выписка</string>
+	<string name="ccard_par">&lt;ccard&gt;</string>
+	<string name="bill_on">Счет на </string>
+	<string name="monthly_result">Баланс на месяц</string>
+	<string name="closing_day_error">День погашения не верен.</string>
+	<string name="payment_day_error">Рассчетный день не верен.</string>
+	<string name="statement_error">Укажите день погашения и рассчетный день в свойствах карты.</string>
+	<string name="is_ccard_payment">Платеж по кредитной карте</string>
+	<string name="is_ccard_payment_summary">Не включать в итоги по счету</string>
+	<string name="header_payments">Платежи</string>
+	<string name="header_credits">Различные поступления</string>
+	<string name="header_expenses">Расходы</string>
+			
 </resources>
