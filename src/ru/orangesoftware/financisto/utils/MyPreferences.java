@@ -190,11 +190,25 @@ public class MyPreferences {
 		return sharedPreferences.getBoolean("include_transfers_into_reports", false);
 	}	
 	
-	public static void switchLocale(Context context, String language, String country) {
+	private static final String DEFAULT = "default";
+	
+	public static void switchLocale(Context context, String locale) {
+		if (DEFAULT.equals(locale)) {
+			switchLocale(context, Locale.getDefault());
+		} else {
+			String[] a = locale.split("-");
+			String language = a[0];
+			String country = a.length > 1 ? a[1] : null;
+			Locale newLocale = country != null ? new Locale(language, country) : new Locale(language);
+			switchLocale(context, newLocale);			
+		}
+	}
+	
+	private static void switchLocale(Context context, Locale locale) {
     	Resources res = context.getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         android.content.res.Configuration conf = res.getConfiguration();
-        conf.locale = country != null ? new Locale(language, country) : new Locale(language);
+        conf.locale = locale;
         Log.i("MyPreferences", "Switching locale to "+conf.locale.getDisplayName());
         res.updateConfiguration(conf, dm);
 	}
