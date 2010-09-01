@@ -133,8 +133,8 @@
   <string name="tap_location">Clicca il marker \'Mia località\' per modificare manualmente la località</string> 
   <string name="note">Note</string> 
   <string name="service_is_not_available">Servizio non disponibile, riprovare più tardi</string> 
-  <string name="resolve_address">Imposto l'indirizzo</string> 
-  <string name="resolving_address">Sto impostando l'indirizzo..</string> 
+  <string name="resolve_address">Imposto l\'indirizzo</string> 
+  <string name="resolving_address">Sto impostando l\'indirizzo..</string> 
   <string name="report">Rapporto</string> 
   <string name="reports">Rapporti</string> 
   <string name="no_reports">Nessun rapporto</string> 
@@ -209,7 +209,7 @@
   <string name="sort_order">Ordinamento</string> 
   <string name="force_gps_location">Forza la località GPS</string> 
   <string name="whats_new">Novità</string> 
-  <string name="attribute_delete_alert">Questo cancellerà l'attributo delle categorie e dalle transazioni.</string> 
+  <string name="attribute_delete_alert">Questo cancellerà l\'attributo delle categorie e dalle transazioni.</string> 
   <string name="user_interface">Interfaccia utente</string> 
   <string name="sort_accounts">Ordinamento conti</string> 
   <string name="sort_accounts_summary">Definisci l’ordine della lista conti (richiede il riavvio)</string> 
@@ -251,9 +251,9 @@
   <string name="restore_database_success">Il database è stato ripristinato con successo.</string>
   <string name="gdocs_connection_failed">Impossibile connettersi a Google Docs.</string>
   <string name="gdocs_folder_not_found">La cartella di backup su Google Docs non è stata trovata.</string>
-  <string name="gdocs_credentials_not_configured">Settare login e password dell'account Google nelle impostazioni.</string>
+  <string name="gdocs_credentials_not_configured">Settare login e password dell\'account Google nelle impostazioni.</string>
   <string name="gdocs_folder_not_configured">Settare la cartella di backup in Google Docs nelle impostazioni.</string>
-  <string name="gdocs_login_failed">Il login o la password dell'account Google non sono validi.</string>
+  <string name="gdocs_login_failed">Il login o la password dell\'account Google non sono validi.</string>
   <string name="gdocs_backup_failed">Impossibile inviare il file di backup a Google Docs. Riprovare più tardi.</string>
   <string name="gdocs_restore_failed">Impossibile ricevere il file di backup da Google Docs. Riprovare più tardi.</string>
   <string name="success">Successo!</string> 
@@ -266,8 +266,8 @@
   <string name="reopen_account">Riapri conto</string> 
   <string name="difference">Differenza</string> 
   <string name="new_balance">Nuovo bilancio</string> 
-  <string name="duplicate_success">Le transazioni sono state duplicate con la data e l'ora correnti</string> 
-  <string name="duplicate_success_with_multiplier">Le transazioni sono state duplicate con la data e l'ora correnti (x%d)</string> 
+  <string name="duplicate_success">Le transazioni sono state duplicate con la data e l\'ora correnti</string> 
+  <string name="duplicate_success_with_multiplier">Le transazioni sono state duplicate con la data e l\'ora correnti (x%d)</string> 
   <string name="no_category">Nessuna categoria</string> 
   <string name="no_project">Nessun progetto</string> 
   <string name="current_location">Località corrente</string> 
@@ -300,7 +300,7 @@
   <string name="remember_last_location_summary">Ricorda l\'ultima località per la categoria selezionata</string> 
   <string name="remember_last_project">Ultimo progetto</string> 
   <string name="remember_last_project_summary">Ricorda l\'ultimo progetto per la categoria selezionata</string> 
-  <string name="position_move_top">Muovi all'inizio</string> 
+  <string name="position_move_top">Muovi all\'inizio</string> 
   <string name="position_move_up">Muovi su</string> 
   <string name="position_move_down">Muovi giù</string> 
   <string name="position_move_bottom">Muovi in fondo</string> 
@@ -406,7 +406,7 @@
   <string name="transaction_schedule">Transazione (programmazione)</string> 
   <string name="transfer_schedule">Trasferimenti (programmazione)</string> 
   <string name="recurrence_period_starts_on_date">Inizia in data</string> 
-  <string name="recurrence_period_starts_on_time">Inizia all'ora</string> 
+  <string name="recurrence_period_starts_on_time">Inizia all\'ora</string> 
   <string name="new_scheduled_transfer_title">Trasferimento programmato</string> 
   <string name="new_scheduled_transfer_text">Il trasferimento programmato è stato eseguito</string> 
   <string name="new_scheduled_transaction_title">Transizione programmata</string> 
@@ -475,7 +475,7 @@
   <string name="monthly_result">Bilancio del mese</string>
   <string name="closing_day_error">Il giorno di chiusura non è valido.</string>
   <string name="payment_day_error">Il giorno del pagamento non è valido.</string>
-  <string name="statement_error">Inserire i giorni di pagamento e di chiusura per questa carta di credito nelle impostazioni dell'account.</string>
+  <string name="statement_error">Inserire i giorni di pagamento e di chiusura per questa carta di credito nelle impostazioni dell\'account.</string>
   <string name="is_ccard_payment">Pagamento con carta di credito</string>
   <string name="is_ccard_payment_summary">Non includere nella fattura totale</string>
   <string name="header_payments">Pagamenti</string>
