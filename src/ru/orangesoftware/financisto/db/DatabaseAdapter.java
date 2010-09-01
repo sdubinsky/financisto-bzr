@@ -597,17 +597,7 @@ public class DatabaseAdapter {
 	}
 	
 	public HashMap<Long, Category> getAllCategoriesMap(boolean includeNoCategory) {
-		Cursor c = getAllCategories(includeNoCategory);
-		try { 
-			HashMap<Long, Category> map = new HashMap<Long, Category>();
-			while (c.moveToNext()) {
-				Category category = Category.formCursor(c);
-				map.put(category.id, category);
-			}
-			return map;
-		} finally {
-			c.close();
-		}
+		return getAllCategoriesTree(includeNoCategory).asMap();
 	}
 
 	public ArrayList<Category> getAllCategoriesList(boolean includeNoCategory) {
