@@ -105,7 +105,15 @@ public class CSVExport extends Export {
 		Currency c = CurrencyCache.getCurrency(currencyId);
 		w.value(c.name);
 		w.value(category != null ? category.title : "");
-		w.value(category != null ? (category.parent != null ? category.parent.title : "") : "");
+		String sParent;
+		if (category == null || category.parent == null) {
+			sParent = new String("");
+		} else {
+			sParent = new String(category.parent.title);
+			for (Category cat = category.parent.parent; cat != null; cat = cat.parent)
+				sParent = cat.title + ":" + sParent;
+		}
+		w.value(sParent);
 		w.value(location);
 		w.value(project);
 		w.value(note);
