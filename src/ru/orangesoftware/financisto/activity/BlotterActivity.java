@@ -358,7 +358,7 @@ public class BlotterActivity extends AbstractListActivity {
 			
 			return true;
 		} else {
-			return true;
+			return super.onCreateOptionsMenu(menu);
 		}
 	}
 	

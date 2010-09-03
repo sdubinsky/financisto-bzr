@@ -462,7 +462,6 @@
 	<string name="include_transfers_into_reports_summary">Include transfers into reports</string>
 	<string name="negative_opening_amount">Negative opening amount</string>
 	<string name="negative_opening_amount_summary">Open account with negative opening amount</string>
-
 	<string name="payment_day">Payment day</string>
 	<string name="closing_day">Closing day</string>
 	<string name="closing_day_hint">Day on which the bill closes</string>
@@ -481,4 +480,7 @@
 	<string name="header_payments">Payments</string>
 	<string name="header_credits">Various Credits</string>
 	<string name="header_expenses">Expenses</string>
+	
+	<string name="ui_language">Locale</string>
+	<string name="ui_language_summary">Set language of user interface (requires restart!)</string>
 </resources>

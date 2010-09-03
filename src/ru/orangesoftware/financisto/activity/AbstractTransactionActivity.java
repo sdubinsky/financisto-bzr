@@ -372,9 +372,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			}
 			return;
 		}		
-		
-		boolean useGps = forceUseGps || MyPreferences.isUseGps(this);
-        
+		      
         // Start listener to find current location
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         String provider = locationManager.getBestProvider(new Criteria(), true);
@@ -385,12 +383,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
         if (lastFix != null) {
         	setLocation(lastFix);
-        	if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {	    	        
-    	        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, networkLocationListener);	        	    	        
-        	}
-        	if (useGps && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-        		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, gpsLocationListener);
-        	}
+        	connectGps(forceUseGps);
         } else {
         	// No enabled providers found, so disable option
         	if (isShowLocation) {
@@ -448,13 +441,43 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		return AttributeViewFactory.createViewForAttribute(this, attribute);
 	}
 
-	@Override
-	protected void onDestroy() {
+	private void connectGps(boolean forceUseGps) {
+		if (locationManager != null) {
+			boolean useGps = forceUseGps || MyPreferences.isUseGps(this);
+        	if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {	    	        
+    	        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, networkLocationListener);	        	    	        
+        	}
+        	if (useGps && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, gpsLocationListener);
+        	}
+		}
+	}
+
+	private void disconnectGPS() {
 		if (locationManager != null) {
 			locationManager.removeUpdates(networkLocationListener);
 			locationManager.removeUpdates(gpsLocationListener);
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		disconnectGPS();
 		super.onDestroy();
+	}
+
+	@Override
+	protected void onPause() {
+		disconnectGPS();
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (lastFix != null) {
+			connectGps(false);
+		}
 	}
 
 	private class DefaultLocationListener implements LocationListener {

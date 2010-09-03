@@ -10,6 +10,10 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/user_interface">
+		<ListPreference android:key="ui_language"
+			android:title="@string/ui_language" android:summary="@string/ui_language_summary"
+			android:entries="@array/ui_language_entities" android:entryValues="@array/ui_language_values"
+			android:defaultValue="SORT_ORDER_DESC" />
 		<ListPreference android:key="sort_accounts"
 			android:title="@string/sort_accounts" android:summary="@string/sort_accounts_summary"
 			android:entries="@array/sort_accounts_entities" android:entryValues="@array/sort_accounts_values"

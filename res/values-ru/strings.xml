@@ -440,7 +440,6 @@
 	<string name="include_transfers_into_reports_summary">Включать переводы в репорты</string>
 	<string name="negative_opening_amount">Отрицательный баланс</string>
 	<string name="negative_opening_amount_summary">Открыть аккаунт с отрицательным балансом</string>
-		
 	<string name="payment_day">День погашения</string>
 	<string name="closing_day">Рассчетный день</string>
 	<string name="closing_day_hint">День, в который происходит рассчет процентов</string>
@@ -459,5 +458,8 @@
 	<string name="header_payments">Платежи</string>
 	<string name="header_credits">Различные поступления</string>
 	<string name="header_expenses">Расходы</string>
+			
+	<string name="ui_language">Locale</string>
+	<string name="ui_language_summary">Выбрать язык интерфейса (требует перезапуска)</string>
 			
 </resources>

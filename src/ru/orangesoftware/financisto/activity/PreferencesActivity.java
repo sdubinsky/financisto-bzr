@@ -11,20 +11,31 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.Intent.ShortcutIconResource;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 
-public class PreferencesActivity extends PreferenceActivity {
-
+public class PreferencesActivity extends PreferenceActivity {	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);   
 		addPreferencesFromResource(R.xml.preferences);	
+		final Preference pLocale = getPreferenceScreen().findPreference("ui_language");
+		pLocale.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String locale = (String)newValue;
+				MyPreferences.switchLocale(PreferencesActivity.this, locale);
+				return true;
+			}
+		});
 		final Preference pNewTransactionShortcut = getPreferenceScreen().findPreference("shortcut_new_transaction");
 		pNewTransactionShortcut.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
