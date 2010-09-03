@@ -248,7 +248,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menuItem = menu.add(0, MENU_PROJECTS, 0, R.string.projects);
 		menuItem.setIcon(R.drawable.ic_menu_project);		
 		menuItem = menu.add(0, MENU_SCHEDULED_TRANSACTIONS, 0, R.string.scheduled_transactions);
-		menuItem.setIcon(android.R.drawable.ic_menu_today);
+		menuItem.setIcon(R.drawable.ic_menu_today);
 		menuItem = menu.add(0, MENU_PREFERENCES, 0, R.string.preferences);
 		menuItem.setIcon(android.R.drawable.ic_menu_preferences);
 		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
