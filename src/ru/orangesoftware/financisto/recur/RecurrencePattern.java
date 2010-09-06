@@ -27,7 +27,6 @@ import com.google.ical.values.WeekdayNum;
 public class RecurrencePattern {
 	
 	private static final LinkedList<WeekdayNum> WEEKDAYS = new LinkedList<WeekdayNum>();
-	private static final LinkedList<WeekdayNum> _WEEKDAYS = new LinkedList<WeekdayNum>();
 	private static final LinkedList<WeekdayNum> WEEKENDS = new LinkedList<WeekdayNum>();
 	
 	static {
@@ -36,11 +35,6 @@ public class RecurrencePattern {
 		WEEKDAYS.add(new WeekdayNum(0, Weekday.WE));
 		WEEKDAYS.add(new WeekdayNum(0, Weekday.TH));
 		WEEKDAYS.add(new WeekdayNum(0, Weekday.FR));		
-		_WEEKDAYS.add(new WeekdayNum(-1, Weekday.MO));
-		_WEEKDAYS.add(new WeekdayNum(-1, Weekday.TU));
-		_WEEKDAYS.add(new WeekdayNum(-1, Weekday.WE));
-		_WEEKDAYS.add(new WeekdayNum(-1, Weekday.TH));
-		_WEEKDAYS.add(new WeekdayNum(-1, Weekday.FR));		
 		WEEKENDS.add(new WeekdayNum(0, Weekday.SU));
 		WEEKENDS.add(new WeekdayNum(0, Weekday.SA));
 	}
@@ -105,11 +99,7 @@ public class RecurrencePattern {
 						r.setByMonthDay(new int[]{num});
 						break;
 					case WEEKDAY:
-						if (num == -1) {
-							r.setByDay(_WEEKDAYS);
-						} else {
-							r.setByDay(WEEKDAYS);							
-						}
+						r.setByDay(WEEKDAYS);							
 						r.setBySetPos(new int[]{num});
 						break;
 					case WEEKEND_DAY:

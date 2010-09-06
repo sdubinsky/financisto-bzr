@@ -194,8 +194,9 @@ public class RecurrenceActivity extends AbstractActivity {
 					Recurrence r = Recurrence.parse(stateToString());
 					RRule rrule = r.createRRule();
 					Log.d("RRULE", rrule.toIcal());
-					RecurrenceScheduler ri = RecurrenceScheduler.create(rrule, recurrence.getStartDate().getTime());
-					ri.advanceTo(new Date());
+					Date startDate = DateUtils.atDateAtTime(System.currentTimeMillis(), recurrence.getStartDate());
+					Log.d("DTSTART", startDate.toString());
+					RecurrenceScheduler ri = RecurrenceScheduler.create(rrule, startDate);
 					StringBuilder sb = new StringBuilder();
 					DateFormat df = DateUtils.getMediumDateFormat(this);
 					String n = String.format("%n");
