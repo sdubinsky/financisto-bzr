@@ -46,7 +46,6 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryTree;
-import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.model.SystemAttribute;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.Transaction;
@@ -1053,29 +1052,18 @@ public class DatabaseAdapter {
 	
 	
 	/**
-	 * Gets the location for a given id.
+	 * Gets the location name for a given id.
 	 * @param id
 	 * @return
 	 */
-	public MyLocation getLocation(long id) {
-		Cursor c = db.query(LOCATIONS_TABLE, LocationColumns.NORMAL_PROJECTION, 
+	public String getLocationName(long id) {
+		Cursor c = db.query(LOCATIONS_TABLE, new String[]{LocationColumns.NAME}, 
 				LocationColumns.ID+"=?", new String[]{String.valueOf(id)}, null, null, null);
 		try {
-			if (c.moveToNext()) {				
-				MyLocation loc = new MyLocation();
-				loc.id = id;
-				loc.accuracy = c.getLong(c.getColumnIndex(LocationColumns.ACCURACY));
-				loc.dateTime = c.getLong(c.getColumnIndex(LocationColumns.DATETIME));
-				loc.isPayee = false;
-				loc.latitude = c.getDouble(c.getColumnIndex(LocationColumns.LATITUDE));
-				loc.longitude = c.getDouble(c.getColumnIndex(LocationColumns.LONGITUDE));
-				loc.name = c.getString(c.getColumnIndex(LocationColumns.NAME));
-				loc.provider = c.getString(c.getColumnIndex(LocationColumns.PROVIDER));
-				loc.resolvedAddress = c.getString(c.getColumnIndex(LocationColumns.RESOLVED_ADDRESS));
-				
-				return loc;
+			if (c.moveToNext()) {
+				return c.getString(0);
 			} else {
-				return new MyLocation();
+				return "";
 			}
 		} finally {
 			c.close();

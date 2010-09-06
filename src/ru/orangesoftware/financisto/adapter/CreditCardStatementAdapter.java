@@ -2,6 +2,7 @@ package ru.orangesoftware.financisto.adapter;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MonthlyViewActivity;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 public class CreditCardStatementAdapter extends SimpleCursorAdapter implements Filterable {
  
+		private final DatabaseAdapter dba;
 	    private int layout;
 	    
 	    private Utils u;
@@ -33,8 +35,11 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 		private final int negativeColor;
 	    private final int normalStyle = Typeface.NORMAL;
 	    private final int normalColor = Color.LTGRAY;
+	    private final LayoutInflater inflater;
 	    
 	    private boolean isStatementPreview = false;
+	    
+	    private final HashMap<Long, String> locationCache = new HashMap<Long, String>();
 
 		/**
 	     * Create an adapter to display the expenses list of a credit card bill.
@@ -45,14 +50,16 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	     * @param to Id of the columns in layout.
 	     * @param cur The credit card base currency.
 	     */
-	    public CreditCardStatementAdapter (Context context, int layout, Cursor c, String[] from, int[] to, Currency cur) {
+	    public CreditCardStatementAdapter (DatabaseAdapter dba, Context context, int layout, Cursor c, String[] from, int[] to, Currency cur) {
 	        super(context, layout, c, from, to);
+	        this.dba = dba;
 	        this.layout = layout;
 	        u = new Utils(context);
 	        this.currency = cur;
 	        futureColor = context.getResources().getColor(R.color.future_color);
 	        scheduledColor = context.getResources().getColor(R.color.scheduled);
 	        negativeColor = context.getResources().getColor(R.color.negative_amount);
+	        inflater = LayoutInflater.from(context);
 	    }
 	    
 	    public boolean isStatementPreview() {
@@ -65,20 +72,16 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	 
 	    @Override
 	    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-	 
-	        Cursor c = getCursor();
-	 
-	        final LayoutInflater inflater = LayoutInflater.from(context);
 	        View v = inflater.inflate(layout, parent, false);
-	 
-	        updateListItem(v, context, c);
-	 
+	        Holder h = new Holder(v);
+	        v.setTag(h);
 	        return v;
 	    }
 	 
 	    @Override
 	    public void bindView(View v, Context context, Cursor c) {
-    		updateListItem(v, context, c);	        
+	    	Holder h = (Holder)v.getTag();
+    		updateListItem(h, context, c);	        
 	    }
 	    
 	    /**
@@ -87,7 +90,7 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	     * @param context The context.
 	     * @param c The cursor with all the bill transactions
 	     */
-	    private void updateListItem(View v, Context context, Cursor c) {
+	    private void updateListItem(Holder h, Context context, Cursor c) {
 	    	// get amount of expense
 	    	int valueCol = c.getColumnIndex(TransactionColumns.FROM_AMOUNT);
 	    	long value = c.getLong(valueCol);
@@ -97,20 +100,20 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	        // get columns values or needed parameters
 	        long date = c.getLong(TransactionColumns.Indicies.DATETIME);
 	        String note = c.getString(TransactionColumns.Indicies.NOTE);
-	        int locId = c.getInt(TransactionColumns.Indicies.LOCATION_ID);
+	        long locId = c.getLong(TransactionColumns.Indicies.LOCATION_ID);
 	        String location = null;
 	        String desc = "";
 	        boolean future = date>Calendar.getInstance().getTimeInMillis();
 	        
 	        // draw headers for payments, various credits and expenses sections
 	        if (c.getColumnIndex(MonthlyViewActivity.HEADER_PAYMENTS) != -1) {
-        		drawGroupTitle(context.getResources().getString(R.string.header_payments), v);   	
+        		drawGroupTitle(context.getResources().getString(R.string.header_payments), h);   	
 	        	return;
 	        } else if (c.getColumnIndex(MonthlyViewActivity.HEADER_CREDITS) != -1) {
-	        	drawGroupTitle(context.getResources().getString(R.string.header_credits), v); 
+	        	drawGroupTitle(context.getResources().getString(R.string.header_credits), h); 
 	        	return;
 	        } else if (c.getColumnIndex(MonthlyViewActivity.HEADER_EXPENSES) != -1) {
-	        	drawGroupTitle(context.getResources().getString(R.string.header_expenses), v); 
+	        	drawGroupTitle(context.getResources().getString(R.string.header_expenses), h); 
 	        	return;
 	        } 
 	        
@@ -122,10 +125,7 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	         *    - "Note" 
 	         */
 	        if (locId>0) { 
-	        	DatabaseAdapter dba = new DatabaseAdapter(context);
-	        	dba.open();
-	        	location = dba.getLocation(locId).name;
-	        	dba.close();
+	        	location = getLocationName(locId);
 	        	if (note!=null && note.length()>0) {
 	        		desc = location+" ("+note+")";
 	        	} else {
@@ -136,9 +136,9 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	        }
 	 
 	        // set expenses date, description and value to the respective columns
-	        TextView dateText = (TextView) v.findViewById(R.id.list_date);
-	        TextView descText = (TextView) v.findViewById(R.id.list_note);
-	        TextView valueText = (TextView) v.findViewById(R.id.list_value);
+	        TextView dateText = h.dateText;
+	        TextView descText = h.descText;
+	        TextView valueText = h.valueText;
 	
 	        dateText.setBackgroundColor(Color.rgb(17,17,17));
         	descText.setBackgroundColor(Color.rgb(17,17,17));
@@ -187,14 +187,23 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	        }
 	    }
 	    
-	    private void drawGroupTitle(String title, View v) {
-	    	TextView dateText = (TextView) v.findViewById(R.id.list_date);
-	        TextView descText = (TextView) v.findViewById(R.id.list_note);
-	        TextView valueText = (TextView) v.findViewById(R.id.list_value);
+	    private String getLocationName(Long locId) {
+	    	String name = locationCache.get(locId);
+	    	if (name == null) {
+	    		name = dba.getLocationName(locId);
+	    		locationCache.put(locId, name);
+	    	}
+			return name;
+		}
+
+		private void drawGroupTitle(String title, Holder h) {
+	        TextView dateText = h.dateText;
+	        TextView descText = h.descText;
+	        TextView valueText = h.valueText;
         	dateText.setText("");
-	        descText.setText(title);
-	        valueText.setText("");
-	        dateText.setBackgroundColor(Color.DKGRAY);
+        	descText.setText(title);
+        	valueText.setText("");
+        	dateText.setBackgroundColor(Color.DKGRAY);
         	descText.setBackgroundColor(Color.DKGRAY);
         	valueText.setBackgroundColor(Color.DKGRAY);
         	descText.setTypeface(Typeface.defaultFromStyle(normalStyle), normalStyle);
@@ -202,6 +211,7 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	    }
 	    
 	    /**
+	     * TODO denis.solonenko: use locale specific DateFormat
 	     * Return the string for date in the following format: dd/MM/yy.
 	     * @param date Time in milliseconds.
 	     * @return The string representing the given time in the format dd/MM/yy.
@@ -213,5 +223,17 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
         	int m = cal.get(Calendar.MONTH)+1;
         	int y = cal.get(Calendar.YEAR);
         	return (d<10?"0"+d:d)+"/"+(m<10?"0"+m:m)+"/"+(y-2000);
+	    }
+	    
+	    private class Holder {
+	        private final TextView dateText;
+	        private final TextView descText;
+	        private final TextView valueText;
+	        
+	        public Holder(View v) {
+		        dateText = (TextView) v.findViewById(R.id.list_date);
+		        descText = (TextView) v.findViewById(R.id.list_note);
+		        valueText = (TextView) v.findViewById(R.id.list_value);	        	
+	        }
 	    }
 	}
