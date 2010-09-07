@@ -23,17 +23,18 @@ import java.util.Date;
 
 import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
 
+import android.os.Environment;
 import api.wireless.gdata.docs.client.DocsClient;
 import api.wireless.gdata.docs.data.DocumentEntry;
 import api.wireless.gdata.docs.data.FolderEntry;
 
 public abstract class Export {
 	
-	public static final String EXPORT_PATH = "/sdcard/financisto/";
+	public static final File EXPORT_PATH =  new File(Environment.getExternalStorageDirectory(), "financisto");
 
 	public String export() throws Exception {
 		String fileName = generateFilename();
-		File path = new File(getPath());
+		File path = getPath();
 		path.mkdirs();
 		File file = new File(path, fileName);		
 		FileOutputStream outputStream = new FileOutputStream(file);
@@ -99,7 +100,7 @@ public abstract class Export {
 
 	protected abstract String getExtension();
 	
-	protected String getPath() {
+	protected File getPath() {
 		return EXPORT_PATH;
 	}
 
