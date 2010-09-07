@@ -11,6 +11,6 @@
 -->
 <resources>
 	<dimen name="amount_picker_width">60dp</dimen>
-	<dimen name="pin_button_width">50dp</dimen>
-	<dimen name="pin_button_height">50dp</dimen>
+	<dimen name="pin_button_width">60dp</dimen>
+	<dimen name="pin_button_height">60dp</dimen>
 </resources>

@@ -461,5 +461,6 @@
 			
 	<string name="ui_language">Locale</string>
 	<string name="ui_language_summary">Выбрать язык интерфейса (требует перезапуска)</string>
+	<string name="enter_pin">Введите PIN</string>
 			
 </resources>

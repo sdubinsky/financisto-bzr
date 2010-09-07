@@ -48,16 +48,16 @@ public class PinView implements OnClickListener {
 	private String pin2;
 	private boolean confirmPin;
 
-	public PinView(Context context, PinListener listener) {
-		this(context, listener, null);
+	public PinView(Context context, PinListener listener, int layoutId) {
+		this(context, listener, null, layoutId);
 	}
 	
-	public PinView(Context context, PinListener listener, String pin) {
+	public PinView(Context context, PinListener listener, String pin, int layoutId) {
 		this.listener = listener;
 		this.confirmPin = pin == null;
 		this.pin1 = pin;
 		LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		v = layoutInflater.inflate(R.layout.lock, null);
+		v = layoutInflater.inflate(layoutId, null);
 		for (int id : buttons) {
 			((Button)v.findViewById(id)).setOnClickListener(this);
 		}

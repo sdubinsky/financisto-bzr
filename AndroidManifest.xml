@@ -72,8 +72,7 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".activity.PinActivity" android:label="@string/pin"
-			android:theme="@style/CupcakeDialog"/>
+		<activity android:name=".activity.PinActivity" android:label="@string/enter_pin"/>
 
 		<activity android:name=".activity.BlotterActivity" android:label="@string/blotter"/>
 		
