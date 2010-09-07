@@ -21,6 +21,8 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
+
 import api.wireless.gdata.docs.client.DocsClient;
 import api.wireless.gdata.docs.data.DocumentEntry;
 import api.wireless.gdata.docs.data.FolderEntry;
@@ -46,6 +48,12 @@ public abstract class Export {
 	 * @param folder Google docs folder name 
 	 * */
 	public String exportOnline(DocsClient docsClient, String folder) throws Exception {
+		// check folder first
+		FolderEntry fd = docsClient.getFolderByTitle(folder);
+		if (fd == null) {
+			throw new SettingsNotConfiguredException("folder-not-found");
+		}
+
 		// generation backup file
 		String fileName = generateFilename();
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -57,7 +65,6 @@ public abstract class Export {
 		// creating document on Google Docs
 		DocumentEntry entry = new DocumentEntry();
 		entry.setTitle(fileName);
-		FolderEntry fd = docsClient.getFolderByTitle(folder);
 		docsClient.createDocumentInFolder(entry, backup, "text/plain",fd.getKey());
 		
 		return fileName;

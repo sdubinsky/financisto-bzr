@@ -542,7 +542,12 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		protected Object work(Context context, DatabaseAdapter db, String...params)  throws AuthenticationException, Exception{
 			DatabaseExport export = new DatabaseExport(context, db.db());
 			try {
-				return export.exportOnline(createDocsClient(context), MyPreferences.getBackupFolder(context));
+				String folder = MyPreferences.getBackupFolder(context);
+				// check the backup folder registered on preferences
+				if(folder==null||folder.equals("")) {
+					throw new SettingsNotConfiguredException("folder-is-null");
+				}
+				return export.exportOnline(createDocsClient(context), folder);
 			}  catch (AuthenticationException e) { // connection error
 				handler.sendEmptyMessage(R.string.gdocs_login_failed);
 				throw e;
@@ -551,6 +556,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
 				else if(e.getMessage().equals("password"))
 					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
+				else if(e.getMessage().equals("folder-is-null"))
+					handler.sendEmptyMessage(R.string.gdocs_folder_not_configured);
+				else if(e.getMessage().equals("folder-not-found"))
+					handler.sendEmptyMessage(R.string.gdocs_folder_not_found);
 				throw e;
 			}  catch (Exception e) { // Other errors 
 				handler.sendEmptyMessage(R.string.gdocs_backup_failed);
