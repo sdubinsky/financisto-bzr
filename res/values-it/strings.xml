@@ -73,7 +73,7 @@
 	<string name="select_category">Seleziona una categoria...</string>
 	<string name="select_project">Seleziona un progetto...</string>	
 	<string name="warning">Attenzione</string>
-	<string name="no_accounts">Dovresti iniziare creando un conto. Tocca sul \'+\' in basso....</string>
+	<string name="no_accounts">Dovresti iniziare creando un conto. Tocca sul \'+\' in basso...</string>
 	<string name="no_budgets">Nessun budget</string>
 	<string name="no_transactions">Nessuna transazione</string>
 	<string name="no_categories">Nessuna categoria</string>
@@ -247,7 +247,7 @@
 	<string name="restore_database">Ripristino Database</string>
 	<string name="restore_database_inprogress">Ripristino database...</string>
 	<string name="restore_database_gdocs">Ripristina da Google Docs</string>
-	<string name="restore_database_inprogress_gdocs">Ripristino database....</string>
+	<string name="restore_database_inprogress_gdocs">Ripristino database...</string>
 	<string name="restore_database_success">Database ripristinato con successo.</string>
 	<string name="gdocs_connection_failed">Impossibile connettersi a Google Docs.</string>
 	<string name="gdocs_folder_not_found">La cartella di backup su Google Docs non è stata trovata.</string>
@@ -481,4 +481,8 @@
 	<string name="header_payments">Pagamenti</string>
 	<string name="header_credits">Crediti Vari</string>
 	<string name="header_expenses">Spese</string>
+	
+	<string name="ui_language">Lingua</string>
+	<string name="ui_language_summary">Imposta la lingua dell\'interfaccia utente (necessita riavvio)</string>
+	<string name="enter_pin">Inserisci PIN</string>
 </resources>
