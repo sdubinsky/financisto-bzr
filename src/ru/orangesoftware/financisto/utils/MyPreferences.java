@@ -7,11 +7,15 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Rodrigo Sousa - google docs backup
+ *     Abdsandryk Souza - report preferences
  ******************************************************************************/
 package ru.orangesoftware.financisto.utils;
 
+import java.util.List;
 import java.util.Locale;
 
+import ru.orangesoftware.financisto.model.Currency;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -149,7 +153,103 @@ public class MyPreferences {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getString("backup_folder", null);
 	}
+	
+	/**
+	 * Gets the string representing reference currency registered on preferences to display chart reports.
+	 * @param context The activity context
+	 * @return  The string representing the currency registered as a reference to display chart reports or null if not configured yet.
+	 */
+	public static String getReferenceCurrencyTitle(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getString("report_reference_currency", "");
+	}
+	
+	/**
+	 * Gets the reference currency registered on preferences to display chart reports.
+	 * @param context The activity context
+	 * @param dbAdapter Database adapter to query data from database
+	 * @return The currency registered as a reference to display chart reports or null if not configured yet.
+	 */
+	public static Currency getReferenceCurrency(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		
+		List<Currency> currencies = CurrencyCache.getAllCurrencies();
+		Currency cur = null;
+		try { 
+			String refCurrency = sharedPreferences.getString("report_reference_currency", null);
+			if (currencies!=null && currencies.size()>0) {
+				for (Currency currency : currencies) {
+					if (currency.title.equals(refCurrency)) cur = currency; 
+				}
+			}
+		} catch (Exception e) {
+			return null;
+		}
+		return cur;
+	}
 
+	/**
+	 * Gets the period of reference (number of Months to display the 2D report) registered on preferences.
+	 * @param context The activity context
+	 * @return The number of months registered as a period of reference to display chart reports or 0 if not configured yet.
+	 */
+	public static int getPeriodOfReference(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String p = sharedPreferences.getString("report_reference_period", "0");
+		return Integer.parseInt(p);
+	}
+	
+	/**
+	 * Gets the reference month.
+	 * @param context The activity context.
+	 * @return The reference month that represents the end of the report period.
+	 */
+	public static int getReferenceMonth(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String month = sharedPreferences.getString("report_reference_month", "0");
+		return Integer.parseInt(month);
+	}
+	
+	/**
+	 * Gets the flag that indicates if the sub categories will be available individually in 2D report or not.
+	 * @param context The activity context.
+	 * @return True if the sub categories shall be displayed in the Report 2D list of categories, false otherwise. 
+	 */
+	public static boolean includeSubCategoriesInReport(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("report_include_sub_categories", true);
+	}
+	
+	/**
+	 * Gets the flag that indicates if the list of filter ids will include No Filter (no category, no project or current location) or not.
+	 * @param context The activity context.
+	 * @return True if no category, no project and current location shall be displayed in 2D Reports, false otherwise.
+	 */
+	public static boolean includeNoFilterInReport(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("report_include_no_filter", true);
+	}
+	
+	/**
+	 * Get the flag that indicates if the category monthly result will consider the result of its sub categories or not.
+	 * @param context The activity context.
+	 * @return True if the category result shall include the result of its categories, false otherwise.
+	 */
+	public static boolean addSubCategoriesToSum(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("report_add_sub_categories_result", false);
+	}
+	
+	/**
+	 * Gets the flag that indicates if the statistics calculation will consider null values or not.
+	 * @param context The activity context.
+	 * @return True if the null values shall impact the statistics, false otherwise.
+	 */
+	public static boolean considerNullResultsInReport(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("report_consider_null_results", true);
+	}
+	
 	public static boolean isShowNote(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getBoolean("ntsl_show_note", true);
@@ -211,6 +311,23 @@ public class MyPreferences {
         conf.locale = locale;
         Log.i("MyPreferences", "Switching locale to "+conf.locale.getDisplayName());
         res.updateConfiguration(conf, dm);
+	}
+	
+	/**
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static String[] getReportPreferences(Context context) {
+		String[] preferences = new String[7];
+		preferences[0] = getReferenceCurrencyTitle(context);
+		preferences[1] = Integer.toString(getPeriodOfReference(context));
+		preferences[2] = Integer.toString(getReferenceMonth(context));
+		preferences[3] = Boolean.toString(considerNullResultsInReport(context));
+		preferences[4] = Boolean.toString(includeNoFilterInReport(context));
+		preferences[5] = Boolean.toString(includeSubCategoriesInReport(context));
+		preferences[6] = Boolean.toString(addSubCategoriesToSum(context));
+		return preferences;
 	}
 
 }

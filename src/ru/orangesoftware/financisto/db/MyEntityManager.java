@@ -24,7 +24,9 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Budget;
+import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.MyEntity;
 import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.model.Project;
 import ru.orangesoftware.financisto.model.SystemAttribute;
@@ -55,6 +57,33 @@ public class MyEntityManager extends EntityManager {
 		this.context = context;
 	}
 	
+	private <T extends MyEntity> ArrayList<T> getAllEntitiesList(Class<T> clazz, boolean include0) {
+		Query<T> q = createQuery(clazz);
+		if (!include0) {
+			q.where(Expressions.neq("id", 0));
+		}
+		q.asc("title");
+		Cursor c = q.execute();
+		try {
+			T e0 = null;
+			ArrayList<T> list = new ArrayList<T>();
+			while (c.moveToNext()) {
+				T e = EntityManager.loadFromCursor(c, clazz);
+				if (e.id == 0) {
+					e0 = e;
+				} else {
+					list.add(e);
+				}
+			}
+			if (e0 != null) {
+				list.add(0, e0);
+			}
+			return list;
+		} finally {
+			c.close();
+		}
+	}
+
 	/* ===============================================
 	 * LOCATION
 	 * =============================================== */
@@ -80,6 +109,28 @@ public class MyEntityManager extends EntityManager {
 		Cursor c = q.execute();
 		//DatabaseUtils.dumpCursor(c);
 		return c;
+	}
+
+	public ArrayList<MyLocation> getAllLocationsList(boolean includeNoLocation) {
+		Cursor c = getAllLocations(includeNoLocation);
+		try {
+			MyLocation e0 = null;
+			ArrayList<MyLocation> list = new ArrayList<MyLocation>();
+			while (c.moveToNext()) {
+				MyLocation e = EntityManager.loadFromCursor(c, MyLocation.class);
+				if (e.id == 0) {
+					e0 = e;
+				} else {
+					list.add(e);
+				}
+			}
+			if (e0 != null) {
+				list.add(0, e0);
+			}
+			return list;
+		} finally {
+			c.close();
+		}
 	}
 
 	public void deleteLocation(long id) {
@@ -197,6 +248,20 @@ public class MyEntityManager extends EntityManager {
 		return saveOrUpdate(account);
 	}
 
+	public ArrayList<Account> getAllAccountsList() {
+		ArrayList<Account> list = new ArrayList<Account>();
+		Cursor c = getAllAccounts();
+		try {
+			while (c.moveToNext()) {
+				Account a = EntityManager.loadFromCursor(c, Account.class);
+				list.add(a);
+			}			
+		} finally {
+			c.close();
+		}
+		return list;
+	}
+
 	/* ===============================================
 	 * CURRENCY
 	 * =============================================== */
@@ -258,31 +323,12 @@ public class MyEntityManager extends EntityManager {
 //		return q.list();
 //	}
 
+	public Project getProject(long id) {
+		return get(Project.class, id);
+	}
+
 	public ArrayList<Project> getAllProjectsList(boolean includeNoProject) {
-		Query<Project> q = createQuery(Project.class);
-		if (!includeNoProject) {
-			q.where(Expressions.neq("id", 0));
-		}
-		q.asc("title");
-		Cursor c = q.execute();
-		try {
-			Project p0 = null;
-			ArrayList<Project> list = new ArrayList<Project>();
-			while (c.moveToNext()) {
-				Project p = EntityManager.loadFromCursor(c, Project.class);
-				if (p.id == 0) {
-					p0 = p;
-				} else {
-					list.add(p);
-				}
-			}
-			if (p0 != null) {
-				list.add(0, p0);
-			}
-			return list;
-		} finally {
-			c.close();
-		}
+		return getAllEntitiesList(Project.class, includeNoProject);
 	}
 
 //	public Category getCategoryByLeft(long left) {
@@ -384,6 +430,14 @@ public class MyEntityManager extends EntityManager {
 		Query<TransactionInfo> q = createQuery(TransactionInfo.class);
 		q.where(Expressions.eq("isTemplate", 2));
 		return (ArrayList<TransactionInfo>)q.list();
+	}
+
+	public Category getCategory(long id) {
+		return get(Category.class, id);
+	}
+
+	public ArrayList<Category> getAllCategoriesList(boolean includeNoCategory) {
+		return getAllEntitiesList(Category.class, includeNoCategory);
 	}
 
 }
