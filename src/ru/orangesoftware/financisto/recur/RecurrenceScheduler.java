@@ -17,7 +17,6 @@ import java.util.Date;
 
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
-import ru.orangesoftware.financisto.utils.DateUtils;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;

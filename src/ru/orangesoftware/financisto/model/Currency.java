@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Abdsandryk Souza - adding default currency and fromCursor
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
@@ -89,6 +90,16 @@ public class Currency {
 		if (id != other.id)
 			return false;
 		return true;
+	}
+		
+	public static Currency defaultCurrency() {
+		Currency c = new Currency();
+		c.id = 2;
+		c.name = "USD";
+		c.title = "American Dollar";
+		c.symbol = "$";
+		c.decimals = 2;
+		return c;
 	}
 		
 }

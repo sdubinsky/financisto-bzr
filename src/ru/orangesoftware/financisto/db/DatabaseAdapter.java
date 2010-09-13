@@ -193,12 +193,18 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getAllExpenses(String accountId, String start, String end) {
 		// query
-		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+"<? AND "+
-					   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
+		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+"<? AND "+
+					   	   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
 		
+		String whereTo = TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+"<? AND "+
+		   				 TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
 		try {
-			Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   where, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   whereFrom, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+			
+			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   whereTo, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
 			return null;
@@ -215,13 +221,20 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getCredits(String accountId, String start, String end) {
 		// query
-		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
-					   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-					   TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
+					   	   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+					       TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		
+		String whereTo = TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
+						 TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+						 TransactionColumns.IS_CCARD_PAYMENT+"=?";
 		
 		try {
-			Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   where, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   whereFrom, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   whereTo, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
 			return null;
@@ -237,19 +250,19 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getPayments(String accountId, String start, String end) {
 		// query direct payments
-		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
-						TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-						TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
+						   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+						   TransactionColumns.IS_CCARD_PAYMENT+"=?";
 		
-		String whereTransfer =  TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
-								TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-								TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereTo =  TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
+						  TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+						  TransactionColumns.IS_CCARD_PAYMENT+"=?";
 		
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   	where, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+					   	whereFrom, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-						whereTransfer, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+						whereTo, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
 			Cursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {

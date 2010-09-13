@@ -8,6 +8,8 @@
   
   Contributors:
       Denis Solonenko - initial API and implementation
+      Abdsandryk Souza - bill filtering, report 2D chart
+      Rodrigo Sousa - google docs backup
 -->
 <resources>
     <string name="accounts">Accounts</string>
@@ -148,12 +150,40 @@
 	<string name="report_by_location_summary">Transactions report by location</string>
 	<string name="report_by_project">By Project</string>
 	<string name="report_by_project_summary">Transactions report by project</string>
+	
+	<string name="report_by_account_by_period">By Account / Period</string>
+	<string name="report_by_account_by_period_summary">Transactions report by account and period</string>
+	<string name="report_by_category_by_period">By Category / Period</string>
+	<string name="report_by_category_by_period_summary">Transactions report by category and period</string>
+	<string name="report_by_location_by_period">By Location / Period</string>
+	<string name="report_by_location_by_period_summary">Transactions report by location and period</string>
+	<string name="report_by_project_by_period">By Project / Period</string>
+	<string name="report_by_project_by_period_summary">Transactions report by project and period</string>
 	<string-array name="report_types">
 		<item>By Period</item>
 		<item>By Category</item>		
 		<item>By Location</item>
 		<item>By Project</item>
+		<item>By Account/Period</item>
+		<item>By Category/Period</item>
+		<item>By Location/Period</item>
+		<item>By Project/Period</item>
 	</string-array>
+	<string name="max_result_label">Max:</string>
+	<string name="min_result_label">Min:</string>
+	<string name="mean_result_label">Mean:</string>
+	<string name="sum_result_label">Sum:</string>
+	<string name="report_init_res">0</string>
+	<string name="no_data_to_report">No data available to display the report.</string>
+	<string name="report_preferences_not_set">Adjust preferences on Report Preferences menu. Considering default currency and period.</string>
+	<string name="currency_not_set">Reference Currency not set on Preferences. Considering default currency.</string>
+	<string name="period_not_set">Period of Reference not set on Preferences. Considering default period.</string>
+	<string name="report_no_category">There is no category available for filtering in the report.</string>
+	<string name="report_no_project">There is no project available for filtering in the report.</string>
+	<string name="report_no_account">There is no account available for filtering in the report.</string>
+	<string name="report_no_location">There is no location available for filtering in the report.</string>
+	<string name="no_account">No account</string>
+	
 	<string name="period_today">Today</string>
 	<string name="period_yesterday">Yesterday</string>
 	<string name="period_this_week">This week</string>
@@ -256,6 +286,12 @@
 	<string name="gdocs_login_failed">Google account login or password not valid.</string>
 	<string name="gdocs_backup_failed">Error sending backup file to Google Docs. Please try again.</string>
 	<string name="gdocs_restore_failed">Error retrieving backup file. Please try again.</string>
+	
+    <string name="gdocs_folder_error">Erro ao acessa a pasta no Google Docs.</string>
+    <string name="gdocs_service_error">Erro no Serviço Google Docs.</string>
+    <string name="gdocs_io_error">Erro na comunicação com o Google Docs.</string>
+    <string name="package_info_error">Não foi possível recuperar as informações do pacote Financisto.</string>
+    
 	<string name="success">Success!</string>
 	<string name="fail">Fail..</string>
 	<string name="duplicate">Duplicate</string>
@@ -270,6 +306,7 @@
 	<string name="duplicate_success_with_multiplier">Transaction has been duplicated with the current date and time (x%d)</string>	
 	<string name="no_category">No category</string>
 	<string name="no_project">No project</string>
+	<string name="no_period">No period</string>
 	<string name="current_location">Current location</string>
 	<string name="protection">Protection</string>
 	<string name="transaction_screen">New transaction screen</string>
@@ -361,6 +398,70 @@
 	<string name="user_password_summary">Google account password</string>
 	<string name="backup_folder">Backup Folder</string>
 	<string name="backup_folder_summary">Folder on Google Docs to store backup files.</string>
+
+    <string name="report_preferences">Report Preferences</string>
+    <string name="all_reports_preferences">General Report Preferences</string>
+    <string name="category_by_period_preferences">Category by Period Report Preferences</string>
+    <string name="report_include_sub_categories">Include sub Categories in list</string>
+	<string name="report_include_sub_categories_summary">Include sub categories in the Category by Period Reports list of categories.</string>
+	<string name="report_add_sub_categories_result">Add sub Categories result</string>
+	<string name="report_add_sub_categories_result_summary">Add sub categories result to the result of a root category.</string>
+	<string name="report_consider_null_results">Consider nulls in statistics</string>
+	<string name="report_consider_null_results_summary">Consider null result when generating statistics (min, max and mean).</string>
+	<string name="report_include_no_filter">Include No &lt;Filter&gt;</string>
+	<string name="report_include_no_filter_summary">Include non classified transactions to reports filters lists (No category, No Project and Unknown Location)</string>
+	<string name="report_reference_month">Reference Month</string>
+	<string name="report_reference_month_summary">Define the Reference Month that represents the end of the report period.</string>
+	<string name="report_last_quarter">Last quarter</string>
+	<string name="report_last_half_year">Last half year</string>
+	<string name="report_last_9_months">Last 9 months</string>
+	<string name="report_last_year">Last year</string>
+	<string-array name="report_reference_month_entities">
+        <item>6 months ago</item>
+        <item>3 months ago</item>
+        <item>Last month</item>
+        <item>Current month</item>
+        <item>Next month</item>
+        <item>3 months later</item>
+        <item>6 months later</item>
+    </string-array>
+	<string name="report_reference_period">Period of Reference</string>
+	<string name="report_reference_period_summary">Define the period of reference (number of months) to be considered when opening report charts.</string>
+	<string-array name="report_reference_period_entities">
+        <item>3 months</item>
+        <item>6 months</item>
+        <item>9 months</item>
+        <item>1 year</item>
+    </string-array>
+	<string name="report_reference_currency">Reference Currency</string>
+	<string name="report_reference_currency_summary">Define the reference currency to be considered when request data for report charts.</string>
+	<string name="report_last_n_months">Last $n months</string>
+	<string name="report_n_months_var">$n</string>
+	<string name="month_jan">JAN</string>
+	<string name="month_feb">FEB</string>
+	<string name="month_mar">MAR</string>
+	<string name="month_apr">APR</string>
+	<string name="month_mai">MAY</string>
+	<string name="month_jun">JUN</string>
+	<string name="month_jul">JUL</string>
+	<string name="month_aug">AUG</string>
+	<string name="month_sep">SEP</string>
+	<string name="month_oct">OCT</string>
+	<string name="month_nov">NOV</string>
+	<string name="month_dec">DEC</string>
+	<string name="month_x_jan">January</string>
+	<string name="month_x_feb">February</string>
+	<string name="month_x_mar">March</string>
+	<string name="month_x_apr">April</string>
+	<string name="month_x_mai">May</string>
+	<string name="month_x_jun">June</string>
+	<string name="month_x_jul">July</string>
+	<string name="month_x_aug">August</string>
+	<string name="month_x_sep">September</string>
+	<string name="month_x_oct">October</string>
+	<string name="month_x_nov">November</string>
+	<string name="month_x_dec">December</string>	
+
 	<string name="other">Other</string>
 	<string name="send_error_reports">Send error reports</string>
 	<string name="send_error_reports_summary">Send anonymous error reports to orangesoftware.ru (requires restart)</string>	
@@ -484,4 +585,6 @@
 	<string name="ui_language">Locale</string>
 	<string name="ui_language_summary">Set language of user interface (requires restart!)</string>
 	<string name="enter_pin">Enter PIN</string>
+	<string name="mass_operations">Mass operations</string>
+	
 </resources>

@@ -34,6 +34,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import api.wireless.gdata.docs.client.DocsClient;
+import api.wireless.gdata.parser.ParseException;
+import api.wireless.gdata.util.ServiceException;
 
 public class DatabaseImport {
 
@@ -60,8 +62,11 @@ public class DatabaseImport {
 	 * 
 	 * @param docsClient The Google Docs connection
 	 * @param resourceId the key of the recovery document on google docs
+	 * @throws ServiceException 
+	 * @throws IOException 
+	 * @throws ParseException 
 	 **/
-	public void importOnlineDatabase(DocsClient docsClient, String resourceId) throws Exception {
+	public void importOnlineDatabase(DocsClient docsClient, String resourceId) throws ParseException, IOException, ServiceException {
 		InputStream inputStream=null;
 		inputStream = docsClient.getDocumentMediaAsTXT(resourceId);
 		recoverDatabase(inputStream);

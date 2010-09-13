@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -22,7 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
-
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import api.wireless.gdata.docs.client.DocsClient;
 import api.wireless.gdata.docs.data.DocumentEntry;
@@ -92,11 +93,11 @@ public abstract class Export {
 		}	
 	}
 
-	protected abstract  void writeHeader(BufferedWriter bw) throws Exception;
+	protected abstract  void writeHeader(BufferedWriter bw) throws IOException, NameNotFoundException;
 
-	protected abstract  void writeBody(BufferedWriter bw) throws Exception;
+	protected abstract  void writeBody(BufferedWriter bw) throws IOException;
 
-	protected abstract  void writeFooter(BufferedWriter bw) throws Exception;
+	protected abstract  void writeFooter(BufferedWriter bw) throws IOException;
 
 	protected abstract String getExtension();
 	

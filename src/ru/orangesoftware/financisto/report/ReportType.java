@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Abdsandryk Souza - adding 2D chart reports
  ******************************************************************************/
 package ru.orangesoftware.financisto.report;
 
@@ -51,6 +52,50 @@ public enum ReportType {
 		public Report createReport(Context context, Bundle extra) {
 			return new ProjectsReport(context);
 		}
+	}, 
+	BY_ACCOUNT_BY_PERIOD(R.string.report_by_account_by_period, R.string.report_by_account_by_period_summary, R.drawable.ic_tab_2d_graph_selected){
+		@Override
+		public Report createReport(Context context, Bundle extra) {
+			return null;
+		}
+		
+		@Override
+		public boolean isConventionalBarReport() {
+			return false;
+		}
+	}, 
+	BY_CATEGORY_BY_PERIOD(R.string.report_by_category_by_period, R.string.report_by_category_by_period_summary, R.drawable.ic_tab_2d_graph_selected){
+		@Override
+		public Report createReport(Context context, Bundle extra) {
+			return null;
+		}
+		
+		@Override
+		public boolean isConventionalBarReport() {
+			return false;
+		}
+	}, 
+	BY_LOCATION_BY_PERIOD(R.string.report_by_location_by_period, R.string.report_by_location_by_period_summary, R.drawable.ic_tab_2d_graph_selected){
+		@Override
+		public Report createReport(Context context, Bundle extra) {
+			return null;
+		}
+		
+		@Override
+		public boolean isConventionalBarReport() {
+			return false;
+		}
+	}, 
+	BY_PROJECT_BY_PERIOD(R.string.report_by_project_by_period, R.string.report_by_project_by_period_summary, R.drawable.ic_tab_2d_graph_selected){
+		@Override
+		public Report createReport(Context context, Bundle extra) {
+			return null;
+		}
+		
+		@Override
+		public boolean isConventionalBarReport() {
+			return false;
+		}
 	};
 	
 	public final int titleId;
@@ -61,6 +106,10 @@ public enum ReportType {
 		this.titleId = titleId;
 		this.summaryId = summaryId;
 		this.iconId = iconId;
+	}
+	
+	public boolean isConventionalBarReport() {
+		return true;
 	}
 	
 	public abstract Report createReport(Context context, Bundle extra);

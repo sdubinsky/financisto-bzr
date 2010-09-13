@@ -37,7 +37,7 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, Void, Obje
 		try {
 			return work(context, db, params);
 		} catch(Exception ex){
-			Log.e("Financisto", "Unable to export database", ex);
+			Log.e("Financisto", "Unable to import/export database", ex);
 			return ex;
 		} finally {
 			db.close();
