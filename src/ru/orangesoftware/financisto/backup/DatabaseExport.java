@@ -20,6 +20,7 @@ import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -39,7 +40,7 @@ public class DatabaseExport extends Export {
 	}
 
 	@Override
-	protected void writeHeader(BufferedWriter bw) throws Exception {
+	protected void writeHeader(BufferedWriter bw) throws IOException, NameNotFoundException  {
 		PackageInfo pi = Utils.getPackageInfo(context);
 		bw.write("PACKAGE:");bw.write(pi.packageName);bw.write("\n");
 		bw.write("VERSION_CODE:");bw.write(String.valueOf(pi.versionCode));bw.write("\n");
@@ -49,7 +50,7 @@ public class DatabaseExport extends Export {
 	}
 
 	@Override
-	protected void writeBody(BufferedWriter bw) throws Exception {
+	protected void writeBody(BufferedWriter bw) throws IOException  {
 		for (String tableName : BACKUP_TABLES) {
 			exportTable(bw, tableName);	
 		}

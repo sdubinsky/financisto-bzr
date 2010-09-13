@@ -16,8 +16,6 @@ import ru.orangesoftware.financisto.view.PinView;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Window;
-import android.widget.TextView;
 
 public class PinActivity extends Activity implements PinView.PinListener {
 	
@@ -26,15 +24,12 @@ public class PinActivity extends Activity implements PinView.PinListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		String pin = MyPreferences.getPin(this);
 		if (pin == null) {
 			onSuccess(null);
 		} else {
-			PinView v = new PinView(this, this, pin);
+			PinView v = new PinView(this, this, pin, R.layout.lock);
 			setContentView(v.getView());
-			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
-			((TextView)findViewById(android.R.id.title)).setText(R.string.pin);
 		}
 	}
 

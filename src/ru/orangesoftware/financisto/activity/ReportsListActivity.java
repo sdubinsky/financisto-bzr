@@ -7,11 +7,13 @@
  * 
  * Contributors:
  *     Denis Solonenko - initial API and implementation
+ *     Abdsandryk Souza - implementing 2D chart reports
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ReportListAdapter;
+import ru.orangesoftware.financisto.graph.Report2DChart;
 import ru.orangesoftware.financisto.report.Report;
 import ru.orangesoftware.financisto.report.ReportType;
 import android.app.ListActivity;
@@ -30,7 +32,11 @@ public class ReportsListActivity extends ListActivity {
 			ReportType.BY_CATEGORY,
 			ReportType.BY_SUB_CATEGORY_ROOTS,
 			ReportType.BY_LOCATION,
-			ReportType.BY_PROJECT			
+			ReportType.BY_PROJECT,
+			ReportType.BY_ACCOUNT_BY_PERIOD, 
+			ReportType.BY_CATEGORY_BY_PERIOD,
+			ReportType.BY_LOCATION_BY_PERIOD,
+			ReportType.BY_PROJECT_BY_PERIOD
 	};
 	
 	@Override
@@ -42,9 +48,17 @@ public class ReportsListActivity extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Intent intent = new Intent(this, ReportActivity.class);
-		intent.putExtra(EXTRA_REPORT_TYPE, reports[position].name());
-		startActivity(intent);
+		if (reports[position].isConventionalBarReport()) {
+			// Conventional Bars reports
+			Intent intent = new Intent(this, ReportActivity.class);
+			intent.putExtra(EXTRA_REPORT_TYPE, reports[position].name());
+			startActivity(intent);			
+		} else {
+			// 2D Chart reports
+			Intent intent = new Intent(this, Report2DChartActivity.class);
+			intent.putExtra(Report2DChart.REPORT_TYPE, position);
+			startActivity(intent);
+		}
 	}
 
 	public static Report createReport(Context context, Bundle extras) {

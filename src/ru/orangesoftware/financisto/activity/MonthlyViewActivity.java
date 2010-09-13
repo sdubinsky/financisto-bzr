@@ -94,6 +94,7 @@ public class MonthlyViewActivity extends ListActivity {
     	if (transactionsCursor != null) {
     		transactionsCursor.close();
     	}
+    	dbAdapter.close();
     	super.onDestroy();
     }
 
@@ -111,8 +112,6 @@ public class MonthlyViewActivity extends ListActivity {
 		// set currency based on account
 		MyEntityManager em = new MyEntityManager(this, dbAdapter.db());
 		account = em.getAccount(accountId);
-		
-		dbAdapter.close();
 		
         // get current month and year
 		Calendar cal = Calendar.getInstance();
@@ -316,9 +315,6 @@ public class MonthlyViewActivity extends ListActivity {
 	 * @param close End of period.
 	 */
 	private void fillData(Calendar open, Calendar close) {
-		dbAdapter = new DatabaseAdapter(this);
-		dbAdapter.open();
-		
 		// closing cursor from previous request
     	if (transactionsCursor != null) {
     		transactionsCursor.close();
@@ -366,7 +362,7 @@ public class MonthlyViewActivity extends ListActivity {
     		int[] to = new int[] {R.id.list_date, R.id.list_note, R.id.list_value};
     		
     		// Mapping data to view
-    		CreditCardStatementAdapter expenses =  new CreditCardStatementAdapter(this, R.layout.credit_card_transaction, transactionsCursor, from, to, currency);
+    		CreditCardStatementAdapter expenses = new CreditCardStatementAdapter(dbAdapter, this, R.layout.credit_card_transaction, transactionsCursor, from, to, currency);
     		expenses.setStatementPreview(isStatementPreview);
     		setListAdapter(expenses);
     		
@@ -391,9 +387,6 @@ public class MonthlyViewActivity extends ListActivity {
     		this.getListView().setVisibility(View.VISIBLE);
     		((TextView)findViewById(android.R.id.empty)).setVisibility(View.GONE);
     	}
-    	
-    	dbAdapter.close();
-    	System.gc();
     }
 	
 	/**

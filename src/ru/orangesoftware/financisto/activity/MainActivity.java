@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -39,6 +40,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -65,7 +67,9 @@ import api.wireless.gdata.docs.client.DocsGDataClient;
 import api.wireless.gdata.docs.data.DocumentEntry;
 import api.wireless.gdata.docs.data.FolderEntry;
 import api.wireless.gdata.docs.parser.xml.XmlDocsGDataParserFactory;
+import api.wireless.gdata.parser.ParseException;
 import api.wireless.gdata.util.AuthenticationException;
+import api.wireless.gdata.util.ServiceException;
 
 import com.nullwire.trace.ExceptionHandler;
 
@@ -248,7 +252,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menuItem = menu.add(0, MENU_PROJECTS, 0, R.string.projects);
 		menuItem.setIcon(R.drawable.ic_menu_project);		
 		menuItem = menu.add(0, MENU_SCHEDULED_TRANSACTIONS, 0, R.string.scheduled_transactions);
-		menuItem.setIcon(android.R.drawable.ic_menu_today);
+		menuItem.setIcon(R.drawable.ic_menu_today);
 		menuItem = menu.add(0, MENU_PREFERENCES, 0, R.string.preferences);
 		menuItem.setIcon(android.R.drawable.ic_menu_preferences);
 		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
@@ -445,6 +449,12 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			else if(e.getMessage().equals("password"))
 				handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
 			return;
+		} catch (ParseException e) {
+			showErrorPopup(this,R.string.gdocs_folder_error);
+		} catch (ServiceException e) {
+			showErrorPopup(this,R.string.gdocs_service_error);
+		} catch (IOException e) {
+			showErrorPopup(this,R.string.gdocs_io_error);
 		}  catch(Exception e) { //outros erros de conexao
 			showErrorPopup(this,R.string.gdocs_connection_failed);
 			return;
@@ -542,7 +552,12 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		protected Object work(Context context, DatabaseAdapter db, String...params)  throws AuthenticationException, Exception{
 			DatabaseExport export = new DatabaseExport(context, db.db());
 			try {
-				return export.exportOnline(createDocsClient(context), MyPreferences.getBackupFolder(context));
+				String folder = MyPreferences.getBackupFolder(context);
+				// check the backup folder registered on preferences
+				if(folder==null||folder.equals("")) {
+					throw new SettingsNotConfiguredException("folder-is-null");
+				}
+				return export.exportOnline(createDocsClient(context), folder);
 			}  catch (AuthenticationException e) { // connection error
 				handler.sendEmptyMessage(R.string.gdocs_login_failed);
 				throw e;
@@ -551,9 +566,22 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
 				else if(e.getMessage().equals("password"))
 					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
+				else if(e.getMessage().equals("folder-is-null"))
+					handler.sendEmptyMessage(R.string.gdocs_folder_not_configured);
+				else if(e.getMessage().equals("folder-not-found"))
+					handler.sendEmptyMessage(R.string.gdocs_folder_not_found);
 				throw e;
-			}  catch (Exception e) { // Other errors 
-				handler.sendEmptyMessage(R.string.gdocs_backup_failed);
+			} catch (ParseException e) {
+				handler.sendEmptyMessage(R.string.gdocs_folder_error);
+				throw e;
+			} catch (NameNotFoundException e) {
+				handler.sendEmptyMessage(R.string.package_info_error);
+				throw e;
+			} catch (ServiceException e) {
+				handler.sendEmptyMessage(R.string.gdocs_service_error);
+				throw e;
+			} catch (IOException e) {
+				handler.sendEmptyMessage(R.string.gdocs_io_error);
 				throw e;
 			}
 		}
@@ -617,10 +645,16 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			}catch (AuthenticationException e) { // authentication error
 				handler.sendEmptyMessage(R.string.gdocs_login_failed);
 				throw e;
-			} catch (Exception e) { // error accessing files
-				handler.sendEmptyMessage(R.string.gdocs_restore_failed);
+			} catch (ParseException e) {
+				handler.sendEmptyMessage(R.string.gdocs_folder_error);
 				throw e;
-			}
+			} catch (IOException e) {
+				handler.sendEmptyMessage(R.string.gdocs_io_error);
+				throw e;
+			} catch (ServiceException e) {
+				handler.sendEmptyMessage(R.string.gdocs_service_error);
+				throw e;
+			} 
 			return true;
 		}
 

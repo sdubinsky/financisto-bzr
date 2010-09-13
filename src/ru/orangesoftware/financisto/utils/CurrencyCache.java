@@ -12,6 +12,8 @@ package ru.orangesoftware.financisto.utils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ru.orangesoftware.financisto.model.Currency;
@@ -67,6 +69,11 @@ public class CurrencyCache {
 
 	private static char charOrEmpty(String s, char c) {
 		return s != null ? (s.length() > 2 ? s.charAt(1) : 0): c;
+	}
+
+	public static ArrayList<Currency> getAllCurrencies() {
+		Collection<Currency> currencies = CURRENCIES.values();
+		return new ArrayList<Currency>(currencies);
 	}
 
 

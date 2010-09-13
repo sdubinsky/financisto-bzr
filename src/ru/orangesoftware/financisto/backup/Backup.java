@@ -30,7 +30,7 @@ public final class Backup {
 	private Backup() {}
 	
 	public static String[] listBackups() {
-		File backupPath = new File(Export.EXPORT_PATH);
+		File backupPath = Export.EXPORT_PATH;
 		String[] files = backupPath.list(new FilenameFilter(){
 			@Override
 			public boolean accept(File dir, String filename) {

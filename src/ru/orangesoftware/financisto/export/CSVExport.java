@@ -14,6 +14,7 @@ import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_DATE_ISO_8601;
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_TIME_ISO_8601;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Date;
@@ -46,12 +47,12 @@ public class CSVExport extends Export {
 	}
 
 	@Override
-	protected void writeHeader(BufferedWriter bw) throws Exception {
+	protected void writeHeader(BufferedWriter bw) throws IOException  {
 		bw.write("date,time,account,amount,currency,category,parent,location,project,note\n");
 	}
 
 	@Override
-	protected void writeBody(BufferedWriter bw) throws Exception {
+	protected void writeBody(BufferedWriter bw) throws IOException {
 		Csv.Writer w = new Csv.Writer(bw).delimiter(',');
 		try {
 			HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
@@ -105,14 +106,7 @@ public class CSVExport extends Export {
 		Currency c = CurrencyCache.getCurrency(currencyId);
 		w.value(c.name);
 		w.value(category != null ? category.title : "");
-		String sParent;
-		if (category == null || category.parent == null) {
-			sParent = new String("");
-		} else {
-			sParent = new String(category.parent.title);
-			for (Category cat = category.parent.parent; cat != null; cat = cat.parent)
-				sParent = cat.title + ":" + sParent;
-		}
+		String sParent = buildPath(category);
 		w.value(sParent);
 		w.value(location);
 		w.value(project);
@@ -120,8 +114,20 @@ public class CSVExport extends Export {
 		w.newLine();
 	}
 
+	private String buildPath(Category category) {
+		if (category == null || category.parent == null) {
+			return "";
+		} else {
+			String sParent = new String(category.parent.title);
+			for (Category cat = category.parent.parent; cat != null; cat = cat.parent) {
+				sParent = cat.title + ":" + sParent;
+			}
+			return sParent;
+		}
+	}
+
 	@Override
-	protected void writeFooter(BufferedWriter bw) throws Exception {
+	protected void writeFooter(BufferedWriter bw) throws IOException {
 	}
 
 	public Category getCategoryById(HashMap<Long, Category> categoriesMap, long id) {

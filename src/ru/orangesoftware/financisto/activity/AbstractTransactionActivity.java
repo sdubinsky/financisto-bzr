@@ -865,7 +865,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 
 	private void setIsCCardPayment(int isCCardPaymentValue) {
-		// TODO Auto-generated method stub
 		transaction.isCCardPayment = isCCardPaymentValue;
 		ccardPayment.setChecked(isCCardPaymentValue==1);
 	}

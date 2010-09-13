@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.utils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import ru.orangesoftware.financisto.R;
 import android.content.Context;
@@ -168,6 +169,16 @@ public class DateUtils {
 		c.set(Calendar.SECOND, 59);
 		c.set(Calendar.MILLISECOND, 999);
 		return c;
+	}
+
+	public static Date atDateAtTime(long now, Calendar startDate) {
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(now);
+		c.set(Calendar.HOUR_OF_DAY, startDate.get(Calendar.HOUR_OF_DAY));
+		c.set(Calendar.MINUTE, startDate.get(Calendar.MINUTE));
+		c.set(Calendar.SECOND, startDate.get(Calendar.SECOND));
+		c.set(Calendar.MILLISECOND, startDate.get(Calendar.MILLISECOND));
+		return c.getTime();
 	}
 
 	public static DateFormat getShortDateFormat(Context context) {

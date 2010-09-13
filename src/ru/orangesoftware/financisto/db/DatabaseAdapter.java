@@ -46,7 +46,6 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryTree;
-import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.model.SystemAttribute;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.Transaction;
@@ -194,12 +193,18 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getAllExpenses(String accountId, String start, String end) {
 		// query
-		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+"<? AND "+
-					   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
+		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+"<? AND "+
+					   	   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
 		
+		String whereTo = TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+"<? AND "+
+		   				 TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
 		try {
-			Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   where, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   whereFrom, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+			
+			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   whereTo, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
 			return null;
@@ -216,13 +221,20 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getCredits(String accountId, String start, String end) {
 		// query
-		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
-					   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-					   TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
+					   	   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+					       TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		
+		String whereTo = TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
+						 TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+						 TransactionColumns.IS_CCARD_PAYMENT+"=?";
 		
 		try {
-			Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   where, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   whereFrom, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   whereTo, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
 			return null;
@@ -238,19 +250,19 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getPayments(String accountId, String start, String end) {
 		// query direct payments
-		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
-						TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-						TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
+						   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+						   TransactionColumns.IS_CCARD_PAYMENT+"=?";
 		
-		String whereTransfer =  TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
-								TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-								TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereTo =  TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
+						  TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
+						  TransactionColumns.IS_CCARD_PAYMENT+"=?";
 		
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   	where, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+					   	whereFrom, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-						whereTransfer, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+						whereTo, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
 			Cursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
@@ -1053,29 +1065,18 @@ public class DatabaseAdapter {
 	
 	
 	/**
-	 * Gets the location for a given id.
+	 * Gets the location name for a given id.
 	 * @param id
 	 * @return
 	 */
-	public MyLocation getLocation(long id) {
-		Cursor c = db.query(LOCATIONS_TABLE, LocationColumns.NORMAL_PROJECTION, 
+	public String getLocationName(long id) {
+		Cursor c = db.query(LOCATIONS_TABLE, new String[]{LocationColumns.NAME}, 
 				LocationColumns.ID+"=?", new String[]{String.valueOf(id)}, null, null, null);
 		try {
-			if (c.moveToNext()) {				
-				MyLocation loc = new MyLocation();
-				loc.id = id;
-				loc.accuracy = c.getLong(c.getColumnIndex(LocationColumns.ACCURACY));
-				loc.dateTime = c.getLong(c.getColumnIndex(LocationColumns.DATETIME));
-				loc.isPayee = false;
-				loc.latitude = c.getDouble(c.getColumnIndex(LocationColumns.LATITUDE));
-				loc.longitude = c.getDouble(c.getColumnIndex(LocationColumns.LONGITUDE));
-				loc.name = c.getString(c.getColumnIndex(LocationColumns.NAME));
-				loc.provider = c.getString(c.getColumnIndex(LocationColumns.PROVIDER));
-				loc.resolvedAddress = c.getString(c.getColumnIndex(LocationColumns.RESOLVED_ADDRESS));
-				
-				return loc;
+			if (c.moveToNext()) {
+				return c.getString(0);
 			} else {
-				return new MyLocation();
+				return "";
 			}
 		} finally {
 			c.close();

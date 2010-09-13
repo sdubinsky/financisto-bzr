@@ -10,7 +10,7 @@
       Denis Solonenko - initial API and implementation
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="ru.orangesoftware.financisto" android:versionName="1.4.0" android:versionCode="30">
+	package="ru.orangesoftware.financisto" android:versionName="1.4.1" android:versionCode="32">
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:description="@string/app_description" android:debuggable="false">
 		
@@ -72,10 +72,11 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".activity.PinActivity" android:label="@string/pin"
-			android:theme="@style/CupcakeDialog"/>
+		<activity android:name=".activity.PinActivity" android:label="@string/enter_pin"/>
 
 		<activity android:name=".activity.BlotterActivity" android:label="@string/blotter"/>
+		
+		<activity android:name=".activity.MassOpActivity" android:label="@string/mass_operations"/>
 		
 		<activity android:name=".activity.BudgetBlotterActivity" android:label="@string/budget"/>
 
@@ -155,6 +156,9 @@
 			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
 			
 		<activity android:name=".activity.MonthlyViewActivity" android:label="@string/monthly_view"/>
+		
+		<activity android:name=".activity.Report2DChartActivity" android:label="@string/report"/>
+		<activity android:name=".activity.ReportPreferencesActivity" android:label="@string/report_preferences"/>
 
 	</application>
 	
