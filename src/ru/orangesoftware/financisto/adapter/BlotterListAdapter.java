@@ -180,11 +180,6 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 			} else {
 				TransactionStatus status = TransactionStatus.valueOf(cursor.getString(BlotterColumns.Indicies.STATUS));
 				v.indicator.setBackgroundColor(colors[status.ordinal()]);
-//				if (status == TransactionStatus.PN) {
-//					v.indicator.setBackgroundColor(pendingColor);			
-//				} else {
-//					v.indicator.setBackgroundColor(Color.TRANSPARENT);			
-//				}
 				long date = cursor.getLong(BlotterColumns.Indicies.DATETIME);
 				dt.setTime(date);
 				v.bottomView.setText(DateUtils.formatDateTime(context, dt.getTime(), 

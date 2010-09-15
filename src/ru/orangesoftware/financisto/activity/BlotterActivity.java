@@ -59,7 +59,7 @@ public class BlotterActivity extends AbstractListActivity {
 	private static final int BILL_PREVIEW_REQUEST = 7;
 	
 		
-	private static final int FILTER_REQUEST = 6;
+	protected static final int FILTER_REQUEST = 6;
 	private static final int MENU_DUPLICATE = MENU_ADD+1;
 	private static final int MENU_SAVE_AS_TEMPLATE = MENU_ADD+2;
 	
@@ -101,11 +101,15 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 	
 	@Override
-	protected void internalOnCreate(Bundle savedInstanceState) {
-		super.internalOnCreate(savedInstanceState);
-
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater = new NodeInflater(layoutInflater);
+	}
+
+	@Override
+	protected void internalOnCreate(Bundle savedInstanceState) {
+		super.internalOnCreate(savedInstanceState);
 
 		bTransfer = (ImageButton)findViewById(R.id.bTransfer);
 		bTransfer.setOnClickListener(new OnClickListener(){
@@ -309,7 +313,7 @@ public class BlotterActivity extends AbstractListActivity {
 		blotterFilter.toSharedPreferences(preferences);
 	}
 
-	private void applyFilter() {
+	protected void applyFilter() {
 		long accountId = blotterFilter.getAccountId();
 		if (accountId != -1) {
 			Account a = em.getAccount(accountId);
@@ -320,6 +324,10 @@ public class BlotterActivity extends AbstractListActivity {
 		if (title != null) {
 			setTitle(getString(R.string.blotter)+" : "+title);
 		}
+		updateFilterImage();		
+	}
+
+	protected void updateFilterImage() {
 		bFilter.setImageResource(blotterFilter.isEmpty() ? R.drawable.ic_menu_filter_off : R.drawable.ic_menu_filter_on);
 	}
 
