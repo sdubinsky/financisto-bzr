@@ -8,6 +8,7 @@
   
   Contributors:
       Denis Solonenko - initial API and implementation
+      Andrew K. Lovetski - new strings for version 1.4.1, added letter ё, corrected misprints
 -->
 <resources>
     <string name="accounts">Счета</string>
@@ -21,8 +22,8 @@
     <string name="save">Сохранить</string>
     <string name="cancel">Отмена</string>
     <string name="close">Закрыть</string>
-    <string name="edit_account">Редактировать счет</string>
-    <string name="add_account">Добавить счет</string>
+    <string name="edit_account">Редактировать счёт</string>
+    <string name="add_account">Добавить счёт</string>
     <string name="title">Название</string>
     <string name="payee">Получатель</string>
     <string name="currency">Валюта</string>    
@@ -34,7 +35,7 @@
 	<string name="edit">Редактировать</string>
 	<string name="delete">Удалить</string>
 	<string name="add_transaction">Добавить транзакцию</string>	
-	<string name="account">Счет</string>
+	<string name="account">Счёт</string>
 	<string name="category">Категория</string>
 	<string name="add_category">Добавить категорию</string>
 	<string name="income">Приход</string>
@@ -68,19 +69,20 @@
 	<string name="integer_part_title">Кол-во разрядов</string>
 	<string name="use_hundredth_title">Использовать копейки</string>
 	<string name="project">Проект</string>
-	<string name="select_account">Выберите счет..</string>
+	<string name="select_account">Выберите счёт..</string>
 	<string name="select_currency">Выберите валюту..</string>
 	<string name="select_category">Выберите категорию..</string>
+	<string name="select_project">Выберите проект..</string>	
 	<string name="warning">Предупреждение</string>
-	<string name="no_accounts">Начните с добавления счета. Нажмите зеленый \'+\' внизу..</string>
+	<string name="no_accounts">Начните с добавления счёта. Нажмите зеленый \'+\' внизу..</string>
 	<string name="no_budgets">Нет бюджетов</string>
 	<string name="no_transactions">Нет транзакций</string>
 	<string name="no_categories">Нет категорий</string>
 	<string name="no_currencies">Нет валют</string>
 	<string name="no_projects">Нет проектов</string>
 	<string name="no_recur">Без повторения</string>
-	<string name="account_from">Со счета</string>
-	<string name="account_to">На счет</string>
+	<string name="account_from">Со счёта</string>
+	<string name="account_to">На счёт</string>
 	<string name="amount_from">Расход</string>
 	<string name="amount_to">Приход</string>
 	<string name="rate">Курс</string>
@@ -112,7 +114,7 @@
 		<item>Текст</item>
 		<item>Число</item>
 		<item>Список</item>
-		<item>Чекбокс</item>
+		<item>Флажок</item>
 	</string-array>
 	<string name="attribute_type">Тип</string>
 	<string name="attribute_name">Название</string>
@@ -134,19 +136,19 @@
 	<string name="service_is_not_available">Сервис недоступен, попробуйте позже</string>	
 	<string name="resolve_address">Получить адрес</string>
 	<string name="resolving_address">Получение адреса..</string>
-	<string name="report">Отчет</string>
-	<string name="reports">Отчеты</string>	
-	<string name="no_reports">Нет отчетов</string>
-	<string name="select_report">Выберите отчет..</string>
+	<string name="report">Отчёт</string>
+	<string name="reports">Отчёты</string>	
+	<string name="no_reports">Нет отчётов</string>
+	<string name="select_report">Выберите отчёт..</string>
 	<string name="overall">Итоговый</string>
 	<string name="report_by_period">По периодам</string>
-	<string name="report_by_period_summary">Отчет по периодам</string>
+	<string name="report_by_period_summary">Отчёт по периодам</string>
 	<string name="report_by_category">По категориям</string>
-	<string name="report_by_category_summary">Отчет по категориям</string>
+	<string name="report_by_category_summary">Отчёт по категориям</string>
 	<string name="report_by_location">По местоположениям</string>
-	<string name="report_by_location_summary">Отчет по местоположениям</string>
+	<string name="report_by_location_summary">Отчёт по местоположениям</string>
 	<string name="report_by_project">По проектам</string>
-	<string name="report_by_project_summary">Отчет по проектам</string>
+	<string name="report_by_project_summary">Отчёт по проектам</string>
 	<string-array name="report_types">
 		<item>По периодам</item>
 		<item>По категориям</item>		
@@ -174,11 +176,11 @@
 	<string name="currency_code_hint">Код по ISO 4217</string>
 	<string name="is_default">Домашняя валюта</string>
 	<string name="is_included_into_totals">Включить в итог</string>
-	<string name="is_included_into_totals_summary">Включать транзакции с этого счета в итог</string>
+	<string name="is_included_into_totals_summary">Включать транзакции с этого счёта в итог</string>
 	<string name="decimals">\nДробные</string>
 	<string name="decimal_separator">Разделитель\nдробных</string>
 	<string name="group_separator">Разделитель\nгрупп</string>
-	<string name="delete_account_confirm">Удалить счет?</string>
+	<string name="delete_account_confirm">Удалить счёт?</string>
 	<string name="delete_transaction_confirm">Удалить транзакцию?</string>
 	<string name="delete_budget_confirm">Удалить бюджет?</string>
 	<string name="delete_budget_recurring_select">Вы удаляете повторяющийся бюджет. Удалить?</string>
@@ -191,10 +193,10 @@
 		<item>Наличные</item>
 		<item>Кредитная карта</item>		
 	</string-array>
-	<string name="account_type">Тип счета</string>
+	<string name="account_type">Тип счёта</string>
 	<string name="card_issuer">Эмитент</string>	
 	<string name="account_type_cash">Наличные</string>
-	<string name="account_type_bank">Банковский счет</string>
+	<string name="account_type_bank">Банковский счёт</string>
 	<string name="account_type_debit_card">Дебетовая карта</string>
 	<string name="account_type_credit_card">Кредитная карта</string>
 	<string name="account_type_asset">Актив</string>	
@@ -229,8 +231,8 @@
 	</string-array>
 	<string name="more_products">Другие продукты..</string>
 	<string name="pin_protection">Защита ПИНом</string>	
-	<string name="pin_protection_summary">Поставьте чтобы защитить запуск ПИНом</string>
-	<string name="pin_protection_notify">Пожалуйста укажите ПИН в Настройках</string>
+	<string name="pin_protection_summary">Поставьте, чтобы защитить запуск ПИНом</string>
+	<string name="pin_protection_notify">Пожалуйста, укажите ПИН в Настройках</string>
 	<string name="change_pin">Сменить ПИН</string>	
 	<string name="change_pin_summary">Сменить ПИН</string>
 	<string name="pin">ПИН</string>
@@ -239,19 +241,30 @@
 	<string name="restore">Восстановить</string>
 	<string name="backup_database">Резерв. копия базы</string>
 	<string name="backup_database_inprogress">Копирование базы..</string>
+	<string name="backup_database_gdocs">Резерв. копия в Google Docs</string>
+	<string name="backup_database_gdocs_inprogress">Копирование базы..</string>
 	<string name="csv_export">Экспорт в CSV</string>
 	<string name="csv_export_inprogress">Экспортирование базы в CSV..</string>	
 	<string name="restore_database">Восстановить базу</string>
 	<string name="restore_database_inprogress">Восстановление базы...</string>
+	<string name="restore_database_gdocs">Восстановить из Google Docs</string>
+	<string name="restore_database_inprogress_gdocs">Восстановление базы...</string>
 	<string name="restore_database_success">База была успешно восстановлена..</string>
+	<string name="gdocs_connection_failed">Нет связи с Google Docs.</string>
+	<string name="gdocs_folder_not_found">Папка резервной копии на Google Docs не найдена.</string>
+	<string name="gdocs_credentials_not_configured">Пожалуйста, укажите логин и пароль аккаунта Google в Настройках.</string>
+	<string name="gdocs_folder_not_configured">Пожалуйста, укажите папку резервной копии Google Docs в Настройках.</string>
+	<string name="gdocs_login_failed">Логин или пароль аккаунта Google указаны неверно.</string>
+	<string name="gdocs_backup_failed">Ошибка при отправке файла резервной копии в Google Docs. Попробуйте ещё раз.</string>
+	<string name="gdocs_restore_failed">Ошибка при получении файла резервной копии. Попробуйте ещё раз.</string>
 	<string name="success">Успешно!</string>
 	<string name="fail">Неудачно..</string>
 	<string name="duplicate">Дублировать</string>
-	<string name="select_from_account">Выберите счет источник..</string>	
-	<string name="select_to_account">Выберите счет получатель..</string>
+	<string name="select_from_account">Выберите счёт источник..</string>	
+	<string name="select_to_account">Выберите счёт получатель..</string>
 	<string name="update_balance">Обновить баланс</string>
-	<string name="close_account">Закрыть счет</string>
-	<string name="reopen_account">Переоткрыть счет</string>
+	<string name="close_account">Закрыть счёт</string>
+	<string name="reopen_account">Переоткрыть счёт</string>
 	<string name="difference">Разница</string>
 	<string name="new_balance">Новый баланс</string>
 	<string name="duplicate_success">Транзакция была скопирована с текущей датой и временем</string>	
@@ -280,10 +293,10 @@
 	<string name="show_project_order">Прядок списка проектов</string>	
 	<string name="show_project_order_summary">Относительное положение списка проектов на экране</string>
 	<string name="remember_selection">Запоминать выбор</string>
-	<string name="remember_last_account">Запоминать счет</string>	
-	<string name="remember_last_account_summary">Запоминать выбранный счет</string>
+	<string name="remember_last_account">Запоминать счёт</string>	
+	<string name="remember_last_account_summary">Запоминать выбранный счёт</string>
 	<string name="remember_last_category">Запоминать категорию</string>	
-	<string name="remember_last_category_summary">Запоминать выбранную категорию для счета</string>
+	<string name="remember_last_category_summary">Запоминать выбранную категорию для счёта</string>
 	<string name="remember_last_location">Запоминать место</string>	
 	<string name="remember_last_location_summary">Запоминать выбранное место для категории</string>
 	<string name="remember_last_project">Запоминать проект</string>	
@@ -342,9 +355,16 @@
 	<string name="calculating">Рассчитываю..</string>
 	<string name="budget_mode">Смягчить условия</string>
 	<string name="budget_mode_summary">Использовать менее ограничительные условия (категория ИЛИ проект) для фильтрации транзакций</string>
+	<string name="gdocs_backup">Резерв. копии на Google Docs</string>
+	<string name="user_login">Логин</string>
+	<string name="user_login_summary">Логин (имя пользователя) аккаунта Google</string>
+	<string name="user_password">Пароль</string>
+	<string name="user_password_summary">Пароль аккаунта Google</string>
+	<string name="backup_folder">Папка резерв. копии</string>
+	<string name="backup_folder_summary">Папка на Google Docs для хранения файлов резервных копий.</string>
 	<string name="other">Другие</string>
-	<string name="send_error_reports">Посылать репорты об ошибках</string>
-	<string name="send_error_reports_summary">Посылать анонимные репорты об ошибках на orangesoftware.ru (требует перезапуска)</string>
+	<string name="send_error_reports">Посылать отчёты об ошибках</string>
+	<string name="send_error_reports_summary">Посылать анонимные отчёты об ошибках на orangesoftware.ru (требует перезапуска)</string>
 	<string name="template_name">Название шаблона</string>
 	<string name="transaction_templates">Шаблоны</string>			
 	<string name="transaction_template">Транзакция (Шаблон)</string>	
@@ -419,9 +439,12 @@
 	<string name="notification_led">Индикатор</string>
 	<string name="transaction_status">Статус</string>
 	<string name="transaction_status_pending">Ожидается</string>
-	<string name="transaction_status_unreconciled">Невыверенно</string>
+	<string name="transaction_status_unreconciled">Не выверено</string>
 	<string name="transaction_status_cleared">Занесено</string>
-	<string name="transaction_status_reconciled">Выверенно</string>
+	<string name="transaction_status_reconciled">Выверено</string>
+	<string name="scheduled">(scheduled)</string>
+	<string name="expired">(expired)</string>
+	<string name="pending">(pending)</string>
 	<string name="system_attribute_delete_after_expired">Удалить после истечения</string>
 	<string name="no_transaction_found">Транзакия не найдена, перезагрузите Financisto..</string>
 	<string name="include_credit">Включить приход</string>	
@@ -431,7 +454,7 @@
 	<string name="attach_picture">Прикрепить фото</string>		
 	<string name="new_picture">Сфотографировать</string>		
 	<string name="report_by_sub_category">По под-категориям</string>
-	<string name="report_by_sub_category_summary">Отчет по под-категориям</string>
+	<string name="report_by_sub_category_summary">Отчёт по под-категориям</string>
 
 	<string name="credits">Благодарность</string>
 	<string name="sort_by_title">Сортировать по заголовкам</string>
@@ -441,20 +464,20 @@
 	<string name="negative_opening_amount">Отрицательный баланс</string>
 	<string name="negative_opening_amount_summary">Открыть аккаунт с отрицательным балансом</string>
 	<string name="payment_day">День погашения</string>
-	<string name="closing_day">Рассчетный день</string>
-	<string name="closing_day_hint">День, в который происходит рассчет процентов</string>
+	<string name="closing_day">Расчётный день</string>
+	<string name="closing_day_hint">День, в который происходит расчёт процентов</string>
 	<string name="ccard_statement">Выписка</string>
 	<string name="monthly_view">Выписка на месяц</string>	
 	<string name="credit_card_statement">Выписка по кредитной карте</string>
 	<string name="ccard_statement_title">&lt;ccard&gt; выписка</string>
 	<string name="ccard_par">&lt;ccard&gt;</string>
-	<string name="bill_on">Счет на </string>
+	<string name="bill_on">Счёт на </string>
 	<string name="monthly_result">Баланс на месяц</string>
 	<string name="closing_day_error">День погашения не верен.</string>
-	<string name="payment_day_error">Рассчетный день не верен.</string>
-	<string name="statement_error">Укажите день погашения и рассчетный день в свойствах карты.</string>
+	<string name="payment_day_error">Расчётный день не верен.</string>
+	<string name="statement_error">Укажите день погашения и расчётный день в свойствах карты.</string>
 	<string name="is_ccard_payment">Платеж по кредитной карте</string>
-	<string name="is_ccard_payment_summary">Не включать в итоги по счету</string>
+	<string name="is_ccard_payment_summary">Не включать в итоги по счёту</string>
 	<string name="header_payments">Платежи</string>
 	<string name="header_credits">Различные поступления</string>
 	<string name="header_expenses">Расходы</string>
@@ -462,5 +485,4 @@
 	<string name="ui_language">Locale</string>
 	<string name="ui_language_summary">Выбрать язык интерфейса (требует перезапуска)</string>
 	<string name="enter_pin">Введите PIN</string>
-			
 </resources>

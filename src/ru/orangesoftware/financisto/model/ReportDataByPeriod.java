@@ -208,8 +208,11 @@ public class ReportDataByPeriod {
 	 * */
 	private String getWhereClause(String filterColumn, int[] filterId, int[] accounts) {
 		StringBuffer accountsWhere = new StringBuffer();
+		// no templates and scheduled transactions
+		accountsWhere.append(TransactionColumns.IS_TEMPLATE+"=0");
+		
 		// report filtering (account, category, location or project)
-		accountsWhere.append("(");
+		accountsWhere.append(" and (");
 		for (int i=0;i<filterId.length;i++) 
 		{
 			if(i!=0)
