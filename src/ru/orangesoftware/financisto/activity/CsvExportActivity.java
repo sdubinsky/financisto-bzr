@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 
 public class CsvExportActivity extends Activity {
@@ -34,6 +35,8 @@ public class CsvExportActivity extends Activity {
 	public static final String CSV_EXPORT_GROUP_SEPARATOR = "CSV_EXPORT_GROUP_SEPARATOR";
 	public static final String CSV_EXPORT_DATE_FORMAT = "CSV_EXPORT_DATE_FORMAT";
 	public static final String CSV_EXPORT_TIME_FORMAT = "CSV_EXPORT_TIME_FORMAT";
+	public static final String CSV_EXPORT_FIELD_SEPARATOR = "CSV_EXPORT_FIELD_SEPARATOR";
+	public static final String CSV_EXPORT_INCLUDE_HEADER = "CSV_EXPORT_INCLUDE_HEADER";
 
 	private final WhereFilter filter = WhereFilter.empty();
 
@@ -67,6 +70,8 @@ public class CsvExportActivity extends Activity {
 			public void onClick(View view) {
 				Spinner decimals = (Spinner)findViewById(R.id.spinnerDecimals);
 				Spinner decimalSeparators = (Spinner)findViewById(R.id.spinnerDecimalSeparators);
+				Spinner fieldSeparators = (Spinner)findViewById(R.id.spinnerFieldSeparator);
+				CheckBox includeHeader = (CheckBox)findViewById(R.id.checkboxIncludeHeader);
 
 				Intent data = new Intent();
 				filter.toIntent(data);
@@ -74,6 +79,8 @@ public class CsvExportActivity extends Activity {
 				data.putExtra(CSV_EXPORT_DECIMALS, 2-decimals.getSelectedItemPosition());
 				data.putExtra(CSV_EXPORT_DECIMAL_SEPARATOR, decimalSeparators.getSelectedItem().toString());
 				data.putExtra(CSV_EXPORT_GROUP_SEPARATOR, groupSeparators.getSelectedItem().toString());
+				data.putExtra(CSV_EXPORT_FIELD_SEPARATOR, fieldSeparators.getSelectedItem().toString().charAt(1));
+				data.putExtra(CSV_EXPORT_INCLUDE_HEADER, includeHeader.isChecked());
 				
 				setResult(RESULT_OK, data);
 				finish();
