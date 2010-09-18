@@ -21,6 +21,7 @@ import ru.orangesoftware.financisto.utils.DateUtils.Period;
 import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,8 +51,6 @@ public class CsvExportActivity extends Activity {
 		
 		df = DateUtils.getShortDateFormat(this);
 		
-		final Spinner groupSeparators = (Spinner)findViewById(R.id.spinnerGroupSeparators);
-		groupSeparators.setSelection(1);
 		filter.put(new DateTimeCriteria(PeriodType.THIS_MONTH));
 		
 		bPeriod = (Button)findViewById(R.id.bPeriod);
@@ -70,6 +69,7 @@ public class CsvExportActivity extends Activity {
 			public void onClick(View view) {
 				Spinner decimals = (Spinner)findViewById(R.id.spinnerDecimals);
 				Spinner decimalSeparators = (Spinner)findViewById(R.id.spinnerDecimalSeparators);
+				Spinner groupSeparators = (Spinner)findViewById(R.id.spinnerGroupSeparators);
 				Spinner fieldSeparators = (Spinner)findViewById(R.id.spinnerFieldSeparator);
 				CheckBox includeHeader = (CheckBox)findViewById(R.id.checkboxIncludeHeader);
 
@@ -97,6 +97,52 @@ public class CsvExportActivity extends Activity {
 		});
 		
 		updatePeriod();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		savePreferences();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		restorePreferences();
+	}
+	
+	private void savePreferences() {
+		Spinner decimals = (Spinner)findViewById(R.id.spinnerDecimals);
+		Spinner decimalSeparators = (Spinner)findViewById(R.id.spinnerDecimalSeparators);
+		Spinner groupSeparators = (Spinner)findViewById(R.id.spinnerGroupSeparators);
+		Spinner fieldSeparators = (Spinner)findViewById(R.id.spinnerFieldSeparator);
+		CheckBox includeHeader = (CheckBox)findViewById(R.id.checkboxIncludeHeader);
+
+		SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
+		
+		editor.putInt(CSV_EXPORT_DECIMALS, decimals.getSelectedItemPosition());
+		editor.putInt(CSV_EXPORT_DECIMAL_SEPARATOR, decimalSeparators.getSelectedItemPosition());
+		editor.putInt(CSV_EXPORT_GROUP_SEPARATOR, groupSeparators.getSelectedItemPosition());
+		editor.putInt(CSV_EXPORT_FIELD_SEPARATOR, fieldSeparators.getSelectedItemPosition());
+		editor.putBoolean(CSV_EXPORT_INCLUDE_HEADER, includeHeader.isChecked());
+		
+		editor.commit();
+	}
+	
+	private void restorePreferences() {
+		Spinner decimals = (Spinner)findViewById(R.id.spinnerDecimals);
+		Spinner decimalSeparators = (Spinner)findViewById(R.id.spinnerDecimalSeparators);
+		Spinner groupSeparators = (Spinner)findViewById(R.id.spinnerGroupSeparators);
+		Spinner fieldSeparators = (Spinner)findViewById(R.id.spinnerFieldSeparator);
+		CheckBox includeHeader = (CheckBox)findViewById(R.id.checkboxIncludeHeader);
+
+		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+		
+		decimals.setSelection(prefs.getInt(CSV_EXPORT_DECIMALS, 0));
+		decimalSeparators.setSelection(prefs.getInt(CSV_EXPORT_DECIMAL_SEPARATOR, 0));
+		groupSeparators.setSelection(prefs.getInt(CSV_EXPORT_GROUP_SEPARATOR, 1));
+		fieldSeparators.setSelection(prefs.getInt(CSV_EXPORT_FIELD_SEPARATOR, 0));
+		includeHeader.setChecked(prefs.getBoolean(CSV_EXPORT_INCLUDE_HEADER, true));
 	}
 
 	private void updatePeriod() {
