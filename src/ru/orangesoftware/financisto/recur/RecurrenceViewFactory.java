@@ -561,7 +561,7 @@ public class RecurrenceViewFactory {
 				x.selectPosition(activity, id, R.string.recurrence_period, adapter, selected);				
 			} else {
 				int k = id-100;
-				ArrayAdapter<String> adapter = EnumUtils.getAdapter(activity, MonthlyPattern.values());
+				ArrayAdapter<String> adapter = EnumUtils.createDropDownAdapter(activity, MonthlyPattern.values());
 				x.selectPosition(activity, id, R.string.recurrence_period, adapter, pattern[k].ordinal());				
 			}
 		}

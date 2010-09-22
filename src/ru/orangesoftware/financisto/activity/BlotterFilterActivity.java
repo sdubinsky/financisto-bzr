@@ -291,7 +291,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			updateSortOrderFromFilter();
 			break;
 		case R.id.status: {
-			ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, statuses);
+			ArrayAdapter<String> adapter = EnumUtils.createDropDownAdapter(this, statuses);
 			Criteria c = filter.get(BlotterFilter.STATUS);
 			int selectedPos = c != null ? TransactionStatus.valueOf(c.getStringValue()).ordinal() : -1;
 			x.selectPosition(this, R.id.status, R.string.transaction_status, adapter, selectedPos);

@@ -20,8 +20,8 @@
 	<color name="future_color">#fff200</color>	
 	<color name="pending_transaction_color">#303030</color>	
 	<color name="unreconciled_transaction_color">#737373</color>	
-	<color name="reconciled_transaction_color">#79c471</color>	
-	<color name="cleared_transaction_color">#39b54a</color>	
+	<color name="reconciled_transaction_color">#006a25</color>	
+	<color name="cleared_transaction_color">#79c471</color>	
 	<dimen name="picker_width">62dp</dimen>
 	<dimen name="calculator_button_width">50px</dimen>
 	<dimen name="calculator_button_height">50px</dimen>
@@ -122,5 +122,6 @@
 	<string name="card_issuer_diners">Diners Club</string>	
 	<string name="card_issuer_discover">Discover</string>	
 	<string name="card_issuer_nets">NETS</string>	
-	<string name="recur_rrule">RFC-2445 RRULE</string>	
+	<string name="recur_rrule">RFC-2445 RRULE</string>
+		
 </resources>

@@ -50,6 +50,7 @@ import ru.orangesoftware.financisto.model.SystemAttribute;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.model.TransactionAttribute;
+import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import android.content.ContentValues;
@@ -1081,6 +1082,54 @@ public class DatabaseAdapter {
 		} finally {
 			c.close();
 		}
+	}
+
+	public void clearAll(long[] ids) {
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.STATUS+"='"+TransactionStatus.CL+"'";
+		runInTransaction(sql, ids);
+	}
+
+	public void reconcileAll(long[] ids) {
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.STATUS+"='"+TransactionStatus.RC+"'";
+		runInTransaction(sql, ids);
+	}
+
+	public void deleteAll(long[] ids) {
+		String sql = "DELETE FROM "+TRANSACTION_TABLE;
+		runInTransaction(sql, ids);
+	}
+
+	private void runInTransaction(String sql, long[] ids) {
+		db.beginTransaction();
+		try {
+			int count = ids.length;
+			int bucket = 100;
+			int num = 1+count/bucket;
+			for (int i=0; i<num; i++) {
+				int x = bucket*i;
+				int y = Math.min(count, bucket*(i+1));
+				String script = createSql(sql, ids, x, y);
+				db.execSQL(script);
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+	}
+
+	private String createSql(String updateSql, long[] ids, int x, int y) {
+		StringBuilder sb = new StringBuilder(updateSql)
+								.append(" WHERE ")
+								.append(TransactionColumns.ID)
+								.append(" IN (");
+		for (int i=x; i<y; i++) {
+			if (i > x) {
+				sb.append(",");
+			}
+			sb.append(ids[i]);
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 
 }

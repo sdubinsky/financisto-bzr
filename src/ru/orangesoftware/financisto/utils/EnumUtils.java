@@ -25,9 +25,16 @@ public abstract class EnumUtils {
 		return items;
 	}
 	
-	public static ArrayAdapter<String> getAdapter(Context context, LocalizableEnum...values) {
+	public static ArrayAdapter<String> createDropDownAdapter(Context context, LocalizableEnum...values) {
 		String[] items = getLocalizedValues(context, values);
 		return new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, items);		
 	}
 	
+	public static ArrayAdapter<String> createSpinnerAdapter(Context context, LocalizableEnum...values) {
+		String[] items = getLocalizedValues(context, values);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, items);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		return adapter;
+	}
+
 }

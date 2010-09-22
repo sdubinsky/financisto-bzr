@@ -580,11 +580,17 @@
 	<string name="is_ccard_payment_summary">Not Include into bill total</string>
 	<string name="header_payments">Payments</string>
 	<string name="header_credits">Various Credits</string>
-	<string name="header_expenses">Expenses</string>
-	
+	<string name="header_expenses">Expenses</string>	
 	<string name="ui_language">Locale</string>
 	<string name="ui_language_summary">Set language of user interface (requires restart!)</string>
+	
 	<string name="enter_pin">Enter PIN</string>
 	<string name="mass_operations">Mass operations</string>
-	
+	<string name="mass_operations_use_filter">Use filter to search for transactions</string>
+	<string name="mass_operations_clear_all">Clear all</string>			
+	<string name="mass_operations_reconcile">Reconcile all</string>		
+	<string name="mass_operations_delete">Delete all</string>		
+	<string name="proceed">Proceed</string>	
+	<string name="apply_mass_op">Apply \'%s\' on %d transaction(s)?</string>		
+	<string name="apply_mass_op_zero_count">No transactions selected..</string>		
 </resources>
