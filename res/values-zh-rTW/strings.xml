@@ -148,12 +148,40 @@
 	<string name="report_by_location_summary">以地點分別統計的交易報告</string>
 	<string name="report_by_project">以專案統計</string>
 	<string name="report_by_project_summary">以專案分別統計的交易報告</string>
+
+	<string name="report_by_account_by_period">以帳戶 / 期間統計</string>
+	<string name="report_by_account_by_period_summary">以帳戶與期間統計的交易報告</string>
+	<string name="report_by_category_by_period">以分類 / 期間統計</string>
+	<string name="report_by_category_by_period_summary">以分類與期間統計的交易報告</string>
+	<string name="report_by_location_by_period">以地點 / 期間統計</string>
+	<string name="report_by_location_by_period_summary">以地點與期間統計的交易報告</string>
+	<string name="report_by_project_by_period">以專案 / 期間統計</string>
+	<string name="report_by_project_by_period_summary">以專案與期間統計的</string>
 	<string-array name="report_types">
 		<item>以期間統計</item>
 		<item>以分類統計</item>		
 		<item>以地點統計</item>
 		<item>以專案統計</item>
+		<item>以帳戶/期間統計</item>
+		<item>以分類/期間統計</item>
+		<item>以地點/期間統計</item>
+		<item>以專案/期間統計</item>
 	</string-array>
+	<string name="max_result_label">最多:</string>
+	<string name="min_result_label">最少:</string>
+	<string name="mean_result_label">平均:</string>
+	<string name="sum_result_label">總額:</string>
+	<string name="report_init_res">0</string>
+	<string name="no_data_to_report">沒有資料可供顯示報告。</string>
+	<string name="report_preferences_not_set">請至「報告選項」選單調整設定。採用預設幣值與期間。</string>
+	<string name="currency_not_set">未設定基準幣值。採用預設幣值。</string>
+	<string name="period_not_set">未設定參考期間。採用預設期間。</string>
+	<string name="report_no_category">沒有分類可供過濾報告內容。</string>
+	<string name="report_no_project">沒有專案可供過濾報告內容。</string>
+	<string name="report_no_account">沒有帳戶可供過濾報告內容。</string>
+	<string name="report_no_location">沒有地點可供過濾報告內容。</string>
+	<string name="no_account">沒有帳戶</string>
+	
 	<string name="period_today">今天</string>
 	<string name="period_yesterday">昨天</string>
 	<string name="period_this_week">本週</string>
@@ -240,11 +268,28 @@
 	<string name="restore">重設</string>
 	<string name="backup_database">備份資料庫</string>
 	<string name="backup_database_inprogress">正在備份資料庫…</string>
+	<string name="backup_database_gdocs">備份到 Google Docs</string>
+	<string name="backup_database_gdocs_inprogress">正在備份資料庫到 Google Docs…</string>
 	<string name="csv_export">匯出 CSV</string>
 	<string name="csv_export_inprogress">匯出資料庫至 CSV 檔案…</string>	
 	<string name="restore_database">匯回資料庫</string>
 	<string name="restore_database_inprogress">正在匯回資料庫…</string>
+	<string name="restore_database_gdocs">從 Google Docs 匯回資料庫</string>
+	<string name="restore_database_inprogress_gdocs">正在從 Google Docs 匯回資料庫…</string>
 	<string name="restore_database_success">資料庫已成功匯回</string>
+	<string name="gdocs_connection_failed">無法連上 Google Docs。</string>
+	<string name="gdocs_folder_not_found">Google Docs 上面找不到備份目錄。</string>
+	<string name="gdocs_credentials_not_configured">請至設定畫面設定 Google 帳號與密碼。</string>
+	<string name="gdocs_folder_not_configured">請至設定畫面設定 Google Docs 備份目錄。</string>
+	<string name="gdocs_login_failed">Google 帳號或密碼錯誤。</string>
+	<string name="gdocs_backup_failed">傳送備份資料到 Google Docs 時發生錯誤，請再試一次。</string>
+	<string name="gdocs_restore_failed">從 Google Docs 取得備份資料時發生錯誤，請再試一次。</string>
+	
+    <string name="gdocs_folder_error">讀寫 Google Docs 目錄時發生錯誤。</string>
+    <string name="gdocs_service_error">Google Docs 服務發生錯誤。</string>
+    <string name="gdocs_io_error">與 Google Docs 通訊時發生錯誤。</string>
+    <string name="package_info_error">取得套件資訊時發生錯誤。.</string>
+    
 	<string name="success">成功!</string>
 	<string name="fail">失敗…</string>
 	<string name="duplicate">複製</string>
@@ -259,6 +304,7 @@
 	<string name="duplicate_success_with_multiplier">已用現在的時間點複製交易項目 (x%d)</string>	
 	<string name="no_category">無分類</string>
 	<string name="no_project">無專案</string>
+	<string name="no_period">無期間</string>
 	<string name="current_location">現在地點</string>
 	<string name="protection">保護</string>
 	<string name="transaction_screen">交易編輯畫面</string>
@@ -343,6 +389,77 @@
 	<string name="calculating">計算中..</string>
 	<string name="budget_mode">擇一限制</string>
 	<string name="budget_mode_summary">只要分類或專案其中之一符合條件就納入預算</string>
+	<string name="gdocs_backup">Google Docs 備份</string>
+	<string name="user_login">帳號</string>
+	<string name="user_login_summary">Google 帳戶名稱</string>
+	<string name="user_password">密碼</string>
+	<string name="user_password_summary">Google 帳戶密碼</string>
+	<string name="backup_folder">備份目錄</string>
+	<string name="backup_folder_summary">Google Docs 上面用來存放備份檔的目錄。</string>
+
+    <string name="report_preferences">報告選項</string>
+    <string name="all_reports_preferences">一般報告選項</string>
+    <string name="category_by_period_preferences">根據分類與期間統計的選項</string>
+    <string name="report_include_sub_categories">清單內包含子分類</string>
+	<string name="report_include_sub_categories_summary">在分類清單內顯示子分類。</string>
+	<string name="report_add_sub_categories_result">累加子分類結果</string>
+	<string name="report_add_sub_categories_result_summary">將子分類的結果加到上層分類的結果。</string>
+	<string name="report_consider_null_results">考慮空資料</string>
+	<string name="report_consider_null_results_summary">計算最大、最小、平均值時考慮空資料。</string>
+	<string name="report_include_no_filter">包含未分類的資料</string>
+	<string name="report_include_no_filter_summary">在報告過濾清單內包含未分類的資料 (無分類、無專案、位置不明等)</string>
+	<string name="report_reference_month">基準月份</string>
+	<string name="report_reference_month_summary">定義報告統計終點的月份。</string>
+	<string name="report_last_quarter">前一季</string>
+	<string name="report_last_half_year">前半年</string>
+	<string name="report_last_9_months">前 9 個月</string>
+	<string name="report_last_year">前一年</string>
+	<string-array name="report_reference_month_entities">
+        <item>6 個月前</item>
+	<item>3 個月前</item>
+        <item>上個月</item>
+        <item>這個月</item>
+        <item>下個月</item>
+        <item>3 個月後</item>
+        <item>6 個月後</item>
+    </string-array>
+	<string name="report_reference_period">參考期間</string>
+	<string name="report_reference_period_summary">定義繪製報告圖的時候使用的參考期間 (月份數目)</string>
+	<string-array name="report_reference_period_entities">
+        <item>3 個月</item>
+        <item>6 個月</item>
+        <item>9 個月</item>
+        <item>1 年</item>
+    </string-array>
+	<string name="report_reference_currency">基準幣值</string>
+	<string name="report_reference_currency_summary">定義取得報告資料時使用的幣值。</string>
+	<string name="report_last_n_months">前 $n 個月</string>
+	<string name="report_n_months_var">$n</string>
+	<string name="month_jan">一月</string>
+	<string name="month_feb">二月</string>
+	<string name="month_mar">三月</string>
+	<string name="month_apr">四月</string>
+	<string name="month_mai">五月</string>
+	<string name="month_jun">六月</string>
+	<string name="month_jul">七月</string>
+	<string name="month_aug">八月</string>
+	<string name="month_sep">九月</string>
+	<string name="month_oct">十月</string>
+	<string name="month_nov">十一月</string>
+	<string name="month_dec">十二月</string>
+	<string name="month_x_jan">一月</string>
+	<string name="month_x_feb">二月</string>
+	<string name="month_x_mar">三月</string>
+	<string name="month_x_apr">四月</string>
+	<string name="month_x_mai">五月</string>
+	<string name="month_x_jun">六月</string>
+	<string name="month_x_jul">七月</string>
+	<string name="month_x_aug">八月</string>
+	<string name="month_x_sep">九月</string>
+	<string name="month_x_oct">十月</string>
+	<string name="month_x_nov">十一月</string>
+	<string name="month_x_dec">十二月</string>	
+
 	<string name="other">其它</string>
 	<string name="send_error_reports">傳送錯誤報告</string>
 	<string name="send_error_reports_summary">傳送匿名錯誤報告至 orangesoftware.ru (需要重新啟動)</string>
@@ -357,7 +474,6 @@
 	<string name="save_as_template_success">已將交易儲存為樣板</string>
 	<string name="scheduled_transactions">定期</string>
 	<string name="no_scheduled_transactions">無定期交易</string>
-	
 	<string name="recur_interval_geeky">玩家描述</string>
 	<string name="recurrence_pattern">循環模式</string>
 	<string name="recurrence_period">循環期間</string>	
@@ -386,12 +502,10 @@
 	<string name="thursday">週四</string>
 	<string name="friday">週五</string>
 	<string name="saturday">週六</string>
-	
 	<string name="transaction_schedule">交易 (定期)</string>
 	<string name="transfer_schedule">移轉 (定期)</string>
 	<string name="recurrence_period_starts_on_date">起始日</string>
 	<string name="recurrence_period_starts_on_time">起始時刻</string>
-	
 	<string name="new_scheduled_transfer_title">定期移轉</string>
 	<string name="new_scheduled_transfer_text">您建立了一筆定期移轉</string>
 	<string name="new_scheduled_transaction_title">定期交易</string>
@@ -401,7 +515,6 @@
 	<string name="new_scheduled_transaction_credit">存入</string>
 	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) 已從 %s 移轉至 %s</string>
 	<string name="new_scheduled_transfer_notification_same_currency">%s 已從 %s 移轉至 %s</string>
-	
 	<string name="notification">通知</string>
 	<string name="notification_options_on">開啟</string>
 	<string name="notification_options_off">關閉</string>
@@ -411,43 +524,66 @@
 	<string name="notification_options_long">Zz</string>
 	<string name="notification_options_2_long">Zz-Zz</string>
 	<string name="notification_options_3_long">Zz-Zz-Zz</string>
-	
 	<string name="notification_options_led_green">綠色</string>
 	<string name="notification_options_led_blue">藍色</string>
 	<string name="notification_options_led_yellow">黃色</string>
 	<string name="notification_options_led_red">紅色</string>
 	<string name="notification_options_led_pink">粉紅色</string>
-	
 	<string name="notification_options_text">音效:%s 震動:%s LED:%s</string>	
 	<string name="notification_options_custom">自訂</string>	
 	<string name="notification_options_default">預設值</string>
 	<string name="notification_sound">鈴聲</string>
 	<string name="notification_vibra">震動</string>
 	<string name="notification_led">LED</string>
-		
 	<string name="transaction_status">狀態</string>
 	<string name="transaction_status_pending">擱置</string>
 	<string name="transaction_status_unreconciled">未出(入)帳</string>
 	<string name="transaction_status_cleared">已出(入)帳</string>
 	<string name="transaction_status_reconciled">已結清/已對帳</string>
-	
 	<string name="scheduled">(定期)</string>
 	<string name="expired">(過期)</string>
 	<string name="pending">(擱置)</string>
-	
 	<string name="system_attribute_delete_after_expired">過期後自動刪除</string>
 	<string name="no_transaction_found">查無交易，請重新啟動 Financisto</string>
-	
 	<string name="include_credit">包含增額</string>	
 	<string name="include_credit_summary">將增額(收入或退款)加入預算總額</string>
-	
 	<string name="enable_widget">啟用小工具</string>
 	<string name="enable_widget_summary">在小工具顯示帳戶總額</string>
-
 	<string name="attach_picture">附加照片</string>		
 	<string name="new_picture">拍攝照片</string>		
-	
 	<string name="report_by_sub_category">以子分類統計</string>
 	<string name="report_by_sub_category_summary">以子分類分別統計的交易報告</string>
+
+	<string name="credits">信用額度</string>
+	<string name="sort_by_title">根據標題排序</string>
+	<string name="sort_all_by_title">全部根據標題排序</string>
+	<string name="include_transfers_into_reports">報告包含轉帳</string>
+	<string name="include_transfers_into_reports_summary">在報告之中納入轉帳交易</string>
+	<string name="negative_opening_amount">負數起始金額</string>
+	<string name="negative_opening_amount_summary">新建一個起始金額是負數的帳戶</string>
+	<string name="payment_day">付款日</string>
+	<string name="closing_day">關帳日</string>
+	<string name="closing_day_hint">當月帳單的日期</string>
+	<string name="ccard_statement">帳單</string>
+	<string name="monthly_view">當月預覽</string>	
+	<string name="credit_card_statement">信用卡帳單</string>
+	<string name="ccard_statement_title">&lt;ccard&gt; 帳單</string>
+	<string name="ccard_par">&lt;ccard&gt;</string>
+	<string name="bill_on">統計到</string>
+	<string name="monthly_result">當月餘額</string>
+	<string name="closing_day_error">關帳日有誤。</string>
+	<string name="payment_day_error">付款日有誤。</string>
+	<string name="statement_error">請編輯帳戶設定關帳日與付款日。</string>
+	<string name="is_ccard_payment">信用卡付款</string>
+	<string name="is_ccard_payment_summary">不納入帳單總金額</string>
+	<string name="header_payments">付款</string>
+	<string name="header_credits">各信用額</string>
+	<string name="header_expenses">支出</string>
+	
+	<string name="ui_language">Locales / 語言</string>
+	<string name="ui_language_summary">Set language of user interface (requires restart!) / 設定使用者介面的語言 (需要重新啟動!)</string>
+	<string name="enter_pin">輸入 PIN</string>
+	<string name="mass_operations">大量編輯</string>
+	
 
 </resources>
