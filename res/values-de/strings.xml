@@ -177,9 +177,11 @@
     <string name="is_default">Standard</string>
     <string name="is_included_into_totals">Bei Gesamtrechnung berücksichtigen</string>
     <string name="is_included_into_totals_summary">Berücksichtigt die Transaktionen dieses Kontos in der Gesamtrechnung</string>
-    <string name="decimals">\nDezimal</string>
-    <string name="decimal_separator">Dezimal\ntrenner</string>
-    <string name="group_separator">Gruppen\nstrenner</string>
+    <string name="decimals">Dezimal-\nstellen</string>
+    <string name="decimal_separator">Dezimal-\ntrenner</string>
+    <string name="group_separator">Gruppen-\ntrenner</string>
+    <string name="field_separator">Feld-\ntrenner</string>
+    <string name="include_header">Spalten-\nüberschriften</string>
     <string name="delete_account_confirm">Konto löschen?</string>
     <string name="delete_transaction_confirm">Transaktion löschen?</string>
     <string name="delete_budget_confirm">Budget löschen?</string>

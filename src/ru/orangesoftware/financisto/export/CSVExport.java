@@ -33,12 +33,21 @@ public class CSVExport extends Export {
 
 	private final DatabaseAdapter db;
 	private final WhereFilter filter;
-	private final NumberFormat f; 
+	private final NumberFormat f;
+	private final char fieldSeparator;
+	private final boolean includeHeader;
 	
-	public CSVExport(DatabaseAdapter db, WhereFilter filter, Currency currency) {
+	public CSVExport(DatabaseAdapter db, WhereFilter filter, Currency currency,
+			char fieldSeparator, boolean includeHeader) {
 		this.db = db;
 		this.filter = filter;
 		this.f = CurrencyCache.createCurrencyFormat(currency);
+		this.fieldSeparator = fieldSeparator;
+		this.includeHeader = includeHeader;
+	}
+	
+	public CSVExport(DatabaseAdapter db, WhereFilter filter, Currency currency) {
+		this(db, filter, currency, ',', true);
 	}
 	
 	@Override
@@ -48,12 +57,17 @@ public class CSVExport extends Export {
 
 	@Override
 	protected void writeHeader(BufferedWriter bw) throws IOException  {
-		bw.write("date,time,account,amount,currency,category,parent,location,project,note\n");
+		if (includeHeader) {
+			Csv.Writer w = new Csv.Writer(bw).delimiter(fieldSeparator);
+			w.value("date").value("time").value("account").value("amount").value("currency");
+			w.value("category").value("parent").value("location").value("project").value("note");
+			w.newLine();
+		}
 	}
 
 	@Override
 	protected void writeBody(BufferedWriter bw) throws IOException {
-		Csv.Writer w = new Csv.Writer(bw).delimiter(',');
+		Csv.Writer w = new Csv.Writer(bw).delimiter(fieldSeparator);
 		try {
 			HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
 			Cursor c = db.getBlotter(filter);
