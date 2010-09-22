@@ -56,6 +56,11 @@
 		<item>\' \'</item>		
 		<item>\'\'</item>
 	</string-array>
+	<string-array name="field_separators">
+		<item>\',\'</item>
+		<item>\';\'</item>
+		<item>\'\t\'</item>
+	</string-array>
 	<string-array name="sort_order_entities">
 		<item>1</item>
 		<item>2</item>

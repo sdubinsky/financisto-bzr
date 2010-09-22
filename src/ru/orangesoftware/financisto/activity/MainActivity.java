@@ -145,18 +145,20 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			if (resultCode == RESULT_OK) {
 				WhereFilter filter = WhereFilter.fromIntent(data);
 				Currency currency = new Currency();
+				char fieldSeparator = data.getCharExtra(CsvExportActivity.CSV_EXPORT_FIELD_SEPARATOR, ',');
+				boolean includeHeader = data.getBooleanExtra(CsvExportActivity.CSV_EXPORT_INCLUDE_HEADER, true);
 				currency.symbol = "$";
 				currency.decimals = data.getIntExtra(CsvExportActivity.CSV_EXPORT_DECIMALS, 2);
 				currency.decimalSeparator = data.getStringExtra(CsvExportActivity.CSV_EXPORT_DECIMAL_SEPARATOR);
 				currency.groupSeparator = data.getStringExtra(CsvExportActivity.CSV_EXPORT_GROUP_SEPARATOR);
-				doCsvExport(filter, currency);
+				doCsvExport(filter, currency, fieldSeparator, includeHeader);
 			}
 		}
 	}
 	
-	private void doCsvExport(WhereFilter filter, Currency currency) {
+	private void doCsvExport(WhereFilter filter, Currency currency, char fieldSeparaotr, boolean includeHeader) {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
-		new CsvExportTask(d, filter, currency).execute((String[])null);
+		new CsvExportTask(d, filter, currency, fieldSeparaotr, includeHeader).execute((String[])null);
 	}
 	
 	private void initialLoad() {
@@ -499,16 +501,21 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		
 		private final WhereFilter filter; 
 		private final Currency currency;
+		private final char fieldSeparator;
+		private final boolean includeHeader;
 		
-		public CsvExportTask(ProgressDialog dialog, WhereFilter filter, Currency currency) {
+		public CsvExportTask(ProgressDialog dialog, WhereFilter filter, Currency currency, 
+				char fieldSeparator, boolean includeHeader) {
 			super(MainActivity.this, dialog, null);
 			this.filter = filter;
 			this.currency = currency;
+			this.fieldSeparator = fieldSeparator;
+			this.includeHeader = includeHeader;
 		}
 		
 		@Override
 		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-			CSVExport export = new CSVExport(db, filter, currency);
+			CSVExport export = new CSVExport(db, filter, currency, fieldSeparator, includeHeader);
 			return export.export();
 		}
 
