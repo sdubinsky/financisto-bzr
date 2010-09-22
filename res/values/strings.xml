@@ -595,4 +595,6 @@
 	<string name="proceed">Proceed</string>	
 	<string name="apply_mass_op">Apply \'%s\' on %d transaction(s)?</string>		
 	<string name="apply_mass_op_zero_count">No transactions selected..</string>		
+	<string name="entities">Entities</string>
+				
 </resources>

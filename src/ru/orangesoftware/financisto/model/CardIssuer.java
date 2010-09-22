@@ -11,8 +11,10 @@
 package ru.orangesoftware.financisto.model;
 
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.EntityEnum;
 
-public enum CardIssuer {
+public enum CardIssuer implements EntityEnum {
+	
 	VISA(R.string.card_issuer_visa, R.drawable.account_type_card_visa), 
 	VISA_ELECTRON(R.string.card_issuer_electron, R.drawable.account_type_card_visa_electron), 
 	MASTERCARD(R.string.card_issuer_mastercard, R.drawable.account_type_card_mastercard), 
@@ -30,6 +32,16 @@ public enum CardIssuer {
 		this.titleId = titleId;
 		this.iconId = iconId;
 	}
+
+	@Override
+	public int getTitleId() {
+		return titleId;
+	}
 	
+	@Override
+	public int getIconId() {		
+		return iconId;
+	}
+
 }
 

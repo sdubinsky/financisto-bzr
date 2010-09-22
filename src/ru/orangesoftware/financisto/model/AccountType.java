@@ -12,8 +12,10 @@
 package ru.orangesoftware.financisto.model;
 
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.EntityEnum;
 
-public enum AccountType {
+public enum AccountType implements EntityEnum {
+	
 	CASH(R.string.account_type_cash, R.drawable.account_type_cash, false, false, false, false), 
 	BANK(R.string.account_type_bank, R.drawable.account_type_bank, true, false, false, false), 
 	DEBIT_CARD(R.string.account_type_debit_card, R.drawable.account_type_debit_card, true, true, true, false), 
@@ -39,5 +41,15 @@ public enum AccountType {
 		this.isCreditCard = isCreditCard;
 
 	}
+
+	@Override
+	public int getTitleId() {
+		return titleId;
+	}
 	
+	@Override
+	public int getIconId() {
+		return iconId;
+	}
+
 }

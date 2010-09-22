@@ -11,7 +11,7 @@
 package ru.orangesoftware.financisto.adapter;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.CardIssuer;
+import ru.orangesoftware.financisto.utils.EntityEnum;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,23 +20,24 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class CardIssuerAdapter extends BaseAdapter {
+public class EntityEnumAdapter<T extends EntityEnum> extends BaseAdapter {
 	
-	private final static CardIssuer[] issuers = CardIssuer.values();
+	private final T[] values;
 	private final LayoutInflater inflater;
 	
-	public CardIssuerAdapter(Context context) {
+	public EntityEnumAdapter(Context context, T[] values) {
+		this.values = values;
 		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	@Override
 	public int getCount() {
-		return issuers.length;
+		return values.length;
 	}
 
 	@Override
-	public Object getItem(int i) {
-		return issuers[i];
+	public T getItem(int i) {
+		return values[i];
 	}
 
 	@Override
@@ -47,13 +48,13 @@ public class CardIssuerAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.account_type_list_item, parent, false);
+			convertView = inflater.inflate(R.layout.entity_enum_list_item, parent, false);
 		}
 		ImageView icon = (ImageView)convertView.findViewById(R.id.icon);
 		TextView title = (TextView)convertView.findViewById(R.id.line1);
-		CardIssuer issuer = issuers[position];
-		icon.setImageResource(issuer.iconId);
-		title.setText(issuer.titleId);
+		T v = values[position];
+		icon.setImageResource(v.getIconId());
+		title.setText(v.getTitleId());
 		return convertView;
 	}
 

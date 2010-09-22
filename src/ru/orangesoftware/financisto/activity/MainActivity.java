@@ -25,11 +25,14 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.dialog.WebViewDialog;
-import ru.orangesoftware.financisto.export.CSVExport;
+import ru.orangesoftware.financisto.export.BackupExportTask;
+import ru.orangesoftware.financisto.export.CsvExportTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.EntityEnum;
+import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.orb.EntityManager;
 import android.app.AlertDialog;
@@ -56,6 +59,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
 import api.wireless.gdata.client.AbstructParserFactory;
@@ -80,16 +84,14 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	
 	private static final int MENU_PREFERENCES = Menu.FIRST+1;
 	private static final int MENU_ABOUT = Menu.FIRST+2;
-	private static final int MENU_CURRENCIES = Menu.FIRST+3;
-	private static final int MENU_CATEGORIES = Menu.FIRST+4;
-	private static final int MENU_LOCATIONS = Menu.FIRST+5;
-	private static final int MENU_PROJECTS = Menu.FIRST+6;
-	private static final int MENU_BACKUP = Menu.FIRST+7;
-	private static final int MENU_RESTORE = Menu.FIRST+8;
-	private static final int MENU_CSV_EXPORT = Menu.FIRST+9;
-	private static final int MENU_SCHEDULED_TRANSACTIONS = Menu.FIRST+10;
-	private static final int MENU_BACKUP_GDOCS = Menu.FIRST+11;
-	private static final int MENU_RESTORE_GDOCS = Menu.FIRST+12;
+	private static final int MENU_BACKUP = Menu.FIRST+3;
+	private static final int MENU_RESTORE = Menu.FIRST+4;
+	private static final int MENU_CSV_EXPORT = Menu.FIRST+5;
+	private static final int MENU_SCHEDULED_TRANSACTIONS = Menu.FIRST+6;
+	private static final int MENU_BACKUP_GDOCS = Menu.FIRST+7;
+	private static final int MENU_RESTORE_GDOCS = Menu.FIRST+8;
+	private static final int MENU_ENTITIES = Menu.FIRST+9;
+	private static final int MENU_MASS_OP = Menu.FIRST+10;
 	
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
@@ -158,7 +160,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	
 	private void doCsvExport(WhereFilter filter, Currency currency, char fieldSeparaotr, boolean includeHeader) {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
-		new CsvExportTask(d, filter, currency, fieldSeparaotr, includeHeader).execute((String[])null);
+		new CsvExportTask(this, d, filter, currency, fieldSeparaotr, includeHeader).execute((String[])null);
 	}
 	
 	private void initialLoad() {
@@ -245,23 +247,20 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuItem menuItem = menu.add(0, MENU_CURRENCIES, 0, R.string.currencies);
-		menuItem.setIcon(R.drawable.icon_currency);
-		menuItem = menu.add(0, MENU_CATEGORIES, 0, R.string.categories);
-		menuItem.setIcon(R.drawable.ic_menu_categories);
-		menuItem = menu.add(0, MENU_LOCATIONS, 0, R.string.locations);
-		menuItem.setIcon(android.R.drawable.ic_menu_mylocation);		
-		menuItem = menu.add(0, MENU_PROJECTS, 0, R.string.projects);
-		menuItem.setIcon(R.drawable.ic_menu_project);		
+		MenuItem menuItem = menu.add(0, MENU_ENTITIES, 0, R.string.entities);
+		menuItem.setIcon(R.drawable.menu_entities);
 		menuItem = menu.add(0, MENU_SCHEDULED_TRANSACTIONS, 0, R.string.scheduled_transactions);
 		menuItem.setIcon(R.drawable.ic_menu_today);
+		menuItem = menu.add(0, MENU_MASS_OP, 0, R.string.mass_operations);
+		menuItem.setIcon(R.drawable.ic_menu_agenda);
+		menuItem = menu.add(0, MENU_BACKUP, 0, R.string.backup_database);
+		menuItem.setIcon(android.R.drawable.ic_menu_upload);
 		menuItem = menu.add(0, MENU_PREFERENCES, 0, R.string.preferences);
 		menuItem.setIcon(android.R.drawable.ic_menu_preferences);
-		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
-		menu.addSubMenu(0, MENU_BACKUP, 0, R.string.backup_database);
 		menu.addSubMenu(0, MENU_RESTORE, 0, R.string.restore_database);
 		menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
+		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
 		menuItem = menu.add(0, MENU_ABOUT, 0, R.string.about);
 		menuItem.setIcon(android.R.drawable.ic_menu_info_details);
 		return true;
@@ -271,23 +270,30 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
-		case MENU_CATEGORIES:
-			startActivity(new Intent(this, CategoryListActivity2.class));
-			break;
-		case MENU_CURRENCIES:
-			startActivity(new Intent(this, CurrencyListActivity.class));
+		case MENU_ENTITIES:
+			final MenuEntities[] entities = MenuEntities.values();
+			ListAdapter adapter = EnumUtils.createEntityEnumAdapter(this, entities);
+			final AlertDialog d = new AlertDialog.Builder(this)
+								.setAdapter(adapter, new DialogInterface.OnClickListener(){
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										dialog.dismiss();
+										MenuEntities e = entities[which];
+										startActivity(new Intent(MainActivity.this, e.getActivityClass()));										
+									}
+								})
+								.create();
+			d.setTitle(R.string.entities);
+			d.show();
 			break;
 		case MENU_PREFERENCES:
 			startActivity(new Intent(this, PreferencesActivity.class));
 			break;
-		case MENU_LOCATIONS:
-			startActivity(new Intent(this, LocationsListActivity.class));
-			break;
-		case MENU_PROJECTS:
-			startActivity(new Intent(this, ProjectListActivity.class));
-			break;
 		case MENU_SCHEDULED_TRANSACTIONS:
 			startActivity(new Intent(this, ScheduledListActivity.class));
+			break;
+		case MENU_MASS_OP:
+			startActivity(new Intent(this, MassOpActivity.class));
 			break;
 		case MENU_ABOUT:
 			showDialog(1);
@@ -312,30 +318,25 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	}
 	
 	/**
-	 * Treat assinchronous requests to popup error messages
+	 * Treat asynchronous requests to popup error messages
 	 * */
-	private Handler handler = new Handler() 
-	{
-		@Override
+	private Handler handler = new Handler() {
 		/**
 		 * Schedule the popup of the given error message
-		 * 
 		 * @param msg The message to display
-		 * */
-		public void handleMessage(Message msg) 
-		{
+		 **/
+		@Override
+		public void handleMessage(Message msg) {
 			showErrorPopup(MainActivity.this, msg.what);
 		}
 	};
 	
 	/**
 	 * Display the error message
-	 * 
 	 * @param context 
 	 * @message message The message to display
-	 * */
-	protected void showErrorPopup(Context context, int message)
-	{
+	 **/
+	protected void showErrorPopup(Context context, int message) {
 		new AlertDialog.Builder(context)
 		.setMessage(message)
 		.setTitle(R.string.error)
@@ -375,7 +376,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	
 	private void doBackup() {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_inprogress), true);
-		new BackupExportTask(d).execute((String[])null);
+		new BackupExportTask(this, d).execute((String[])null);
 	}
 	
 	/**
@@ -497,55 +498,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			.show();
 	}
 
-	private class CsvExportTask extends ImportExportAsyncTask {
-		
-		private final WhereFilter filter; 
-		private final Currency currency;
-		private final char fieldSeparator;
-		private final boolean includeHeader;
-		
-		public CsvExportTask(ProgressDialog dialog, WhereFilter filter, Currency currency, 
-				char fieldSeparator, boolean includeHeader) {
-			super(MainActivity.this, dialog, null);
-			this.filter = filter;
-			this.currency = currency;
-			this.fieldSeparator = fieldSeparator;
-			this.includeHeader = includeHeader;
-		}
-		
-		@Override
-		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-			CSVExport export = new CSVExport(db, filter, currency, fieldSeparator, includeHeader);
-			return export.export();
-		}
-
-		@Override
-		protected String getSuccessMessage(Object result) {
-			return String.valueOf(result);
-		}
-
-	}
-
-	private class BackupExportTask extends ImportExportAsyncTask {
-		
-		public BackupExportTask(ProgressDialog dialog) {
-			super(MainActivity.this, dialog, null);
-		}
-		
-		@Override
-		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-			DatabaseExport export = new DatabaseExport(context, db.db());
-			return export.export();
-
-		}
-		
-		@Override
-		protected String getSuccessMessage(Object result) {
-			return String.valueOf(result);
-		}
-
-	}
-	
 	/**
 	 * Task that calls backup to google docs functions
 	 * */
@@ -709,4 +661,37 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		return super.onCreateDialog(id);
 	}
 
+	private enum MenuEntities implements EntityEnum {
+		
+		CURRENCIES(R.string.currencies, R.drawable.menu_entities_currencies, CurrencyListActivity.class),
+		CATEGORIES(R.string.categories, R.drawable.menu_entities_categories, CategoryListActivity2.class),
+		LOCATIONS(R.string.locations, R.drawable.menu_entities_locations, LocationsListActivity.class),
+		PROJECTS(R.string.projects, R.drawable.menu_entities_projects, ProjectListActivity.class);
+
+		private final int titleId;
+		private final int iconId;
+		private final Class<?> actitivyClass;
+		
+		private MenuEntities(int titleId, int iconId, Class<?> activityClass) {
+			this.titleId = titleId;
+			this.iconId = iconId;
+			this.actitivyClass = activityClass;
+		}
+		
+		@Override
+		public int getTitleId() {
+			return titleId;
+		}
+		
+		@Override
+		public int getIconId() {
+			return iconId;
+		}
+		
+		public Class<?> getActivityClass() {
+			return actitivyClass;
+		}
+		
+	}
+	
 }
