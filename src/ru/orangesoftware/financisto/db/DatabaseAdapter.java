@@ -270,27 +270,26 @@ public class DatabaseAdapter {
 		}
 	}
 	
-	/**
-	 * [Monthly view] Returns all the transactions for a given Account in a given period (month).
-	 * @param accountId Account id.
-	 * @param start Start date.
-	 * @param end End date.
-	 * @return Transactions (negative value) of the given Account, from start date to end date.
-	 */
-	public Cursor getAllTransactions(String accountId, String start, String end) {
-		// query
-		String where = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+
-					   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
-		
-		try {
-			Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   where, new String[]{accountId, start, end}, null, null, TransactionColumns.DATETIME);
-			return c;
-		} catch(SQLiteException e) {
-			return null;
-		}
-	}
-	
+    /**
+     * [Monthly view] Returns all the transactions for a given Account in a given period (month).
+     * @param accountId Account id.
+     * @param start Start date.
+     * @param end End date.
+     * @return Transactions (negative value) of the given Account, from start date to end date.
+     */
+    public Cursor getAllTransactions(String accountId, String start, String end) {
+        // query
+        String where = "("+TransactionColumns.FROM_ACCOUNT_ID+"=? OR "+TransactionColumns.TO_ACCOUNT_ID+"=?) AND "+
+                       TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";        
+        try {
+            Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+                       where, new String[]{accountId, accountId, start, end}, null, null, TransactionColumns.DATETIME);
+            return c;
+        } catch(SQLiteException e) {
+            return null;
+        }
+    }
+    
 	public Cursor getTransactions(WhereFilter filter) {
 		String sortOrder = getBlotterSortOrder(filter);
 		return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION, 
