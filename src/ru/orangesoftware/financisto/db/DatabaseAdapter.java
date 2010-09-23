@@ -1119,6 +1119,8 @@ public class DatabaseAdapter {
 	private String createSql(String updateSql, long[] ids, int x, int y) {
 		StringBuilder sb = new StringBuilder(updateSql)
 								.append(" WHERE ")
+								.append(TransactionColumns.IS_TEMPLATE)
+								.append("=0 AND ")
 								.append(TransactionColumns.ID)
 								.append(" IN (");
 		for (int i=x; i<y; i++) {
