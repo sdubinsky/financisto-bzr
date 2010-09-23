@@ -12,8 +12,7 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.AccountTypeAdapter;
-import ru.orangesoftware.financisto.adapter.CardIssuerAdapter;
+import ru.orangesoftware.financisto.adapter.EntityEnumAdapter;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.CardIssuer;
@@ -64,8 +63,8 @@ public class AccountActivity extends AbstractActivity {
 	private CheckBox isIncludedIntoTotals;
 	private CheckBox isNegativeOpeningAmount;
 	
-	private AccountTypeAdapter accountTypeAdapter;
-	private CardIssuerAdapter cardIssuerAdapter;
+	private EntityEnumAdapter<AccountType> accountTypeAdapter;
+	private EntityEnumAdapter<CardIssuer> cardIssuerAdapter;
 	private ListAdapter currencyAdapter;	
 	
 	/** for bill filtering */
@@ -117,10 +116,10 @@ public class AccountActivity extends AbstractActivity {
 
 		LinearLayout layout = (LinearLayout)findViewById(R.id.layout);		
 
-		accountTypeAdapter = new AccountTypeAdapter(this);
+		accountTypeAdapter = new EntityEnumAdapter<AccountType>(this, AccountType.values());
 		accountTypeNode = x.addListNodeIcon(layout, R.id.account_type, R.string.account_type, R.string.account_type);
 		
-		cardIssuerAdapter = new CardIssuerAdapter(this);
+		cardIssuerAdapter = new EntityEnumAdapter<CardIssuer>(this, CardIssuer.values());
 		cardIssuerNode = x.addListNodeIcon(layout, R.id.card_issuer, R.string.card_issuer, R.string.card_issuer);
 		setVisibility(cardIssuerNode, View.GONE);
 		

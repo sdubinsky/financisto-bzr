@@ -161,11 +161,11 @@ public class RecurrenceActivity extends AbstractActivity {
 	protected void onClick(View v, int id) {
 		switch (id) {
 			case R.id.recurrence_pattern: {
-				ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, frequencies);
+				ArrayAdapter<String> adapter = EnumUtils.createDropDownAdapter(this, frequencies);
 				x.selectPosition(this, R.id.recurrence_pattern, R.string.recurrence_pattern, adapter, recurrence.pattern.frequency.ordinal());
 			} break;
 			case R.id.recurrence_period: {
-				ArrayAdapter<String> adapter = EnumUtils.getAdapter(this, untils);
+				ArrayAdapter<String> adapter = EnumUtils.createDropDownAdapter(this, untils);
 				x.selectPosition(this, R.id.recurrence_period, R.string.recurrence_period, adapter, recurrence.period.until.ordinal());
 			} break;
 			case R.id.start_date: {

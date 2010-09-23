@@ -16,8 +16,8 @@ import ru.orangesoftware.financisto.utils.LocalizableEnum;
 public enum TransactionStatus implements LocalizableEnum {
 	PN(R.string.transaction_status_pending, R.drawable.transaction_status_pending_2, R.color.pending_transaction_color),
 	UR(R.string.transaction_status_unreconciled, R.drawable.transaction_status_unreconciled_2, R.color.unreconciled_transaction_color),
-	CL(R.string.transaction_status_cleared, R.drawable.transaction_status_cleared_2, R.color.reconciled_transaction_color),
-	RC(R.string.transaction_status_reconciled, R.drawable.transaction_status_reconciled_2, R.color.cleared_transaction_color);
+	CL(R.string.transaction_status_cleared, R.drawable.transaction_status_cleared_2, R.color.cleared_transaction_color),
+	RC(R.string.transaction_status_reconciled, R.drawable.transaction_status_reconciled_2, R.color.reconciled_transaction_color);
 	
 	public final int titleId;
 	public final int iconId;

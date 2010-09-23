@@ -243,7 +243,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		status.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				ArrayAdapter<String> adapter = EnumUtils.getAdapter(AbstractTransactionActivity.this, statuses);
+				ArrayAdapter<String> adapter = EnumUtils.createDropDownAdapter(AbstractTransactionActivity.this, statuses);
 				x.selectPosition(AbstractTransactionActivity.this, R.id.status, R.string.transaction_status, adapter, transaction.status.ordinal());
 			}
 		});

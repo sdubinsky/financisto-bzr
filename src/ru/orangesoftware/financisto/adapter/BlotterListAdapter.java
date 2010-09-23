@@ -28,13 +28,12 @@ import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class BlotterListAdapter extends ResourceCursorAdapter {
 	
@@ -49,12 +48,19 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 	
 	private final int colors[];
 	
+	private boolean allChecked = true;
+	private final HashMap<Long, Boolean> checkedItems = new HashMap<Long, Boolean>();	
+	
 	public BlotterListAdapter(Context context, Cursor c) {
-		this(context, R.layout.blotter_list_item, c);
+		this(context, R.layout.blotter_list_item, c, false);
 	}
 
 	public BlotterListAdapter(Context context, int layoutId, Cursor c) {
-		super(context, layoutId, c);
+		this(context, layoutId, c, false);
+	}
+
+	public BlotterListAdapter(Context context, int layoutId, Cursor c, boolean autoRequery) {
+		super(context, layoutId, c, autoRequery);
 		transferColor = context.getResources().getColor(R.color.transfer_color);
 		futureColor = context.getResources().getColor(R.color.future_color);
 		icBlotterIncome = context.getResources().getDrawable(R.drawable.ic_blotter_income);
@@ -75,8 +81,6 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		return colors;
 	}
 
-	private HashMap<Long, Boolean> checkedItems;
-	
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		View view = super.newView(context, cursor, parent);		
@@ -91,7 +95,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {	
-		BlotterViewHolder v = (BlotterViewHolder)view.getTag();
+		final BlotterViewHolder v = (BlotterViewHolder)view.getTag();
 		long toAccountId = cursor.getLong(BlotterColumns.Indicies.TO_ACCOUNT_ID);
 		int isTemplate = cursor.getInt(BlotterColumns.Indicies.IS_TEMPLATE);
 		TextView noteView = isTemplate == 1 ? v.bottomView : v.centerView;
@@ -180,11 +184,6 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 			} else {
 				TransactionStatus status = TransactionStatus.valueOf(cursor.getString(BlotterColumns.Indicies.STATUS));
 				v.indicator.setBackgroundColor(colors[status.ordinal()]);
-//				if (status == TransactionStatus.PN) {
-//					v.indicator.setBackgroundColor(pendingColor);			
-//				} else {
-//					v.indicator.setBackgroundColor(Color.TRANSPARENT);			
-//				}
 				long date = cursor.getLong(BlotterColumns.Indicies.DATETIME);
 				dt.setTime(date);
 				v.bottomView.setText(DateUtils.formatDateTime(context, dt.getTime(), 
@@ -199,29 +198,43 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		}
 		if (v.checkBox != null) {
 			final long id = cursor.getLong(BlotterColumns.Indicies.ID);
-			v.checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+			v.checkBox.setOnClickListener(new OnClickListener(){
 				@Override
-				public void onCheckedChanged(CompoundButton arg0, boolean checked) {
-					updateCheckedState(id, checked);
+				public void onClick(View arg0) {
+					updateCheckedState(id, allChecked ^ v.checkBox.isChecked());
 				}
 			});
-			v.checkBox.setChecked(getCheckedState(id));
+			boolean isChecked = getCheckedState(id);
+			v.checkBox.setChecked(isChecked);
 		}
 	}
 
-	private boolean getCheckedState(long id) {
-		return checkedItems != null && checkedItems.get(id) != null;
+	public boolean getCheckedState(long id) {
+		return checkedItems.get(id) != null ? !allChecked : allChecked;
 	}
 
 	private void updateCheckedState(long id, boolean checked) {
-		if (checkedItems == null) {
-			checkedItems = new HashMap<Long, Boolean>();
-		}
 		if (checked) {
 			checkedItems.put(id, true);
 		} else {
 			checkedItems.remove(id);
 		}
+	}
+	
+	public int getCheckedCount() {
+		return allChecked ? getCount()-checkedItems.size() : checkedItems.size();
+	}
+
+	public void checkAll() {
+		allChecked = true;
+		checkedItems.clear();
+		notifyDataSetInvalidated();
+	}
+
+	public void uncheckAll() {
+		allChecked = false;
+		checkedItems.clear();
+		notifyDataSetInvalidated();
 	}
 
 	public static class BlotterViewHolder {
@@ -246,6 +259,28 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 			checkBox = (CheckBox)view.findViewById(R.id.cb);
 		}
 		
+	}
+
+	public long[] getAllCheckedIds() {
+		int checkedCount = getCheckedCount();
+		long[] ids = new long[checkedCount];
+		int k = 0;
+		if (allChecked) {
+			int count = getCount();
+			boolean addAll = count == checkedCount;
+			for (int i=0; i<count; i++) {
+				long id = getItemId(i);
+				boolean checked = addAll || getCheckedState(id);
+				if (checked) {
+					ids[k++] = id;
+				}
+			}
+		} else {
+			for (Long id : checkedItems.keySet()) {
+				ids[k++] = id;
+			}
+		}
+		return ids;
 	}
 
 }
