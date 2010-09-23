@@ -588,5 +588,6 @@
 	<string name="ui_language_summary">Set language of user interface (requires restart!)</string>
 	<string name="enter_pin">Enter PIN</string>
 	<string name="mass_operations">Mass operations</string>
+	<string name="card_issuer_unionpay">UnionPay</string>
 	
 </resources>
