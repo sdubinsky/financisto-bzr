@@ -164,7 +164,11 @@
 	
 	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4"/>
 	
-	<supports-screens/>
+	<supports-screens 
+		android:smallScreens="true"
+		android:normalScreens="true"
+		android:largeScreens="true"
+		android:anyDensity="true"/>
 		
 	<uses-feature android:name="android.hardware.camera" /> 
 	
@@ -176,7 +180,6 @@
 	<uses-permission android:name="android.permission.VIBRATE"/>
 	<uses-permission android:name="android.permission.WAKE_LOCK"/>
 	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>	
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	
-
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
 </manifest> 
