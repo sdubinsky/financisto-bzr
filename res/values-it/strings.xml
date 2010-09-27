@@ -481,8 +481,18 @@
 	<string name="header_payments">Pagamenti</string>
 	<string name="header_credits">Crediti Vari</string>
 	<string name="header_expenses">Spese</string>
-	
 	<string name="ui_language">Lingua</string>
 	<string name="ui_language_summary">Imposta la lingua dell\'interfaccia utente (necessita riavvio)</string>
+	
 	<string name="enter_pin">Inserisci PIN</string>
+	<string name="mass_operations">Operazioni di massa</string>
+	<string name="card_issuer_unionpay">UnionPay</string>
+	<string name="mass_operations_use_filter">Usa un filtro per cercare le transazioni</string>
+	<string name="mass_operations_clear_all">Pulisci tutto</string>			
+	<string name="mass_operations_reconcile">Riconcilia tutto</string>		
+	<string name="mass_operations_delete">Elimina tutto</string>		
+	<string name="proceed">Procedi</string>	
+	<string name="apply_mass_op">Applica \'%s\' su %d transazioni?</string>		
+	<string name="apply_mass_op_zero_count">Nessuna transazione selezionata..</string>		
+	<string name="entities">Entità</string>
 </resources>
