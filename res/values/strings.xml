@@ -589,6 +589,7 @@
 	<string name="enter_pin">Enter PIN</string>
 	<string name="mass_operations">Mass operations</string>
 	<string name="card_issuer_unionpay">UnionPay</string>
+	<string name="account_type_paypal">PayPal</string>	
 	<string name="mass_operations_use_filter">Use filter to search for transactions</string>
 	<string name="mass_operations_clear_all">Clear all</string>			
 	<string name="mass_operations_reconcile">Reconcile all</string>		

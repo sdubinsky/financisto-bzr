@@ -20,6 +20,7 @@ public enum AccountType implements EntityEnum {
 	BANK(R.string.account_type_bank, R.drawable.account_type_bank, true, false, false, false), 
 	DEBIT_CARD(R.string.account_type_debit_card, R.drawable.account_type_debit_card, true, true, true, false), 
 	CREDIT_CARD(R.string.account_type_credit_card, R.drawable.account_type_credit_card, true, true, true, true), 
+	PAYPAL(R.string.account_type_paypal, R.drawable.account_type_paypal, false, false, false, false),
 	ASSET(R.string.account_type_asset, R.drawable.account_type_other, false, false, false, false),
 	LIABILITY(R.string.account_type_liability, R.drawable.account_type_other, false, false, false, false),
 	OTHER(R.string.account_type_other, R.drawable.account_type_other, false, false, false, false);
