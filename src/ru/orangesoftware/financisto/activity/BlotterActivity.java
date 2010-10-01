@@ -146,6 +146,9 @@ public class BlotterActivity extends AbstractListActivity {
 			saveFilter = intent.getBooleanExtra(SAVE_FILTER, false);
 			filterAccounts = intent.getBooleanExtra(EXTRA_FILTER_ACCOUNTS, false);
 		}
+		if (savedInstanceState != null) {
+			blotterFilter = WhereFilter.fromBundle(savedInstanceState);
+		}
 		if (saveFilter && blotterFilter.isEmpty()) {
 			blotterFilter = WhereFilter.fromSharedPreferences(getPreferences(0));
 		}
@@ -153,6 +156,13 @@ public class BlotterActivity extends AbstractListActivity {
 		calculateTotals();
 	}
 	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		blotterFilter.toBundle(outState);
+	}
+
 	protected void createFromTemplate() {
 		Intent intent = new Intent(this, SelectTemplateActivity.class);
 		startActivityForResult(intent, NEW_TRANSACTION_FROM_TEMPLATE_REQUEST);
