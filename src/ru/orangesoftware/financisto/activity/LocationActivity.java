@@ -11,7 +11,7 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.utils.AddressGeocoder;
@@ -57,7 +57,7 @@ public class LocationActivity extends MapActivity {
 	private TextView location;
 	private Vibrator vibrator;
 	
-	private DatabaseHelper db;
+	private DatabaseAdapter db;
 	private MyEntityManager em;
 	
 	private MyLocation myLocation = new MyLocation();
@@ -67,8 +67,10 @@ public class LocationActivity extends MapActivity {
         super.onCreate(icicle); 
         setContentView(R.layout.location);
 
-        db = new DatabaseHelper(this);
-        em = new MyEntityManager(this, db.getWritableDatabase());
+        db = new DatabaseAdapter(this);
+        db.open();
+        
+        em = db.em();
         
         vibrator = (Vibrator)getSystemService(Activity.VIBRATOR_SERVICE);
         mapView = (MapView)findViewById(R.id.mapview);

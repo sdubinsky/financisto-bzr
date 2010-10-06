@@ -93,7 +93,7 @@ public class ScheduledListAdapter extends BaseAdapter {
 			v = (Holder)convertView.getTag();
 		}
 		TransactionInfo t = getItem(position);
-		if (t.nextDateTime.after(now)) {
+		if (t.nextDateTime != null && t.nextDateTime.after(now)) {
 			v.indicator.setBackgroundColor(scheduledColor);			
 		} else {
 			v.indicator.setBackgroundColor(Color.TRANSPARENT);			

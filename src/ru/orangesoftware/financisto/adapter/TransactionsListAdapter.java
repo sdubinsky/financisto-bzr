@@ -22,8 +22,11 @@ import android.text.format.DateUtils;
 
 public class TransactionsListAdapter extends AbstractBlotterListAdapter {
 	
+	private final Utils u;
+	
 	public TransactionsListAdapter(DatabaseAdapter db, Context context, Cursor c) {
 		super(db, context, c);
+		this.u = new Utils(context);
 	}
 
 	@Override

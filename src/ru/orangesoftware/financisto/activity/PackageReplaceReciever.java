@@ -10,7 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
 import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,7 +27,7 @@ public class PackageReplaceReciever extends BroadcastReceiver {
 		if (PACKAGE_REPLACED.equals(action)) {
 			FinancistoService.acquireLock(context);
 			Intent serviceIntent = new Intent(context, FinancistoService.class);
-			serviceIntent.putExtra(RecurrenceScheduler.SCHEDULE_ALL, true);
+			serviceIntent.putExtra(FinancistoService.SCHEDULE_ALL, true);
 			context.startService(serviceIntent);			
 		}
 	}

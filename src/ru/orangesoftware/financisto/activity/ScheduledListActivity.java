@@ -18,6 +18,7 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
+import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -45,15 +46,19 @@ public class ScheduledListActivity extends BlotterActivity {
 	
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		ArrayList<TransactionInfo> transactions = RecurrenceScheduler.getSortedSchedules(em);
-		return new ScheduledListAdapter(this, transactions);
+		return new ScheduledListAdapter(this, getScheduledTransactions(System.currentTimeMillis()));
 	}
 
 	@Override
 	public void requeryCursor() {
-		ArrayList<TransactionInfo> transactions = RecurrenceScheduler.getSortedSchedules(em);
+		long now = System.currentTimeMillis();
+		ArrayList<TransactionInfo> transactions = getScheduledTransactions(now);
 		updateAdapter(transactions);		
-		RecurrenceScheduler.scheduleAll(this, transactions);
+		FinancistoService.scheduleAll(this, transactions, now);
+	}
+
+	private ArrayList<TransactionInfo> getScheduledTransactions(long now) {
+		return RecurrenceScheduler.getSortedSchedules(em, now);
 	}
 
 	private void updateAdapter(ArrayList<TransactionInfo> transactions) {

@@ -40,7 +40,7 @@ public class ProjectActivity extends Activity {
 		db = new DatabaseAdapter(this);
 		db.open();
 		
-		em = new MyEntityManager(this, db.db());
+		em = db.em();
 
 		Button bOK = (Button)findViewById(R.id.bOK);
 		bOK.setOnClickListener(new OnClickListener(){

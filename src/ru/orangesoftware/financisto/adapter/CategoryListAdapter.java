@@ -19,14 +19,17 @@ import ru.orangesoftware.financisto.model.Category;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
+import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
-public class CategoryListAdapter extends MyResourceCursorAdapter {
+public class CategoryListAdapter extends ResourceCursorAdapter {
 	
+	private final DatabaseAdapter db;
 	private HashMap<Long, String> attributes;
 	
 	public CategoryListAdapter(DatabaseAdapter db, Context context, int layout, Cursor c) {
-		super(db, context, layout, c);		
+		super(context, layout, c);
+		this.db = db;
 	}		
 
 	public void fetchAttributes() {

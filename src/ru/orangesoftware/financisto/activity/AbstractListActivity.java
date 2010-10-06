@@ -64,7 +64,7 @@ public abstract class AbstractListActivity extends ListActivity implements Reque
 		db = new DatabaseAdapter(this);
 		db.open();
 		
-		em = new MyEntityManager(this, db.db());
+		em = db.em();
 		
 		internalOnCreate(savedInstanceState);
 		

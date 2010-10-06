@@ -10,7 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
 import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,9 +27,9 @@ public class ScheduledAlarmReciever extends BroadcastReceiver {
 		Intent serviceIntent = new Intent(context, FinancistoService.class);
 		String action = intent.getAction();
 		if (BOOT_COMPLETED.equals(action)) {
-			serviceIntent.putExtra(RecurrenceScheduler.SCHEDULE_ALL, true);
+			serviceIntent.putExtra(FinancistoService.SCHEDULE_ALL, true);
 		} else {
-			serviceIntent.putExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, intent.getLongExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, -1));
+			serviceIntent.putExtra(FinancistoService.SCHEDULED_TRANSACTION_ID, intent.getLongExtra(FinancistoService.SCHEDULED_TRANSACTION_ID, -1));
 		}
 		context.startService(serviceIntent);			
 	}

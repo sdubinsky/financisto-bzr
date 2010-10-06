@@ -26,7 +26,6 @@ import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.model.Project;
-import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
 import ru.orangesoftware.financisto.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
@@ -96,6 +95,9 @@ public class TransactionInfo {
 	@Column(name = "attached_picture")
 	public String attachedPicture;		
 
+	@Column(name = "last_recurrence")
+	public long lastRecurrence;		
+
 	@Transient
 	public Date nextDateTime;
 	
@@ -105,14 +107,6 @@ public class TransactionInfo {
 
 	public boolean isSchedule() {
 		return isTemplate == 2;
-	}
-
-	public void calculateNextDate() {
-		nextDateTime = RecurrenceScheduler.calculateNextDate(recurrence);		
-	}
-
-	public void calculateNextDate(long now) {
-		nextDateTime = RecurrenceScheduler.calculateNextDate(recurrence, now);		
 	}
 
 	private boolean isTransfer() {

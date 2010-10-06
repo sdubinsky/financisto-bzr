@@ -90,7 +90,7 @@ public class Report2DChartActivity extends Activity {
 		dbAdapter = new DatabaseAdapter(this);
 		dbAdapter.open();
 		
-		em = new MyEntityManager(this, dbAdapter.db());
+		em = dbAdapter.em();
 		
 		// get report preferences to display chart
 		// Reference Currency

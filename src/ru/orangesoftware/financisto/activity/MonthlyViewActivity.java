@@ -110,7 +110,7 @@ public class MonthlyViewActivity extends ListActivity {
 		dbAdapter.open();
 		
 		// set currency based on account
-		MyEntityManager em = new MyEntityManager(this, dbAdapter.db());
+		MyEntityManager em = dbAdapter.em();
 		account = em.getAccount(accountId);
 		
         // get current month and year

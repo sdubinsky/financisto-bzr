@@ -42,7 +42,7 @@ public class AccountWidget extends AppWidgetProvider {
     	DatabaseAdapter db = new DatabaseAdapter(context);
 		db.open();
 		try {
-			MyEntityManager em = new MyEntityManager(context, db.db());
+			MyEntityManager em = db.em();
 			Account a = em.getAccount(accountId);
 			return updateFromAccount(context, a);
 		} catch (Exception ex) { 
@@ -94,7 +94,7 @@ public class AccountWidget extends AppWidgetProvider {
     	DatabaseAdapter db = new DatabaseAdapter(context);
 		db.open();
 		try {
-			MyEntityManager em = new MyEntityManager(context, db.db());
+			MyEntityManager em = db.em();
 			Cursor c = em.getAllActiveAccounts();
 			try {
 				int count = c.getCount();

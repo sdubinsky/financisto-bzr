@@ -23,7 +23,6 @@ import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
-import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.dialog.WebViewDialog;
 import ru.orangesoftware.financisto.export.BackupExportTask;
 import ru.orangesoftware.financisto.export.CsvExportTask;
@@ -34,7 +33,6 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.EntityEnum;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.MyPreferences;
-import ru.orangesoftware.orb.EntityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -180,8 +178,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 				x.endTransaction();
 			}
 			t2 = System.currentTimeMillis();
-			EntityManager em = new MyEntityManager(this, x);
-			CurrencyCache.initialize(em);
+			CurrencyCache.initialize(db.em());
 		} finally {
 			db.close();
 		}
@@ -564,7 +561,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 
 		@Override
 		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-			new DatabaseImport(MainActivity.this, db.db(), params[0]).importDatabase();
+			new DatabaseImport(MainActivity.this, db, params[0]).importDatabase();
 			return true;
 		}
 		
@@ -592,7 +589,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		@Override
 		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception, AuthenticationException, SettingsNotConfiguredException {
 			try {
-				new DatabaseImport(MainActivity.this, db.db(), params[0]).
+				new DatabaseImport(MainActivity.this, db, params[0]).
 					importOnlineDatabase(createDocsClient(context), params[1]);
 			}  catch (SettingsNotConfiguredException e) { // error configuring connection parameters
 				if(e.getMessage().equals("login"))

@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import ru.orangesoftware.financisto.db.Database;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseSchemaEvolution;
-import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 import ru.orangesoftware.financisto.export.Export;
@@ -30,7 +30,6 @@ import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-//import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import api.wireless.gdata.docs.client.DocsClient;
@@ -40,13 +39,15 @@ import api.wireless.gdata.util.ServiceException;
 public class DatabaseImport {
 
 	private final Context context;
+	private final DatabaseAdapter dbAdapter;
 	private final SQLiteDatabase db;
 	private final String backupFile;
 	private final DatabaseSchemaEvolution schemaEvolution;
 	
-	public DatabaseImport(Context context, SQLiteDatabase db, String backupFile) {
+	public DatabaseImport(Context context, DatabaseAdapter dbAdapter, String backupFile) {
 		this.context = context;
-		this.db = db;
+		this.dbAdapter = dbAdapter;
+		this.db = dbAdapter.db();
 		this.backupFile = backupFile;
 		this.schemaEvolution = new DatabaseSchemaEvolution(context, Database.DATABASE_NAME, null, Database.DATABASE_VERSION);
 	}
@@ -142,7 +143,7 @@ public class DatabaseImport {
 	}*/
 
 	private void scheduleAll() {
-		FinancistoService.scheduleAll(context, new MyEntityManager(context, db));
+		FinancistoService.scheduleAll(context, dbAdapter);
 	}
 
 	private static final String[] RESTORE_SCRIPTS = {

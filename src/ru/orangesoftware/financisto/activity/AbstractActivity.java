@@ -39,7 +39,7 @@ public abstract class AbstractActivity extends Activity implements ActivityLayou
 		x = new ActivityLayout(nodeInflater, this);
 		db = new DatabaseAdapter(this);
 		db.open();
-		em = new MyEntityManager(this, db.db());
+		em = db.em();
 	}
 	
 	@Override

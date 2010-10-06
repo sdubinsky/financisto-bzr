@@ -59,7 +59,7 @@ public class CurrencyActivity extends Activity {
 
 		db = new DatabaseAdapter(this);
 		db.open();
-		em = new MyEntityManager(this, db.db());
+		em = db.em();
 		
 		decimals = (Spinner)findViewById(R.id.spinnerDecimals);
 		decimalSeparators = (Spinner)findViewById(R.id.spinnerDecimalSeparators);

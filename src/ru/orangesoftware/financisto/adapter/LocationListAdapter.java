@@ -18,12 +18,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
-public class LocationListAdapter  extends MyResourceCursorAdapter {
+public class LocationListAdapter  extends ResourceCursorAdapter {
 
 	public LocationListAdapter(DatabaseAdapter db, Context context, Cursor c) {
-		super(db, context, R.layout.location_item, c);
+		super(context, R.layout.location_item, c);
 	}
 	
 	@Override

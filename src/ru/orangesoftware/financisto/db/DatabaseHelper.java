@@ -84,6 +84,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String STATUS = "status";		
 		public static final String ATTACHED_PICTURE = "attached_picture";
 		public static final String IS_CCARD_PAYMENT = "is_ccard_payment";
+		public static final String LAST_RECURRENCE = "last_recurrence";
 		
 		public static String[] NORMAL_PROJECTION = {
 			ID, 
@@ -106,7 +107,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			NOTIFICATION_OPTIONS,
 			STATUS,
 			ATTACHED_PICTURE,
-			IS_CCARD_PAYMENT};
+			IS_CCARD_PAYMENT,
+			LAST_RECURRENCE};
 
 		public static class Indicies {
 			public static final int ID = 0;
@@ -130,6 +132,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			public static final int STATUS = 18;
 			public static final int ATTACHED_PICTURE = 19;
 			public static final int IS_CCARD_PAYMENT = 20;
+			public static final int LAST_RECURRENCE = 21;
 		}
 		
 		private TransactionColumns() {}

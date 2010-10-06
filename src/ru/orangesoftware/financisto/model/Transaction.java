@@ -94,6 +94,9 @@ public class Transaction {
 	@Column(name = "is_ccard_payment")
 	public int isCCardPayment;
 
+	@Column(name = "last_recurrence")
+	public long lastRecurrence;
+
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
 
@@ -119,6 +122,7 @@ public class Transaction {
 		values.put(TransactionColumns.STATUS, status.name());
 		values.put(TransactionColumns.ATTACHED_PICTURE, attachedPicture);
 		values.put(TransactionColumns.IS_CCARD_PAYMENT, isCCardPayment);
+		values.put(TransactionColumns.LAST_RECURRENCE, lastRecurrence);
 		return values;
 	}
 
@@ -146,6 +150,7 @@ public class Transaction {
 		t.status = TransactionStatus.valueOf(c.getString(TransactionColumns.Indicies.STATUS));
 		t.attachedPicture = c.getString(TransactionColumns.Indicies.ATTACHED_PICTURE);
 		t.isCCardPayment = c.getInt(TransactionColumns.Indicies.IS_CCARD_PAYMENT);
+		t.lastRecurrence = c.getLong(TransactionColumns.Indicies.LAST_RECURRENCE);
 		return t;
 	}		
 	

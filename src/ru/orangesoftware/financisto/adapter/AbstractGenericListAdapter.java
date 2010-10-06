@@ -16,11 +16,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ResourceCursorAdapter;
 
-public abstract class AbstractGenericListAdapter extends MyResourceCursorAdapter {
+public abstract class AbstractGenericListAdapter extends ResourceCursorAdapter {
 
 	public AbstractGenericListAdapter(DatabaseAdapter db, Context context, Cursor c) {
-		super(db, context, R.layout.generic_list_item, c);
+		super(context, R.layout.generic_list_item, c);
 	}
 
 	@Override

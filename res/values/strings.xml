@@ -598,5 +598,8 @@
 	<string name="apply_mass_op">Apply \'%s\' on %d transaction(s)?</string>		
 	<string name="apply_mass_op_zero_count">No transactions selected..</string>		
 	<string name="entities">Entities</string>
+	<string name="transaction_status_restored">Restored</string>	
+	<string name="scheduled_transactions_restored">Scheduled transactions have been restored</string>		
+	<string name="scheduled_transactions_have_been_restored">%d missed scheduled transactions have been restored. Please use Mass Operations to clear/delete them.</string>		
 
 </resources>
