@@ -26,6 +26,7 @@ import ru.orangesoftware.orb.Expressions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
 
 public class WhereFilter {
 	
@@ -172,27 +173,27 @@ public class WhereFilter {
 		return Expressions.and(ee);
 	}
 
-	public void toIntent(Intent intent) {		
+	public void toBundle(Bundle bundle) {		
 		String[] extras = new String[criterias.size()];
 		for (int i=0; i<extras.length; i++) {
 			extras[i] = criterias.get(i).toStringExtra();
 		}
-		intent.putExtra(TITLE_EXTRA, title);
-		intent.putExtra(FILTER_EXTRA, extras);
-		intent.putExtra(SORT_ORDER_EXTRA, getSortOrder());
+		bundle.putString(TITLE_EXTRA, title);
+		bundle.putStringArray(FILTER_EXTRA, extras);
+		bundle.putString(SORT_ORDER_EXTRA, getSortOrder());
 	}
-	
-	public static WhereFilter fromIntent(Intent intent) {
-		String title = intent.getStringExtra(TITLE_EXTRA);
+
+	public static WhereFilter fromBundle(Bundle bundle) {
+		String title = bundle.getString(TITLE_EXTRA);
 		WhereFilter filter = new WhereFilter(title);
-		String[] a = intent.getStringArrayExtra(FILTER_EXTRA);
+		String[] a = bundle.getStringArray(FILTER_EXTRA);
 		if (a != null) {
 			int count = a.length;
 			for (int i=0; i<count; i++) {
 				filter.put(Criteria.fromStringExtra(a[i]));
 			}
 		}
-		String sortOrder = intent.getStringExtra(SORT_ORDER_EXTRA);
+		String sortOrder = bundle.getString(SORT_ORDER_EXTRA);
 		if (sortOrder != null) {
 			String[] orders = sortOrder.split(",");
 			if (orders != null && orders.length > 0) {
@@ -200,6 +201,19 @@ public class WhereFilter {
 			}
 		}
 		return filter;
+	}
+
+	public void toIntent(Intent intent) {
+		Bundle bundle = intent.getExtras();
+		if (bundle == null) bundle = new Bundle();		
+		toBundle(bundle);
+		intent.replaceExtras(bundle);
+	}
+
+	public static WhereFilter fromIntent(Intent intent) {
+		Bundle bundle = intent.getExtras();
+		if (bundle == null) bundle = new Bundle();
+		return fromBundle(bundle);
 	}
 	
 	public String getSortOrder() {
