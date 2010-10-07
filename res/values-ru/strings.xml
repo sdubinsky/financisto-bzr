@@ -481,8 +481,23 @@
 	<string name="header_payments">Платежи</string>
 	<string name="header_credits">Различные поступления</string>
 	<string name="header_expenses">Расходы</string>
-			
 	<string name="ui_language">Locale</string>
 	<string name="ui_language_summary">Выбрать язык интерфейса (требует перезапуска)</string>
 	<string name="enter_pin">Введите PIN</string>
+
+	<string name="mass_operations">Массовые операции</string>
+	<string name="mass_operations_use_filter">Используйте фильтр для поиска транзакций</string>
+	<string name="mass_operations_clear_all">Внести все</string>			
+	<string name="mass_operations_reconcile">Выверить все</string>		
+	<string name="mass_operations_delete">Удалить все</string>		
+	<string name="proceed">Выполнить</string>	
+	<string name="apply_mass_op">Применить \'%s\' на %d транзакцию(й)?</string>		
+	<string name="apply_mass_op_zero_count">Не выбрано ни одной транзакции..</string>		
+	<string name="entities">Сущности</string>
+	<string name="transaction_status_restored">Восстановлено</string>	
+	<string name="scheduled_transactions_restored">Запланированные транзакции восстановлены</string>		
+	<string name="scheduled_transactions_have_been_restored">Восстановлено %d пропущенных транзакций. Используйте масс. операции для работы с ними.</string>		
+	<string name="restore_missed_scheduled_transactions">Восстанавливать пропущенные транзакции</string>		
+	<string name="restore_missed_scheduled_transactions_summary">Пропущенные запланированные транзакции будут восстановлены со статусом \'Восстановлено\'</string>		
+	
 </resources>
