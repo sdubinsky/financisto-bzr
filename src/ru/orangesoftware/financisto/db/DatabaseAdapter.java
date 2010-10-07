@@ -497,6 +497,18 @@ public class DatabaseAdapter {
 		}
 	}
 	
+	public void deleteTransactionNoDbTransaction(long id) {
+		Transaction t = getTransaction(id);
+		if (t.isNotTemplateLike()) {
+			updateAccountTotalAmount(t.fromAccountId, -t.fromAmount);
+			updateAccountTotalAmount(t.toAccountId, -t.toAmount);
+			updateLocationCount(t.locationId, -1);
+		}
+		String[] sid = new String[]{String.valueOf(id)};
+		db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
+		db.delete(TRANSACTION_TABLE, TransactionColumns.ID+"=?", sid);
+	}
+
 	// ===================================================================
 	// CATEGORY
 	// ===================================================================
@@ -1117,8 +1129,15 @@ public class DatabaseAdapter {
 	}
 
 	public void deleteAll(long[] ids) {
-		String sql = "DELETE FROM "+TRANSACTION_TABLE;
-		runInTransaction(sql, ids);
+		db.beginTransaction();
+		try {
+			for (long id : ids) {
+				deleteTransactionNoDbTransaction(id);
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
 	}
 
 	private void runInTransaction(String sql, long[] ids) {
