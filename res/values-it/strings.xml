@@ -495,4 +495,8 @@
 	<string name="apply_mass_op">Applica \'%s\' su %d transazioni?</string>		
 	<string name="apply_mass_op_zero_count">Nessuna transazione selezionata..</string>		
 	<string name="entities">Entità</string>
+	<string name="transaction_status_restored">Ripristinate</string>	
+	<string name="scheduled_transactions_restored">Le transazioni programmate sono state ripristinate</string>		
+	<string name="scheduled_transactions_have_been_restored">%d transazioni programmate dimenticate sono state ripristinate. Uta le operazioni di massa per pulirle o eliminarle.</string>	
+	
 </resources>
