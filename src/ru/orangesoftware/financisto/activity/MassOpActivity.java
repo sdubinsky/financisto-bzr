@@ -64,7 +64,11 @@ public class MassOpActivity extends BlotterActivity {
 				applyMassOp(op);
 			}
 		});
-		blotterFilter = WhereFilter.empty();
+		Intent intent = getIntent();
+		if (intent != null) {			
+			blotterFilter = WhereFilter.fromIntent(intent);
+			applyFilter();
+		}
 		spOperation.setPrompt(getString(R.string.mass_operations));
 		spOperation.setAdapter(EnumUtils.createSpinnerAdapter(this, operations));
 	}

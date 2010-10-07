@@ -18,11 +18,14 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.AbstractTransactionActivity;
 import ru.orangesoftware.financisto.activity.AccountWidget;
 import ru.orangesoftware.financisto.activity.MassOpActivity;
+import ru.orangesoftware.financisto.blotter.BlotterFilter;
+import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.RestoredTransaction;
 import ru.orangesoftware.financisto.model.SystemAttribute;
 import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
+import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
@@ -99,8 +102,8 @@ public class FinancistoService extends Service {
 
 	public static void scheduleAll(Context context, DatabaseAdapter db) {		
 		long now = System.currentTimeMillis();
-		//restoreMissedSchedules(context, db, now);
-		//now += 1000;
+		restoreMissedSchedules(context, db, now);
+		now += 1000;
 		// all transactions up to and including now has already been restored
 		scheduleAll(context, db, now);
 	}
@@ -218,6 +221,9 @@ public class FinancistoService extends Service {
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.defaults = Notification.DEFAULT_ALL;
 		Intent notificationIntent = new Intent(context, MassOpActivity.class);
+		WhereFilter filter = new WhereFilter("");
+		filter.eq(BlotterFilter.STATUS, TransactionStatus.RS.name());
+		filter.toIntent(notificationIntent);
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 		notification.setLatestEventInfo(context, context.getString(R.string.scheduled_transactions_restored), text, contentIntent);	
 		return notification;
