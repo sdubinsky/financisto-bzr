@@ -103,6 +103,9 @@
 		<CheckBoxPreference android:key="include_transfers_into_reports"
 			android:title="@string/include_transfers_into_reports" android:summary="@string/include_transfers_into_reports_summary"
 			android:defaultValue="false" />
+		<CheckBoxPreference android:key="restore_missed_scheduled_transactions"
+			android:title="@string/restore_missed_scheduled_transactions" android:summary="@string/restore_missed_scheduled_transactions_summary"
+			android:defaultValue="true" />
 		<CheckBoxPreference android:key="send_error_reports"
 			android:title="@string/send_error_reports" android:summary="@string/send_error_reports_summary"
 			android:defaultValue="true" />

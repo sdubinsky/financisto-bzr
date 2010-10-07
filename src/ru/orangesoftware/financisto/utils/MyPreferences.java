@@ -290,6 +290,11 @@ public class MyPreferences {
 		return sharedPreferences.getBoolean("include_transfers_into_reports", false);
 	}	
 	
+	public static boolean isRestoreMissedScheduledTransactions(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("restore_missed_scheduled_transactions", true);
+	}		
+	
 	private static final String DEFAULT = "default";
 	
 	public static void switchLocale(Context context, String locale) {

@@ -102,9 +102,11 @@ public class FinancistoService extends Service {
 
 	public static void scheduleAll(Context context, DatabaseAdapter db) {		
 		long now = System.currentTimeMillis();
-		restoreMissedSchedules(context, db, now);
-		now += 1000;
-		// all transactions up to and including now has already been restored
+		if (MyPreferences.isRestoreMissedScheduledTransactions(context)) {
+			restoreMissedSchedules(context, db, now);
+			// all transactions up to and including now has already been restored
+			now += 1000;
+		}
 		scheduleAll(context, db, now);
 	}
 

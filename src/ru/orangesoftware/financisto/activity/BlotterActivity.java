@@ -243,6 +243,7 @@ public class BlotterActivity extends AbstractListActivity {
 			c = db.getBlotter(blotterFilter);
 		}
 		//DatabaseUtils.dumpCursor(c);
+		startManagingCursor(c);
 		return c;
 	}
 
