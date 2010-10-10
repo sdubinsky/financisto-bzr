@@ -13,7 +13,7 @@
 -->
 <resources>
     <string name="accounts">Konti</string>
-    <string name="blotter">Blotter</string>
+    <string name="blotter">Bevægelser</string>
     <string name="currencies">Valuta</string>
     <string name="categories">Kategorier</string>
     <string name="budgets">Budgetter</string>
