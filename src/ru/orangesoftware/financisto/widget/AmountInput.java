@@ -140,6 +140,7 @@ public class AmountInput extends LinearLayout {
 		primary = (EditText) findViewById(R.id.primary);
 		primary.setKeyListener(keyListener);
 		primary.addTextChangedListener(textWatcher);
+		primary.setOnFocusChangeListener(selectAllOnFocusListener);
 		secondary = (EditText) findViewById(R.id.secondary);
 		secondary.setKeyListener(new DigitsKeyListener(false, false){
 			
@@ -163,10 +164,11 @@ public class AmountInput extends LinearLayout {
 
 		});
 		secondary.addTextChangedListener(textWatcher);
+		secondary.setOnFocusChangeListener(selectAllOnFocusListener);
 	}
 	
 	private static final char[] acceptedChars = new char[]{'0','1','2','3','4','5','6','7','8','9'};
-	private static final char[] commaChars = new char[]{'.', '.'};
+	private static final char[] commaChars = new char[]{'.', ','};
 	
 	private final NumberKeyListener keyListener = new NumberKeyListener() {
 		
@@ -205,7 +207,18 @@ public class AmountInput extends LinearLayout {
 		public int getInputType() {
 			return InputType.TYPE_CLASS_PHONE;
 		}
-	}; 
+	};
+	
+	private final View.OnFocusChangeListener selectAllOnFocusListener = new View.OnFocusChangeListener() {
+		
+		@Override
+		public void onFocusChange(View v, boolean hasFocus) {
+			EditText t = (EditText) v;
+			if (hasFocus) {
+				t.selectAll();
+			}
+		}
+	};
 
 	protected <T extends Activity> void startInputActivity(Class<T> clazz) {
 		Intent intent = new Intent(getContext(), clazz);
