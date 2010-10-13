@@ -205,17 +205,19 @@ public class BlotterActivity extends AbstractListActivity {
 		return false;
 	}
 
-	private void duplicateTransaction(long id, int multiplier) {
+	private long duplicateTransaction(long id, int multiplier) {
 		String toastText;
+		long newId;
 		if (multiplier > 1) {
-			db.duplicateTransactionWithMultiplier(id, multiplier);
+			newId = db.duplicateTransactionWithMultiplier(id, multiplier);
 			toastText = getString(R.string.duplicate_success_with_multiplier, multiplier);
 		} else {
-			db.duplicateTransaction(id);
+			newId = db.duplicateTransaction(id);
 			toastText = getString(R.string.duplicate_success);
 		}
 		Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
 		requeryCursor();
+		return newId;
 	}
 
 	protected void addItem(int requestId, Class<? extends AbstractTransactionActivity> clazz) {
@@ -309,9 +311,15 @@ public class BlotterActivity extends AbstractListActivity {
 		} else if (resultCode == RESULT_OK && requestCode == NEW_TRANSACTION_FROM_TEMPLATE_REQUEST) {
 			long templateId = data.getLongExtra(SelectTemplateActivity.TEMPATE_ID, -1);
 			int multiplier = data.getIntExtra(SelectTemplateActivity.MULTIPLIER, 1);
+			boolean edit = data.getBooleanExtra(SelectTemplateActivity.EDIT_AFTER_CREATION, false);
 			if (templateId > 0) {
-				duplicateTransaction(templateId, multiplier);
-				FinancistoService.updateWidget(BlotterActivity.this);
+				long id = duplicateTransaction(templateId, multiplier);
+				Transaction t = db.getTransaction(id);
+				if (t.fromAmount == 0 || edit) {
+					editItem(-1, id);
+				} else {
+					FinancistoService.updateWidget(BlotterActivity.this);
+				}
 			}
 		}
 		if (resultCode == RESULT_OK || resultCode == RESULT_FIRST_USER) {
