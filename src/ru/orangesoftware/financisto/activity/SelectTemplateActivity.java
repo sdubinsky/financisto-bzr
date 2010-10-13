@@ -19,15 +19,18 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 public class SelectTemplateActivity extends TemplatesListActivity {
 	
 	public static final String TEMPATE_ID = "template_id";
 	public static final String MULTIPLIER = "multiplier";
+	public static final String EDIT_AFTER_CREATION = "edit_after_creation";
 
 	private TextView multiplierText;
 	private int multiplier = 1; 
@@ -39,6 +42,17 @@ public class SelectTemplateActivity extends TemplatesListActivity {
 	@Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		internalOnCreateTemplates();
+
+		getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				returnResult(id, true);
+				return true;
+			}
+		});
+
 		Button b = (Button)findViewById(R.id.bEditTemplates);
 		b.setOnClickListener(new OnClickListener(){
 			@Override
@@ -98,12 +112,7 @@ public class SelectTemplateActivity extends TemplatesListActivity {
 
 	@Override
 	protected void viewItem(int position, long id) {
-		Intent data = new Intent();
-		data.putExtra(TEMPATE_ID, id);
-		data.putExtra(MULTIPLIER, multiplier);
-		setResult(RESULT_OK, data);
-		finish();
-		
+		returnResult(id, false);
 	}
 
 	@Override
@@ -114,6 +123,15 @@ public class SelectTemplateActivity extends TemplatesListActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		// do nothing
+	}
+
+	void returnResult(long id, boolean edit) {
+		Intent intent = new Intent();
+		intent.putExtra(TEMPATE_ID, id);
+		intent.putExtra(MULTIPLIER, multiplier);
+		if (edit) intent.putExtra(EDIT_AFTER_CREATION, true);
+		setResult(RESULT_OK, intent);
+		finish();
 	}
 
 }

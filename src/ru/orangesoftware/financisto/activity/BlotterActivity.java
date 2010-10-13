@@ -311,10 +311,11 @@ public class BlotterActivity extends AbstractListActivity {
 		} else if (resultCode == RESULT_OK && requestCode == NEW_TRANSACTION_FROM_TEMPLATE_REQUEST) {
 			long templateId = data.getLongExtra(SelectTemplateActivity.TEMPATE_ID, -1);
 			int multiplier = data.getIntExtra(SelectTemplateActivity.MULTIPLIER, 1);
+			boolean edit = data.getBooleanExtra(SelectTemplateActivity.EDIT_AFTER_CREATION, false);
 			if (templateId > 0) {
 				long id = duplicateTransaction(templateId, multiplier);
 				Transaction t = db.getTransaction(id);
-				if (t.fromAmount == 0) {
+				if (t.fromAmount == 0 || edit) {
 					editItem(-1, id);
 				} else {
 					FinancistoService.updateWidget(BlotterActivity.this);
