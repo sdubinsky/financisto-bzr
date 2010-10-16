@@ -485,7 +485,7 @@
 	<string name="ui_language_summary">Imposta la lingua dell\'interfaccia utente (necessita riavvio)</string>
 	
 	<string name="enter_pin">Inserisci PIN</string>
-	<string name="mass_operations">Operazioni multiple</string>
+	<string name="mass_operations">Operazioni</string>
 	<string name="card_issuer_unionpay">UnionPay</string>
 	<string name="mass_operations_use_filter">Usa un filtro per cercare le transazioni</string>
 	<string name="mass_operations_clear_all">Pulisci tutto</string>			
@@ -497,6 +497,8 @@
 	<string name="entities">Entità</string>
 	<string name="transaction_status_restored">Ripristinate</string>	
 	<string name="scheduled_transactions_restored">Le transazioni programmate sono state ripristinate</string>		
-	<string name="scheduled_transactions_have_been_restored">%d transazioni programmate dimenticate sono state ripristinate. Uta le operazioni multiple per pulirle o eliminarle.</string>	
+	<string name="scheduled_transactions_have_been_restored">%d transazioni programmate dimenticate sono state ripristinate. Usa le operazioni di massa per pulirle o eliminarle.</string>
+	<string name="restore_missed_scheduled_transactions">Ripristina programmazioni mancanti</string>		
+	<string name="restore_missed_scheduled_transactions_summary">Le transazioni programmate mancanti verranno ripristinate con lo status \'Ripristinate\'</string>	
 	
 </resources>
