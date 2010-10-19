@@ -14,7 +14,12 @@ import static ru.orangesoftware.financisto.backup.Backup.BACKUP_TABLES;
 import static ru.orangesoftware.financisto.backup.Backup.BACKUP_TABLES_WITH_SYSTEM_IDS;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.utils.Utils;
@@ -23,6 +28,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class DatabaseExport extends Export {
 	
@@ -47,6 +53,23 @@ public class DatabaseExport extends Export {
 		bw.write("VERSION_NAME:");bw.write(pi.versionName);bw.write("\n");
 		bw.write("DATABASE_VERSION:");bw.write(db.getVersion());bw.write("\n");
 		bw.write("#START\n");
+	}
+
+	public static void copy(File source, File dest) throws IOException {
+	     FileChannel in = null, out = null;
+	     try {          
+	          in = new FileInputStream(source).getChannel();
+	          out = new FileOutputStream(dest).getChannel();
+	 
+	          long size = in.size();
+	          MappedByteBuffer buf = in.map(FileChannel.MapMode.READ_ONLY, 0, size);
+	 
+	          out.write(buf);
+	 
+	     } finally {
+	          if (in != null)          in.close();
+	          if (out != null)     out.close();
+	     }
 	}
 
 	@Override

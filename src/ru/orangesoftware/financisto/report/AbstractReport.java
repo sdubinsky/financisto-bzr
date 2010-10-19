@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.report;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -31,8 +30,6 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.util.Log;
 
 public abstract class AbstractReport implements Report {
 	
@@ -54,9 +51,6 @@ public abstract class AbstractReport implements Report {
 		filterTransfers(filter);
 		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,  
 				filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
-		Log.i("", filter.getSelection());
-		Log.i("", Arrays.toString(filter.getSelectionArgs()));
-		DatabaseUtils.dumpCursor(c);
 		return getUnitsFromCursorAndSort(c);
 	}
 
@@ -91,7 +85,7 @@ public abstract class AbstractReport implements Report {
 					u = new GraphUnit(id, alterName(id, name), DEFAULT_STYLE);
 					lastId = id;
 				}
-				Currency currency = CurrencyCache.getCurrency(currencyId);
+				Currency currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
 				u.addAmount(currency, amount);
 			}
 			if (u != null) {
@@ -109,7 +103,7 @@ public abstract class AbstractReport implements Report {
 			while (c.moveToNext()) {				
 				long currencyId = c.getLong(2);
 				long amount = c.getLong(3);
-				Currency currency = CurrencyCache.getCurrency(currencyId);
+				Currency currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
 				u.addAmount(currency, amount);
 			}
 			return u;
