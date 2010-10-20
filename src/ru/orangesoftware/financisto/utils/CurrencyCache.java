@@ -29,6 +29,11 @@ public class CurrencyCache {
 		return CURRENCIES.get(currencyId);
 	}
 	
+	public static Currency getCurrencyOrEmpty(long currencyId) {
+		Currency c = CURRENCIES.get(currencyId);
+		return c != null ? c : Currency.EMPTY;
+	}
+
 	public static Currency putCurrency(Currency currency) {
 		Currency c = CURRENCIES.putIfAbsent(currency.id, currency);
 		if (c == null) {
