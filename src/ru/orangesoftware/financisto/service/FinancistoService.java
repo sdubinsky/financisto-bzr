@@ -31,10 +31,10 @@ import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -45,7 +45,7 @@ import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-public class FinancistoService extends Service {
+public class FinancistoService extends IntentService {
 
 	private static final String TAG = "FinancistoService";
 	public static final String WIDGET_UPDATE_ACTION = "ru.orangesoftware.financisto.UPDATE_WIDGET";
@@ -57,35 +57,37 @@ public class FinancistoService extends Service {
 	private DatabaseAdapter db;
 	private MyEntityManager em;
 	
+	public FinancistoService() {
+		super("FinancistoService");
+	}
+
 	@Override
-	public void onStart(Intent intent, int startId) {
+	protected void onHandleIntent(Intent intent) {
 		try {
-			Log.d(TAG, "Started with "+intent);
-			if (intent != null) {
-				String action = intent.getAction();
-				if (WIDGET_UPDATE_ACTION.equals(action)) {
-					if (MyPreferences.isWidgetEnabled(this)) {
-			        	long accountId = -1;
-			        	if (intent != null) {
-			        		accountId = intent.getLongExtra(AccountWidget.WIDGET_ACCOUNT_ID, -1);
-			        		if (accountId == -1) {
-			        			accountId = intent.getLongExtra(AccountWidget.TRANSACTION_ACCOUNT_ID, -1);
-			        			if (accountId != -1) {
-			        				updateWidget(AccountWidget.buildUpdatesForAccount(this, accountId));
-			        				return;
-			        			}
-			        		}
-			        	}
-			        	updateWidget(AccountWidget.buildUpdate(this, accountId));
-					} else {
-			        	updateWidget(AccountWidget.noDataUpdate(this));						
-					}
+			Log.d(TAG, "Handle "+intent);
+			String action = intent.getAction();
+			if (WIDGET_UPDATE_ACTION.equals(action)) {
+				if (MyPreferences.isWidgetEnabled(this)) {
+		        	long accountId = -1;
+		        	if (intent != null) {
+		        		accountId = intent.getLongExtra(AccountWidget.WIDGET_ACCOUNT_ID, -1);
+		        		if (accountId == -1) {
+		        			accountId = intent.getLongExtra(AccountWidget.TRANSACTION_ACCOUNT_ID, -1);
+		        			if (accountId != -1) {
+		        				updateWidget(AccountWidget.buildUpdatesForAccount(this, accountId));
+		        				return;
+		        			}
+		        		}
+		        	}
+		        	updateWidget(AccountWidget.buildUpdate(this, accountId));
 				} else {
-					if (intent.getBooleanExtra(SCHEDULE_ALL, false)) {
-						scheduleAll(this, db);
-					} else {
-						scheduleOne(intent);
-					}
+		        	updateWidget(AccountWidget.noDataUpdate(this));						
+				}
+			} else {
+				if (intent.getBooleanExtra(SCHEDULE_ALL, false)) {
+					scheduleAll(this, db);
+				} else {
+					scheduleOne(intent);
 				}
 			}
 		} finally {
