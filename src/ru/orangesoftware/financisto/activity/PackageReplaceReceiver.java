@@ -16,19 +16,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class PackageReplaceReciever extends BroadcastReceiver {
+public class PackageReplaceReceiver extends BroadcastReceiver {
 
 	private static final String PACKAGE_REPLACED = "android.intent.action.PACKAGE_REPLACED";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i("PackageReplaceReciever", "Recieved "+intent);
+		Log.i("PackageReplaceReceiver", "Received "+intent);
 		String action = intent.getAction();
 		if (PACKAGE_REPLACED.equals(action)) {
-			FinancistoService.acquireLock(context);
-			Intent serviceIntent = new Intent(context, FinancistoService.class);
-			serviceIntent.putExtra(FinancistoService.SCHEDULE_ALL, true);
-			context.startService(serviceIntent);			
+			Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ALL);
+            FinancistoService.sendWakefulWork(context, serviceIntent);
 		}
 	}
 

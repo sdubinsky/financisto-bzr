@@ -10,53 +10,9 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import static ru.orangesoftware.financisto.utils.ThumbnailUtil.PICTURES_DIR;
-import static ru.orangesoftware.financisto.utils.ThumbnailUtil.PICTURES_THUMB_DIR;
-import static ru.orangesoftware.financisto.utils.ThumbnailUtil.PICTURE_FILE_NAME_FORMAT;
-import static ru.orangesoftware.financisto.utils.ThumbnailUtil.createAndStoreImageThumbnail;
-
-import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.ProjectColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Attribute;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.MyEntity;
-import ru.orangesoftware.financisto.model.MyLocation;
-import ru.orangesoftware.financisto.model.Project;
-import ru.orangesoftware.financisto.model.SystemAttribute;
-import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.model.TransactionAttribute;
-import ru.orangesoftware.financisto.model.TransactionStatus;
-import ru.orangesoftware.financisto.recur.NotificationOptions;
-import ru.orangesoftware.financisto.recur.Recurrence;
-import ru.orangesoftware.financisto.service.FinancistoService;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
-import ru.orangesoftware.financisto.utils.DateUtils;
-import ru.orangesoftware.financisto.utils.EnumUtils;
-import ru.orangesoftware.financisto.utils.MyPreferences;
-import ru.orangesoftware.financisto.utils.TransactionUtils;
-import ru.orangesoftware.financisto.utils.Utils;
-import ru.orangesoftware.financisto.view.AttributeView;
-import ru.orangesoftware.financisto.view.AttributeViewFactory;
-import ru.orangesoftware.financisto.widget.AmountInput;
-import ru.orangesoftware.orb.EntityManager;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.Intent;
@@ -71,20 +27,28 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-import android.widget.TimePicker;
+import android.view.Window;
+import android.widget.*;
 import android.widget.LinearLayout.LayoutParams;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseHelper.*;
+import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.recur.NotificationOptions;
+import ru.orangesoftware.financisto.recur.Recurrence;
+import ru.orangesoftware.financisto.utils.*;
+import ru.orangesoftware.financisto.view.AttributeView;
+import ru.orangesoftware.financisto.view.AttributeViewFactory;
+import ru.orangesoftware.financisto.widget.AmountInput;
+import ru.orangesoftware.orb.EntityManager;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static ru.orangesoftware.financisto.utils.ThumbnailUtil.*;
 
 public abstract class AbstractTransactionActivity extends AbstractActivity {
 	
@@ -145,10 +109,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	
 	private LocationManager locationManager;
 	private Location lastFix;
-    
-    private Button bOK;
-	
-	protected boolean isDuplicate = false;
+
+    protected boolean isDuplicate = false;
 	
 	private LinearLayout attributesLayout;
 	private boolean setCurrentLocation;
@@ -303,26 +265,26 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			String value = transaction.getSystemAttribute(SystemAttribute.DELETE_AFTER_EXPIRED);
 			deleteAfterExpired.inflateView(layout, value != null ? value : sa.defaultValue);
 		}
-		
-		bOK = (Button)findViewById(R.id.bOK);
-		bOK.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				if (onOKClicked()) {
-					boolean isNew = transaction.id == -1;
-					long id = db.insertOrUpdate(transaction, getAttributes());
-					if (isNew) {
-						MyPreferences.setLastAccount(AbstractTransactionActivity.this, transaction.fromAccountId);
-					}
-					Intent data = new Intent();
-					data.putExtra(TransactionColumns.ID, id);
-					FinancistoService.updateWidget(AbstractTransactionActivity.this);
-					setResult(RESULT_OK, data);
-					finish();					
-				}
-			}
 
-		});
+        Button bOK = (Button) findViewById(R.id.bOK);
+		bOK.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if (onOKClicked()) {
+                    boolean isNew = transaction.id == -1;
+                    long id = db.insertOrUpdate(transaction, getAttributes());
+                    if (isNew) {
+                        MyPreferences.setLastAccount(AbstractTransactionActivity.this, transaction.fromAccountId);
+                    }
+                    Intent data = new Intent();
+                    data.putExtra(TransactionColumns.ID, id);
+                    AccountWidget.updateWidgets(AbstractTransactionActivity.this);
+                    setResult(RESULT_OK, data);
+                    finish();
+                }
+            }
+
+        });
 
 		Button bCancel = (Button)findViewById(R.id.bCancel);
 		bCancel.setOnClickListener(new OnClickListener(){

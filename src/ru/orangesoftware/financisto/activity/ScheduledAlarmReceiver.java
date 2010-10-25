@@ -11,27 +11,26 @@
 package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.service.FinancistoService;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import ru.orangesoftware.financisto.service.RecurrenceScheduler;
 
-public class ScheduledAlarmReciever extends BroadcastReceiver {
+public class ScheduledAlarmReceiver extends PackageReplaceReceiver {
 
 	private static final String BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i("ScheduledAlarmReciever", "Recieved "+intent);
-		FinancistoService.acquireLock(context);
-		Intent serviceIntent = new Intent(context, FinancistoService.class);
-		String action = intent.getAction();
+		Log.i("ScheduledAlarmReceiver", "Received " + intent);
+        String action = intent.getAction();
 		if (BOOT_COMPLETED.equals(action)) {
-			serviceIntent.putExtra(FinancistoService.SCHEDULE_ALL, true);
+            super.onReceive(context, intent);
 		} else {
-			serviceIntent.putExtra(FinancistoService.SCHEDULED_TRANSACTION_ID, intent.getLongExtra(FinancistoService.SCHEDULED_TRANSACTION_ID, -1));
+            Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ONE);
+			serviceIntent.putExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, intent.getLongExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, -1));
+            FinancistoService.sendWakefulWork(context, serviceIntent);
 		}
-		context.startService(serviceIntent);			
 	}
 
 }
