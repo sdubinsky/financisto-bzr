@@ -13,12 +13,10 @@ package ru.orangesoftware.financisto.activity;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
 import ru.orangesoftware.financisto.R;
@@ -37,8 +35,9 @@ import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
 
 public class AccountWidget extends AppWidgetProvider {
 
-    private static final String WIDGET_UPDATE_ACTION = "ru.orangesoftware.financisto.UPDATE_WIDGET";
+    private static final Uri CONTENT_URI = Uri.parse("content://ru.orangesoftware.financisto/accountwidget");
 
+    private static final String WIDGET_UPDATE_ACTION = "ru.orangesoftware.financisto.UPDATE_WIDGET";
     private static final String PREFS_NAME = "ru.orangesoftware.financisto.activity.AccountWidget";
     private static final String PREF_PREFIX_KEY = "prefix_";
 
@@ -120,10 +119,11 @@ public class AccountWidget extends AppWidgetProvider {
     }
 
     private static void addScrollOnClick(Context context, RemoteViews updateViews, int widgetId) {
-        Intent intent = new Intent(context, AccountWidget.class);
-        intent.setAction(WIDGET_UPDATE_ACTION);
+        Uri widgetUri = ContentUris.withAppendedId(CONTENT_URI, widgetId);
+        Intent intent = new Intent(WIDGET_UPDATE_ACTION, widgetUri, context, AccountWidget.class);
         intent.putExtra(WIDGET_ID, widgetId);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        intent.putExtra("ts", System.currentTimeMillis());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         updateViews.setOnClickPendingIntent(R.id.account_icon, pendingIntent);
     }
 
