@@ -36,12 +36,6 @@ public class ScheduledListActivity extends BlotterActivity {
 	}
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        scheduler = new RecurrenceScheduler(db);
-    }
-
-    @Override
 	protected void calculateTotals() {
 		// do nothing
 	}
@@ -71,6 +65,7 @@ public class ScheduledListActivity extends BlotterActivity {
 	@Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
+        scheduler = new RecurrenceScheduler(db);
 		// remove filter button and totals
 		bFilter.setVisibility(View.GONE);
 		bTemplate.setVisibility(View.GONE);
