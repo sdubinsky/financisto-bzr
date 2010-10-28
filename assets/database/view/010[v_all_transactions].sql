@@ -15,6 +15,7 @@ SELECT
 	p.title as project,
 	loc._id as location_id,
 	loc.name as location,
+	t.payee as payee,
 	t.note as note,
 	t.from_amount as from_amount,
 	t.to_amount as to_amount,

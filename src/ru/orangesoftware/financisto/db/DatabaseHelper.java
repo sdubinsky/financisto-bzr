@@ -73,6 +73,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String LONGITUDE = "longitude";		
 		public static final String FROM_ACCOUNT_ID = "from_account_id";		
 		public static final String TO_ACCOUNT_ID = "to_account_id";
+        public static final String PAYEE = "payee";
 		public static final String NOTE = "note";
 		public static final String FROM_AMOUNT = "from_amount";
 		public static final String TO_AMOUNT = "to_amount";
@@ -91,7 +92,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			FROM_ACCOUNT_ID, 
 			TO_ACCOUNT_ID,
 			CATEGORY_ID, 
-			PROJECT_ID, 
+			PROJECT_ID,
+            PAYEE,
 			NOTE, 
 			FROM_AMOUNT, 
 			TO_AMOUNT,
@@ -110,29 +112,30 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			IS_CCARD_PAYMENT,
 			LAST_RECURRENCE};
 
-		public static class Indicies {
+        public static class Indicies {
 			public static final int ID = 0;
 			public static final int FROM_ACCOUNT_ID = 1;
 			public static final int TO_ACCOUNT_ID = 2;		
 			public static final int CATEGORY_ID = 3;
 			public static final int PROJECT_ID = 4;
-			public static final int NOTE = 5;
-			public static final int FROM_AMOUNT = 6;
-			public static final int TO_AMOUNT = 7;
-			public static final int DATETIME = 8;
-			public static final int LOCATION_ID = 9;
-			public static final int PROVIDER = 10;
-			public static final int ACCURACY = 11;
-			public static final int LATITUDE = 12;
-			public static final int LONGITUDE = 13;
-			public static final int IS_TEMPLATE = 14;
-			public static final int TEMPLATE_NAME = 15;
-			public static final int RECURRENCE = 16;
-			public static final int NOTIFICATION_OPTIONS = 17;
-			public static final int STATUS = 18;
-			public static final int ATTACHED_PICTURE = 19;
-			public static final int IS_CCARD_PAYMENT = 20;
-			public static final int LAST_RECURRENCE = 21;
+            public static final int PAYEE = 5;
+			public static final int NOTE = 6;
+			public static final int FROM_AMOUNT = 7;
+			public static final int TO_AMOUNT = 8;
+			public static final int DATETIME = 9;
+			public static final int LOCATION_ID = 10;
+			public static final int PROVIDER = 11;
+			public static final int ACCURACY = 12;
+			public static final int LATITUDE = 13;
+			public static final int LONGITUDE = 14;
+			public static final int IS_TEMPLATE = 15;
+			public static final int TEMPLATE_NAME = 16;
+			public static final int RECURRENCE = 17;
+			public static final int NOTIFICATION_OPTIONS = 18;
+			public static final int STATUS = 19;
+			public static final int ATTACHED_PICTURE = 20;
+			public static final int IS_CCARD_PAYMENT = 21;
+			public static final int LAST_RECURRENCE = 22;
 		}
 		
 		private TransactionColumns() {}
@@ -155,6 +158,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String PROJECT = "project";
 		public static final String LOCATION_ID = "location_id";
 		public static final String LOCATION = "location";
+        public static final String PAYEE = "payee";
 		public static final String NOTE = "note";
 		public static final String FROM_AMOUNT = "from_amount";
 		public static final String TO_AMOUNT = "to_amount";
@@ -181,6 +185,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			PROJECT,
 			LOCATION_ID,
 			LOCATION,
+            PAYEE,
 			NOTE,
 			FROM_AMOUNT,
 			TO_AMOUNT,
@@ -215,16 +220,17 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			public static final int PROJECT = 12;
 			public static final int LOCATION_ID = 13;
 			public static final int LOCATION = 14;
-			public static final int NOTE = 15;
-			public static final int FROM_AMOUNT = 16;
-			public static final int TO_AMOUNT = 17;
-			public static final int DATETIME = 18;
-			public static final int IS_TEMPLATE = 19;		
-			public static final int TEMPLATE_NAME = 20;
-			public static final int RECURRENCE = 21;
-			public static final int NOTIFICATION_OPTIONS = 22;
-			public static final int STATUS = 23;
-		};
+            public static final int PAYEE = 15;
+			public static final int NOTE = 16;
+			public static final int FROM_AMOUNT = 17;
+			public static final int TO_AMOUNT = 18;
+			public static final int DATETIME = 19;
+			public static final int IS_TEMPLATE = 20;
+			public static final int TEMPLATE_NAME = 21;
+			public static final int RECURRENCE = 22;
+			public static final int NOTIFICATION_OPTIONS = 23;
+			public static final int STATUS = 24;
+		}
 	}		
 
 	public static class AccountColumns {

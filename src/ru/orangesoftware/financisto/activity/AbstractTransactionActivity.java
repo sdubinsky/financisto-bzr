@@ -126,8 +126,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected Button dateText;
 	protected Button timeText;
 	
-	protected TextView attributesText;
-	protected EditText noteText;
+    protected EditText payeeText;
+    protected EditText noteText;
 	protected TextView recurText;	
 	protected TextView notificationText;	
 	
@@ -145,10 +145,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	
 	private LocationManager locationManager;
 	private Location lastFix;
-    
-    private Button bOK;
-	
-	protected boolean isDuplicate = false;
+
+    protected boolean isDuplicate = false;
 	
 	private LinearLayout attributesLayout;
 	private boolean setCurrentLocation;
@@ -157,6 +155,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected boolean isRememberLastCategory;
 	protected boolean isRememberLastLocation;
 	protected boolean isRememberLastProject;
+    protected boolean isShowPayee;
 	protected boolean isShowLocation;
 	protected boolean isShowNote;
 	protected boolean isShowProject;
@@ -167,8 +166,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected DateFormat tf;
 	
 	protected Transaction transaction = new Transaction();
-	
-	public AbstractTransactionActivity() {}
+
+    public AbstractTransactionActivity() {}
 	
 	protected abstract int getLayoutId();
 	
@@ -189,6 +188,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		isRememberLastCategory = isRememberLastAccount && MyPreferences.isRememberCategory(this);
 		isRememberLastLocation = isRememberLastCategory && MyPreferences.isRememberLocation(this);
 		isRememberLastProject = isRememberLastCategory && MyPreferences.isRememberProject(this);
+        isShowPayee = MyPreferences.isShowPayee(this);
 		isShowLocation = MyPreferences.isShowLocation(this);
 		isShowNote = MyPreferences.isShowNote(this);
 		isShowProject = MyPreferences.isShowProject(this);
@@ -303,26 +303,26 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			String value = transaction.getSystemAttribute(SystemAttribute.DELETE_AFTER_EXPIRED);
 			deleteAfterExpired.inflateView(layout, value != null ? value : sa.defaultValue);
 		}
-		
-		bOK = (Button)findViewById(R.id.bOK);
-		bOK.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				if (onOKClicked()) {
-					boolean isNew = transaction.id == -1;
-					long id = db.insertOrUpdate(transaction, getAttributes());
-					if (isNew) {
-						MyPreferences.setLastAccount(AbstractTransactionActivity.this, transaction.fromAccountId);
-					}
-					Intent data = new Intent();
-					data.putExtra(TransactionColumns.ID, id);
-					FinancistoService.updateWidget(AbstractTransactionActivity.this);
-					setResult(RESULT_OK, data);
-					finish();					
-				}
-			}
 
-		});
+        Button bOK = (Button) findViewById(R.id.bOK);
+		bOK.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if (onOKClicked()) {
+                    boolean isNew = transaction.id == -1;
+                    long id = db.insertOrUpdate(transaction, getAttributes());
+                    if (isNew) {
+                        MyPreferences.setLastAccount(AbstractTransactionActivity.this, transaction.fromAccountId);
+                    }
+                    Intent data = new Intent();
+                    data.putExtra(TransactionColumns.ID, id);
+                    FinancistoService.updateWidget(AbstractTransactionActivity.this);
+                    setResult(RESULT_OK, data);
+                    finish();
+                }
+            }
+
+        });
 
 		Button bCancel = (Button)findViewById(R.id.bCancel);
 		bCancel.setOnClickListener(new OnClickListener(){
@@ -518,10 +518,26 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private final LocationListener gpsLocationListener = new DefaultLocationListener();
 
 	protected void createCommonNodes(LinearLayout layout) {
+        int payeeOrder = MyPreferences.getPayeeOrder(this);
 		int locationOrder = MyPreferences.getLocationOrder(this);
 		int noteOrder = MyPreferences.getNoteOrder(this);
 		int projectOrder = MyPreferences.getProjectOrder(this);
 		for (int i=0; i<6; i++) {
+            if (i == payeeOrder) {
+                if (isShowPayee) {
+                    //payee
+                    payeeText = new EditText(this);
+                    payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View view, boolean hasFocus) {
+                            if (hasFocus) {
+                                payeeText.selectAll();
+                            }
+                        }
+                    });
+                    x.addEditNode(layout, R.string.payee, payeeText);
+                }
+            }
 			if (i == locationOrder) {
 				if (isShowLocation) {
 					//location
@@ -850,6 +866,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		} else {
 			setLocation(transaction.provider, transaction.accuracy, transaction.latitude, transaction.longitude);
 		}
+        if (isShowPayee) {
+            payeeText.setText(transaction.payee);
+        }
 		if (isShowNote) {
 			noteText.setText(transaction.note);
 		}
@@ -905,6 +924,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			transaction.latitude = lastFix != null ? lastFix.getLatitude() : 0;
 			transaction.longitude = lastFix != null ? lastFix.getLongitude() : 0;
 		}
+        if (isShowPayee) {
+            transaction.payee = payeeText.getText().toString();
+        }
 		if (isShowNote) {
 			transaction.note = noteText.getText().toString();
 		}

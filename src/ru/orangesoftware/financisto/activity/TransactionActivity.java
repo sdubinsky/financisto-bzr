@@ -67,12 +67,12 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		incomeExpenseButton.setChecked(false);		
 		//account
 		accountText = x.addListNode(layout, R.id.account, R.string.account, R.string.select_account);
-		//category
-		categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
 		//amount
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
 		x.addEditNode(layout, isUpdateBalanceMode ? R.string.new_balance : R.string.amount, amountInput);
+		//category
+		categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
 		// difference
 		if (isUpdateBalanceMode) {
 			differenceText = x.addInfoNode(layout, -1, R.string.difference, "0");

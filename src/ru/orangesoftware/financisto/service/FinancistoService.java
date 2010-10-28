@@ -68,17 +68,14 @@ public class FinancistoService extends IntentService {
 			String action = intent.getAction();
 			if (WIDGET_UPDATE_ACTION.equals(action)) {
 				if (MyPreferences.isWidgetEnabled(this)) {
-		        	long accountId = -1;
-		        	if (intent != null) {
-		        		accountId = intent.getLongExtra(AccountWidget.WIDGET_ACCOUNT_ID, -1);
-		        		if (accountId == -1) {
-		        			accountId = intent.getLongExtra(AccountWidget.TRANSACTION_ACCOUNT_ID, -1);
-		        			if (accountId != -1) {
-		        				updateWidget(AccountWidget.buildUpdatesForAccount(this, accountId));
-		        				return;
-		        			}
-		        		}
-		        	}
+		        	long accountId = intent.getLongExtra(AccountWidget.WIDGET_ACCOUNT_ID, -1);
+                    if (accountId == -1) {
+                        accountId = intent.getLongExtra(AccountWidget.TRANSACTION_ACCOUNT_ID, -1);
+                        if (accountId != -1) {
+                            updateWidget(AccountWidget.buildUpdatesForAccount(this, accountId));
+                            return;
+                        }
+                    }
 		        	updateWidget(AccountWidget.buildUpdate(this, accountId));
 				} else {
 		        	updateWidget(AccountWidget.noDataUpdate(this));						
@@ -92,6 +89,7 @@ public class FinancistoService extends IntentService {
 			}
 		} finally {
 			releaseLock();
+            stopSelf();
 		}
 	}
 
@@ -124,7 +122,7 @@ public class FinancistoService extends IntentService {
 				deleteTransactionIfNeeded(transaction);
 				Log.i("FinancistoService", "Expired transaction "+transaction.id+" has been deleted");
 			}
-			updateWidget(this);
+			updateWidget(AccountWidget.buildUpdate(this, -1));
 		}
 	}
 
@@ -273,17 +271,16 @@ public class FinancistoService extends IntentService {
 		super.onDestroy();
 	}
 
-
-
+    //@GuardedBy("this")
 	private static WakeLock sWakeLock;
 	
 	public static synchronized void acquireLock(Context context) {
 		Log.d(TAG, Thread.currentThread().getName()+" WakeLock is about to be acquired "+sWakeLock);
 		if (sWakeLock != null) {
-			return;
+            releaseLock();
 		}
 		PowerManager mgr = (PowerManager)context.getSystemService(Context.POWER_SERVICE);	
-		sWakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK|PowerManager.ON_AFTER_RELEASE, "MissedReminderWakeLock");
+		sWakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MissedReminderWakeLock");
 		sWakeLock.acquire();
 		Log.d(TAG, "WakeLock acquired "+sWakeLock);
 	}

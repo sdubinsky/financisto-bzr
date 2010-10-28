@@ -177,7 +177,7 @@ public abstract class EntityManager {
 		try {
 			if (c.moveToFirst()) {
 				try {
-					return loadFromCursor("e", c, ed);
+					return (T)loadFromCursor("e", c, ed);
 				} catch (Exception e) {
 					throw new PersistenceException("Unable to load entity of type "+clazz+" with id "+id, e);
 				}
@@ -196,7 +196,7 @@ public abstract class EntityManager {
 			List<T> list = new LinkedList<T>();
 			while (c.moveToNext()) {
 				try {
-					T t = loadFromCursor("e", c, ed);
+					T t = (T)loadFromCursor("e", c, ed);
 					list.add(t);
 				} catch (Exception e) {
 					throw new PersistenceException("Unable to list entites of type "+clazz, e);
@@ -211,7 +211,7 @@ public abstract class EntityManager {
 	public static <T> T loadFromCursor(Cursor c, Class<T> clazz) {
 		EntityDefinition ed = getEntityDefinitionOrThrow(clazz);
 		try {
-			return loadFromCursor("e", c, ed);
+			return (T)loadFromCursor("e", c, ed);
 		} catch (Exception e) {
 			throw new PersistenceException("Unable to load entity of type "+clazz+" from cursor", e);
 		}

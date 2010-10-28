@@ -27,9 +27,6 @@ import android.database.Cursor;
 @Table(name = "transactions")
 public class Transaction {
 	
-	public static int TRANSFER_IN = 1;
-	public static int TRANSFER_OUT = 2;
-	
 	@Id
 	@Column(name = "_id")
 	public long id = -1;
@@ -64,6 +61,9 @@ public class Transaction {
 	@Column(name = "to_account_id")
 	public long toAccountId;
 	
+    @Column(name = "payee")
+    public String payee;
+
 	@Column(name = "note")
 	public String note;
 	
@@ -100,7 +100,7 @@ public class Transaction {
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
 
-	public ContentValues toValues() {
+    public ContentValues toValues() {
 		ContentValues values = new ContentValues();
 		values.put(TransactionColumns.CATEGORY_ID, categoryId);
 		values.put(TransactionColumns.PROJECT_ID, projectId);
@@ -112,6 +112,7 @@ public class Transaction {
 		values.put(TransactionColumns.LONGITUDE, longitude);
 		values.put(TransactionColumns.FROM_ACCOUNT_ID, fromAccountId);
 		values.put(TransactionColumns.TO_ACCOUNT_ID, toAccountId);
+        values.put(TransactionColumns.PAYEE, payee);
 		values.put(TransactionColumns.NOTE, note);
 		values.put(TransactionColumns.FROM_AMOUNT, fromAmount);
 		values.put(TransactionColumns.TO_AMOUNT, toAmount);
@@ -134,6 +135,7 @@ public class Transaction {
 		t.toAccountId = c.getLong(TransactionColumns.Indicies.TO_ACCOUNT_ID);
 		t.categoryId = c.getLong(TransactionColumns.Indicies.CATEGORY_ID);
 		t.projectId = c.getLong(TransactionColumns.Indicies.PROJECT_ID);
+        t.payee = c.getString(TransactionColumns.Indicies.PAYEE);
 		t.note = c.getString(TransactionColumns.Indicies.NOTE);
 		t.fromAmount = c.getLong(TransactionColumns.Indicies.FROM_AMOUNT);
 		t.toAmount = c.getLong(TransactionColumns.Indicies.TO_AMOUNT);
