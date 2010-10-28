@@ -10,23 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.backup;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.ACCOUNT_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import ru.orangesoftware.financisto.db.Database;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseSchemaEvolution;
-import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
-import ru.orangesoftware.financisto.export.Export;
-import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -35,6 +18,18 @@ import android.util.Log;
 import api.wireless.gdata.docs.client.DocsClient;
 import api.wireless.gdata.parser.ParseException;
 import api.wireless.gdata.util.ServiceException;
+import ru.orangesoftware.financisto.db.Database;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
+import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.db.DatabaseSchemaEvolution;
+import ru.orangesoftware.financisto.export.Export;
+import ru.orangesoftware.financisto.service.RecurrenceScheduler;
+
+import java.io.*;
+
+import static ru.orangesoftware.financisto.db.DatabaseHelper.ACCOUNT_TABLE;
+import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT;
 
 public class DatabaseImport {
 
@@ -143,7 +138,8 @@ public class DatabaseImport {
 	}*/
 
 	private void scheduleAll() {
-		FinancistoService.scheduleAll(context, dbAdapter);
+        RecurrenceScheduler scheduler = new RecurrenceScheduler(dbAdapter);
+        scheduler.scheduleAll(context);
 	}
 
 	private static final String[] RESTORE_SCRIPTS = {

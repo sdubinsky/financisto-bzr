@@ -10,31 +10,32 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.ScheduledListAdapter;
-import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
-import ru.orangesoftware.financisto.recur.RecurrenceScheduler;
-import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.ScheduledListAdapter;
+import ru.orangesoftware.financisto.blotter.BlotterFilter;
+import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.service.RecurrenceScheduler;
+
+import java.util.ArrayList;
 
 public class ScheduledListActivity extends BlotterActivity {
+
+    private RecurrenceScheduler scheduler;
 
 	public ScheduledListActivity() {}
 	
 	public ScheduledListActivity(int layoutId) {
 		super(layoutId);
 	}
-	
-	@Override
+
+    @Override
 	protected void calculateTotals() {
 		// do nothing
 	}
@@ -46,19 +47,15 @@ public class ScheduledListActivity extends BlotterActivity {
 	
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		return new ScheduledListAdapter(this, getScheduledTransactions(System.currentTimeMillis()));
+        ArrayList<TransactionInfo> transactions = scheduler.getSortedSchedules(System.currentTimeMillis());
+		return new ScheduledListAdapter(this, transactions);
 	}
 
 	@Override
 	public void requeryCursor() {
 		long now = System.currentTimeMillis();
-		ArrayList<TransactionInfo> transactions = getScheduledTransactions(now);
-		updateAdapter(transactions);		
-		FinancistoService.scheduleAll(this, transactions, now);
-	}
-
-	private ArrayList<TransactionInfo> getScheduledTransactions(long now) {
-		return RecurrenceScheduler.getSortedSchedules(em, now);
+		ArrayList<TransactionInfo> transactions = scheduler.scheduleAll(this, now);
+		updateAdapter(transactions);
 	}
 
 	private void updateAdapter(ArrayList<TransactionInfo> transactions) {
@@ -68,6 +65,7 @@ public class ScheduledListActivity extends BlotterActivity {
 	@Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
+        scheduler = new RecurrenceScheduler(db);
 		// remove filter button and totals
 		bFilter.setVisibility(View.GONE);
 		bTemplate.setVisibility(View.GONE);

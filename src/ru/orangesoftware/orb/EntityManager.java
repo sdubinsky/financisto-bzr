@@ -10,6 +10,11 @@
  ******************************************************************************/
 package ru.orangesoftware.orb;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import javax.persistence.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -17,19 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.PersistenceException;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 public abstract class EntityManager {
 	
@@ -102,7 +94,7 @@ public abstract class EntityManager {
 		return FieldInfo.primitive(f, columnName);
 	}
 	
-	static EntityDefinition getEntityDefinitionOrThrow(Class<? extends Object> clazz) {
+	static EntityDefinition getEntityDefinitionOrThrow(Class<?> clazz) {
 		EntityDefinition ed = definitions.get(clazz);
 		if (ed == null) {
 			EntityDefinition ned = parseDefinition(clazz);
@@ -190,7 +182,6 @@ public abstract class EntityManager {
 
 	public <T> List<T> list(Class<T> clazz) {
 		EntityDefinition ed = getEntityDefinitionOrThrow(clazz);
-		//Cursor c = db.query(ed.tableName, ed.columns, null, null, null, null, null);
 		Cursor c = db.rawQuery(ed.sqlQuery, null);
 		try {
 			List<T> list = new LinkedList<T>();

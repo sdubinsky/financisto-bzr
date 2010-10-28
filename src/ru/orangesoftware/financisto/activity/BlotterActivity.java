@@ -11,8 +11,16 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.List;
-
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.*;
+import android.view.View.OnClickListener;
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.BlotterListAdapter;
 import ru.orangesoftware.financisto.adapter.TransactionsListAdapter;
@@ -22,28 +30,10 @@ import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.service.FinancistoService;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import ru.orangesoftware.financisto.view.NodeInflater;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewFlipper;
+
+import java.util.List;
 
 public class BlotterActivity extends AbstractListActivity {
 	
@@ -268,7 +258,7 @@ public class BlotterActivity extends AbstractListActivity {
 			public void onClick(DialogInterface arg0, int arg1) {
 				db.deleteTransaction(id);
 				requeryCursor();
-				FinancistoService.updateWidget(BlotterActivity.this);
+				AccountWidget.updateWidgets(BlotterActivity.this);
 			}
 		})
 		.setNegativeButton(R.string.no, null)
@@ -318,7 +308,7 @@ public class BlotterActivity extends AbstractListActivity {
 				if (t.fromAmount == 0 || edit) {
 					editItem(-1, id);
 				} else {
-					FinancistoService.updateWidget(BlotterActivity.this);
+					AccountWidget.updateWidgets(BlotterActivity.this);
 				}
 			}
 		}
