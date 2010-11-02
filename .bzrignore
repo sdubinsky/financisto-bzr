@@ -4,3 +4,5 @@ FinancistoSandbox.iml
 FinancistoSandbox.ipr
 FinancistoSandbox.iws
 FinancistoSandbox.eml
+classes
+tests/tests.iml

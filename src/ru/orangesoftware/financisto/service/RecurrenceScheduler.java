@@ -107,7 +107,7 @@ public class RecurrenceScheduler {
         return db.duplicateTransaction(transaction.id);
     }
 
-	private List<RestoredTransaction> getMissedSchedules(long now) {
+	public List<RestoredTransaction> getMissedSchedules(long now) {
 		long t0 = System.currentTimeMillis();
 		try {
 			Date endDate = new Date(now);
