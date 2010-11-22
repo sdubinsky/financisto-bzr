@@ -10,16 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
-import java.util.Date;
-import java.util.HashMap;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.TransactionStatus;
-import ru.orangesoftware.financisto.recur.Recurrence;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
-import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -27,13 +17,21 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.ResourceCursorAdapter;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.TransactionStatus;
+import ru.orangesoftware.financisto.recur.Recurrence;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import java.util.Date;
+import java.util.HashMap;
+
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 public class BlotterListAdapter extends ResourceCursorAdapter {
 	
@@ -133,31 +131,18 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		} else {
 			String fromAccountTitle = cursor.getString(BlotterColumns.Indicies.FROM_ACCOUNT_TITLE);
 			v.topView.setText(fromAccountTitle);
-			
+			sb.setLength(0);
+            String payee = cursor.getString(BlotterColumns.Indicies.PAYEE);
 			String note = cursor.getString(BlotterColumns.Indicies.NOTE);
 			String location = cursor.getString(BlotterColumns.Indicies.LOCATION);
 			long locationId = cursor.getLong(BlotterColumns.Indicies.LOCATION_ID);
-			if (locationId > 0 && location != null && location.length() > 0) {
-				sb.setLength(0);
-				sb.append(location);
-				if (Utils.isNotEmpty(note)) {
-					sb.append(": ").append(note);
-				}
-				note = sb.toString();
-			}
 			long categoryId = cursor.getLong(BlotterColumns.Indicies.CATEGORY_ID);
+            String categoryTitle = "";
 			if (categoryId > 0) {
-				String categoryTitle = cursor.getString(BlotterColumns.Indicies.CATEGORY_TITLE);
-				if (Utils.isNotEmpty(note)) {
-					sb.setLength(0);
-					sb.append(categoryTitle).append(" (").append(note).append(")");
-					noteView.setText(sb.toString());
-				} else {
-					noteView.setText(categoryTitle);
-				}
-			} else {
-				noteView.setText(note);
+                categoryTitle = cursor.getString(BlotterColumns.Indicies.CATEGORY_TITLE);
 			}
+            String text = generateTransactionText(sb, payee, note, locationId, location, categoryTitle);
+            noteView.setText(text);
 			noteView.setTextColor(Color.WHITE);
 			
 			long fromCurrencyId = cursor.getLong(BlotterColumns.Indicies.FROM_ACCOUNT_CURRENCY_ID);
@@ -209,7 +194,34 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		}
 	}
 
-	public boolean getCheckedState(long id) {
+    public static String generateTransactionText(StringBuilder sb, String payee, String note,
+                                           long locationId, String location, String categoryTitle) {
+        sb.setLength(0);
+        append(sb, payee);
+        if (locationId > 0) {
+            append(sb, location);
+        }
+        append(sb, note);
+        String secondPart = sb.toString();
+        sb.setLength(0);
+        if (isNotEmpty(categoryTitle)) {
+            sb.append(categoryTitle).append(" (").append(secondPart).append(")");
+            return sb.toString();
+        } else {
+            return secondPart;
+        }
+    }
+
+    private static void append(StringBuilder sb, String s) {
+        if (isNotEmpty(s)) {
+            if (sb.length() > 0) {
+                sb.append(": ");
+            }
+            sb.append(s);
+        }
+    }
+
+    public boolean getCheckedState(long id) {
 		return checkedItems.get(id) != null ? !allChecked : allChecked;
 	}
 

@@ -62,6 +62,9 @@ public class TransactionInfo {
 	@Column(name = "datetime")
 	public long dateTime;
 	
+    @Column(name = "payee")
+    public String payee;
+
 	@Column(name = "note")
 	public String note;
 	
