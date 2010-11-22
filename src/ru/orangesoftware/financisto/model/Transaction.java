@@ -11,17 +11,12 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
-import java.util.EnumMap;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import android.content.ContentValues;
 import android.database.Cursor;
+import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
+
+import javax.persistence.*;
+import java.util.EnumMap;
 
 @Entity
 @Table(name = "transactions")
@@ -61,6 +56,9 @@ public class Transaction {
 	@Column(name = "to_account_id")
 	public long toAccountId;
 	
+    @Column(name = "payee_id")
+    public long payeeId;
+
     @Column(name = "payee")
     public String payee;
 
@@ -112,6 +110,7 @@ public class Transaction {
 		values.put(TransactionColumns.LONGITUDE, longitude);
 		values.put(TransactionColumns.FROM_ACCOUNT_ID, fromAccountId);
 		values.put(TransactionColumns.TO_ACCOUNT_ID, toAccountId);
+        values.put(TransactionColumns.PAYEE_ID, payeeId);
         values.put(TransactionColumns.PAYEE, payee);
 		values.put(TransactionColumns.NOTE, note);
 		values.put(TransactionColumns.FROM_AMOUNT, fromAmount);

@@ -12,8 +12,8 @@ package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.db.DatabaseHelper.ProjectColumns;
 import ru.orangesoftware.financisto.model.Project;
 import android.app.Activity;
 import android.content.Intent;
@@ -50,7 +50,7 @@ public class ProjectActivity extends Activity {
 				project.title = title.getText().toString();
 				long id = em.saveOrUpdate(project);
 				Intent intent = new Intent();
-				intent.putExtra(ProjectColumns.ID, id);
+				intent.putExtra(DatabaseHelper.EntityColumns.ID, id);
 				setResult(RESULT_OK, intent);
 				finish();
 			}

@@ -8,11 +8,23 @@
  * Contributors:
  *     Denis Solonenko - initial API and implementation
  ******************************************************************************/
-package ru.orangesoftware.financisto.db;
+package ru.orangesoftware.orb;
 
-public interface Database {
+import java.util.Collections;
+
+class Like implements Expression {
+
+	private final String field;
+	private final Object value;
+
+	Like(String field, Object value) {
+		this.field = field;
+		this.value = value;
+	}
 	
-	String DATABASE_NAME = "financisto.db";
-	
-	int DATABASE_VERSION = 141;
+	@Override
+	public Selection toSelection(EntityDefinition ed) {
+		return new Selection("("+ed.getColumnForField(field)+" like ?)", Collections.singletonList(String.valueOf(value)));
+	}
+
 }

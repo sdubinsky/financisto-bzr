@@ -49,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static ru.orangesoftware.financisto.utils.ThumbnailUtil.*;
+import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public abstract class AbstractTransactionActivity extends AbstractActivity {
 	
@@ -90,7 +91,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected Button dateText;
 	protected Button timeText;
 	
-    protected EditText payeeText;
+    protected AutoCompleteTextView payeeText;
     protected EditText noteText;
 	protected TextView recurText;	
 	protected TextView notificationText;	
@@ -490,7 +491,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
             if (i == payeeOrder) {
                 if (isShowPayee) {
                     //payee
-                    payeeText = new EditText(this);
+                    SimpleCursorAdapter payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
+                    payeeText = new AutoCompleteTextView(this);
+                    payeeText.setThreshold(1);
+                    payeeText.setAdapter(payeeAdapter);
                     payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                         @Override
                         public void onFocusChange(View view, boolean hasFocus) {
@@ -533,7 +537,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		
 	}
 
-	protected abstract void createListNodes(LinearLayout layout);
+    protected abstract void createListNodes(LinearLayout layout);
 	
 	protected abstract boolean onOKClicked();
 
@@ -746,7 +750,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 					break;
 				case NEW_PROJECT_REQUEST:					
 					projects = em.getAllProjectsList(true);
-					long projectId = data.getLongExtra(ProjectColumns.ID, -1);
+					long projectId = data.getLongExtra(EntityColumns.ID, -1);
 					if (projectId != -1) {
 						selectProject(projectId);
 					}
@@ -889,13 +893,13 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			transaction.longitude = lastFix != null ? lastFix.getLongitude() : 0;
 		}
         if (isShowPayee) {
-            transaction.payee = payeeText.getText().toString();
+            transaction.payee = text(payeeText);
         }
 		if (isShowNote) {
-			transaction.note = noteText.getText().toString();
+			transaction.note = text(noteText);
 		}
 		if (transaction.isTemplate()) {
-			transaction.templateName = templateName.getText().toString();
+			transaction.templateName = text(templateName);
 		}
 		if (transaction.isScheduled()) {
 			transaction.recurrence = recurrence;

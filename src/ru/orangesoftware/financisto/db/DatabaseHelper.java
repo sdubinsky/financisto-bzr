@@ -10,10 +10,10 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.db;
 
-import java.io.IOException;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
+import java.io.IOException;
 
 public class DatabaseHelper extends DatabaseSchemaEvolution {
 	
@@ -47,7 +47,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	public static final String CATEGORY_ATTRIBUTE_TABLE = "category_attribute";
 	public static final String TRANSACTION_ATTRIBUTE_TABLE = "transaction_attribute";
 	public static final String LOCATIONS_TABLE = "locations";
-	
+    public static final String PAYEE_TABLE = "payee";
+
 	public static final String V_ALL_TRANSACTIONS = "v_all_transactions";
 	public static final String V_BLOTTER = "v_blotter";
 	public static final String V_BLOTTER_FOR_ACCOUNT = "v_blotter_for_account";
@@ -73,6 +74,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String LONGITUDE = "longitude";		
 		public static final String FROM_ACCOUNT_ID = "from_account_id";		
 		public static final String TO_ACCOUNT_ID = "to_account_id";
+        public static final String PAYEE_ID = "payee_id";
         public static final String PAYEE = "payee";
 		public static final String NOTE = "note";
 		public static final String FROM_AMOUNT = "from_amount";
@@ -295,7 +297,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		}
 	}
 
-	public static class ProjectColumns {
+	public static class EntityColumns {
 		
 		public static final String ID = "_id";
 		public static final String TITLE = "title";

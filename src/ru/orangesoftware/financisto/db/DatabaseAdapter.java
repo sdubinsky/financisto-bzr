@@ -11,49 +11,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.db;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.ACCOUNT_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.ATTRIBUTES_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.CATEGORY_ATTRIBUTE_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.CATEGORY_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.LOCATIONS_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.TRANSACTION_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_ALL_TRANSACTIONS;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_ATTRIBUTES;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_CATEGORY;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.AttributeColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.AttributeViewColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryAttributeColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.LocationColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionAttributeColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
-import ru.orangesoftware.financisto.model.Attribute;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.CategoryTree;
-import ru.orangesoftware.financisto.model.RestoredTransaction;
-import ru.orangesoftware.financisto.model.SystemAttribute;
-import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.model.TransactionAttribute;
-import ru.orangesoftware.financisto.model.TransactionStatus;
-import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -61,6 +18,17 @@ import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
+import ru.orangesoftware.financisto.blotter.BlotterFilter;
+import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import java.io.IOException;
+import java.util.*;
+
+import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 
 public class DatabaseAdapter {
 
@@ -446,6 +414,7 @@ public class DatabaseAdapter {
 	}
 
 	private long insertTransaction(Transaction t) {
+        insertPayee(t);
 		long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
 		if (t.isNotTemplateLike()) {
 			updateAccountTotalAmount(t.fromAccountId, t.fromAmount);
@@ -456,7 +425,15 @@ public class DatabaseAdapter {
 		return id;
 	}
 
-	private void updateTransaction(Transaction t) {
+    private void insertPayee(Transaction t) {
+        String payee = t.payee;
+        if (Utils.isNotEmpty(payee)) {
+            Payee p = em.insertPayee(payee);
+            t.payeeId = p.id;
+        }
+    }
+
+    private void updateTransaction(Transaction t) {
 		if (t.isNotTemplateLike()) {
 			Transaction oldT = getTransaction(t.id);
 			updateAccountTotalAmount(oldT.fromAccountId, oldT.fromAmount, t.fromAccountId, t.fromAmount);

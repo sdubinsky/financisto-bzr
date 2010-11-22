@@ -8,11 +8,14 @@
  * Contributors:
  *     Denis Solonenko - initial API and implementation
  ******************************************************************************/
-package ru.orangesoftware.financisto.db;
+package ru.orangesoftware.financisto.model;
 
-public interface Database {
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "payee")
+public class Payee extends MyEntity {
 	
-	String DATABASE_NAME = "financisto.db";
 	
-	int DATABASE_VERSION = 141;
 }

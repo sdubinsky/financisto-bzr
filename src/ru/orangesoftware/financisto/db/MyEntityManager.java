@@ -10,43 +10,31 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.db;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.ACCOUNT_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.BUDGET_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.CURRENCY_TABLE;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
-import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Budget;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.MyEntity;
-import ru.orangesoftware.financisto.model.MyLocation;
-import ru.orangesoftware.financisto.model.Project;
-import ru.orangesoftware.financisto.model.SystemAttribute;
-import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
-import ru.orangesoftware.financisto.utils.MyPreferences;
-import ru.orangesoftware.financisto.utils.RecurUtils;
 import ru.orangesoftware.financisto.utils.DateUtils.Period;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.MyPreferences.AccountSortOrder;
 import ru.orangesoftware.financisto.utils.MyPreferences.LocationsSortOrder;
+import ru.orangesoftware.financisto.utils.RecurUtils;
 import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
 import ru.orangesoftware.orb.EntityManager;
 import ru.orangesoftware.orb.Expression;
 import ru.orangesoftware.orb.Expressions;
 import ru.orangesoftware.orb.Query;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 
 public class MyEntityManager extends EntityManager {
 	
@@ -440,4 +428,30 @@ public class MyEntityManager extends EntityManager {
 		return getAllEntitiesList(Category.class, includeNoCategory);
 	}
 
+    public Payee insertPayee(String payee) {
+        Query<Payee> q = createQuery(Payee.class);
+        q.where(Expressions.eq("title", payee));
+        Payee p = q.uniqueResult();
+        if (p == null) {
+            p = new Payee();
+            p.title = payee;
+            p.id = saveOrUpdate(p);
+        }
+        return p;
+    }
+
+    public Cursor getAllPayees() {
+        Query<Payee> q = createQuery(Payee.class);
+        return q.asc("title").execute();
+    }
+
+    public ArrayList<Payee> getAllPayeeList() {
+        return getAllEntitiesList(Payee.class, true);
+    }
+
+    public Cursor getAllPayeesLike(CharSequence constraint) {
+        Query<Payee> q = createQuery(Payee.class);
+        q.where(Expressions.like("title", "%"+constraint+"%"));
+        return q.asc("title").execute();
+    }
 }
