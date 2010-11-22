@@ -602,6 +602,8 @@
 	<string name="scheduled_transactions_restored">Scheduled transactions have been restored</string>		
 	<string name="scheduled_transactions_have_been_restored">%d missed scheduled transactions have been restored. Please use Mass Operations to clear/delete them.</string>		
 	<string name="restore_missed_scheduled_transactions">Restore missed schedules</string>		
-	<string name="restore_missed_scheduled_transactions_summary">Missed scheduled transactions will be restored with \'Restored\' status</string>		
+	<string name="restore_missed_scheduled_transactions_summary">Missed scheduled transactions will be restored with \'Restored\' status</string>
+
+    <string name="save_and_new">Save&amp;New</string>
 
 </resources>

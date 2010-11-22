@@ -31,7 +31,7 @@
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent" android:layout_height="fill_parent"
 			android:orientation="vertical" android:id="@+id/list" />
-	<include layout="@layout/ok_cancel_buttons" />
+	<include layout="@layout/save_and_new_buttons" />
 	</LinearLayout>
 </ScrollView>
 

@@ -205,8 +205,12 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
         String secondPart = sb.toString();
         sb.setLength(0);
         if (isNotEmpty(categoryTitle)) {
-            sb.append(categoryTitle).append(" (").append(secondPart).append(")");
-            return sb.toString();
+            if (isNotEmpty(secondPart)) {
+                sb.append(categoryTitle).append(" (").append(secondPart).append(")");
+                return sb.toString();
+            } else {
+                return categoryTitle;
+            }
         } else {
             return secondPart;
         }

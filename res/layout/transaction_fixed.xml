@@ -36,5 +36,5 @@
 			</LinearLayout>
 		</LinearLayout>
 	</ScrollView>
-	<include layout="@layout/ok_cancel_buttons" />
+	<include layout="@layout/save_and_new_buttons" />
 </LinearLayout>	

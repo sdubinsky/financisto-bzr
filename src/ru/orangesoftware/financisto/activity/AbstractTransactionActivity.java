@@ -178,7 +178,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
 		long accountId = -1;
 		long transactionId = -1;
-		Intent intent = getIntent();		
+		final Intent intent = getIntent();
 		if (intent != null) {
 			accountId = intent.getLongExtra(ACCOUNT_ID_EXTRA, -1);
 			transactionId = intent.getLongExtra(TRAN_ID_EXTRA, -1);
@@ -269,34 +269,33 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			deleteAfterExpired.inflateView(layout, value != null ? value : sa.defaultValue);
 		}
 
-        Button bOK = (Button) findViewById(R.id.bOK);
-		bOK.setOnClickListener(new OnClickListener() {
+        Button bSave = (Button) findViewById(R.id.bSave);
+		bSave.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if (onOKClicked()) {
-                    boolean isNew = transaction.id == -1;
-                    long id = db.insertOrUpdate(transaction, getAttributes());
-                    if (isNew) {
-                        MyPreferences.setLastAccount(AbstractTransactionActivity.this, transaction.fromAccountId);
-                    }
-                    Intent data = new Intent();
-                    data.putExtra(TransactionColumns.ID, id);
-                    AccountWidget.updateWidgets(AbstractTransactionActivity.this);
-                    setResult(RESULT_OK, data);
-                    finish();
-                }
+                saveAndFinish();
             }
 
         });
 
-		Button bCancel = (Button)findViewById(R.id.bCancel);
-		bCancel.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				setResult(RESULT_CANCELED);
-				finish();
-			}			
-		});		
+        final boolean isEdit = transaction.id > 0;
+		Button bSaveAndNew = (Button)findViewById(R.id.bSaveAndNew);
+        if (isEdit) {
+            bSaveAndNew.setText(R.string.cancel);
+        }
+		bSaveAndNew.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if (isEdit) {
+                    setResult(RESULT_CANCELED);
+                    finish();
+                } else {
+                    if (saveAndFinish()) {
+                        startActivityForResult(intent, -1);
+                    }
+                }
+            }
+        });
 		
 		if (transactionId != -1) {
 			editTransaction(transaction);
@@ -325,9 +324,34 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		
 		long t1 = System.currentTimeMillis();
 		Log.i("TransactionActivity", "onCreate "+(t1-t0)+"ms");
-	}	
-	
-	protected void internalOnCreate() {
+	}
+
+    private boolean saveAndFinish() {
+        long id = save();
+        if (id > 0) {
+            Intent data = new Intent();
+            data.putExtra(TransactionColumns.ID, id);
+            setResult(RESULT_OK, data);
+            finish();
+            return true;
+        }
+        return false;
+    }
+
+    private long save() {
+        if (onOKClicked()) {
+            boolean isNew = transaction.id == -1;
+            long id = db.insertOrUpdate(transaction, getAttributes());
+            if (isNew) {
+                MyPreferences.setLastAccount(this, transaction.fromAccountId);
+            }
+            AccountWidget.updateWidgets(this);
+            return id;
+        }
+        return -1;
+    }
+
+    protected void internalOnCreate() {
 	}
 
 	protected void selectCurrentLocation(boolean forceUseGps) {
