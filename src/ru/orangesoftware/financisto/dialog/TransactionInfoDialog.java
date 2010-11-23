@@ -99,7 +99,10 @@ public class TransactionInfoDialog {
 		add(layout, R.string.category, ti.category.title);
 		List<TransactionAttributeInfo> attributes = em.getAttributesForTransaction(transactionId);
 		for (TransactionAttributeInfo tai : attributes) {
-			add(layout, tai.name, tai.getValue(parentActivity));
+            String value = tai.getValue(parentActivity);
+            if (isNotEmpty(value)) {
+			    add(layout, tai.name, value);
+            }
 		}
 
         if (isNotEmpty(ti.payee)) {

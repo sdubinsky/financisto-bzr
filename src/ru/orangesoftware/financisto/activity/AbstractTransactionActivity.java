@@ -124,7 +124,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected boolean isShowLocation;
 	protected boolean isShowNote;
 	protected boolean isShowProject;
-	
+    protected boolean isShowTakePicture;
+
 	protected AttributeView deleteAfterExpired;
 	
 	protected DateFormat df;
@@ -157,6 +158,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		isShowLocation = MyPreferences.isShowLocation(this);
 		isShowNote = MyPreferences.isShowNote(this);
 		isShowProject = MyPreferences.isShowProject(this);
+        isShowTakePicture = MyPreferences.isShowTakePicture(this);
 
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
@@ -550,7 +552,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				}
 			}
 		}
-		if (transaction.isNotTemplateLike()) {
+		if (isShowTakePicture && transaction.isNotTemplateLike()) {
 			pictureView = x.addPictureNodeMinus(this, layout, R.id.attach_picture, R.id.delete_picture, R.string.attach_picture, R.string.new_picture);
 		}
 		// checkbox to register if the transaction is a credit card payment. 
@@ -871,7 +873,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			setRecurrence(transaction.recurrence);
 			setNotification(transaction.notificationOptions);
 		}
-		selectPicture(transaction.attachedPicture);
+        if (isShowTakePicture) {
+		    selectPicture(transaction.attachedPicture);
+        }
 		setIsCCardPayment(transaction.isCCardPayment);
 	}
 

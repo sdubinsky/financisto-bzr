@@ -121,6 +121,11 @@ public class MyPreferences {
 		return sharedPreferences.getBoolean("remember_last_project", false);
 	}
 
+    public static boolean isShowTakePicture(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("ntsl_show_picture", true);
+    }
+
     public static boolean isShowPayee(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean("ntsl_show_payee", true);
