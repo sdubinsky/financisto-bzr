@@ -11,6 +11,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.text.InputFilter;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.EntityEnumAdapter;
 import ru.orangesoftware.financisto.model.Account;
@@ -95,6 +96,7 @@ public class AccountActivity extends AbstractActivity {
 
 		sortOrderText = new EditText(this);
 		sortOrderText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        sortOrderText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
 		sortOrderText.setSingleLine();
 		
 		/********** bill filtering **********/
