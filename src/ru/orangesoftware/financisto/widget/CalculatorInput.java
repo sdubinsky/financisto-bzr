@@ -10,19 +10,19 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.widget;
 
-import java.math.BigDecimal;
-import java.util.Stack;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import java.math.BigDecimal;
+import java.util.Stack;
 
 public class CalculatorInput extends Activity implements OnClickListener {
 
@@ -155,7 +155,7 @@ public class CalculatorInput extends Activity implements OnClickListener {
 		if (c == '.' && s.indexOf('.') != -1 && !isRestart) {
 			return;
 		}
-		if (s == "0") {
+		if ("0".equals(s)) {
 			s = String.valueOf(c);
 		} else {
 			s += c;
@@ -198,7 +198,12 @@ public class CalculatorInput extends Activity implements OnClickListener {
 				stack.push(new BigDecimal(valOne).multiply(new BigDecimal(valTwo)).toPlainString());
 				break;
 			case '/':
-				stack.push(new BigDecimal(valOne).divide(new BigDecimal(valTwo), 2, BigDecimal.ROUND_HALF_UP).toPlainString());
+                BigDecimal d2 = new BigDecimal(valTwo);
+                if (d2.intValue() == 0) {
+                    stack.push("0.0");
+                } else {
+				    stack.push(new BigDecimal(valOne).divide(d2, 2, BigDecimal.ROUND_HALF_UP).toPlainString());
+                }
 				break;
 			default:
 				break;
