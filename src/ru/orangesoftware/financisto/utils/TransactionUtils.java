@@ -19,6 +19,7 @@ import ru.orangesoftware.financisto.adapter.MyEntityAdapter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.db.MyEntityManager;
+import ru.orangesoftware.financisto.model.Payee;
 import ru.orangesoftware.financisto.model.Project;
 
 import java.util.ArrayList;
@@ -46,6 +47,10 @@ public class TransactionUtils {
 	public static ListAdapter createProjectAdapter(Context context, ArrayList<Project> projects) {
 		return new MyEntityAdapter<Project>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, projects);
 	}
+
+    public static ListAdapter createPayeeAdapter(Context context, ArrayList<Payee> payees) {
+        return new MyEntityAdapter<Payee>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, payees);
+    }
 
 	public static ListAdapter createLocationAdapter(Context context, Cursor cursor) {
 		return new SimpleCursorAdapter(context, android.R.layout.simple_spinner_dropdown_item, cursor, 

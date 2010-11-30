@@ -434,6 +434,7 @@ public class DatabaseAdapter {
     }
 
     private void updateTransaction(Transaction t) {
+        insertPayee(t);
 		if (t.isNotTemplateLike()) {
 			Transaction oldT = getTransaction(t.id);
 			updateAccountTotalAmount(oldT.fromAccountId, oldT.fromAmount, t.fromAccountId, t.fromAmount);

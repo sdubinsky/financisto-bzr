@@ -13,24 +13,25 @@ package ru.orangesoftware.financisto.activity;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.model.Payee;
 import ru.orangesoftware.financisto.model.Project;
 
 import java.util.ArrayList;
 
-public class ProjectListActivity extends MyEntityListActivity<Project> {
+public class PayeeListActivity extends MyEntityListActivity<Payee> {
 
-    public ProjectListActivity() {
-        super(Project.class);
+    public PayeeListActivity() {
+        super(Payee.class);
     }
 
     @Override
-    protected ArrayList<Project> loadEntities() {
-        return em.getAllProjectsList(false);
+    protected ArrayList<Payee> loadEntities() {
+        return em.getAllPayeeList();
     }
 
     @Override
     protected String getContextMenuHeaderTitle(int position) {
-        return getString(R.string.project);
+        return getString(R.string.payee);
     }
 
     @Override
@@ -39,8 +40,8 @@ public class ProjectListActivity extends MyEntityListActivity<Project> {
     }
 
     @Override
-    protected WhereFilter.Criteria createBlotterCriteria(Project p) {
-        return WhereFilter.Criteria.eq(BlotterFilter.PROJECT_ID, String.valueOf(p.id));
+    protected WhereFilter.Criteria createBlotterCriteria(Payee p) {
+        return WhereFilter.Criteria.eq(BlotterFilter.PAYEE_ID, String.valueOf(p.id));
     }
 
 }

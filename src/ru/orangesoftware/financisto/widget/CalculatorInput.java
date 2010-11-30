@@ -143,7 +143,7 @@ public class CalculatorInput extends Activity implements OnClickListener {
 				case '\r':
 					doEqualsChar();
 					break;
-				case '±':
+				case '\u00B1':
 					setDisplay(new BigDecimal(result).negate().toPlainString());
 					break;
 			}

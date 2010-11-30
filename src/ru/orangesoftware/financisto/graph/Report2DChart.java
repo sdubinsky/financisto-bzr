@@ -17,10 +17,11 @@ public abstract class Report2DChart {
 	public static final String REPORT_TYPE = "report_type";
 
 	// position in ReportListActivity array
-	public static final int REPORT_ACCOUNT_BY_PERIOD = 5;
-	public static final int REPORT_CATEGORY_BY_PERIOD = 6;
-	public static final int REPORT_LOCATION_BY_PERIOD = 7;
-	public static final int REPORT_PROJECT_BY_PERIOD = 8;
+	public static final int REPORT_ACCOUNT_BY_PERIOD = 6;
+	public static final int REPORT_CATEGORY_BY_PERIOD = 7;
+    public static final int REPORT_PAYEE_BY_PERIOD = 8;
+	public static final int REPORT_LOCATION_BY_PERIOD = 9;
+	public static final int REPORT_PROJECT_BY_PERIOD = 10;
 	
 	protected int level = 0;
 	protected int chartWidth;
@@ -46,7 +47,7 @@ public abstract class Report2DChart {
 
 	/**
 	 * Basic constructor
-	 * @param dbAdapter Database Adapter to query data from database
+	 * @param em entity manager to query data from database
 	 * @param periodLength The number of months to plot the chart
 	 * @param currency The reference currency to filter transactions in same currency
 	 */
@@ -57,7 +58,7 @@ public abstract class Report2DChart {
 	
 	/**
 	 * Constructor with a given first number
-	 * @param dbAdapter Database Adapter to query data from database
+	 * @param em entity manager to query data from database
 	 * @param startPeriod The first month of the period
 	 * @param periodLength The number of months to plot the chart
 	 * @param currency The reference currency to filter transactions in same currency
@@ -68,7 +69,7 @@ public abstract class Report2DChart {
 	
 	/**
 	 * Constructor for children charts, identifying the level in the hierarchy (0 = root)
-	 * @param dbAdapter Database Adapter to query data from database
+	 * @param em entity manager to query data from database
 	 * @param startPeriod The first month of the period 
 	 * @param periodLength The number of months to plot the chart
 	 * @param currency The reference currency to filter transactions in same currency
@@ -82,7 +83,7 @@ public abstract class Report2DChart {
 	/**
 	 * Rebuild data.
 	 * @param context The activity context.
-	 * @param dbAdapter Database Adapter to query data from database
+	 * @param em entity manager to query data from database
 	 * @param startPeriod The first month of the period
 	 * @param periodLength The number of months to plot the chart
 	 * @param currency The reference currency to filter transactions in same currency

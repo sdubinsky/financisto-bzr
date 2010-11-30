@@ -149,6 +149,11 @@
 		
 		<activity android:name=".activity.ProjectListActivity" android:label="@string/projects"/>
 		
+        <activity android:name=".activity.PayeeActivity" android:label="@string/payee"
+            android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
+
+        <activity android:name=".activity.PayeeListActivity" android:label="@string/payees"/>
+
 		<activity android:name=".activity.LocationsListActivity" android:label="@string/locations"/>
 		
 		<activity android:name=".activity.TemplatesListActivity" android:label="@string/transaction_templates"/>

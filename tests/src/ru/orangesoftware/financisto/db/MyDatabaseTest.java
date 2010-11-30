@@ -46,7 +46,7 @@ public class MyDatabaseTest extends AndroidTestCase {
         Payee p2 = em.insertPayee(payee);
         ArrayList<Payee> payees = em.getAllPayeeList();
         // then
-        assertEquals("Ids are not the same!", p1.id, p2.id);
+        assertEquals("Ids should be the same!", p1.id, p2.id);
         assertEquals("List should be of size 1!", 1, payees.size());
         assertEquals("The first payee should be the one!", payees.get(0).title, payee);
     }

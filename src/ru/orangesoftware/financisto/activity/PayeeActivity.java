@@ -8,14 +8,14 @@
  * Contributors:
  *     Denis Solonenko - initial API and implementation
  ******************************************************************************/
-package ru.orangesoftware.financisto.model;
+package ru.orangesoftware.financisto.activity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import ru.orangesoftware.financisto.model.Payee;
 
-@Entity
-@Table(name = "project")
-public class Project extends MyEntity {
+public class PayeeActivity extends MyEntityActivity<Payee> {
 
-	
+    public PayeeActivity() {
+        super(Payee.class);
+    }
+
 }

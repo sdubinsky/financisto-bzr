@@ -4,10 +4,11 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Android 1.6 Google APIs"/>
 	<classpathentry kind="lib" path="lib/trace-0.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rfc2445-no-joda.jar"/>
 	<classpathentry kind="lib" path="lib/GDocsAPI.jar"/>
 	<classpathentry kind="lib" path="lib/CWAC-WakefulIntentService.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Android 1.6 Google APIs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Android 1.6 Google APIs"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

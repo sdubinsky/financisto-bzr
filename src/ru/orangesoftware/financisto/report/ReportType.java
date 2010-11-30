@@ -41,6 +41,12 @@ public enum ReportType {
 			return new SubCategoryReport(context, extra);
 		}
 	},
+    BY_PAYEE(R.string.report_by_payee, R.string.report_by_payee_summary, R.drawable.report_icon_default){
+        @Override
+        public Report createReport(Context context, Bundle extra) {
+            return new PayeesReport(context);
+        }
+    },
 	BY_LOCATION(R.string.report_by_location, R.string.report_by_location_summary, R.drawable.report_icon_default){
 		@Override
 		public Report createReport(Context context, Bundle extra) {
@@ -75,6 +81,17 @@ public enum ReportType {
 			return false;
 		}
 	}, 
+    BY_PAYEE_BY_PERIOD(R.string.report_by_payee_by_period, R.string.report_by_payee_by_period_summary, R.drawable.ic_tab_2d_graph_selected){
+        @Override
+        public Report createReport(Context context, Bundle extra) {
+            return null;
+        }
+
+        @Override
+        public boolean isConventionalBarReport() {
+            return false;
+        }
+    },
 	BY_LOCATION_BY_PERIOD(R.string.report_by_location_by_period, R.string.report_by_location_by_period_summary, R.drawable.ic_tab_2d_graph_selected){
 		@Override
 		public Report createReport(Context context, Bundle extra) {

@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.adapter;
 import java.util.ArrayList;
 
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.MyEntity;
 import ru.orangesoftware.financisto.model.Project;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -20,30 +21,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public class ProjectListAdapter extends BaseAdapter {
+public class EntityListAdapter<T extends MyEntity> extends BaseAdapter {
 	
 	private final LayoutInflater inflater;
 	
-	private ArrayList<Project> projects;
+	private ArrayList<T> entities;
 	
-	public ProjectListAdapter(Context context, ArrayList<Project> projects) {
-		this.projects = projects;
+	public EntityListAdapter(Context context, ArrayList<T> entities) {
+		this.entities = entities;
 		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
-	public void setProjects(ArrayList<Project> projects) {
-		this.projects = projects;
+	public void setEntities(ArrayList<T> entities) {
+		this.entities = entities;
 		notifyDataSetChanged();
 	}
 
 	@Override
 	public int getCount() {
-		return projects.size();
+		return entities.size();
 	}
 
 	@Override
-	public Project getItem(int i) {
-		return projects.get(i);
+	public T getItem(int i) {
+		return entities.get(i);
 	}
 
 	@Override
@@ -63,8 +64,8 @@ public class ProjectListAdapter extends BaseAdapter {
 		v.labelView.setVisibility(View.GONE);
 		v.amountView.setVisibility(View.GONE);
 		
-		Project p = getItem(position);
-		v.lineView.setText(p.title);
+		MyEntity e = getItem(position);
+		v.lineView.setText(e.title);
 		return convertView;
 	}
 
