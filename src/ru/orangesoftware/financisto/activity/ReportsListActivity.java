@@ -31,10 +31,12 @@ public class ReportsListActivity extends ListActivity {
 			ReportType.BY_PERIOD,
 			ReportType.BY_CATEGORY,
 			ReportType.BY_SUB_CATEGORY_ROOTS,
+            ReportType.BY_PAYEE,
 			ReportType.BY_LOCATION,
 			ReportType.BY_PROJECT,
 			ReportType.BY_ACCOUNT_BY_PERIOD, 
 			ReportType.BY_CATEGORY_BY_PERIOD,
+            ReportType.BY_PAYEE_BY_PERIOD,
 			ReportType.BY_LOCATION_BY_PERIOD,
 			ReportType.BY_PROJECT_BY_PERIOD
 	};

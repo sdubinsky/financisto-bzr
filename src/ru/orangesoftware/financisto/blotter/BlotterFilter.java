@@ -12,19 +12,23 @@ package ru.orangesoftware.financisto.blotter;
 
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 
+import static ru.orangesoftware.financisto.utils.EnumUtils.lower;
+
 public interface BlotterFilter {
 
-	String FROM_ACCOUNT_ID = BlotterColumns.FROM_ACCOUNT_ID;//"fromAccount.id";
-	String FROM_ACCOUNT_CURRENCY_ID = BlotterColumns.FROM_ACCOUNT_CURRENCY_ID;//"fromAccount.currency.id";	
-	String CATEGORY_ID = BlotterColumns.CATEGORY_ID; //"category.id";
-	String CATEGORY_LEFT = BlotterColumns.CATEGORY_LEFT; //"category.left";
-	String LOCATION_ID = BlotterColumns.LOCATION_ID;//"location.id";
-	String PROJECT_ID = BlotterColumns.PROJECT_ID;//"project.id";
-	String DATETIME = BlotterColumns.DATETIME;
+	String FROM_ACCOUNT_ID = lower(BlotterColumns.FROM_ACCOUNT_ID);
+	String FROM_ACCOUNT_CURRENCY_ID = lower(BlotterColumns.FROM_ACCOUNT_CURRENCY_ID);
+	String CATEGORY_ID = lower(BlotterColumns.CATEGORY_ID);
+	String CATEGORY_LEFT = lower(BlotterColumns.CATEGORY_LEFT);
+	String LOCATION_ID = lower(BlotterColumns.LOCATION_ID);
+	String PROJECT_ID = lower(BlotterColumns.PROJECT_ID);
+    String PAYEE_ID = lower(BlotterColumns.PAYEE_ID);
+	String DATETIME = lower(BlotterColumns.DATETIME);
 	String BUDGET_ID = "budget_id";
-	String IS_TEMPLATE = BlotterColumns.IS_TEMPLATE;
-	String STATUS = BlotterColumns.STATUS;
+	String IS_TEMPLATE = lower(BlotterColumns.IS_TEMPLATE);
+	String STATUS = lower(BlotterColumns.STATUS);
 	
-	String SORT_NEWER_TO_OLDER = BlotterColumns.DATETIME+" desc";//
-	String SORT_OLDER_TO_NEWER = BlotterColumns.DATETIME+" asc";//
+	String SORT_NEWER_TO_OLDER = BlotterColumns.DATETIME+" desc";
+	String SORT_OLDER_TO_NEWER = BlotterColumns.DATETIME+" asc";
+
 }

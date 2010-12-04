@@ -10,10 +10,12 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.db;
 
-import java.io.IOException;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
+import java.io.IOException;
+
+import static ru.orangesoftware.financisto.utils.EnumUtils.asStringArray;
 
 public class DatabaseHelper extends DatabaseSchemaEvolution {
 	
@@ -47,7 +49,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	public static final String CATEGORY_ATTRIBUTE_TABLE = "category_attribute";
 	public static final String TRANSACTION_ATTRIBUTE_TABLE = "transaction_attribute";
 	public static final String LOCATIONS_TABLE = "locations";
-	
+    public static final String PAYEE_TABLE = "payee";
+
 	public static final String V_ALL_TRANSACTIONS = "v_all_transactions";
 	public static final String V_BLOTTER = "v_blotter";
 	public static final String V_BLOTTER_FOR_ACCOUNT = "v_blotter_for_account";
@@ -60,6 +63,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	public static final String V_REPORT_PERIOD = "v_report_period";
 	public static final String V_REPORT_LOCATIONS = "v_report_location";	
 	public static final String V_REPORT_PROJECTS = "v_report_project";
+    public static final String V_REPORT_PAYEES = "v_report_payee";
 	
 	public static class TransactionColumns {				
 		
@@ -73,6 +77,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String LONGITUDE = "longitude";		
 		public static final String FROM_ACCOUNT_ID = "from_account_id";		
 		public static final String TO_ACCOUNT_ID = "to_account_id";
+        public static final String PAYEE_ID = "payee_id";
+        public static final String PAYEE = "payee";
 		public static final String NOTE = "note";
 		public static final String FROM_AMOUNT = "from_amount";
 		public static final String TO_AMOUNT = "to_amount";
@@ -91,7 +97,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			FROM_ACCOUNT_ID, 
 			TO_ACCOUNT_ID,
 			CATEGORY_ID, 
-			PROJECT_ID, 
+			PROJECT_ID,
+            PAYEE,
 			NOTE, 
 			FROM_AMOUNT, 
 			TO_AMOUNT,
@@ -110,124 +117,75 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			IS_CCARD_PAYMENT,
 			LAST_RECURRENCE};
 
-		public static class Indicies {
+        public static class Indicies {
 			public static final int ID = 0;
 			public static final int FROM_ACCOUNT_ID = 1;
 			public static final int TO_ACCOUNT_ID = 2;		
 			public static final int CATEGORY_ID = 3;
 			public static final int PROJECT_ID = 4;
-			public static final int NOTE = 5;
-			public static final int FROM_AMOUNT = 6;
-			public static final int TO_AMOUNT = 7;
-			public static final int DATETIME = 8;
-			public static final int LOCATION_ID = 9;
-			public static final int PROVIDER = 10;
-			public static final int ACCURACY = 11;
-			public static final int LATITUDE = 12;
-			public static final int LONGITUDE = 13;
-			public static final int IS_TEMPLATE = 14;
-			public static final int TEMPLATE_NAME = 15;
-			public static final int RECURRENCE = 16;
-			public static final int NOTIFICATION_OPTIONS = 17;
-			public static final int STATUS = 18;
-			public static final int ATTACHED_PICTURE = 19;
-			public static final int IS_CCARD_PAYMENT = 20;
-			public static final int LAST_RECURRENCE = 21;
+            public static final int PAYEE = 5;
+			public static final int NOTE = 6;
+			public static final int FROM_AMOUNT = 7;
+			public static final int TO_AMOUNT = 8;
+			public static final int DATETIME = 9;
+			public static final int LOCATION_ID = 10;
+			public static final int PROVIDER = 11;
+			public static final int ACCURACY = 12;
+			public static final int LATITUDE = 13;
+			public static final int LONGITUDE = 14;
+			public static final int IS_TEMPLATE = 15;
+			public static final int TEMPLATE_NAME = 16;
+			public static final int RECURRENCE = 17;
+			public static final int NOTIFICATION_OPTIONS = 18;
+			public static final int STATUS = 19;
+			public static final int ATTACHED_PICTURE = 20;
+			public static final int IS_CCARD_PAYMENT = 21;
+			public static final int LAST_RECURRENCE = 22;
 		}
 		
 		private TransactionColumns() {}
 	}
 	
-	public static class BlotterColumns {				
-		
-		public static final String ID = "_id";
-		public static final String FROM_ACCOUNT_ID = "from_account_id";		
-		public static final String FROM_ACCOUNT_TITLE = "from_account_title";
-		public static final String FROM_ACCOUNT_CURRENCY_ID = "from_account_currency_id";
-		public static final String TO_ACCOUNT_ID = "to_account_id";	
-		public static final String TO_ACCOUNT_TITLE = "to_account_title";
-		public static final String TO_ACCOUNT_CURRENCY_ID = "to_account_currency_id";
-		public static final String CATEGORY_ID = "category_id";
-		public static final String CATEGORY_TITLE = "category_title";
-		public static final String CATEGORY_LEFT = "category_left";
-		public static final String CATEGORY_RIGHT = "category_right";
-		public static final String PROJECT_ID = "project_id";
-		public static final String PROJECT = "project";
-		public static final String LOCATION_ID = "location_id";
-		public static final String LOCATION = "location";
-		public static final String NOTE = "note";
-		public static final String FROM_AMOUNT = "from_amount";
-		public static final String TO_AMOUNT = "to_amount";
-		public static final String DATETIME = "datetime";		
-		public static final String IS_TEMPLATE = "is_template";	
-		public static final String TEMPLATE_NAME = "template_name";
-		public static final String RECURRENCE = "recurrence";
-		public static final String NOTIFICATION_OPTIONS = "notification_options";		
-		public static final String STATUS = "status";
+	public static enum BlotterColumns {
+		_ID,
+		FROM_ACCOUNT_ID,
+		FROM_ACCOUNT_TITLE,
+		FROM_ACCOUNT_CURRENCY_ID,
+		TO_ACCOUNT_ID,
+		TO_ACCOUNT_TITLE,
+		TO_ACCOUNT_CURRENCY_ID,
+		CATEGORY_ID,
+		CATEGORY_TITLE,
+		CATEGORY_LEFT,
+		CATEGORY_RIGHT,
+		PROJECT_ID,
+		PROJECT,
+		LOCATION_ID,
+		LOCATION,
+        PAYEE_ID,
+        PAYEE,
+		NOTE,
+		FROM_AMOUNT,
+		TO_AMOUNT,
+		DATETIME,
+		IS_TEMPLATE,
+		TEMPLATE_NAME,
+		RECURRENCE,
+		NOTIFICATION_OPTIONS,
+		STATUS;
 
-		public static final String[] NORMAL_PROJECTION = {
-			ID,
-			FROM_ACCOUNT_ID,		
-			FROM_ACCOUNT_TITLE,
-			FROM_ACCOUNT_CURRENCY_ID,
-			TO_ACCOUNT_ID,	
-			TO_ACCOUNT_TITLE,
-			TO_ACCOUNT_CURRENCY_ID,
-			CATEGORY_ID,
-			CATEGORY_TITLE,
-			CATEGORY_LEFT,
-			CATEGORY_RIGHT,
-			PROJECT_ID,
-			PROJECT,
-			LOCATION_ID,
-			LOCATION,
-			NOTE,
-			FROM_AMOUNT,
-			TO_AMOUNT,
-			DATETIME,
-			IS_TEMPLATE,
-			TEMPLATE_NAME,
-			RECURRENCE,
-			NOTIFICATION_OPTIONS,
-			STATUS
-		};
+		public static final String[] NORMAL_PROJECTION = asStringArray(BlotterColumns.values());
 
-		public static final String[] BALANCE_PROJECTION = {
-			FROM_ACCOUNT_CURRENCY_ID,
+        public static final String[] BALANCE_PROJECTION = {
+			FROM_ACCOUNT_CURRENCY_ID.name(),
 			"SUM("+FROM_AMOUNT+")"
 		};
 
 		public static final String BALANCE_GROUPBY = "FROM_ACCOUNT_CURRENCY_ID";
 
-		public static class Indicies {
-			public static final int ID = 0;
-			public static final int FROM_ACCOUNT_ID = 1;		
-			public static final int FROM_ACCOUNT_TITLE = 2;
-			public static final int FROM_ACCOUNT_CURRENCY_ID = 3;
-			public static final int TO_ACCOUNT_ID = 4;	
-			public static final int TO_ACCOUNT_TITLE = 5;
-			public static final int TO_ACCOUNT_CURRENCY_ID = 6;
-			public static final int CATEGORY_ID = 7;
-			public static final int CATEGORY_TITLE = 8;
-			public static final int CATEGORY_LEFT = 9;
-			public static final int CATEGORY_RIGHT = 10;
-			public static final int PROJECT_ID = 11;
-			public static final int PROJECT = 12;
-			public static final int LOCATION_ID = 13;
-			public static final int LOCATION = 14;
-			public static final int NOTE = 15;
-			public static final int FROM_AMOUNT = 16;
-			public static final int TO_AMOUNT = 17;
-			public static final int DATETIME = 18;
-			public static final int IS_TEMPLATE = 19;		
-			public static final int TEMPLATE_NAME = 20;
-			public static final int RECURRENCE = 21;
-			public static final int NOTIFICATION_OPTIONS = 22;
-			public static final int STATUS = 23;
-		};
-	}		
+	}
 
-	public static class AccountColumns {
+    public static class AccountColumns {
 		
 		public static final String ID = "_id";
 		public static final String TITLE = "title";
@@ -289,7 +247,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		}
 	}
 
-	public static class ProjectColumns {
+	public static class EntityColumns {
 		
 		public static final String ID = "_id";
 		public static final String TITLE = "title";

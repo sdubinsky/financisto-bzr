@@ -25,7 +25,7 @@ public class ScheduledAlarmReceiver extends PackageReplaceReceiver {
 		Log.i("ScheduledAlarmReceiver", "Received " + intent);
         String action = intent.getAction();
 		if (BOOT_COMPLETED.equals(action)) {
-            super.onReceive(context, intent);
+            scheduleAll(context);
 		} else {
             Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ONE);
 			serviceIntent.putExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, intent.getLongExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, -1));

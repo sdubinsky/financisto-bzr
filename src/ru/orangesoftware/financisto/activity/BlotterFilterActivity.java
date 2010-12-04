@@ -20,13 +20,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.MyEntity;
-import ru.orangesoftware.financisto.model.MyLocation;
-import ru.orangesoftware.financisto.model.Project;
-import ru.orangesoftware.financisto.model.TransactionStatus;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.DateUtils;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
@@ -56,6 +50,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 	private TextView currency;
 	private TextView category;
 	private TextView project;
+    private TextView payee;
 	private TextView location;
 	private TextView sortOrder;
 	private TextView status;
@@ -77,6 +72,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 		account = x.addListNodeMinus(layout, R.id.account, R.id.account_clear, R.string.account, R.string.no_filter);
 		currency = x.addListNodeMinus(layout, R.id.currency, R.id.currency_clear, R.string.currency, R.string.no_filter);
 		category = x.addListNodeMinus(layout, R.id.category, R.id.category_clear, R.string.category, R.string.no_filter);
+        payee = x.addListNodeMinus(layout, R.id.payee, R.id.payee_clear, R.string.payee, R.string.no_filter);
 		project = x.addListNodeMinus(layout, R.id.project, R.id.project_clear, R.string.project, R.string.no_filter);
 		location = x.addListNodeMinus(layout, R.id.location, R.id.location_clear, R.string.location, R.string.no_filter);
 		status = x.addListNodeMinus(layout, R.id.status, R.id.status_clear, R.string.transaction_status, R.string.no_filter);
@@ -119,6 +115,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			updateCurrencyFromFilter();
 			updateCategoryFromFilter();
 			updateProjectFromFilter();
+            updatePayeeFromFilter();
 			updateLocationFromFilter();
 			updateSortOrderFromFilter();
 			updateStatusFromFilter();
@@ -154,6 +151,16 @@ public class BlotterFilterActivity extends AbstractActivity {
 			project.setText(R.string.no_filter);
 		}
 	}
+
+    private void updatePayeeFromFilter() {
+        Criteria c = filter.get(BlotterFilter.PAYEE_ID);
+        if (c != null) {
+            Payee p = em.load(Payee.class, c.getLongValue1());
+            payee.setText(p.title);
+        } else {
+            payee.setText(R.string.no_filter);
+        }
+    }
 
 	private void updateCategoryFromFilter() {
 		Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
@@ -269,6 +276,17 @@ public class BlotterFilterActivity extends AbstractActivity {
 		case R.id.project_clear:
 			clear(BlotterFilter.PROJECT_ID, project);
 			break;
+        case R.id.payee: {
+            ArrayList<Payee> payees = em.getAllPayeeList();
+            ListAdapter adapter = TransactionUtils.createPayeeAdapter(this, payees);
+            Criteria c = filter.get(BlotterFilter.PAYEE_ID);
+            long selectedId = c != null ? c.getLongValue1() : -1;
+            int selectedPos = MyEntity.indexOf(payees, selectedId);
+            x.selectItemId(this, R.id.payee, R.string.payee, adapter, selectedPos);
+        } break;
+        case R.id.payee_clear:
+            clear(BlotterFilter.PAYEE_ID, payee);
+            break;
 		case R.id.location: {
 			Cursor cursor = em.getAllLocations(false);
 			startManagingCursor(cursor);
@@ -327,6 +345,10 @@ public class BlotterFilterActivity extends AbstractActivity {
 			filter.put(Criteria.eq(BlotterFilter.PROJECT_ID, String.valueOf(selectedId)));
 			updateProjectFromFilter();
 			break;
+        case R.id.payee:
+            filter.put(Criteria.eq(BlotterFilter.PAYEE_ID, String.valueOf(selectedId)));
+            updatePayeeFromFilter();
+            break;
 		case R.id.location:
 			filter.put(Criteria.eq(BlotterFilter.LOCATION_ID, String.valueOf(selectedId)));
 			updateLocationFromFilter();

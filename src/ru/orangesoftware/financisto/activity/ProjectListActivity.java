@@ -10,90 +10,37 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.ProjectListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.Project;
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.widget.ListAdapter;
 
-public class ProjectListActivity extends AbstractListActivity {
-	
-	private static final int NEW_PROJECT_REQUEST = 1;
-	private static final int EDIT_PROJECT_REQUEST = 2;
-	
-	private ArrayList<Project> projects;
+import java.util.ArrayList;
 
-	public ProjectListActivity() {
-		super(R.layout.project_list);
-	}
-	
-	@Override
-	protected void internalOnCreate(Bundle savedInstanceState) {
-		super.internalOnCreate(savedInstanceState);
-		projects = em.getAllProjectsList(false);
-		//disableMenu(MENU_VIEW);
-	}
+public class ProjectListActivity extends MyEntityListActivity<Project> {
 
-	@Override
-	protected void addItem() {
-		Intent intent = new Intent(ProjectListActivity.this, ProjectActivity.class);
-		startActivityForResult(intent, NEW_PROJECT_REQUEST);
-	}
+    public ProjectListActivity() {
+        super(Project.class);
+    }
 
-	@Override
-	protected ListAdapter createAdapter(Cursor cursor) {
-		return new ProjectListAdapter(this, projects);
-	}
+    @Override
+    protected ArrayList<Project> loadEntities() {
+        return em.getAllProjectsList(false);
+    }
 
-	@Override
-	protected Cursor createCursor() {
-		return null;
-	}
-	
-	@Override
-	public void requeryCursor() {
-		projects = em.getAllProjectsList(false);
-		((ProjectListAdapter)adapter).setProjects(projects);
-	}
+    @Override
+    protected String getContextMenuHeaderTitle(int position) {
+        return getString(R.string.project);
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode == RESULT_OK) {
-			requeryCursor();
-		}
-	}
+    @Override
+    protected Class<? extends MyEntityActivity> getEditActivityClass() {
+        return PayeeActivity.class;
+    }
 
-	@Override
-	protected void deleteItem(int position, final long id) {
-		em.deleteProject(id);
-		requeryCursor();
-	}
+    @Override
+    protected WhereFilter.Criteria createBlotterCriteria(Project p) {
+        return WhereFilter.Criteria.eq(BlotterFilter.PROJECT_ID, String.valueOf(p.id));
+    }
 
-	@Override
-	public void editItem(int position, long id) {
-		Intent intent = new Intent(ProjectListActivity.this, ProjectActivity.class);
-		intent.putExtra(ProjectActivity.PROJECT_ID_EXTRA, id);
-		startActivityForResult(intent, EDIT_PROJECT_REQUEST);		
-	}	
-	
-	@Override
-	protected void viewItem(int position, long id) {
-		Project p = em.load(Project.class, id);
-		Intent intent = new Intent(this, BlotterActivity.class);
-		WhereFilter.Criteria.eq(BlotterFilter.PROJECT_ID, String.valueOf(id))
-			.toIntent(p.title, intent);
-		startActivity(intent);
-	}	
-
-	@Override
-	protected String getContextMenuHeaderTitle(int position) {
-		return getString(R.string.project);
-	}
 }

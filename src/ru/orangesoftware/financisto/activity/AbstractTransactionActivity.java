@@ -49,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static ru.orangesoftware.financisto.utils.ThumbnailUtil.*;
+import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public abstract class AbstractTransactionActivity extends AbstractActivity {
 	
@@ -90,8 +91,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected Button dateText;
 	protected Button timeText;
 	
-	protected TextView attributesText;
-	protected EditText noteText;
+    protected AutoCompleteTextView payeeText;
+    protected EditText noteText;
 	protected TextView recurText;	
 	protected TextView notificationText;	
 	
@@ -119,18 +120,20 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected boolean isRememberLastCategory;
 	protected boolean isRememberLastLocation;
 	protected boolean isRememberLastProject;
+    protected boolean isShowPayee;
 	protected boolean isShowLocation;
 	protected boolean isShowNote;
 	protected boolean isShowProject;
-	
+    protected boolean isShowTakePicture;
+
 	protected AttributeView deleteAfterExpired;
 	
 	protected DateFormat df;
 	protected DateFormat tf;
 	
 	protected Transaction transaction = new Transaction();
-	
-	public AbstractTransactionActivity() {}
+
+    public AbstractTransactionActivity() {}
 	
 	protected abstract int getLayoutId();
 	
@@ -151,9 +154,11 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		isRememberLastCategory = isRememberLastAccount && MyPreferences.isRememberCategory(this);
 		isRememberLastLocation = isRememberLastCategory && MyPreferences.isRememberLocation(this);
 		isRememberLastProject = isRememberLastCategory && MyPreferences.isRememberProject(this);
+        isShowPayee = MyPreferences.isShowPayee(this);
 		isShowLocation = MyPreferences.isShowLocation(this);
 		isShowNote = MyPreferences.isShowNote(this);
 		isShowProject = MyPreferences.isShowProject(this);
+        isShowTakePicture = MyPreferences.isShowTakePicture(this);
 
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
@@ -175,7 +180,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
 		long accountId = -1;
 		long transactionId = -1;
-		Intent intent = getIntent();		
+		final Intent intent = getIntent();
 		if (intent != null) {
 			accountId = intent.getLongExtra(ACCOUNT_ID_EXTRA, -1);
 			transactionId = intent.getLongExtra(TRAN_ID_EXTRA, -1);
@@ -266,34 +271,33 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			deleteAfterExpired.inflateView(layout, value != null ? value : sa.defaultValue);
 		}
 
-        Button bOK = (Button) findViewById(R.id.bOK);
-		bOK.setOnClickListener(new OnClickListener() {
+        Button bSave = (Button) findViewById(R.id.bSave);
+		bSave.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if (onOKClicked()) {
-                    boolean isNew = transaction.id == -1;
-                    long id = db.insertOrUpdate(transaction, getAttributes());
-                    if (isNew) {
-                        MyPreferences.setLastAccount(AbstractTransactionActivity.this, transaction.fromAccountId);
-                    }
-                    Intent data = new Intent();
-                    data.putExtra(TransactionColumns.ID, id);
-                    AccountWidget.updateWidgets(AbstractTransactionActivity.this);
-                    setResult(RESULT_OK, data);
-                    finish();
-                }
+                saveAndFinish();
             }
 
         });
 
-		Button bCancel = (Button)findViewById(R.id.bCancel);
-		bCancel.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				setResult(RESULT_CANCELED);
-				finish();
-			}			
-		});		
+        final boolean isEdit = transaction.id > 0;
+		Button bSaveAndNew = (Button)findViewById(R.id.bSaveAndNew);
+        if (isEdit) {
+            bSaveAndNew.setText(R.string.cancel);
+        }
+		bSaveAndNew.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if (isEdit) {
+                    setResult(RESULT_CANCELED);
+                    finish();
+                } else {
+                    if (saveAndFinish()) {
+                        startActivityForResult(intent, -1);
+                    }
+                }
+            }
+        });
 		
 		if (transactionId != -1) {
 			editTransaction(transaction);
@@ -322,9 +326,34 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		
 		long t1 = System.currentTimeMillis();
 		Log.i("TransactionActivity", "onCreate "+(t1-t0)+"ms");
-	}	
-	
-	protected void internalOnCreate() {
+	}
+
+    private boolean saveAndFinish() {
+        long id = save();
+        if (id > 0) {
+            Intent data = new Intent();
+            data.putExtra(TransactionColumns.ID, id);
+            setResult(RESULT_OK, data);
+            finish();
+            return true;
+        }
+        return false;
+    }
+
+    private long save() {
+        if (onOKClicked()) {
+            boolean isNew = transaction.id == -1;
+            long id = db.insertOrUpdate(transaction, getAttributes());
+            if (isNew) {
+                MyPreferences.setLastAccount(this, transaction.fromAccountId);
+            }
+            AccountWidget.updateWidgets(this);
+            return id;
+        }
+        return -1;
+    }
+
+    protected void internalOnCreate() {
 	}
 
 	protected void selectCurrentLocation(boolean forceUseGps) {
@@ -480,10 +509,29 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private final LocationListener gpsLocationListener = new DefaultLocationListener();
 
 	protected void createCommonNodes(LinearLayout layout) {
+        int payeeOrder = MyPreferences.getPayeeOrder(this);
 		int locationOrder = MyPreferences.getLocationOrder(this);
 		int noteOrder = MyPreferences.getNoteOrder(this);
 		int projectOrder = MyPreferences.getProjectOrder(this);
 		for (int i=0; i<6; i++) {
+            if (i == payeeOrder) {
+                if (isShowPayee) {
+                    //payee
+                    SimpleCursorAdapter payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
+                    payeeText = new AutoCompleteTextView(this);
+                    payeeText.setThreshold(1);
+                    payeeText.setAdapter(payeeAdapter);
+                    payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View view, boolean hasFocus) {
+                            if (hasFocus) {
+                                payeeText.selectAll();
+                            }
+                        }
+                    });
+                    x.addEditNode(layout, R.string.payee, payeeText);
+                }
+            }
 			if (i == locationOrder) {
 				if (isShowLocation) {
 					//location
@@ -504,7 +552,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				}
 			}
 		}
-		if (transaction.isNotTemplateLike()) {
+		if (isShowTakePicture && transaction.isNotTemplateLike()) {
 			pictureView = x.addPictureNodeMinus(this, layout, R.id.attach_picture, R.id.delete_picture, R.string.attach_picture, R.string.new_picture);
 		}
 		// checkbox to register if the transaction is a credit card payment. 
@@ -515,7 +563,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		
 	}
 
-	protected abstract void createListNodes(LinearLayout layout);
+    protected abstract void createListNodes(LinearLayout layout);
 	
 	protected abstract boolean onOKClicked();
 
@@ -728,7 +776,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 					break;
 				case NEW_PROJECT_REQUEST:					
 					projects = em.getAllProjectsList(true);
-					long projectId = data.getLongExtra(ProjectColumns.ID, -1);
+					long projectId = data.getLongExtra(EntityColumns.ID, -1);
 					if (projectId != -1) {
 						selectProject(projectId);
 					}
@@ -812,6 +860,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		} else {
 			setLocation(transaction.provider, transaction.accuracy, transaction.latitude, transaction.longitude);
 		}
+        if (isShowPayee) {
+            payeeText.setText(transaction.payee);
+        }
 		if (isShowNote) {
 			noteText.setText(transaction.note);
 		}
@@ -822,7 +873,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			setRecurrence(transaction.recurrence);
 			setNotification(transaction.notificationOptions);
 		}
-		selectPicture(transaction.attachedPicture);
+        if (isShowTakePicture) {
+		    selectPicture(transaction.attachedPicture);
+        }
 		setIsCCardPayment(transaction.isCCardPayment);
 	}
 
@@ -867,11 +920,14 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			transaction.latitude = lastFix != null ? lastFix.getLatitude() : 0;
 			transaction.longitude = lastFix != null ? lastFix.getLongitude() : 0;
 		}
+        if (isShowPayee) {
+            transaction.payee = text(payeeText);
+        }
 		if (isShowNote) {
-			transaction.note = noteText.getText().toString();
+			transaction.note = text(noteText);
 		}
 		if (transaction.isTemplate()) {
-			transaction.templateName = templateName.getText().toString();
+			transaction.templateName = text(templateName);
 		}
 		if (transaction.isScheduled()) {
 			transaction.recurrence = recurrence;

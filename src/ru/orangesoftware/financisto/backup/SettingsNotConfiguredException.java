@@ -16,9 +16,6 @@
 
 package ru.orangesoftware.financisto.backup;
 
-/**
- * Exceção usada quando ocorre algum erro relacionado aos parametros de configuração do usuário 
- * */
 public class SettingsNotConfiguredException extends Exception {
 	
 	public static final long serialVersionUID = 1;

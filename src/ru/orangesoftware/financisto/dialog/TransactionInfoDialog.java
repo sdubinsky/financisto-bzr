@@ -10,21 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.dialog;
 
-import java.util.List;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.activity.AbstractListActivity;
-import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.model.AccountType;
-import ru.orangesoftware.financisto.model.MyLocation;
-import ru.orangesoftware.financisto.model.Project;
-import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
-import ru.orangesoftware.financisto.model.TransactionStatus;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
-import ru.orangesoftware.financisto.recur.Recurrence;
-import ru.orangesoftware.financisto.utils.ThumbnailUtil;
-import ru.orangesoftware.financisto.utils.Utils;
-import ru.orangesoftware.financisto.view.NodeInflater;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -37,6 +22,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.activity.AbstractListActivity;
+import ru.orangesoftware.financisto.db.MyEntityManager;
+import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.recur.Recurrence;
+import ru.orangesoftware.financisto.utils.ThumbnailUtil;
+import ru.orangesoftware.financisto.utils.Utils;
+import ru.orangesoftware.financisto.view.NodeInflater;
+
+import java.util.List;
+
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 public class TransactionInfoDialog {
 
@@ -101,8 +99,16 @@ public class TransactionInfoDialog {
 		add(layout, R.string.category, ti.category.title);
 		List<TransactionAttributeInfo> attributes = em.getAttributesForTransaction(transactionId);
 		for (TransactionAttributeInfo tai : attributes) {
-			add(layout, tai.name, tai.getValue(parentActivity));
+            String value = tai.getValue(parentActivity);
+            if (isNotEmpty(value)) {
+			    add(layout, tai.name, value);
+            }
 		}
+
+        if (isNotEmpty(ti.payee)) {
+            add(layout, R.string.payee, ti.payee);
+        }
+
 //		if (isShowProject) {
 			Project project = ti.project;
 			if (project != null && project.id > 0) {

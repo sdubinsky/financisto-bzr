@@ -61,5 +61,9 @@ public class Expressions {
 	public static Expression btw(String field, Object value1, Object value2) {
 		return new Btw(field, value1, value2);
 	}
+
+    public static Expression like(String field, Object value1) {
+        return new Like(field, value1);
+    }
 }
 

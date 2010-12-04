@@ -105,7 +105,7 @@ public class ScheduledListAdapter extends BaseAdapter {
 			String fromAccountTitle = t.fromAccount.title;
 			String toAccountTitle = t.toAccount.title;
 			sb.setLength(0);
-			sb.append(fromAccountTitle).append(" » ").append(toAccountTitle);
+			sb.append(fromAccountTitle).append(" \u00BB ").append(toAccountTitle);
 			noteView.setText(sb.toString());
 			noteView.setTextColor(transferColor);
 
@@ -122,7 +122,7 @@ public class ScheduledListAdapter extends BaseAdapter {
 				long fromAmount = Math.abs(t.fromAmount);
 				long toAmount = t.toAmount;
 				sb.setLength(0);
-				Utils.amountToString(sb, fromCurrency, fromAmount).append(" » ");
+				Utils.amountToString(sb, fromCurrency, fromAmount).append(" \u00BB ");
 				Utils.amountToString(sb, toCurrency, toAmount);
 				v.rightView.setText(sb.toString());	
 				v.rightView.setTextColor(dateViewColor);

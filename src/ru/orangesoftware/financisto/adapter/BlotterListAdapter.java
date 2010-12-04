@@ -10,16 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
-import java.util.Date;
-import java.util.HashMap;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.TransactionStatus;
-import ru.orangesoftware.financisto.recur.Recurrence;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
-import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -27,13 +17,21 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.ResourceCursorAdapter;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.TransactionStatus;
+import ru.orangesoftware.financisto.recur.Recurrence;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import java.util.Date;
+import java.util.HashMap;
+
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 public class BlotterListAdapter extends ResourceCursorAdapter {
 	
@@ -96,73 +94,60 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {	
 		final BlotterViewHolder v = (BlotterViewHolder)view.getTag();
-		long toAccountId = cursor.getLong(BlotterColumns.Indicies.TO_ACCOUNT_ID);
-		int isTemplate = cursor.getInt(BlotterColumns.Indicies.IS_TEMPLATE);
+		long toAccountId = cursor.getLong(BlotterColumns.TO_ACCOUNT_ID.ordinal());
+		int isTemplate = cursor.getInt(BlotterColumns.IS_TEMPLATE.ordinal());
 		TextView noteView = isTemplate == 1 ? v.bottomView : v.centerView;
 		if (toAccountId > 0) {
 			v.topView.setText(R.string.transfer);			
 			
-			String fromAccountTitle = cursor.getString(BlotterColumns.Indicies.FROM_ACCOUNT_TITLE);
-			String toAccountTitle = cursor.getString(BlotterColumns.Indicies.TO_ACCOUNT_TITLE);
+			String fromAccountTitle = cursor.getString(BlotterColumns.FROM_ACCOUNT_TITLE.ordinal());
+			String toAccountTitle = cursor.getString(BlotterColumns.TO_ACCOUNT_TITLE.ordinal());
 			sb.setLength(0);
-			sb.append(fromAccountTitle).append(" » ").append(toAccountTitle);
+			sb.append(fromAccountTitle).append(" \u00BB ").append(toAccountTitle);
 			noteView.setText(sb.toString());
 			noteView.setTextColor(transferColor);
 
-			long fromCurrencyId = cursor.getLong(BlotterColumns.Indicies.FROM_ACCOUNT_CURRENCY_ID);
+			long fromCurrencyId = cursor.getLong(BlotterColumns.FROM_ACCOUNT_CURRENCY_ID.ordinal());
 			Currency fromCurrency = CurrencyCache.getCurrency(fromCurrencyId);
-			long toCurrencyId = cursor.getLong(BlotterColumns.Indicies.TO_ACCOUNT_CURRENCY_ID);
+			long toCurrencyId = cursor.getLong(BlotterColumns.TO_ACCOUNT_CURRENCY_ID.ordinal());
 			Currency toCurrency = CurrencyCache.getCurrency(toCurrencyId);
 			
 			int dateViewColor = v.bottomView.getCurrentTextColor();
 			
 			if (fromCurrencyId == toCurrencyId) {
-				long amount = Math.abs(cursor.getLong(BlotterColumns.Indicies.FROM_AMOUNT));				
+				long amount = Math.abs(cursor.getLong(BlotterColumns.FROM_AMOUNT.ordinal()));
 				u.setAmountText(v.rightView, fromCurrency, amount, false);					
 				v.rightView.setTextColor(dateViewColor);
 			} else {			
-				long fromAmount = Math.abs(cursor.getLong(BlotterColumns.Indicies.FROM_AMOUNT));
-				long toAmount = cursor.getLong(BlotterColumns.Indicies.TO_AMOUNT);
+				long fromAmount = Math.abs(cursor.getLong(BlotterColumns.FROM_AMOUNT.ordinal()));
+				long toAmount = cursor.getLong(BlotterColumns.TO_AMOUNT.ordinal());
 				sb.setLength(0);
-				Utils.amountToString(sb, fromCurrency, fromAmount).append(" » ");
+				Utils.amountToString(sb, fromCurrency, fromAmount).append(" \u00BB ");
 				Utils.amountToString(sb, toCurrency, toAmount);
 				v.rightView.setText(sb.toString());	
 				v.rightView.setTextColor(dateViewColor);
 			}
 			v.iconView.setImageDrawable(icBlotterTransfer);
 		} else {
-			String fromAccountTitle = cursor.getString(BlotterColumns.Indicies.FROM_ACCOUNT_TITLE);
+			String fromAccountTitle = cursor.getString(BlotterColumns.FROM_ACCOUNT_TITLE.ordinal());
 			v.topView.setText(fromAccountTitle);
-			
-			String note = cursor.getString(BlotterColumns.Indicies.NOTE);
-			String location = cursor.getString(BlotterColumns.Indicies.LOCATION);
-			long locationId = cursor.getLong(BlotterColumns.Indicies.LOCATION_ID);
-			if (locationId > 0 && location != null && location.length() > 0) {
-				sb.setLength(0);
-				sb.append(location);
-				if (Utils.isNotEmpty(note)) {
-					sb.append(": ").append(note);
-				}
-				note = sb.toString();
-			}
-			long categoryId = cursor.getLong(BlotterColumns.Indicies.CATEGORY_ID);
+			sb.setLength(0);
+            String payee = cursor.getString(BlotterColumns.PAYEE.ordinal());
+			String note = cursor.getString(BlotterColumns.NOTE.ordinal());
+			String location = cursor.getString(BlotterColumns.LOCATION.ordinal());
+			long locationId = cursor.getLong(BlotterColumns.LOCATION_ID.ordinal());
+			long categoryId = cursor.getLong(BlotterColumns.CATEGORY_ID.ordinal());
+            String categoryTitle = "";
 			if (categoryId > 0) {
-				String categoryTitle = cursor.getString(BlotterColumns.Indicies.CATEGORY_TITLE);
-				if (Utils.isNotEmpty(note)) {
-					sb.setLength(0);
-					sb.append(categoryTitle).append(" (").append(note).append(")");
-					noteView.setText(sb.toString());
-				} else {
-					noteView.setText(categoryTitle);
-				}
-			} else {
-				noteView.setText(note);
+                categoryTitle = cursor.getString(BlotterColumns.CATEGORY_TITLE.ordinal());
 			}
+            String text = generateTransactionText(sb, payee, note, locationId, location, categoryTitle);
+            noteView.setText(text);
 			noteView.setTextColor(Color.WHITE);
 			
-			long fromCurrencyId = cursor.getLong(BlotterColumns.Indicies.FROM_ACCOUNT_CURRENCY_ID);
+			long fromCurrencyId = cursor.getLong(BlotterColumns.FROM_ACCOUNT_CURRENCY_ID.ordinal());
 			Currency fromCurrency = CurrencyCache.getCurrency(fromCurrencyId);
-			long amount = cursor.getLong(BlotterColumns.Indicies.FROM_AMOUNT);
+			long amount = cursor.getLong(BlotterColumns.FROM_AMOUNT.ordinal());
 			sb.setLength(0);
 			u.setAmountText(sb, v.rightView, fromCurrency, amount, true);
 			if (amount > 0) {
@@ -172,19 +157,19 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 			}
 		}
 		if (isTemplate == 1) {
-			String templateName = cursor.getString(BlotterColumns.Indicies.TEMPLATE_NAME);
+			String templateName = cursor.getString(BlotterColumns.TEMPLATE_NAME.ordinal());
 			v.centerView.setText(templateName);
 		} else {
-			String recurrence = cursor.getString(BlotterColumns.Indicies.RECURRENCE);
+			String recurrence = cursor.getString(BlotterColumns.RECURRENCE.ordinal());
 			if (isTemplate == 2 && recurrence != null) {
 				Recurrence r = Recurrence.parse(recurrence);
 				//RRule rrule = r.createRRule();
 				v.bottomView.setText(r.toInfoString(context));
 				v.bottomView.setTextColor(v.topView.getTextColors().getDefaultColor());
 			} else {
-				TransactionStatus status = TransactionStatus.valueOf(cursor.getString(BlotterColumns.Indicies.STATUS));
+				TransactionStatus status = TransactionStatus.valueOf(cursor.getString(BlotterColumns.STATUS.ordinal()));
 				v.indicator.setBackgroundColor(colors[status.ordinal()]);
-				long date = cursor.getLong(BlotterColumns.Indicies.DATETIME);
+				long date = cursor.getLong(BlotterColumns.DATETIME.ordinal());
 				dt.setTime(date);
 				v.bottomView.setText(DateUtils.formatDateTime(context, dt.getTime(), 
 						DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_ABBREV_MONTH));
@@ -197,7 +182,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 			}
 		}
 		if (v.checkBox != null) {
-			final long id = cursor.getLong(BlotterColumns.Indicies.ID);
+			final long id = cursor.getLong(BlotterColumns._ID.ordinal());
 			v.checkBox.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
@@ -209,7 +194,38 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		}
 	}
 
-	public boolean getCheckedState(long id) {
+    public static String generateTransactionText(StringBuilder sb, String payee, String note,
+                                           long locationId, String location, String categoryTitle) {
+        sb.setLength(0);
+        append(sb, payee);
+        if (locationId > 0) {
+            append(sb, location);
+        }
+        append(sb, note);
+        String secondPart = sb.toString();
+        sb.setLength(0);
+        if (isNotEmpty(categoryTitle)) {
+            if (isNotEmpty(secondPart)) {
+                sb.append(categoryTitle).append(" (").append(secondPart).append(")");
+                return sb.toString();
+            } else {
+                return categoryTitle;
+            }
+        } else {
+            return secondPart;
+        }
+    }
+
+    private static void append(StringBuilder sb, String s) {
+        if (isNotEmpty(s)) {
+            if (sb.length() > 0) {
+                sb.append(": ");
+            }
+            sb.append(s);
+        }
+    }
+
+    public boolean getCheckedState(long id) {
 		return checkedItems.get(id) != null ? !allChecked : allChecked;
 	}
 

@@ -42,4 +42,17 @@ public abstract class EnumUtils {
 		return adapter;
 	}
 
+    public static String lower(Enum value) {
+        return value.name().toLowerCase();
+    }
+
+    public static String[] asStringArray(Enum[] values) {
+        int count = values.length;
+        String[] a = new String[count];
+        for (int i=0; i<count; i++) {
+            a[i] = lower(values[i]);
+        }
+        return a;
+    }
+
 }

@@ -11,24 +11,16 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
-import java.util.EnumMap;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import android.content.ContentValues;
 import android.database.Cursor;
+import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
+
+import javax.persistence.*;
+import java.util.EnumMap;
 
 @Entity
 @Table(name = "transactions")
 public class Transaction {
-	
-	public static int TRANSFER_IN = 1;
-	public static int TRANSFER_OUT = 2;
 	
 	@Id
 	@Column(name = "_id")
@@ -64,6 +56,12 @@ public class Transaction {
 	@Column(name = "to_account_id")
 	public long toAccountId;
 	
+    @Column(name = "payee_id")
+    public long payeeId;
+
+    @Column(name = "payee")
+    public String payee;
+
 	@Column(name = "note")
 	public String note;
 	
@@ -100,7 +98,7 @@ public class Transaction {
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
 
-	public ContentValues toValues() {
+    public ContentValues toValues() {
 		ContentValues values = new ContentValues();
 		values.put(TransactionColumns.CATEGORY_ID, categoryId);
 		values.put(TransactionColumns.PROJECT_ID, projectId);
@@ -112,6 +110,8 @@ public class Transaction {
 		values.put(TransactionColumns.LONGITUDE, longitude);
 		values.put(TransactionColumns.FROM_ACCOUNT_ID, fromAccountId);
 		values.put(TransactionColumns.TO_ACCOUNT_ID, toAccountId);
+        values.put(TransactionColumns.PAYEE_ID, payeeId);
+        values.put(TransactionColumns.PAYEE, payee);
 		values.put(TransactionColumns.NOTE, note);
 		values.put(TransactionColumns.FROM_AMOUNT, fromAmount);
 		values.put(TransactionColumns.TO_AMOUNT, toAmount);
@@ -134,6 +134,7 @@ public class Transaction {
 		t.toAccountId = c.getLong(TransactionColumns.Indicies.TO_ACCOUNT_ID);
 		t.categoryId = c.getLong(TransactionColumns.Indicies.CATEGORY_ID);
 		t.projectId = c.getLong(TransactionColumns.Indicies.PROJECT_ID);
+        t.payee = c.getString(TransactionColumns.Indicies.PAYEE);
 		t.note = c.getString(TransactionColumns.Indicies.NOTE);
 		t.fromAmount = c.getLong(TransactionColumns.Indicies.FROM_AMOUNT);
 		t.toAmount = c.getLong(TransactionColumns.Indicies.TO_AMOUNT);

@@ -107,7 +107,7 @@ public class RecurrenceScheduler {
         return db.duplicateTransaction(transaction.id);
     }
 
-	private List<RestoredTransaction> getMissedSchedules(long now) {
+	public List<RestoredTransaction> getMissedSchedules(long now) {
 		long t0 = System.currentTimeMillis();
 		try {
 			Date endDate = new Date(now);
@@ -205,34 +205,45 @@ public class RecurrenceScheduler {
         return PendingIntent.getBroadcast(context, (int)transaction.id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
+    /**
+     * Correct order by nextDateTime:
+     * 2010-12-01
+     * 2010-12-02
+     * 2010-11-23 <- today
+     * 2010-11-11
+     * 2010-10-08
+     * NULL
+     */
+    public static class RecurrenceComparator implements Comparator<TransactionInfo> {
+
+        private final Date today;
+
+        public RecurrenceComparator(long now) {
+            this.today = new Date(now);
+        }
+
+        @Override
+        public int compare(TransactionInfo o1, TransactionInfo o2) {
+            Date d1 = o1 != null ? (o1.nextDateTime != null ? o1.nextDateTime : NULL_DATE) : NULL_DATE;
+            Date d2 = o2 != null ? (o2.nextDateTime != null ? o2.nextDateTime : NULL_DATE) : NULL_DATE;
+            if (d1.after(today)) {
+                if (d2.after(today)) {
+                    return d1.compareTo(d2);
+                } else {
+                    return -1;
+                }
+            } else {
+                if (d2.after(today)) {
+                    return 1;
+                } else {
+                    return -d1.compareTo(d2);
+                }
+            }
+        }
+    }
+
 	private void sortTransactionsByScheduleDate(ArrayList<TransactionInfo> list, long now) {
-		final Date today = new Date(now);
-		Collections.sort(list, new Comparator<TransactionInfo>(){
-			@Override
-			public int compare(TransactionInfo o1, TransactionInfo o2) {
-				Date d1 = o1 != null ? o1.nextDateTime : NULL_DATE;
-				Date d2 = o2 != null ? o2.nextDateTime : NULL_DATE;
-				if (d1 == null) {
-					d1 = NULL_DATE;
-				}
-				if (d2 == null) {
-					d2 = NULL_DATE;
-				}
-				if (d1.after(today)) {
-					if (d2.after(today)) {
-						return o1.nextDateTime.compareTo(o2.nextDateTime);
-					} else {
-						return -1;
-					}
-				} else {
-					if (d2.after(today)) {
-						return 1;
-					} else {
-						return -o1.nextDateTime.compareTo(o2.nextDateTime);
-					}
-				}
-			}
-		});
+		Collections.sort(list, new RecurrenceComparator(now));
 	}
 
 	private long calculateNextScheduleDate(ArrayList<TransactionInfo> list, long now) {

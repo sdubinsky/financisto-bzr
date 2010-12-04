@@ -16,6 +16,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "project")
 public class Project extends MyEntity {
-	
+
 	
 }

@@ -10,11 +10,37 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.app.TabActivity;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.*;
+import android.view.View.OnClickListener;
+import android.widget.*;
+import api.wireless.gdata.client.AbstructParserFactory;
+import api.wireless.gdata.client.GDataParserFactory;
+import api.wireless.gdata.client.ServiceDataClient;
+import api.wireless.gdata.data.Feed;
+import api.wireless.gdata.docs.client.DocsClient;
+import api.wireless.gdata.docs.client.DocsGDataClient;
+import api.wireless.gdata.docs.data.DocumentEntry;
+import api.wireless.gdata.docs.data.FolderEntry;
+import api.wireless.gdata.docs.parser.xml.XmlDocsGDataParserFactory;
+import api.wireless.gdata.parser.ParseException;
+import api.wireless.gdata.util.AuthenticationException;
+import api.wireless.gdata.util.ServiceException;
+import com.nullwire.trace.ExceptionHandler;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.backup.Backup;
 import ru.orangesoftware.financisto.backup.DatabaseExport;
@@ -33,47 +59,11 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.EntityEnum;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.MyPreferences;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.app.TabActivity;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TabHost;
-import android.widget.TextView;
-import api.wireless.gdata.client.AbstructParserFactory;
-import api.wireless.gdata.client.GDataParserFactory;
-import api.wireless.gdata.client.ServiceDataClient;
-import api.wireless.gdata.data.Feed;
-import api.wireless.gdata.docs.client.DocsClient;
-import api.wireless.gdata.docs.client.DocsGDataClient;
-import api.wireless.gdata.docs.data.DocumentEntry;
-import api.wireless.gdata.docs.data.FolderEntry;
-import api.wireless.gdata.docs.parser.xml.XmlDocsGDataParserFactory;
-import api.wireless.gdata.parser.ParseException;
-import api.wireless.gdata.util.AuthenticationException;
-import api.wireless.gdata.util.ServiceException;
 
-import com.nullwire.trace.ExceptionHandler;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
 
 public class MainActivity extends TabActivity implements TabHost.OnTabChangeListener {
 	
@@ -450,10 +440,13 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			return;
 		} catch (ParseException e) {
 			showErrorPopup(this,R.string.gdocs_folder_error);
+            return;
 		} catch (ServiceException e) {
 			showErrorPopup(this,R.string.gdocs_service_error);
+            return;
 		} catch (IOException e) {
 			showErrorPopup(this,R.string.gdocs_io_error);
+            return;
 		}  catch(Exception e) { //outros erros de conexao
 			showErrorPopup(this,R.string.gdocs_connection_failed);
 			return;
@@ -462,14 +455,14 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		/*
 		 * Convert from ListList<DocumentEntry> to String[] to use in method setSingleChoiceItems()
 		 * */
-		List<DocumentEntry> arquivos = feed.getEntries();
-		final String[] backupFilesNames = new String[arquivos.size()];
+		List<DocumentEntry> entries = feed.getEntries();
+		final String[] backupFilesNames = new String[entries.size()];
 		backupFiles = new Properties();
 		String name;
-		for (int i=0;i<arquivos.size();i++) {
-			name = arquivos.get(i).getTitle();
+		for (int i=0;i<entries.size();i++) {
+			name = entries.get(i).getTitle();
 			backupFilesNames[i]=name;
-			backupFiles.put(name, arquivos.get(i).getKey());
+			backupFiles.put(name, entries.get(i).getKey());
 		}		
 		
 		new AlertDialog.Builder(this)
@@ -486,7 +479,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			.setSingleChoiceItems(backupFilesNames, -1, new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					if (backupFilesNames != null && which >= 0 && which < backupFilesNames.length) {
+					if (which >= 0 && which < backupFilesNames.length) {
 						selectedBackupFile = backupFilesNames[which];
 					}
 				}
@@ -662,7 +655,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		CURRENCIES(R.string.currencies, R.drawable.menu_entities_currencies, CurrencyListActivity.class),
 		CATEGORIES(R.string.categories, R.drawable.menu_entities_categories, CategoryListActivity2.class),
 		LOCATIONS(R.string.locations, R.drawable.menu_entities_locations, LocationsListActivity.class),
-		PROJECTS(R.string.projects, R.drawable.menu_entities_projects, ProjectListActivity.class);
+		PROJECTS(R.string.projects, R.drawable.menu_entities_projects, ProjectListActivity.class),
+        PAYEES(R.string.payees, R.drawable.menu_entities_payees, PayeeListActivity.class);
 
 		private final int titleId;
 		private final int iconId;

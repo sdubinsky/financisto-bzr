@@ -10,11 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.utils;
 
-import java.math.BigDecimal;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.Total;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -28,6 +23,11 @@ import android.text.style.TextAppearanceSpan;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.Total;
+
+import java.math.BigDecimal;
 
 public class Utils {
 	
@@ -91,12 +91,12 @@ public class Utils {
 	}
 
 	public static boolean checkEditText(EditText editText, String name, boolean required, int length) {
-		String text = editText.getText().toString();
-		if (text.length() == 0 && required) {
+		String text = text(editText);
+		if (isEmpty(text) && required) {
 			editText.setError("Please specify the "+name+"..");
 			return false;
 		}
-		if (text.length() > length) {
+		if (text != null && text.length() > length) {
 			editText.setError("Lenght of the "+name+" must not be more than "+length+" chars..");
 			return false;
 		}

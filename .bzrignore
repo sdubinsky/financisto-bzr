@@ -1,6 +1,8 @@
 bin
 gen
-Financisto.eml
-Financisto.iml
-Financisto.ipr
-Financisto.iws
+FinancistoSandbox.iml
+FinancistoSandbox.ipr
+FinancistoSandbox.iws
+FinancistoSandbox.eml
+classes
+tests/tests.iml

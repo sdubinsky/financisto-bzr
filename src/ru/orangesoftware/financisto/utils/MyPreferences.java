@@ -15,6 +15,7 @@ package ru.orangesoftware.financisto.utils;
 import java.util.List;
 import java.util.Locale;
 
+import ru.orangesoftware.financisto.activity.AbstractTransactionActivity;
 import ru.orangesoftware.financisto.model.Currency;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -24,8 +25,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class MyPreferences {
-	
-	public static enum AccountSortOrder {
+
+    public static enum AccountSortOrder {
 		SORT_ORDER_ASC("sortOrder", true),
 		SORT_ORDER_DESC("sortOrder", false),
 		NAME("title", true);
@@ -119,6 +120,21 @@ public class MyPreferences {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getBoolean("remember_last_project", false);
 	}
+
+    public static boolean isShowTakePicture(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("ntsl_show_picture", true);
+    }
+
+    public static boolean isShowPayee(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("ntsl_show_payee", true);
+    }
+
+    public static int getPayeeOrder(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return Integer.parseInt(sharedPreferences.getString("ntsl_show_payee_order", "1"));
+    }
 
 	public static boolean isShowLocation(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
