@@ -25,9 +25,13 @@ public class PackageReplaceReceiver extends BroadcastReceiver {
 		Log.i("PackageReplaceReceiver", "Received "+intent);
 		String action = intent.getAction();
 		if (PACKAGE_REPLACED.equals(action)) {
-			Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ALL);
-            FinancistoService.sendWakefulWork(context, serviceIntent);
+            scheduleAll(context);
 		}
 	}
+
+    protected void scheduleAll(Context context) {
+        Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ALL);
+        FinancistoService.sendWakefulWork(context, serviceIntent);
+    }
 
 }
