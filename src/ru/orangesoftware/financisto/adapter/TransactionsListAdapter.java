@@ -37,8 +37,11 @@ public class TransactionsListAdapter extends AbstractBlotterListAdapter {
 		long toAccountId = cursor.getLong(BlotterColumns.TO_ACCOUNT_ID.ordinal());
         String payee = cursor.getString(BlotterColumns.PAYEE.ordinal());
 		String note = cursor.getString(BlotterColumns.NOTE.ordinal());
-		String location = cursor.getString(BlotterColumns.LOCATION.ordinal());
 		long locationId = cursor.getLong(BlotterColumns.LOCATION_ID.ordinal());
+        String location = "";
+        if (locationId > 0) {
+            location = cursor.getString(BlotterColumns.LOCATION.ordinal());
+        }
 		String toAccount = cursor.getString(BlotterColumns.TO_ACCOUNT_TITLE.ordinal());
 		long fromAmount = cursor.getLong(BlotterColumns.FROM_AMOUNT.ordinal());
         if (toAccountId > 0) {
@@ -54,11 +57,11 @@ public class TransactionsListAdapter extends AbstractBlotterListAdapter {
 		}
 		
 		long categoryId = cursor.getLong(BlotterColumns.CATEGORY_ID.ordinal());
-        String categoryTitle = "";
+        String category = "";
 		if (categoryId > 0) {
-            categoryTitle = cursor.getString(BlotterColumns.CATEGORY_TITLE.ordinal());
+            category = cursor.getString(BlotterColumns.CATEGORY_TITLE.ordinal());
 		}
-        String text = generateTransactionText(sb, payee, note, locationId, location, categoryTitle);
+        String text = generateTransactionText(sb, payee, note, location, category);
         v.lineView.setText(text);
 
 		long currencyId = cursor.getLong(BlotterColumns.FROM_ACCOUNT_CURRENCY_ID.ordinal());

@@ -31,6 +31,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import static ru.orangesoftware.financisto.adapter.BlotterListAdapter.generateTransactionText;
+
 public class ScheduledListAdapter extends BaseAdapter {
 	
 	private final StringBuilder sb = new StringBuilder();
@@ -131,30 +133,18 @@ public class ScheduledListAdapter extends BaseAdapter {
 		} else {
 			String fromAccountTitle = t.fromAccount.title;
 			v.topView.setText(fromAccountTitle);
-			
 			String note = t.note;
-			MyLocation location = t.location;
-			if (location != null && location.id > 0) {
-				sb.setLength(0);
-				sb.append(location.name);
-				if (Utils.isNotEmpty(note)) {
-					sb.append(": ").append(note);
-				}
-				note = sb.toString();
+            String location = "";
+			if (t.location != null && t.location.id > 0) {
+                location = t.location.name;
 			}
-			Category category = t.category;
-			if (category.id > 0) {
-				String categoryTitle = category.title;
-				if (Utils.isNotEmpty(note)) {
-					sb.setLength(0);
-					sb.append(categoryTitle).append(" (").append(note).append(")");
-					noteView.setText(sb.toString());
-				} else {
-					noteView.setText(categoryTitle);
-				}
-			} else {
-				noteView.setText(note);
+			String category = "";
+			if (t.category.id > 0) {
+				category = t.category.title;
 			}
+            String payee = t.payee;
+            String text = generateTransactionText(sb, payee, note, location, category);
+            noteView.setText(text);
 			noteView.setTextColor(Color.WHITE);
 			
 			long amount = t.fromAmount;

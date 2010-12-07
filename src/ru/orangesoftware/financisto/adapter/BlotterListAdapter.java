@@ -16,6 +16,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -134,14 +135,17 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 			sb.setLength(0);
             String payee = cursor.getString(BlotterColumns.PAYEE.ordinal());
 			String note = cursor.getString(BlotterColumns.NOTE.ordinal());
-			String location = cursor.getString(BlotterColumns.LOCATION.ordinal());
-			long locationId = cursor.getLong(BlotterColumns.LOCATION_ID.ordinal());
+            long locationId = cursor.getLong(BlotterColumns.LOCATION_ID.ordinal());
+			String location = "";
+            if (locationId > 0) {
+                location = cursor.getString(BlotterColumns.LOCATION.ordinal());
+            }
 			long categoryId = cursor.getLong(BlotterColumns.CATEGORY_ID.ordinal());
-            String categoryTitle = "";
+            String category = "";
 			if (categoryId > 0) {
-                categoryTitle = cursor.getString(BlotterColumns.CATEGORY_TITLE.ordinal());
+                category = cursor.getString(BlotterColumns.CATEGORY_TITLE.ordinal());
 			}
-            String text = generateTransactionText(sb, payee, note, locationId, location, categoryTitle);
+            String text = generateTransactionText(sb, payee, note, location, category);
             noteView.setText(text);
 			noteView.setTextColor(Color.WHITE);
 			
@@ -194,22 +198,19 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 		}
 	}
 
-    public static String generateTransactionText(StringBuilder sb, String payee, String note,
-                                           long locationId, String location, String categoryTitle) {
+    public static String generateTransactionText(StringBuilder sb, String payee, String note, String location, String category) {
         sb.setLength(0);
         append(sb, payee);
-        if (locationId > 0) {
-            append(sb, location);
-        }
+        append(sb, location);
         append(sb, note);
         String secondPart = sb.toString();
         sb.setLength(0);
-        if (isNotEmpty(categoryTitle)) {
+        if (isNotEmpty(category)) {
             if (isNotEmpty(secondPart)) {
-                sb.append(categoryTitle).append(" (").append(secondPart).append(")");
+                sb.append(category).append(" (").append(secondPart).append(")");
                 return sb.toString();
             } else {
-                return categoryTitle;
+                return category;
             }
         } else {
             return secondPart;
