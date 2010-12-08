@@ -10,18 +10,21 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.util.Log;
+import android.view.View;
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.utils.MyPreferences;
+import ru.orangesoftware.financisto.utils.TransactionUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.ToggleButton;
+
+import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public class TransactionActivity extends AbstractTransactionActivity {
 	
@@ -29,6 +32,8 @@ public class TransactionActivity extends AbstractTransactionActivity {
 
 	private static final int MENU_TURN_GPS_ON = Menu.FIRST;
 	
+    private AutoCompleteTextView payeeText;
+    private SimpleCursorAdapter payeeAdapter;
 	private ToggleButton incomeExpenseButton;
 	private TextView differenceText; 
 	private boolean isUpdateBalanceMode = false;
@@ -67,6 +72,20 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		incomeExpenseButton.setChecked(false);		
 		//account
 		accountText = x.addListNode(layout, R.id.account, R.string.account, R.string.select_account);
+        //payee
+        payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
+        payeeText = new AutoCompleteTextView(this);
+        payeeText.setThreshold(1);
+        payeeText.setAdapter(payeeAdapter);
+        payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    payeeText.selectAll();
+                }
+            }
+        });
+        x.addEditNode(layout, R.string.payee, payeeText);
 		//amount
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
@@ -109,12 +128,14 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	protected void editTransaction(Transaction transaction) {
 		super.editTransaction(transaction);
 		selectAccount(transaction.fromAccountId, false);
+        payeeText.setText(transaction.payee);
 		amountInput.setAmount(transaction.fromAmount);
 		incomeExpenseButton.setChecked(transaction.fromAmount >= 0);		
 	}
 
 	private void updateTransactionFromUI() {
 		updateTransactionFromUI(transaction);
+        transaction.payee = text(payeeText);
 		transaction.fromAccountId = selectedAccountId;
 		long amount = amountInput.getAmount();
 		if (isUpdateBalanceMode) {
@@ -142,4 +163,10 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		return false;
 	}
 
+    @Override
+    protected void onDestroy() {
+        Log.d("Financisto", "TransactionActivity.onDestroy");
+        payeeAdapter.changeCursor(null);
+        super.onDestroy();
+    }
 }

@@ -48,7 +48,7 @@
                 <CheckBoxPreference android:defaultValue="true" android:key="ntsl_use_fixed_layout"
                                     android:title="@string/use_fixed_layout"
                                     android:summary="@string/use_fixed_layout_summary"/>
-                <CheckBoxPreference android:key="ntsl_show_payee"
+                <!--CheckBoxPreference android:key="ntsl_show_payee"
                                     android:title="@string/show_payee"
                                     android:summary="@string/show_payee_summary"
                                     android:defaultValue="true"/>
@@ -57,7 +57,7 @@
                                 android:summary="@string/show_payee_order_summary"
                                 android:entries="@array/sort_order_entities"
                                 android:entryValues="@array/sort_order_entities"
-                                android:dependency="ntsl_show_payee" android:defaultValue="1"/>
+                                android:dependency="ntsl_show_payee" android:defaultValue="1"/-->
                 <CheckBoxPreference android:key="ntsl_show_location"
                                     android:title="@string/show_location"
                                     android:summary="@string/show_location_summary"

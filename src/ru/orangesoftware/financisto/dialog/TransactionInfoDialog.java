@@ -18,10 +18,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.AbstractListActivity;
 import ru.orangesoftware.financisto.db.MyEntityManager;
@@ -57,12 +54,7 @@ public class TransactionInfoDialog {
 
 	public void show(long transactionId) {
 		final AbstractListActivity parentActivity = this.parentActivity;
-//		boolean isShowLocation = MyPreferences.isShowLocation(blotterActivity);
-//		boolean isShowNote = MyPreferences.isShowNote(blotterActivity);
-//		boolean isShowProject = MyPreferences.isShowProject(blotterActivity);
-
 		View v = layoutInflater.inflate(R.layout.transaction_info, null);
-		
 		LinearLayout layout = (LinearLayout)v.findViewById(R.id.list);
 		TransactionInfo ti = em.getTransactionInfo(transactionId);
 		if (ti == null) {
@@ -70,23 +62,34 @@ public class TransactionInfoDialog {
 			t.show();
 			return;
 		}
+
+        TransactionStatus status = TransactionStatus.valueOf(ti.status);
+        View titleView = layoutInflater.inflate(R.layout.transaction_info_title, null);
+        TextView titleLabel = (TextView)titleView.findViewById(R.id.label);
+        TextView titleData = (TextView)titleView.findViewById(R.id.data);
+        ImageView titleIcon = (ImageView)titleView.findViewById(R.id.icon);
 		if (ti.isTemplate()) {
-			add(layout, R.string.template_name, ti.templateName);
+            titleLabel.setText(ti.templateName);
 		} else {
 			if (ti.isSchedule() && ti.recurrence != null) {
 				Recurrence r = Recurrence.parse(ti.recurrence);
-				add(layout, R.string.recur, r.toInfoString(parentActivity));								
+                titleLabel.setText(r.toInfoString(parentActivity));
 			} else {
-				add(layout, R.string.date, DateUtils.formatDateTime(parentActivity, ti.dateTime, 
+                int titleId = ti.toAccount == null ? R.string.transaction : R.string.transfer;
+                titleLabel.setText(titleId);
+				add(layout, R.string.date, DateUtils.formatDateTime(parentActivity, ti.dateTime,
 						DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_SHOW_YEAR),
 						ti.attachedPicture);				
 			}
 		}
-		TransactionStatus status = TransactionStatus.valueOf(ti.status);
-		add(layout, R.string.transaction_status, parentActivity.getString(status.titleId), status);
+        titleData.setText(parentActivity.getString(status.titleId));
+        titleIcon.setImageResource(status.iconId);
 		if (ti.toAccount == null) {
 			AccountType formAccountType = AccountType.valueOf(ti.fromAccount.type);
 			add(layout, R.string.account, ti.fromAccount.title, formAccountType);
+            if (isNotEmpty(ti.payee)) {
+                add(layout, R.string.payee, ti.payee);
+            }
 			add(layout, R.string.amount, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
 		} else {
 			AccountType fromAccountType = AccountType.valueOf(ti.fromAccount.type);
@@ -105,36 +108,24 @@ public class TransactionInfoDialog {
             }
 		}
 
-        if (isNotEmpty(ti.payee)) {
-            add(layout, R.string.payee, ti.payee);
+        Project project = ti.project;
+        if (project != null && project.id > 0) {
+            add(layout, R.string.project, project.title);
         }
 
-//		if (isShowProject) {
-			Project project = ti.project;
-			if (project != null && project.id > 0) {
-				add(layout, R.string.project, project.title);
-			}
-//		}
-//		if (isShowNote) {
-			if (!Utils.isEmpty(ti.note)) {
-				add(layout, R.string.note, ti.note);
-			}
-//		}
-//		if (isShowLocation) {
-			MyLocation location = ti.location;
-			String locationName;
-			if (location != null && location.id > 0) {
-				locationName = location.name+(location.resolvedAddress != null ? " ("+location.resolvedAddress+")" : "");
-				add(layout, R.string.location, locationName);
-			}/* else {
-				locationName = Utils.locationToText(ti.provider, ti.latitude, ti.longitude, ti.accuracy != null ? ti.accuracy : 0, null);
-			}*/			
-//		}
-		
+        if (!Utils.isEmpty(ti.note)) {
+            add(layout, R.string.note, ti.note);
+        }
+
+        MyLocation location = ti.location;
+        String locationName;
+        if (location != null && location.id > 0) {
+            locationName = location.name+(location.resolvedAddress != null ? " ("+location.resolvedAddress+")" : "");
+            add(layout, R.string.location, locationName);
+        }
+
 		final Dialog d = new AlertDialog.Builder(parentActivity)
-			.setTitle(ti.toAccount == null 
-					? (ti.isTemplate() ? R.string.transaction_template : (ti.isSchedule() ? R.string.transaction_schedule : R.string.transaction)) 
-					: (ti.isTemplate() ? R.string.transfer_template : (ti.isSchedule() ? R.string.transfer_schedule : R.string.transfer)))			
+			.setCustomTitle(titleView)
 			.setView(v)
 			.create();
 		d.setCanceledOnTouchOutside(true);
@@ -159,12 +150,7 @@ public class TransactionInfoDialog {
 		d.show();
 	}
 
-	private void add(LinearLayout layout, int labelId, String data, TransactionStatus transactionStatus) {		
-		inflater.new Builder(layout, R.layout.select_entry_simple_icon)
-			.withIcon(transactionStatus.iconId).withLabel(labelId).withData(data).create();
-	}
-
-	private void add(LinearLayout layout, int labelId, String data, AccountType accountType) {		
+	private void add(LinearLayout layout, int labelId, String data, AccountType accountType) {
 		inflater.new Builder(layout, R.layout.select_entry_simple_icon)
 			.withIcon(accountType.iconId).withLabel(labelId).withData(data).create();
 	}

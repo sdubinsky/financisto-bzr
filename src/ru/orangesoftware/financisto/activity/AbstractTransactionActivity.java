@@ -91,7 +91,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected Button dateText;
 	protected Button timeText;
 	
-    protected AutoCompleteTextView payeeText;
     protected EditText noteText;
 	protected TextView recurText;	
 	protected TextView notificationText;	
@@ -120,7 +119,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected boolean isRememberLastCategory;
 	protected boolean isRememberLastLocation;
 	protected boolean isRememberLastProject;
-    protected boolean isShowPayee;
 	protected boolean isShowLocation;
 	protected boolean isShowNote;
 	protected boolean isShowProject;
@@ -154,7 +152,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		isRememberLastCategory = isRememberLastAccount && MyPreferences.isRememberCategory(this);
 		isRememberLastLocation = isRememberLastCategory && MyPreferences.isRememberLocation(this);
 		isRememberLastProject = isRememberLastCategory && MyPreferences.isRememberProject(this);
-        isShowPayee = MyPreferences.isShowPayee(this);
 		isShowLocation = MyPreferences.isShowLocation(this);
 		isShowNote = MyPreferences.isShowNote(this);
 		isShowProject = MyPreferences.isShowProject(this);
@@ -357,6 +354,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 
 	protected void selectCurrentLocation(boolean forceUseGps) {
+        setCurrentLocation = true;
+        selectedLocationId = 0;
+
 		if (transaction.isTemplateLike()) {
 			if (isShowLocation) {
 				locationText.setText(R.string.current_location);
@@ -381,8 +381,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
         		locationText.setText(R.string.no_fix);
         	}
         }
-        setCurrentLocation = true;
-        selectedLocationId = 0;
 	}
 
 	private void createAttributesLayout(LinearLayout layout) {
@@ -509,29 +507,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private final LocationListener gpsLocationListener = new DefaultLocationListener();
 
 	protected void createCommonNodes(LinearLayout layout) {
-        int payeeOrder = MyPreferences.getPayeeOrder(this);
 		int locationOrder = MyPreferences.getLocationOrder(this);
 		int noteOrder = MyPreferences.getNoteOrder(this);
 		int projectOrder = MyPreferences.getProjectOrder(this);
 		for (int i=0; i<6; i++) {
-            if (i == payeeOrder) {
-                if (isShowPayee) {
-                    //payee
-                    SimpleCursorAdapter payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
-                    payeeText = new AutoCompleteTextView(this);
-                    payeeText.setThreshold(1);
-                    payeeText.setAdapter(payeeAdapter);
-                    payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                        @Override
-                        public void onFocusChange(View view, boolean hasFocus) {
-                            if (hasFocus) {
-                                payeeText.selectAll();
-                            }
-                        }
-                    });
-                    x.addEditNode(layout, R.string.payee, payeeText);
-                }
-            }
 			if (i == locationOrder) {
 				if (isShowLocation) {
 					//location
@@ -723,7 +702,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private void selectLocation(long locationId) {
 		if (locationId == 0) {
 			selectCurrentLocation(false);
-		} else {			
+		} else {
 			if (isShowLocation) {
 				if (Utils.moveCursor(locationCursor, "_id", locationId) != -1) {
 					MyLocation location = EntityManager.loadFromCursor(locationCursor,MyLocation.class);
@@ -860,9 +839,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		} else {
 			setLocation(transaction.provider, transaction.accuracy, transaction.latitude, transaction.longitude);
 		}
-        if (isShowPayee) {
-            payeeText.setText(transaction.payee);
-        }
 		if (isShowNote) {
 			noteText.setText(transaction.note);
 		}
@@ -920,9 +896,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			transaction.latitude = lastFix != null ? lastFix.getLatitude() : 0;
 			transaction.longitude = lastFix != null ? lastFix.getLongitude() : 0;
 		}
-        if (isShowPayee) {
-            transaction.payee = text(payeeText);
-        }
 		if (isShowNote) {
 			transaction.note = text(noteText);
 		}
