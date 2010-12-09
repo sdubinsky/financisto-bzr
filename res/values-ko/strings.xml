@@ -30,7 +30,7 @@
     <string name="add_currency">화폐 단위 더하기</string>
     <string name="opening_amount">시작 금액</string>
     <string name="limit_amount">제한 금액</string>
-	<string name="amount_in">금액 &lt;b&gt;%s %s&lt;/b&gt;</string>
+	<string name="amount_in" formatted="false">금액 &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">보기</string>
 	<string name="edit">편집</string>
 	<string name="delete">삭제</string>
@@ -412,11 +412,11 @@
 	<string name="new_scheduled_transfer_text">예약된 이체가 수행되었습니다</string>					
 	<string name="new_scheduled_transaction_title">거래 예약</string>
 	<string name="new_scheduled_transaction_text">거래 예약이 더해졌습니다</string>
-	<string name="new_scheduled_transaction_notification">%s(이)가 처리되었습니다 %s %s</string>					
+	<string name="new_scheduled_transaction_notification" formatted="false">%s(이)가 처리되었습니다 %s %s</string>
 	<string name="new_scheduled_transaction_debit">직불 카드</string>					
 	<string name="new_scheduled_transaction_credit">신용 카드</string>					
-	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s)(이)가 %s에서 %s(으)로 이체 되었습니다</string>					
-	<string name="new_scheduled_transfer_notification_same_currency">%s(이)가 %s에서 %s(으)로 이체 되었습니다</string>		
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s)(이)가 %s에서 %s(으)로 이체 되었습니다</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s(이)가 %s에서 %s(으)로 이체 되었습니다</string>
 	<string name="notification">알림</string>		
 	<string name="notification_options_on">켜기</string>	
 	<string name="notification_options_off">끄기</string>					
@@ -431,7 +431,7 @@
 	<string name="notification_options_led_yellow">노란색</string>					
 	<string name="notification_options_led_red">빨간색</string>					
 	<string name="notification_options_led_pink">핑크색</string>	
-	<string name="notification_options_text">소리:%s 진동:%s 불빛:%s</string>	
+	<string name="notification_options_text" formatted="false">소리:%s 진동:%s 불빛:%s</string>
 	<string name="notification_options_custom">사용자 지정</string>	
 	<string name="notification_options_default">기본값</string>
 	<string name="notification_sound">벨소리</string>

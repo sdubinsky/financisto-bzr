@@ -31,7 +31,7 @@
     <string name="add_currency">Währung hinzufügen</string>
     <string name="opening_amount">Aktuelles Guthaben</string>
     <string name="limit_amount">Kontolimit</string>
-    <string name="amount_in">Betrag in &lt;b&gt;%s %s&lt;/b&gt;</string>
+    <string name="amount_in" formatted="false">Betrag in &lt;b&gt;%s %s&lt;/b&gt;</string>
     <string name="view">Anzeigen</string>
     <string name="edit">Bearbeiten</string>
     <string name="delete">Löschen</string>
@@ -510,11 +510,11 @@
     <string name="new_scheduled_transfer_text">Terminierter Transfer wurde erstellt</string>                    
     <string name="new_scheduled_transaction_title">Terminierte Transaktion</string>
     <string name="new_scheduled_transaction_text">Terminierte Transaktion wurde hinzugefügt</string>
-    <string name="new_scheduled_transaction_notification">%s wurde %s %s</string>                    
+    <string name="new_scheduled_transaction_notification" formatted="false">%s wurde %s %s</string>
     <string name="new_scheduled_transaction_debit">belastet</string>                    
     <string name="new_scheduled_transaction_credit">gutgeschrieben</string>                    
-    <string name="new_scheduled_transfer_notification_differ_currency">%s(%s) wurde transferiert von  %s nach %s</string>                    
-    <string name="new_scheduled_transfer_notification_same_currency">%s wurde transferiert von  %s nach %s</string>        
+    <string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) wurde transferiert von  %s nach %s</string>
+    <string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s wurde transferiert von  %s nach %s</string>
     
     <string name="notification">Mitteilung</string>        
     <string name="notification_options_on">An</string>    
@@ -532,7 +532,7 @@
     <string name="notification_options_led_red">Rot</string>                    
     <string name="notification_options_led_pink">Pink</string>    
     
-    <string name="notification_options_text">Sound:%s Vibration:%s Led:%s</string>    
+    <string name="notification_options_text" formatted="false">Sound:%s Vibration:%s Led:%s</string>
     <string name="notification_options_custom">Benutzerdefiniert</string>    
     <string name="notification_options_default">Standard</string>
     <string name="notification_sound">klingelton</string>
@@ -599,7 +599,7 @@
     <string name="mass_operations_reconcile">Alle beigelegt</string>		
     <string name="mass_operations_delete">Alle löschen</string>		
     <string name="proceed">Fortfahren</string>	
-    <string name="apply_mass_op">\'%s\' auf %d Transaktion(en) anwenden?</string>		
+    <string name="apply_mass_op" formatted="false">\'%s\' auf %d Transaktion(en) anwenden?</string>
     <string name="apply_mass_op_zero_count">Keine Transaktion ausgewählt</string>		
     <string name="entities">Instanzen</string>
     

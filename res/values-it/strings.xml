@@ -29,7 +29,7 @@
     <string name="add_currency">Aggiungi valuta</string>
     <string name="opening_amount">Importo iniziale</string>
     <string name="limit_amount">Importo limite</string>
-	<string name="amount_in">Importo in &lt;b&gt;%s %s&lt;/b&gt;</string>
+	<string name="amount_in" formatted="false">Importo in &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">Visualizza</string>
 	<string name="edit">Modifica</string>
 	<string name="delete">Elimina</string>
@@ -411,11 +411,11 @@
 	<string name="new_scheduled_transfer_text">Trasferimento programmato eseguito</string>					
 	<string name="new_scheduled_transaction_title">Transazione programmata</string>
 	<string name="new_scheduled_transaction_text">Transazione programmata aggiunta</string>
-	<string name="new_scheduled_transaction_notification">%s è stato %s %s</string>					
+	<string name="new_scheduled_transaction_notification" formatted="false">%s è stato %s %s</string>
 	<string name="new_scheduled_transaction_debit">addebitato su</string>					
 	<string name="new_scheduled_transaction_credit">accreditato su</string>					
-	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) è stato trasferito da %s a %s</string>					
-	<string name="new_scheduled_transfer_notification_same_currency">%s è stato trasferito da %s a %s</string>		
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) è stato trasferito da %s a %s</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s è stato trasferito da %s a %s</string>
 	<string name="notification">Notifiche</string>		
 	<string name="notification_options_on">Attivo</string>	
 	<string name="notification_options_off">Disattivo</string>					
@@ -430,7 +430,7 @@
 	<string name="notification_options_led_yellow">Giallo</string>					
 	<string name="notification_options_led_red">Rosso</string>					
 	<string name="notification_options_led_pink">Rosa</string>	
-	<string name="notification_options_text">Suono:%s Vibrazione:%s Led:%s</string>	
+	<string name="notification_options_text" formatted="false">Suono:%s Vibrazione:%s Led:%s</string>
 	<string name="notification_options_custom">Personalizzato</string>	
 	<string name="notification_options_default">Predefinito</string>
 	<string name="notification_sound">Suoneria</string>
@@ -492,7 +492,7 @@
 	<string name="mass_operations_reconcile">Riconcilia tutto</string>		
 	<string name="mass_operations_delete">Elimina tutto</string>		
 	<string name="proceed">Procedi</string>	
-	<string name="apply_mass_op">Applica \'%s\' su %d transazioni?</string>		
+	<string name="apply_mass_op" formatted="false">Applica \'%s\' su %d transazioni?</string>
 	<string name="apply_mass_op_zero_count">Nessuna transazione selezionata..</string>		
 	<string name="entities">Entità</string>
 	<string name="transaction_status_restored">Ripristinate</string>	

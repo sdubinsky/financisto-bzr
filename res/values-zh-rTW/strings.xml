@@ -29,7 +29,7 @@
     <string name="add_currency">新增貨幣</string>
     <string name="opening_amount">起始金額</string>
     <string name="limit_amount">額度</string>
-	<string name="amount_in">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
+	<string name="amount_in" formatted="false">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">檢視</string>
 	<string name="edit">編輯</string>
 	<string name="delete">刪除</string>
@@ -510,11 +510,11 @@
 	<string name="new_scheduled_transfer_text">您建立了一筆定期移轉</string>
 	<string name="new_scheduled_transaction_title">定期交易</string>
 	<string name="new_scheduled_transaction_text">您建立了一筆定期交易</string>
-	<string name="new_scheduled_transaction_notification">%s 已%s %s</string>
+	<string name="new_scheduled_transaction_notification" formatted="false">%s 已%s %s</string>
 	<string name="new_scheduled_transaction_debit">支付自</string>
 	<string name="new_scheduled_transaction_credit">存入</string>
-	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) 已從 %s 移轉至 %s</string>
-	<string name="new_scheduled_transfer_notification_same_currency">%s 已從 %s 移轉至 %s</string>
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) 已從 %s 移轉至 %s</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s 已從 %s 移轉至 %s</string>
 	<string name="notification">通知</string>
 	<string name="notification_options_on">開啟</string>
 	<string name="notification_options_off">關閉</string>
@@ -529,7 +529,7 @@
 	<string name="notification_options_led_yellow">黃色</string>
 	<string name="notification_options_led_red">紅色</string>
 	<string name="notification_options_led_pink">粉紅色</string>
-	<string name="notification_options_text">音效:%s 震動:%s LED:%s</string>	
+	<string name="notification_options_text" formatted="false">音效:%s 震動:%s LED:%s</string>
 	<string name="notification_options_custom">自訂</string>	
 	<string name="notification_options_default">預設值</string>
 	<string name="notification_sound">鈴聲</string>

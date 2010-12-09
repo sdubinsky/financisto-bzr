@@ -30,7 +30,7 @@
     <string name="add_currency">Добавить валюту</string>
     <string name="opening_amount">Начальный баланс</string>
     <string name="limit_amount">Лимит</string>
-	<string name="amount_in">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
+	<string name="amount_in" formatted="false">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">Просмотреть</string>
 	<string name="edit">Редактировать</string>
 	<string name="delete">Удалить</string>
@@ -412,11 +412,11 @@
 	<string name="new_scheduled_transfer_text">Был сделан запланированный перевод</string>					
 	<string name="new_scheduled_transaction_title">Запланированная транзакция</string>
 	<string name="new_scheduled_transaction_text">Была сделана запланированная транзакция</string>
-	<string name="new_scheduled_transaction_notification">%s было %s %s</string>					
+	<string name="new_scheduled_transaction_notification" formatted="false">%s было %s %s</string>
 	<string name="new_scheduled_transaction_debit">начислено на</string>					
 	<string name="new_scheduled_transaction_credit">списано с</string>					
-	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) было переведено с %s на %s</string>					
-	<string name="new_scheduled_transfer_notification_same_currency">%s было переведено с %s на %s</string>		
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) было переведено с %s на %s</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s было переведено с %s на %s</string>
 	<string name="notification">Нотификация</string>		
 	<string name="notification_options_on">Вкл</string>	
 	<string name="notification_options_off">Выкл</string>					
@@ -431,7 +431,7 @@
 	<string name="notification_options_led_yellow">Желтый</string>					
 	<string name="notification_options_led_red">Красный</string>					
 	<string name="notification_options_led_pink">Розовый</string>	
-	<string name="notification_options_text">Звук:%s Вибрация:%s Индикатор:%s</string>	
+	<string name="notification_options_text" formatted="false">Звук:%s Вибрация:%s Индикатор:%s</string>
 	<string name="notification_options_custom">Пользовательский</string>	
 	<string name="notification_options_default">По-умолчанию</string>
 	<string name="notification_sound">Мелодия</string>
@@ -491,7 +491,7 @@
 	<string name="mass_operations_reconcile">Выверить все</string>		
 	<string name="mass_operations_delete">Удалить все</string>		
 	<string name="proceed">Выполнить</string>	
-	<string name="apply_mass_op">Применить \'%s\' на %d транзакцию(й)?</string>		
+	<string name="apply_mass_op" formatted="false">Применить \'%s\' на %d транзакцию(й)?</string>
 	<string name="apply_mass_op_zero_count">Не выбрано ни одной транзакции..</string>		
 	<string name="entities">Сущности</string>
 	<string name="transaction_status_restored">Восстановлено</string>	

@@ -31,7 +31,7 @@
     <string name="add_currency">Incluir moeda</string>
     <string name="opening_amount">Saldo de abertura</string>
     <string name="limit_amount">Limite de saldo</string>
-	<string name="amount_in">Saldo em &lt;b&gt;%s %s&lt;/b&gt;</string>
+	<string name="amount_in" formatted="false">Saldo em &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">Visualizar</string>
 	<string name="edit">Editar</string>
 	<string name="delete">Apagar</string>
@@ -466,8 +466,7 @@
 	<string name="delete_template_confirm">Apagar modelo?</string>	
 	<string name="save_as_template">Salvar como modelo</string>	
 	<string name="save_as_template_success">Transação salva como modelo..</string>		
-	<string name="edit_templates">Editar modelos</string>	
-	<string name="scheduled_transactions">Agendado</string>	
+	<string name="scheduled_transactions">Agendado</string>
 	<string name="no_scheduled_transactions">Sem transações agendadas</string>	
 	<string name="recur_interval_geeky">Geeky</string>
 	<string name="recurrence_pattern">Padrão de recorrência</string>
@@ -505,11 +504,11 @@
 	<string name="new_scheduled_transfer_text">Agendamento de transferência adicionado</string>
 	<string name="new_scheduled_transaction_title">Transação agendada</string>
 	<string name="new_scheduled_transaction_text">Agendamento de transação adicionado</string>
-	<string name="new_scheduled_transaction_notification">%s foi %s %s</string>			
+	<string name="new_scheduled_transaction_notification" formatted="false">%s foi %s %s</string>
 	<string name="new_scheduled_transaction_debit">debitada para</string>					
 	<string name="new_scheduled_transaction_credit">creditada para</string>					
-	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) foi transferida da %s para %s</string>					
-	<string name="new_scheduled_transfer_notification_same_currency">%s foi transferida da %s para %s</string>
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) foi transferida da %s para %s</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s foi transferida da %s para %s</string>
 	<string name="notification">Notificação</string>		
 	<string name="notification_options_on">Ligado</string>	
 	<string name="notification_options_off">Desligado</string>					
@@ -524,7 +523,7 @@
 	<string name="notification_options_led_yellow">Amarelo</string>					
 	<string name="notification_options_led_red">Vermelho</string>					
 	<string name="notification_options_led_pink">Rosa</string>	
-	<string name="notification_options_text">Tocar:%s Vibrar:%s Piscar:%s</string>	
+	<string name="notification_options_text" formatted="false">Tocar:%s Vibrar:%s Piscar:%s</string>
 	<string name="notification_options_custom">Personalizar</string>	
 	<string name="notification_options_default">Padrão</string>
 	<string name="notification_sound">Som</string>

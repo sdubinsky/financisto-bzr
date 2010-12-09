@@ -30,7 +30,7 @@
     <string name="add_currency">Ajouter une devise</string>
     <string name="opening_amount">Montant initial</string>
     <string name="limit_amount">Montant limite</string>
-	<string name="amount_in">Montant en &lt;b&gt;%s %s&lt;/b&gt;</string>
+	<string name="amount_in" formatted="false">Montant en &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">Consulter</string>
 	<string name="edit">Modifier</string>
 	<string name="delete">Supprimer</string>
@@ -394,11 +394,11 @@
 	<string name="new_scheduled_transfer_text">Un virement planifié a été réalisé</string>					
 	<string name="new_scheduled_transaction_title">Opération planifiée</string>
 	<string name="new_scheduled_transaction_text">Une opération planifiée a été ajoutée</string>
-	<string name="new_scheduled_transaction_notification">%s a été %s %s</string>					
+	<string name="new_scheduled_transaction_notification" formatted="false">%s a été %s %s</string>
 	<string name="new_scheduled_transaction_debit">débité sur</string>					
 	<string name="new_scheduled_transaction_credit">crédité sur</string>					
-	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) a été transféré de %s vers %s</string>					
-	<string name="new_scheduled_transfer_notification_same_currency">%s a été transféré de %s vers %s</string>		
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) a été transféré de %s vers %s</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s a été transféré de %s vers %s</string>
 	<string name="notification">Notification</string>		
 	<string name="notification_options_on">Activé</string>	
 	<string name="notification_options_off">Désactivé</string>					
@@ -413,7 +413,7 @@
 	<string name="notification_options_led_yellow">Jaune</string>					
 	<string name="notification_options_led_red">Rouge</string>					
 	<string name="notification_options_led_pink">Rose</string>	
-	<string name="notification_options_text">Son : %s Vibration : %s Led : %s</string>	
+	<string name="notification_options_text" formatted="false">Son : %s Vibration : %s Led : %s</string>
 	<string name="notification_options_custom">Personnalisé</string>	
 	<string name="notification_options_default">Par défaut</string>
 	<string name="notification_sound">Sonnerie</string>

@@ -31,7 +31,7 @@
     <string name="add_currency">Tilføj valuta</string>
     <string name="opening_amount">Startsaldo</string>
     <string name="limit_amount">Begræns beløb</string>
-	<string name="amount_in">Beløb i &lt;b&gt;%s %s&lt;/b&gt;</string>
+	<string name="amount_in" formatted="false">Beløb i &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">Se</string>
 	<string name="edit">Rediger</string>
 	<string name="delete">Slet</string>
@@ -514,11 +514,11 @@
 	<string name="new_scheduled_transfer_text">Planlagt overførsel blev tilføjet</string>					
 	<string name="new_scheduled_transaction_title">Planlagt transaktion</string>
 	<string name="new_scheduled_transaction_text">Planlagt transaktion blev tilføjet</string>
-	<string name="new_scheduled_transaction_notification">%s har været %s %s</string>					
+	<string name="new_scheduled_transaction_notification" formatted="false">%s har været %s %s</string>
 	<string name="new_scheduled_transaction_debit">debiteret til</string>					
 	<string name="new_scheduled_transaction_credit">krediteret til</string>					
-	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) blev overført fra %s til %s</string>					
-	<string name="new_scheduled_transfer_notification_same_currency">%s blev overført fra %s til %s</string>		
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) blev overført fra %s til %s</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s blev overført fra %s til %s</string>
 	<string name="notification">Meddelelse</string>		
 	<string name="notification_options_on">Til</string>	
 	<string name="notification_options_off">Fra</string>					
@@ -533,7 +533,7 @@
 	<string name="notification_options_led_yellow">Gul</string>					
 	<string name="notification_options_led_red">Rød</string>					
 	<string name="notification_options_led_pink">Pink</string>	
-	<string name="notification_options_text">Lyd:%s Vibration:%s Led:%s</string>	
+	<string name="notification_options_text" formatted="false">Lyd:%s Vibration:%s Led:%s</string>
 	<string name="notification_options_custom">Brugerdefineret</string>	
 	<string name="notification_options_default">Standard</string>
 	<string name="notification_sound">Ringetone</string>
@@ -595,7 +595,7 @@
 	<string name="mass_operations_reconcile">Afstem alt</string>		
 	<string name="mass_operations_delete">Slet alt</string>		
 	<string name="proceed">Fortsæt</string>	
-	<string name="apply_mass_op">Påfør \'%s\' på %d transaktion(er)?</string>		
+	<string name="apply_mass_op" formatted="false">Påfør \'%s\' på %d transaktion(er)?</string>
 	<string name="apply_mass_op_zero_count">Ingen transaktioner valgt..</string>		
 	<string name="entities">Enheder</string>
 	<string name="transaction_status_restored">Genskabt</string>	

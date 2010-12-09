@@ -31,7 +31,7 @@
     <string name="add_currency">Add Currency</string>
     <string name="opening_amount">Opening amount</string>
     <string name="limit_amount">Limit amount</string>
-	<string name="amount_in">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
+	<string name="amount_in" formatted="false">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">View</string>
 	<string name="edit">Edit</string>
 	<string name="delete">Delete</string>
@@ -514,11 +514,11 @@
 	<string name="new_scheduled_transfer_text">Scheduled transfer has been made</string>					
 	<string name="new_scheduled_transaction_title">Scheduled transaction</string>
 	<string name="new_scheduled_transaction_text">Scheduled transaction has been added</string>
-	<string name="new_scheduled_transaction_notification">%s has been %s %s</string>					
+	<string name="new_scheduled_transaction_notification" formatted="false">%s has been %s %s</string>
 	<string name="new_scheduled_transaction_debit">debited to</string>					
 	<string name="new_scheduled_transaction_credit">credited to</string>					
-	<string name="new_scheduled_transfer_notification_differ_currency">%s(%s) has been transferred from %s to %s</string>					
-	<string name="new_scheduled_transfer_notification_same_currency">%s has been transferred from %s to %s</string>		
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) has been transferred from %s to %s</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s has been transferred from %s to %s</string>
 	<string name="notification">Notification</string>		
 	<string name="notification_options_on">On</string>	
 	<string name="notification_options_off">Off</string>					
@@ -533,7 +533,7 @@
 	<string name="notification_options_led_yellow">Yellow</string>					
 	<string name="notification_options_led_red">Red</string>					
 	<string name="notification_options_led_pink">Pink</string>	
-	<string name="notification_options_text">Sound:%s Vibration:%s Led:%s</string>	
+	<string name="notification_options_text" formatted="false">Sound:%s Vibration:%s Led:%s</string>
 	<string name="notification_options_custom">Custom</string>	
 	<string name="notification_options_default">Default</string>
 	<string name="notification_sound">Ringtone</string>
@@ -595,7 +595,7 @@
 	<string name="mass_operations_reconcile">Reconcile all</string>		
 	<string name="mass_operations_delete">Delete all</string>		
 	<string name="proceed">Proceed</string>	
-	<string name="apply_mass_op">Apply \'%s\' on %d transaction(s)?</string>		
+	<string name="apply_mass_op" formatted="false">Apply \'%s\' on %d transaction(s)?</string>
 	<string name="apply_mass_op_zero_count">No transactions selected..</string>		
 	<string name="entities">Entities</string>
 	<string name="transaction_status_restored">Restored</string>	

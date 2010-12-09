@@ -19,7 +19,7 @@
     <string name="add_currency">新增货币</string>
     <string name="opening_amount">起始金额</string>
     <string name="limit_amount">额度</string>
-    <string name="amount_in">金额 &lt;b>%s %s&lt;/b></string>
+    <string name="amount_in" formatted="false">金额 &lt;b>%s %s&lt;/b></string>
     <string name="view">查看</string>
     <string name="edit">编辑</string>
     <string name="delete">删除</string>
@@ -305,7 +305,6 @@
     <string name="delete_template_confirm">确定删除模板?</string>
     <string name="save_as_template">保存为样板</string>
     <string name="save_as_template_success">已将交易保存为样板</string>
-    <string name="edit_templates">编辑模板</string>
     <string name="scheduled_transactions">定期</string>
     <string name="no_scheduled_transactions">无定期交易</string>
     <string name="recur_interval_geeky">玩家描述</string>
@@ -344,11 +343,11 @@
     <string name="new_scheduled_transfer_text">您建立了一笔定期转账</string>
     <string name="new_scheduled_transaction_title">定期交易</string>
     <string name="new_scheduled_transaction_text">您建立了一笔定期交易</string>
-    <string name="new_scheduled_transaction_notification">%s 已%s %s</string>
+    <string name="new_scheduled_transaction_notification" formatted="false">%s 已%s %s</string>
     <string name="new_scheduled_transaction_debit">支付自</string>
     <string name="new_scheduled_transaction_credit">存入</string>
-    <string name="new_scheduled_transfer_notification_differ_currency">%s(%s) 已从 %s 转账至 %s</string>
-    <string name="new_scheduled_transfer_notification_same_currency">%s 已从 %s 转账至 %s</string>
+    <string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) 已从 %s 转账至 %s</string>
+    <string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s 已从 %s 转账至 %s</string>
     <string name="notification">通知</string>
     <string name="notification_options_on">开启</string>
     <string name="notification_options_off">关闭</string>
@@ -363,7 +362,7 @@
     <string name="notification_options_led_yellow">黄色</string>
     <string name="notification_options_led_red">红色</string>
     <string name="notification_options_led_pink">粉红</string>
-    <string name="notification_options_text">音效:%s 震动:%s LED:%s</string>
+    <string name="notification_options_text" formatted="false">音效:%s 震动:%s LED:%s</string>
     <string name="notification_options_custom">自定</string>
     <string name="notification_options_default">默认值</string>
     <string name="notification_sound">铃声</string>

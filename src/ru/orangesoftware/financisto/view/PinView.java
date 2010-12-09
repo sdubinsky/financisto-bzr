@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.view;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import android.os.Vibrator;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.utils.Base64Coder;
 import android.content.Context;
@@ -42,6 +43,7 @@ public class PinView implements OnClickListener {
 	private final View v;	
 	private final ViewSwitcher switcher;
 	private final MessageDigest digest;
+    private final Vibrator vibrator;
 	
 	private TextView result;
 	private String pin1;
@@ -69,7 +71,8 @@ public class PinView implements OnClickListener {
 			digest = MessageDigest.getInstance("SHA-1");
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
-		}				
+		}
+        this.vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 	
 	public View getView() {
@@ -80,7 +83,9 @@ public class PinView implements OnClickListener {
 	public void onClick(View v) {
 		Button b = (Button)v;
 		char c = b.getText().charAt(0);
-		String text = result.getText().toString();
+        if (vibrator != null) {
+            vibrator.vibrate(20);
+        }
 		switch (c) {
 		case 'O':
 			nextStep();
@@ -89,6 +94,7 @@ public class PinView implements OnClickListener {
 			result.setText("");
 			break;
 		default:
+            String text = result.getText().toString();
 			if (text.length() < 7) {
 				result.setText(text+String.valueOf(c));
 			}
@@ -147,5 +153,5 @@ public class PinView implements OnClickListener {
 		anim.setInterpolator(new CycleInterpolator(5));
 		return anim;
 	}
-	
+
 }
