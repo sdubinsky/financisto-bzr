@@ -10,13 +10,13 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
+import static ru.orangesoftware.financisto.adapter.BlotterListAdapter.generateTransactionText;
+
 import java.util.ArrayList;
 import java.util.Date;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
@@ -30,8 +30,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import static ru.orangesoftware.financisto.adapter.BlotterListAdapter.generateTransactionText;
 
 public class ScheduledListAdapter extends BaseAdapter {
 	

@@ -37,6 +37,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	private ToggleButton incomeExpenseButton;
 	private TextView differenceText; 
 	private boolean isUpdateBalanceMode = false;
+    private boolean isShowPayee = true;
 	private long currentBalance;
 	private Utils u;
 	
@@ -73,19 +74,22 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		//account
 		accountText = x.addListNode(layout, R.id.account, R.string.account, R.string.select_account);
         //payee
-        payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
-        payeeText = new AutoCompleteTextView(this);
-        payeeText.setThreshold(1);
-        payeeText.setAdapter(payeeAdapter);
-        payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    payeeText.selectAll();
+        isShowPayee = MyPreferences.isShowPayee(this);
+        if (isShowPayee) {
+            payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
+            payeeText = new AutoCompleteTextView(this);
+            payeeText.setThreshold(1);
+            payeeText.setAdapter(payeeAdapter);
+            payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean hasFocus) {
+                    if (hasFocus) {
+                        payeeText.selectAll();
+                    }
                 }
-            }
-        });
-        x.addEditNode(layout, R.string.payee, payeeText);
+            });
+            x.addEditNode(layout, R.string.payee, payeeText);
+        }
 		//amount
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
@@ -128,14 +132,18 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	protected void editTransaction(Transaction transaction) {
 		super.editTransaction(transaction);
 		selectAccount(transaction.fromAccountId, false);
-        payeeText.setText(transaction.payee);
+        if (isShowPayee) {
+            payeeText.setText(transaction.payee);
+        }
 		amountInput.setAmount(transaction.fromAmount);
 		incomeExpenseButton.setChecked(transaction.fromAmount >= 0);		
 	}
 
 	private void updateTransactionFromUI() {
 		updateTransactionFromUI(transaction);
-        transaction.payee = text(payeeText);
+        if (isShowPayee) {
+            transaction.payee = text(payeeText);
+        }
 		transaction.fromAccountId = selectedAccountId;
 		long amount = amountInput.getAmount();
 		if (isUpdateBalanceMode) {
@@ -166,7 +174,9 @@ public class TransactionActivity extends AbstractTransactionActivity {
     @Override
     protected void onDestroy() {
         Log.d("Financisto", "TransactionActivity.onDestroy");
-        payeeAdapter.changeCursor(null);
+        if (payeeAdapter != null) {
+            payeeAdapter.changeCursor(null);
+        }
         super.onDestroy();
     }
 }

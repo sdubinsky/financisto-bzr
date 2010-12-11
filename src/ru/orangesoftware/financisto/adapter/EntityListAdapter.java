@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.MyEntity;
-import ru.orangesoftware.financisto.model.Project;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
