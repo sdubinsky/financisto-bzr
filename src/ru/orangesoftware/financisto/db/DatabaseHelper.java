@@ -65,124 +65,71 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	public static final String V_REPORT_PROJECTS = "v_report_project";
     public static final String V_REPORT_PAYEES = "v_report_payee";
 	
-	public static class TransactionColumns {				
+	public static enum TransactionColumns {
+        _id,
+        from_account_id,
+        to_account_id,
+        category_id,
+        project_id,
+        payee_id,
+        note,
+        from_amount,
+        to_amount,
+        datetime,
+        location_id,
+        provider,
+        accuracy,
+        latitude,
+        longitude,
+        is_template,
+        template_name,
+        recurrence,
+        notification_options,
+        status,
+        attached_picture,
+        is_ccard_payment,
+        last_recurrence;
 		
-		public static final String ID = "_id";
-		public static final String CATEGORY_ID = "category_id";
-		public static final String PROJECT_ID = "project_id";
-		public static final String DATETIME = "datetime";
-		public static final String PROVIDER = "provider";
-		public static final String ACCURACY = "accuracy";
-		public static final String LATITUDE = "latitude";
-		public static final String LONGITUDE = "longitude";		
-		public static final String FROM_ACCOUNT_ID = "from_account_id";		
-		public static final String TO_ACCOUNT_ID = "to_account_id";
-        public static final String PAYEE_ID = "payee_id";
-        public static final String PAYEE = "payee";
-		public static final String NOTE = "note";
-		public static final String FROM_AMOUNT = "from_amount";
-		public static final String TO_AMOUNT = "to_amount";
-		public static final String LOCATION_ID = "location_id";
-		public static final String IS_TEMPLATE = "is_template";
-		public static final String TEMPLATE_NAME = "template_name";
-		public static final String RECURRENCE = "recurrence";
-		public static final String NOTIFICATION_OPTIONS = "notification_options";		
-		public static final String STATUS = "status";		
-		public static final String ATTACHED_PICTURE = "attached_picture";
-		public static final String IS_CCARD_PAYMENT = "is_ccard_payment";
-		public static final String LAST_RECURRENCE = "last_recurrence";
-		
-		public static String[] NORMAL_PROJECTION = {
-			ID, 
-			FROM_ACCOUNT_ID, 
-			TO_ACCOUNT_ID,
-			CATEGORY_ID, 
-			PROJECT_ID,
-            PAYEE,
-			NOTE, 
-			FROM_AMOUNT, 
-			TO_AMOUNT,
-			DATETIME,
-			LOCATION_ID,
-			PROVIDER, 
-			ACCURACY, 
-			LATITUDE, 
-			LONGITUDE,
-			IS_TEMPLATE,
-			TEMPLATE_NAME,
-			RECURRENCE,
-			NOTIFICATION_OPTIONS,
-			STATUS,
-			ATTACHED_PICTURE,
-			IS_CCARD_PAYMENT,
-			LAST_RECURRENCE};
+		public static String[] NORMAL_PROJECTION = asStringArray(TransactionColumns.values());
 
-        public static class Indicies {
-			public static final int ID = 0;
-			public static final int FROM_ACCOUNT_ID = 1;
-			public static final int TO_ACCOUNT_ID = 2;		
-			public static final int CATEGORY_ID = 3;
-			public static final int PROJECT_ID = 4;
-            public static final int PAYEE = 5;
-			public static final int NOTE = 6;
-			public static final int FROM_AMOUNT = 7;
-			public static final int TO_AMOUNT = 8;
-			public static final int DATETIME = 9;
-			public static final int LOCATION_ID = 10;
-			public static final int PROVIDER = 11;
-			public static final int ACCURACY = 12;
-			public static final int LATITUDE = 13;
-			public static final int LONGITUDE = 14;
-			public static final int IS_TEMPLATE = 15;
-			public static final int TEMPLATE_NAME = 16;
-			public static final int RECURRENCE = 17;
-			public static final int NOTIFICATION_OPTIONS = 18;
-			public static final int STATUS = 19;
-			public static final int ATTACHED_PICTURE = 20;
-			public static final int IS_CCARD_PAYMENT = 21;
-			public static final int LAST_RECURRENCE = 22;
-		}
-		
-		private TransactionColumns() {}
 	}
 	
 	public static enum BlotterColumns {
-		_ID,
-		FROM_ACCOUNT_ID,
-		FROM_ACCOUNT_TITLE,
-		FROM_ACCOUNT_CURRENCY_ID,
-		TO_ACCOUNT_ID,
-		TO_ACCOUNT_TITLE,
-		TO_ACCOUNT_CURRENCY_ID,
-		CATEGORY_ID,
-		CATEGORY_TITLE,
-		CATEGORY_LEFT,
-		CATEGORY_RIGHT,
-		PROJECT_ID,
-		PROJECT,
-		LOCATION_ID,
-		LOCATION,
-        PAYEE_ID,
-        PAYEE,
-		NOTE,
-		FROM_AMOUNT,
-		TO_AMOUNT,
-		DATETIME,
-		IS_TEMPLATE,
-		TEMPLATE_NAME,
-		RECURRENCE,
-		NOTIFICATION_OPTIONS,
-		STATUS;
+        _id,
+        from_account_id,
+        from_account_title,
+        from_account_currency_id,
+        to_account_id,
+        to_account_title,
+        to_account_currency_id,
+        category_id,
+        category_title,
+        category_left,
+        category_right,
+        project_id,
+        project,
+        location_id,
+        location,
+        payee_id,
+        payee,
+		note,
+		from_amount,
+		to_amount,
+		datetime,
+		is_template,
+		template_name,
+		recurrence,
+		notification_options,
+		status;
 
 		public static final String[] NORMAL_PROJECTION = asStringArray(BlotterColumns.values());
 
         public static final String[] BALANCE_PROJECTION = {
-			FROM_ACCOUNT_CURRENCY_ID.name(),
-			"SUM("+FROM_AMOUNT+")"
+			from_account_currency_id.name(),
+			"SUM("+from_amount+")"
 		};
 
-		public static final String BALANCE_GROUPBY = "FROM_ACCOUNT_CURRENCY_ID";
-
+		public static final String BALANCE_GROUP_BY = "FROM_ACCOUNT_CURRENCY_ID";
 	}
 
     public static class AccountColumns {

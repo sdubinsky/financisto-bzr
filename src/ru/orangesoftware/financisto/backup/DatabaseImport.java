@@ -166,8 +166,8 @@ public class DatabaseImport {
 	}
 
 	private void recalculateAccountsBalances(long accountId) {
-		Cursor c = db.query(V_BLOTTER_FOR_ACCOUNT, new String[]{"SUM("+BlotterColumns.FROM_AMOUNT+")"}, 
-				BlotterColumns.FROM_ACCOUNT_ID+"=?", new String[]{String.valueOf(accountId)}, 
+		Cursor c = db.query(V_BLOTTER_FOR_ACCOUNT, new String[]{"SUM("+BlotterColumns.from_amount+")"},
+				BlotterColumns.from_account_id +"=?", new String[]{String.valueOf(accountId)},
 				null, null, null);
 		try {	
 			long amount = 0;

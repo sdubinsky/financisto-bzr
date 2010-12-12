@@ -89,8 +89,7 @@ public class LocationByPeriodReport extends Report2DChart {
 
 	@Override
 	protected void setColumnFilter() {
-		// TODO Auto-generated method stub
-		columnFilter = TransactionColumns.LOCATION_ID;
+		columnFilter = TransactionColumns.location_id.name();
 	}
 	
 	@Override

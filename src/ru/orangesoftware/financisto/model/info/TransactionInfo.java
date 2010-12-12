@@ -22,10 +22,7 @@ import javax.persistence.Transient;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.TransactionActivity;
 import ru.orangesoftware.financisto.activity.TransferActivity;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.MyLocation;
-import ru.orangesoftware.financisto.model.Project;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
@@ -62,8 +59,8 @@ public class TransactionInfo {
 	@Column(name = "datetime")
 	public long dateTime;
 	
-    @Column(name = "payee")
-    public String payee;
+    @JoinColumn(name = "payee_id", required = false)
+    public Payee payee;
 
 	@Column(name = "note")
 	public String note;

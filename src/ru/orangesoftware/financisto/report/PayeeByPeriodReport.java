@@ -57,7 +57,7 @@ public class PayeeByPeriodReport extends Report2DChart {
 
 	@Override
 	protected void setColumnFilter() {
-		columnFilter = TransactionColumns.PAYEE_ID;
+		columnFilter = TransactionColumns.payee_id.name();
 	}
 
 	@Override

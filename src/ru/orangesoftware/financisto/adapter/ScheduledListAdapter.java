@@ -140,7 +140,7 @@ public class ScheduledListAdapter extends BaseAdapter {
 			if (t.category.id > 0) {
 				category = t.category.title;
 			}
-            String payee = t.payee;
+            String payee = t.payee != null ? t.payee.title : null;
             String text = generateTransactionText(sb, payee, note, location, category);
             noteView.setText(text);
 			noteView.setTextColor(Color.WHITE);

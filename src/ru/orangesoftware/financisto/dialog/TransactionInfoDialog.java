@@ -87,8 +87,8 @@ public class TransactionInfoDialog {
 		if (ti.toAccount == null) {
 			AccountType formAccountType = AccountType.valueOf(ti.fromAccount.type);
 			add(layout, R.string.account, ti.fromAccount.title, formAccountType);
-            if (isNotEmpty(ti.payee)) {
-                add(layout, R.string.payee, ti.payee);
+            if (ti.payee != null) {
+                add(layout, R.string.payee, ti.payee.title);
             }
 			add(layout, R.string.amount, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
 		} else {

@@ -34,16 +34,16 @@ public class TransactionsListAdapter extends AbstractBlotterListAdapter {
 
 	@Override
 	public void bindView(GenericViewHolder v, Context context, Cursor cursor) {		
-		long toAccountId = cursor.getLong(BlotterColumns.TO_ACCOUNT_ID.ordinal());
-        String payee = cursor.getString(BlotterColumns.PAYEE.ordinal());
-		String note = cursor.getString(BlotterColumns.NOTE.ordinal());
-		long locationId = cursor.getLong(BlotterColumns.LOCATION_ID.ordinal());
+		long toAccountId = cursor.getLong(BlotterColumns.to_account_id.ordinal());
+        String payee = cursor.getString(BlotterColumns.payee.ordinal());
+		String note = cursor.getString(BlotterColumns.note.ordinal());
+		long locationId = cursor.getLong(BlotterColumns.location_id.ordinal());
         String location = "";
         if (locationId > 0) {
-            location = cursor.getString(BlotterColumns.LOCATION.ordinal());
+            location = cursor.getString(BlotterColumns.location.ordinal());
         }
-		String toAccount = cursor.getString(BlotterColumns.TO_ACCOUNT_TITLE.ordinal());
-		long fromAmount = cursor.getLong(BlotterColumns.FROM_AMOUNT.ordinal());
+		String toAccount = cursor.getString(BlotterColumns.to_account_title.ordinal());
+		long fromAmount = cursor.getLong(BlotterColumns.from_amount.ordinal());
         if (toAccountId > 0) {
 			if (fromAmount > 0) {
 				note = toAccount+" \u00BB";
@@ -56,15 +56,15 @@ public class TransactionsListAdapter extends AbstractBlotterListAdapter {
 			v.lineView.setTextColor(Color.WHITE);
 		}
 		
-		long categoryId = cursor.getLong(BlotterColumns.CATEGORY_ID.ordinal());
+		long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
         String category = "";
 		if (categoryId > 0) {
-            category = cursor.getString(BlotterColumns.CATEGORY_TITLE.ordinal());
+            category = cursor.getString(BlotterColumns.category_title.ordinal());
 		}
         String text = generateTransactionText(sb, payee, note, location, category);
         v.lineView.setText(text);
 
-		long currencyId = cursor.getLong(BlotterColumns.FROM_ACCOUNT_CURRENCY_ID.ordinal());
+		long currencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
 		Currency c = CurrencyCache.getCurrency(currencyId);
 		u.setAmountText(v.amountView, c, fromAmount, true);
 		if (fromAmount > 0) {
@@ -73,7 +73,7 @@ public class TransactionsListAdapter extends AbstractBlotterListAdapter {
 			v.iconView.setImageDrawable(icBlotterExpense);
 		}
 		
-		long date = cursor.getLong(BlotterColumns.DATETIME.ordinal());
+		long date = cursor.getLong(BlotterColumns.datetime.ordinal());
 		v.numberView.setText(DateUtils.formatDateTime(context, date, 
 				DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_ABBREV_MONTH));
 		if (date > System.currentTimeMillis()) {

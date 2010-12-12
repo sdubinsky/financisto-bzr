@@ -86,7 +86,7 @@ public class ProjectByPeriodReport extends Report2DChart {
 
 	@Override
 	protected void setColumnFilter() {
-		columnFilter = TransactionColumns.PROJECT_ID;
+		columnFilter = TransactionColumns.project_id.name();
 	}
 
 	@Override

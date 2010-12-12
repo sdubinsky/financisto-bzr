@@ -85,28 +85,28 @@ public class CSVExport extends Export {
 	}
 
 	private void writeLine(Csv.Writer w, Cursor cursor, HashMap<Long, Category> categoriesMap, StringBuilder sb) {
-		long date = cursor.getLong(BlotterColumns.DATETIME.ordinal());
+		long date = cursor.getLong(BlotterColumns.datetime.ordinal());
 		Date dt = new Date(date);
-		long categoryId = cursor.getLong(BlotterColumns.CATEGORY_ID.ordinal());
+		long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
 		Category category = getCategoryById(categoriesMap, categoryId);
-		long toAccountId = cursor.getLong(BlotterColumns.TO_ACCOUNT_ID.ordinal());
-		String project = cursor.getString(BlotterColumns.PROJECT.ordinal());
+		long toAccountId = cursor.getLong(BlotterColumns.to_account_id.ordinal());
+		String project = cursor.getString(BlotterColumns.project.ordinal());
 		if (toAccountId > 0) {
-			String fromAccountTitle = cursor.getString(BlotterColumns.FROM_ACCOUNT_TITLE.ordinal());
-			String toAccountTitle = cursor.getString(BlotterColumns.TO_ACCOUNT_TITLE.ordinal());
-			long fromCurrencyId = cursor.getLong(BlotterColumns.FROM_ACCOUNT_CURRENCY_ID.ordinal());
-			long toCurrencyId = cursor.getLong(BlotterColumns.TO_ACCOUNT_CURRENCY_ID.ordinal());
-			long fromAmount = cursor.getLong(BlotterColumns.FROM_AMOUNT.ordinal());
-			long toAmount = cursor.getLong(BlotterColumns.TO_AMOUNT.ordinal());
-			String note = cursor.getString(BlotterColumns.NOTE.ordinal());
+			String fromAccountTitle = cursor.getString(BlotterColumns.from_account_title.ordinal());
+			String toAccountTitle = cursor.getString(BlotterColumns.to_account_title.ordinal());
+			long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
+			long toCurrencyId = cursor.getLong(BlotterColumns.to_account_currency_id.ordinal());
+			long fromAmount = cursor.getLong(BlotterColumns.from_amount.ordinal());
+			long toAmount = cursor.getLong(BlotterColumns.to_amount.ordinal());
+			String note = cursor.getString(BlotterColumns.note.ordinal());
 			writeLine(w, dt, fromAccountTitle, fromAmount, fromCurrencyId, category, "Transfer Out", project, note);
 			writeLine(w, dt, toAccountTitle, toAmount, toCurrencyId, category, "Transfer In", project, note);
 		} else {
-			String fromAccountTitle = cursor.getString(BlotterColumns.FROM_ACCOUNT_TITLE.ordinal());
-			String note = cursor.getString(BlotterColumns.NOTE.ordinal());
-			String location = cursor.getString(BlotterColumns.LOCATION.ordinal());
-			long fromCurrencyId = cursor.getLong(BlotterColumns.FROM_ACCOUNT_CURRENCY_ID.ordinal());
-			long amount = cursor.getLong(BlotterColumns.FROM_AMOUNT.ordinal());
+			String fromAccountTitle = cursor.getString(BlotterColumns.from_account_title.ordinal());
+			String note = cursor.getString(BlotterColumns.note.ordinal());
+			String location = cursor.getString(BlotterColumns.location.ordinal());
+			long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
+			long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
 			writeLine(w, dt, fromAccountTitle, amount, fromCurrencyId, category, location, project, note);
 		}
 	}

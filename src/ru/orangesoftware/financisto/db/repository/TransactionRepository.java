@@ -57,7 +57,7 @@ public class TransactionRepository {
 	
 	public Transaction getTransaction(long id) {
 		Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-				TransactionColumns.ID+"=?", new String[]{String.valueOf(id)}, 
+				TransactionColumns._id +"=?", new String[]{String.valueOf(id)},
 				null, null, null);
 		try {
 			if (c.moveToFirst()) {
@@ -106,7 +106,7 @@ public class TransactionRepository {
 
 	public Cursor getBlotter(String where) {
 		return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION, where, null, null, null, 
-				BlotterColumns.DATETIME+" DESC");
+				BlotterColumns.datetime+" DESC");
 	}
 
 	/**
@@ -118,17 +118,17 @@ public class TransactionRepository {
 	 */
 	public Cursor getAllExpenses(String accountId, String start, String end) {
 		// query
-		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+"<? AND "+
-					   	   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
+		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +"<? AND "+
+					   	   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
 		
-		String whereTo = TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+"<? AND "+
-		   				 TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
+		String whereTo = TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +"<? AND "+
+		   				 TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereFrom, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+					   whereFrom, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.datetime.name());
 			
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereTo, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+					   whereTo, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.datetime.name());
 			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
@@ -146,19 +146,19 @@ public class TransactionRepository {
 	 */
 	public Cursor getCredits(String accountId, String start, String end) {
 		// query
-		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
-					   	   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-					       TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +">? AND "+
+					   	   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
+					       TransactionColumns.is_ccard_payment +"=?";
 		
-		String whereTo = TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
-						 TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-						 TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereTo = TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +">? AND "+
+						 TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
+						 TransactionColumns.is_ccard_payment +"=?";
 		
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereFrom, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+					   whereFrom, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.datetime.name());
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereTo, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+					   whereTo, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.datetime.name());
 			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
@@ -175,19 +175,19 @@ public class TransactionRepository {
 	 */
 	public Cursor getPayments(String accountId, String start, String end) {
 		// query direct payments
-		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
-						   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-						   TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +">? AND "+
+						   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
+						   TransactionColumns.is_ccard_payment +"=?";
 		
-		String whereTo =  TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
-						  TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-						  TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereTo =  TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +">? AND "+
+						  TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
+						  TransactionColumns.is_ccard_payment +"=?";
 		
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   	whereFrom, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+					   	whereFrom, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.datetime.name());
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-						whereTo, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+						whereTo, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.datetime.name());
 			Cursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
@@ -204,11 +204,11 @@ public class TransactionRepository {
      */
     public Cursor getAllTransactions(String accountId, String start, String end) {
         // query
-        String where = "("+TransactionColumns.FROM_ACCOUNT_ID+"=? OR "+TransactionColumns.TO_ACCOUNT_ID+"=?) AND "+
-                       TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";        
+        String where = "("+TransactionColumns.from_account_id +"=? OR "+TransactionColumns.to_account_id +"=?) AND "+
+                       TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
         try {
             Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-                       where, new String[]{accountId, accountId, start, end}, null, null, TransactionColumns.DATETIME);
+                       where, new String[]{accountId, accountId, start, end}, null, null, TransactionColumns.datetime.name());
             return c;
         } catch(SQLiteException e) {
             return null;
@@ -225,7 +225,7 @@ public class TransactionRepository {
 	public Total[] getTransactionsBalance(WhereFilter filter) {
 		Cursor c = db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.BALANCE_PROJECTION, 
 				filter.getSelection(), filter.getSelectionArgs(), 
-				BlotterColumns.BALANCE_GROUPBY, null, null);
+				BlotterColumns.BALANCE_GROUP_BY, null, null);
 		try {			
 			int count = c.getCount();
 			List<Total> totals = new ArrayList<Total>(count);
@@ -380,7 +380,7 @@ public class TransactionRepository {
 				updateLocationCount(t.locationId, 1);
 			}
 		}
-		db.update(TRANSACTION_TABLE, t.toValues(), TransactionColumns.ID+"=?", 
+		db.update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
 				new String[]{String.valueOf(t.id)});		
 	}
 	
@@ -404,7 +404,7 @@ public class TransactionRepository {
 			}
 			String[] sid = new String[]{String.valueOf(id)};
 			db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
-			db.delete(TRANSACTION_TABLE, TransactionColumns.ID+"=?", sid);
+			db.delete(TRANSACTION_TABLE, TransactionColumns._id +"=?", sid);
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();			
@@ -412,12 +412,12 @@ public class TransactionRepository {
 	}
 	
 	public void clearAll(long[] ids) {
-		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.STATUS+"='"+TransactionStatus.CL+"'";
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.CL+"'";
 		runInTransaction(sql, ids);
 	}
 
 	public void reconcileAll(long[] ids) {
-		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.STATUS+"='"+TransactionStatus.RC+"'";
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.RC+"'";
 		runInTransaction(sql, ids);
 	}
 
@@ -447,9 +447,9 @@ public class TransactionRepository {
 	private String createSql(String updateSql, long[] ids, int x, int y) {
 		StringBuilder sb = new StringBuilder(updateSql)
 								.append(" WHERE ")
-								.append(TransactionColumns.IS_TEMPLATE)
+								.append(TransactionColumns.is_template)
 								.append("=0 AND ")
-								.append(TransactionColumns.ID)
+								.append(TransactionColumns._id)
 								.append(" IN (");
 		for (int i=x; i<y; i++) {
 			if (i > x) {

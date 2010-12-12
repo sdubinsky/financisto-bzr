@@ -189,8 +189,8 @@ public class ReportDataByPeriod {
 			String where = getWhereClause(filterColumn, filterId, accounts);
 			String[] pars = getWherePars(startDate, periodLength, filterId, accounts);
 			// query data
-			cursor = db.query(TRANSACTION_TABLE, new String[]{filterColumn, TransactionColumns.FROM_AMOUNT, TransactionColumns.DATETIME, TransactionColumns.DATETIME}, 
-					   where, pars, null, null, TransactionColumns.DATETIME);
+			cursor = db.query(TRANSACTION_TABLE, new String[]{filterColumn, TransactionColumns.from_amount.name(), TransactionColumns.datetime.name(), TransactionColumns.datetime.name()},
+					   where, pars, null, null, TransactionColumns.datetime.name());
 			// extract data and fill statistics
 			extractData(cursor); 
 
@@ -201,7 +201,7 @@ public class ReportDataByPeriod {
 
 	/**
 	 * Build a where clause based on the following format:
-	 * <filteredColumn>=? and (DATETIME>=? and DATETIME<=?) and (FROM_ACCOUNT_ID=? or FROM_ACCOUNT_ID=? ...)
+	 * <filteredColumn>=? and (datetime>=? and datetime<=?) and (from_account_id=? or from_account_id=? ...)
 	 * 
 	 * @param filterColumn The report filter (account, category, location or project)
 	 * @param accounts List of account ids for which the reference currency is the report reference currency.
@@ -209,7 +209,7 @@ public class ReportDataByPeriod {
 	private String getWhereClause(String filterColumn, int[] filterId, int[] accounts) {
 		StringBuffer accountsWhere = new StringBuffer();
 		// no templates and scheduled transactions
-		accountsWhere.append(TransactionColumns.IS_TEMPLATE+"=0");
+		accountsWhere.append(TransactionColumns.is_template +"=0");
 		
 		// report filtering (account, category, location or project)
 		accountsWhere.append(" and (");
@@ -222,7 +222,7 @@ public class ReportDataByPeriod {
 		accountsWhere.append(")");
 		
 		// period
-		accountsWhere.append(" and ("+TransactionColumns.DATETIME+">=? and "+TransactionColumns.DATETIME+"<=?)");
+		accountsWhere.append(" and ("+TransactionColumns.datetime +">=? and "+TransactionColumns.datetime +"<=?)");
 		
 		// list of accounts for which the reference currency is the report reference currency
 		if(accounts.length>0)
@@ -231,7 +231,7 @@ public class ReportDataByPeriod {
 		{
 			if(i!=0)
 				accountsWhere.append(" or ");
-			accountsWhere.append(TransactionColumns.FROM_ACCOUNT_ID+"=? ");
+			accountsWhere.append(TransactionColumns.from_account_id +"=? ");
 		}
 		if(accounts.length>0)
 			accountsWhere.append(")");
@@ -240,7 +240,7 @@ public class ReportDataByPeriod {
 	
 	/**
 	 * Build the parameters of the where clause based on the following format:
-	 * <filteredColumn>=? and (DATETIME>=? and DATETIME<=?) and (FROM_ACCOUNT_ID=? or FROM_ACCOUNT_ID=? ...)
+	 * <filteredColumn>=? and (datetime>=? and datetime<=?) and (from_account_id=? or from_account_id=? ...)
 	 * 
 	 * @param startDate The first month of the report period
 	 * @param periodLength The number of months of the report period
@@ -315,7 +315,7 @@ public class ReportDataByPeriod {
  					stepMonth = true;
 					break;
 				}
- 				result += c.getDouble(c.getColumnIndex(TransactionColumns.FROM_AMOUNT));
+ 				result += c.getDouble(c.getColumnIndex(TransactionColumns.from_amount.name()));
 			} while(c.moveToNext());
 			
 			// If step month, get back to transaction of the new month in cursor.
@@ -380,7 +380,7 @@ public class ReportDataByPeriod {
 	 */
 	private Calendar getMonthInTransaction(Cursor c) {
 		Calendar month = new GregorianCalendar();
-		month.setTimeInMillis(c.getLong(c.getColumnIndex(TransactionColumns.DATETIME)));
+		month.setTimeInMillis(c.getLong(c.getColumnIndex(TransactionColumns.datetime.name())));
 		month.set(month.get(Calendar.YEAR), month.get(Calendar.MONTH), 1, 0, 0, 0);
 		month.set(Calendar.MILLISECOND, 0);
 		return month;

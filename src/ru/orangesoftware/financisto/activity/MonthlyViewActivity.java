@@ -358,7 +358,7 @@ public class MonthlyViewActivity extends ListActivity {
      		startManagingCursor(transactionsCursor);
     		
     		// Mapping data from database
-    		String[] from = new String[] {TransactionColumns.DATETIME, TransactionColumns.NOTE, TransactionColumns.FROM_AMOUNT};
+    		String[] from = new String[] {TransactionColumns.datetime.name(), TransactionColumns.note.name(), TransactionColumns.from_amount.name()};
     		int[] to = new int[] {R.id.list_date, R.id.list_note, R.id.list_value};
     		
     		// Mapping data to view
@@ -401,15 +401,15 @@ public class MonthlyViewActivity extends ListActivity {
 		if (isStatementPreview) {
 			// exclude payments
 			for (int i=0; i<cursor.getCount(); i++) {
-				if (cursor.getInt(cursor.getColumnIndex(TransactionColumns.IS_CCARD_PAYMENT))==0) {
-					total += cursor.getLong(cursor.getColumnIndex(TransactionColumns.FROM_AMOUNT));
+				if (cursor.getInt(cursor.getColumnIndex(TransactionColumns.is_ccard_payment.name()))==0) {
+					total += cursor.getLong(cursor.getColumnIndex(TransactionColumns.from_amount.name()));
 				}
 				cursor.moveToNext();
 			}
 		} else {
 			// consider all transactions
 			for (int i=0; i<cursor.getCount(); i++) {
-				total += cursor.getLong(cursor.getColumnIndex(TransactionColumns.FROM_AMOUNT));
+				total += cursor.getLong(cursor.getColumnIndex(TransactionColumns.from_amount.name()));
 				cursor.moveToNext();
 			}
 		}
@@ -472,27 +472,27 @@ public class MonthlyViewActivity extends ListActivity {
 	
 	private Cursor getHeader(String type, int count) {
 		MatrixCursor header = new MatrixCursor(new String[] {
-				TransactionColumns.ID, 
-				TransactionColumns.FROM_ACCOUNT_ID, 
-				TransactionColumns.TO_ACCOUNT_ID,
-				TransactionColumns.CATEGORY_ID, 
-				TransactionColumns.PROJECT_ID, 
-				TransactionColumns.NOTE, 
-				TransactionColumns.FROM_AMOUNT, 
-				TransactionColumns.TO_AMOUNT,
-				TransactionColumns.DATETIME,
-				TransactionColumns.LOCATION_ID,
-				TransactionColumns.PROVIDER, 
-				TransactionColumns.ACCURACY, 
-				TransactionColumns.LATITUDE, 
-				TransactionColumns.LONGITUDE,
-				TransactionColumns.IS_TEMPLATE,
-				TransactionColumns.TEMPLATE_NAME,
-				TransactionColumns.RECURRENCE,
-				TransactionColumns.NOTIFICATION_OPTIONS,
-				TransactionColumns.STATUS,
-				TransactionColumns.ATTACHED_PICTURE,
-				TransactionColumns.IS_CCARD_PAYMENT, type});
+				TransactionColumns._id.name(),
+				TransactionColumns.from_account_id.name(),
+				TransactionColumns.to_account_id.name(),
+				TransactionColumns.category_id.name(),
+				TransactionColumns.project_id.name(),
+				TransactionColumns.note.name(),
+				TransactionColumns.from_amount.name(),
+				TransactionColumns.to_amount.name(),
+				TransactionColumns.datetime.name(),
+				TransactionColumns.location_id.name(),
+				TransactionColumns.provider.name(),
+				TransactionColumns.accuracy.name(),
+				TransactionColumns.latitude.name(),
+				TransactionColumns.longitude.name(),
+				TransactionColumns.is_template.name(),
+				TransactionColumns.template_name.name(),
+				TransactionColumns.recurrence.name(),
+				TransactionColumns.notification_options.name(),
+				TransactionColumns.status.name(),
+				TransactionColumns.attached_picture.name(),
+				TransactionColumns.is_ccard_payment.name(), type});
 		if (count>0) {
 			header.addRow(new Object[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,count});
 		}

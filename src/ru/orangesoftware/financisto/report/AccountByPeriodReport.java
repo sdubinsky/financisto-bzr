@@ -86,7 +86,7 @@ public class AccountByPeriodReport extends Report2DChart {
 
 	@Override
 	protected void setColumnFilter() {
-		columnFilter = TransactionColumns.FROM_ACCOUNT_ID;
+		columnFilter = TransactionColumns.from_account_id.name();
 	}
 	
 	@Override

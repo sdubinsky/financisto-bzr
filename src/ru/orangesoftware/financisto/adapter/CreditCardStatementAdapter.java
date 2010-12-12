@@ -86,21 +86,21 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	    
 	    /**
 	     * Update the list of expenses, displaying the elements of the Cursor. 
-	     * @param v The view.
+	     * @param h The view.
 	     * @param context The context.
 	     * @param c The cursor with all the bill transactions
 	     */
 	    private void updateListItem(Holder h, Context context, Cursor c) {
 	    	// get amount of expense
-	    	int valueCol = c.getColumnIndex(TransactionColumns.FROM_AMOUNT);
+	    	int valueCol = c.getColumnIndex(TransactionColumns.from_amount.name());
 	    	long value = c.getLong(valueCol);
 	    	// is scheduled?
-	    	boolean isScheduled = c.getInt(c.getColumnIndex(TransactionColumns.IS_TEMPLATE))==2;
+	    	boolean isScheduled = c.getInt(c.getColumnIndex(TransactionColumns.is_template.name()))==2;
 	        
 	        // get columns values or needed parameters
-	        long date = c.getLong(TransactionColumns.Indicies.DATETIME);
-	        String note = c.getString(TransactionColumns.Indicies.NOTE);
-	        long locId = c.getLong(TransactionColumns.Indicies.LOCATION_ID);
+	        long date = c.getLong(TransactionColumns.datetime.ordinal());
+	        String note = c.getString(TransactionColumns.note.ordinal());
+	        long locId = c.getLong(TransactionColumns.location_id.ordinal());
 	        String location = null;
 	        String desc = "";
 	        boolean future = date>Calendar.getInstance().getTimeInMillis();

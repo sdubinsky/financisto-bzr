@@ -329,7 +329,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
         long id = save();
         if (id > 0) {
             Intent data = new Intent();
-            data.putExtra(TransactionColumns.ID, id);
+            data.putExtra(TransactionColumns._id.name(), id);
             setResult(RESULT_OK, data);
             finish();
             return true;

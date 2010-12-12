@@ -10,19 +10,20 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.Payee;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
-import android.content.Intent;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import static ru.orangesoftware.financisto.utils.Utils.text;
 
@@ -132,9 +133,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	protected void editTransaction(Transaction transaction) {
 		super.editTransaction(transaction);
 		selectAccount(transaction.fromAccountId, false);
-        if (isShowPayee) {
-            payeeText.setText(transaction.payee);
-        }
+        selectPayee(transaction.payeeId);
 		amountInput.setAmount(transaction.fromAmount);
 		incomeExpenseButton.setChecked(transaction.fromAmount >= 0);		
 	}
@@ -151,7 +150,21 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		}
 		transaction.fromAmount = incomeExpenseButton.isChecked() ? amount : -amount;
 	}
-	
+
+    private void selectPayee(long payeeId) {
+        if (isShowPayee) {
+            Payee p = db.em().get(Payee.class, payeeId);
+            selectPayee(p);
+        }
+    }
+
+    protected void selectPayee(Payee p) {
+        if (isShowPayee && p != null) {
+            payeeText.setText(p.title);
+            transaction.payeeId = p.id;
+        }
+    }
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);

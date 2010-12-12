@@ -75,16 +75,16 @@ public class DatabaseAdapter {
 	// ===================================================================
 
 	private static final String UPDATE_ORPHAN_TRANSACTIONS_1 = "UPDATE "+TRANSACTION_TABLE+" SET "+
-								TransactionColumns.TO_ACCOUNT_ID+"=0, "+
-								TransactionColumns.TO_AMOUNT+"=0 "+
-								"WHERE "+TransactionColumns.TO_ACCOUNT_ID+"=?";
+								TransactionColumns.to_account_id +"=0, "+
+								TransactionColumns.to_amount +"=0 "+
+								"WHERE "+TransactionColumns.to_account_id +"=?";
 	private static final String UPDATE_ORPHAN_TRANSACTIONS_2 = "UPDATE "+TRANSACTION_TABLE+" SET "+
-								TransactionColumns.FROM_ACCOUNT_ID+"="+TransactionColumns.TO_ACCOUNT_ID+", "+
-								TransactionColumns.FROM_AMOUNT+"="+TransactionColumns.TO_AMOUNT+", "+
-								TransactionColumns.TO_ACCOUNT_ID+"=0, "+
-								TransactionColumns.TO_AMOUNT+"=0 "+
-								"WHERE "+TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+
-										 TransactionColumns.TO_ACCOUNT_ID+">0";
+								TransactionColumns.from_account_id +"="+TransactionColumns.to_account_id +", "+
+								TransactionColumns.from_amount +"="+TransactionColumns.to_amount +", "+
+								TransactionColumns.to_account_id +"=0, "+
+								TransactionColumns.to_amount +"=0 "+
+								"WHERE "+TransactionColumns.from_account_id +"=? AND "+
+										 TransactionColumns.to_account_id +">0";
 	
 	public int deleteAccount(long id) {
 		db.beginTransaction();
@@ -93,8 +93,8 @@ public class DatabaseAdapter {
 			db.execSQL(UPDATE_ORPHAN_TRANSACTIONS_1, sid);
 			db.execSQL(UPDATE_ORPHAN_TRANSACTIONS_2, sid);
 			db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID
-					+" in (SELECT _id from "+TRANSACTION_TABLE+" where "+TransactionColumns.FROM_ACCOUNT_ID+"=?)", sid);
-			db.delete(TRANSACTION_TABLE, TransactionColumns.FROM_ACCOUNT_ID+"=?", sid);
+					+" in (SELECT _id from "+TRANSACTION_TABLE+" where "+TransactionColumns.from_account_id +"=?)", sid);
+			db.delete(TRANSACTION_TABLE, TransactionColumns.from_account_id +"=?", sid);
 			int count = db.delete(ACCOUNT_TABLE, "_id=?", sid); 
 			db.setTransactionSuccessful();
 			return count;
@@ -110,7 +110,7 @@ public class DatabaseAdapter {
 	
 	public Transaction getTransaction(long id) {
 		Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-				TransactionColumns.ID+"=?", new String[]{String.valueOf(id)}, 
+				TransactionColumns._id +"=?", new String[]{String.valueOf(id)},
 				null, null, null);
 		try {
 			if (c.moveToFirst()) {
@@ -159,7 +159,7 @@ public class DatabaseAdapter {
 
 	public Cursor getBlotter(String where) {
 		return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION, where, null, null, null, 
-				BlotterColumns.DATETIME+" DESC");
+				BlotterColumns.datetime+" DESC");
 	}
 
 	/**
@@ -171,17 +171,17 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getAllExpenses(String accountId, String start, String end) {
 		// query
-		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+"<? AND "+
-					   	   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
+		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +"<? AND "+
+					   	   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
 		
-		String whereTo = TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+"<? AND "+
-		   				 TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";
+		String whereTo = TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +"<? AND "+
+		   				 TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereFrom, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+					   whereFrom, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.datetime.name());
 			
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereTo, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.DATETIME);
+					   whereTo, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.datetime.name());
 			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
@@ -199,19 +199,19 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getCredits(String accountId, String start, String end) {
 		// query
-		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
-					   	   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-					       TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +">? AND "+
+					   	   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
+					       TransactionColumns.is_ccard_payment +"=?";
 		
-		String whereTo = TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
-						 TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-						 TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereTo = TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +">? AND "+
+						 TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
+						 TransactionColumns.is_ccard_payment +"=?";
 		
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereFrom, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+					   whereFrom, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.datetime.name());
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereTo, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.DATETIME);
+					   whereTo, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.datetime.name());
 			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
@@ -228,19 +228,19 @@ public class DatabaseAdapter {
 	 */
 	public Cursor getPayments(String accountId, String start, String end) {
 		// query direct payments
-		String whereFrom = TransactionColumns.FROM_ACCOUNT_ID+"=? AND "+TransactionColumns.FROM_AMOUNT+">? AND "+
-						   TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-						   TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +">? AND "+
+						   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
+						   TransactionColumns.is_ccard_payment +"=?";
 		
-		String whereTo =  TransactionColumns.TO_ACCOUNT_ID+"=? AND "+TransactionColumns.TO_AMOUNT+">? AND "+
-						  TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<? AND "+
-						  TransactionColumns.IS_CCARD_PAYMENT+"=?";
+		String whereTo =  TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +">? AND "+
+						  TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
+						  TransactionColumns.is_ccard_payment +"=?";
 		
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   	whereFrom, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+					   	whereFrom, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.datetime.name());
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-						whereTo, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.DATETIME);
+						whereTo, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.datetime.name());
 			Cursor c = new MergeCursor(new Cursor[] {c1, c2});
 			return c;
 		} catch(SQLiteException e) {
@@ -257,11 +257,11 @@ public class DatabaseAdapter {
      */
     public Cursor getAllTransactions(String accountId, String start, String end) {
         // query
-        String where = "("+TransactionColumns.FROM_ACCOUNT_ID+"=? OR "+TransactionColumns.TO_ACCOUNT_ID+"=?) AND "+
-                       TransactionColumns.DATETIME+">? AND "+TransactionColumns.DATETIME+"<?";        
+        String where = "("+TransactionColumns.from_account_id +"=? OR "+TransactionColumns.to_account_id +"=?) AND "+
+                       TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
         try {
             Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-                       where, new String[]{accountId, accountId, start, end}, null, null, TransactionColumns.DATETIME);
+                       where, new String[]{accountId, accountId, start, end}, null, null, TransactionColumns.datetime.name());
             return c;
         } catch(SQLiteException e) {
             return null;
@@ -278,7 +278,7 @@ public class DatabaseAdapter {
 	public Total[] getTransactionsBalance(WhereFilter filter) {
 		Cursor c = db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.BALANCE_PROJECTION, 
 				filter.getSelection(), filter.getSelectionArgs(), 
-				BlotterColumns.BALANCE_GROUPBY, null, null);
+				BlotterColumns.BALANCE_GROUP_BY, null, null);
 		try {			
 			int count = c.getCount();
 			List<Total> totals = new ArrayList<Total>(count);
@@ -444,7 +444,7 @@ public class DatabaseAdapter {
 				updateLocationCount(t.locationId, 1);
 			}
 		}
-		db.update(TRANSACTION_TABLE, t.toValues(), TransactionColumns.ID+"=?", 
+		db.update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
 				new String[]{String.valueOf(t.id)});		
 	}
 	
@@ -468,7 +468,7 @@ public class DatabaseAdapter {
 			}
 			String[] sid = new String[]{String.valueOf(id)};
 			db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
-			db.delete(TRANSACTION_TABLE, TransactionColumns.ID+"=?", sid);
+			db.delete(TRANSACTION_TABLE, TransactionColumns._id +"=?", sid);
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();			
@@ -484,7 +484,7 @@ public class DatabaseAdapter {
 		}
 		String[] sid = new String[]{String.valueOf(id)};
 		db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
-		db.delete(TRANSACTION_TABLE, TransactionColumns.ID+"=?", sid);
+		db.delete(TRANSACTION_TABLE, TransactionColumns._id +"=?", sid);
 	}
 
 	// ===================================================================
@@ -757,8 +757,8 @@ public class DatabaseAdapter {
 	}
 	
 	private static final String DELETE_CATEGORY_UPDATE1 = "UPDATE "+TRANSACTION_TABLE
-		+" SET "+TransactionColumns.CATEGORY_ID+"=0 WHERE "
-		+TransactionColumns.CATEGORY_ID+" IN ("
+		+" SET "+TransactionColumns.category_id +"=0 WHERE "
+		+TransactionColumns.category_id +" IN ("
 		+"SELECT "+CategoryColumns.ID+" FROM "+CATEGORY_TABLE+" WHERE "
 		+CategoryColumns.LEFT+" BETWEEN ? AND ?)";
 	private static final String DELETE_CATEGORY_UPDATE2 = "UPDATE "+CATEGORY_TABLE
@@ -1097,12 +1097,12 @@ public class DatabaseAdapter {
 	}
 
 	public void clearAll(long[] ids) {
-		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.STATUS+"='"+TransactionStatus.CL+"'";
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.CL+"'";
 		runInTransaction(sql, ids);
 	}
 
 	public void reconcileAll(long[] ids) {
-		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.STATUS+"='"+TransactionStatus.RC+"'";
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.RC+"'";
 		runInTransaction(sql, ids);
 	}
 
@@ -1139,9 +1139,9 @@ public class DatabaseAdapter {
 	private String createSql(String updateSql, long[] ids, int x, int y) {
 		StringBuilder sb = new StringBuilder(updateSql)
 								.append(" WHERE ")
-								.append(TransactionColumns.IS_TEMPLATE)
+								.append(TransactionColumns.is_template)
 								.append("=0 AND ")
-								.append(TransactionColumns.ID)
+								.append(TransactionColumns._id)
 								.append(" IN (");
 		for (int i=x; i<y; i++) {
 			if (i > x) {
@@ -1154,7 +1154,7 @@ public class DatabaseAdapter {
 	}
 	
 	private static final String UPDATE_LAST_RECURRENCE = 
-		"UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.LAST_RECURRENCE+"=? WHERE "+TransactionColumns.ID+"=?";
+		"UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.last_recurrence +"=? WHERE "+TransactionColumns._id +"=?";
 
 	public void storeMissedSchedules(List<RestoredTransaction> restored, long now) {
 		db.beginTransaction();

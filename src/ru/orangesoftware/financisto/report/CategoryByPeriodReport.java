@@ -113,7 +113,7 @@ public class CategoryByPeriodReport extends Report2DChart {
 
 	@Override
 	protected void setColumnFilter() {
-		columnFilter = TransactionColumns.CATEGORY_ID;
+		columnFilter = TransactionColumns.category_id.name();
 	}
 	
 	/**

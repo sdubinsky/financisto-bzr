@@ -296,8 +296,8 @@ public class CategoryRepository {
 	}
 	
 	private static final String DELETE_CATEGORY_UPDATE1 = "UPDATE "+TRANSACTION_TABLE
-		+" SET "+TransactionColumns.CATEGORY_ID+"=0 WHERE "
-		+TransactionColumns.CATEGORY_ID+" IN ("
+		+" SET "+TransactionColumns.category_id +"=0 WHERE "
+		+TransactionColumns.category_id +" IN ("
 		+"SELECT "+CategoryColumns.ID+" FROM "+CATEGORY_TABLE+" WHERE "
 		+CategoryColumns.LEFT+" BETWEEN ? AND ?)";
 	private static final String DELETE_CATEGORY_UPDATE2 = "UPDATE "+CATEGORY_TABLE

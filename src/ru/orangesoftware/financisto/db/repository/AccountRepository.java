@@ -16,18 +16,18 @@ public class AccountRepository {
 	}
 
 	private static final String UPDATE_ORPHAN_TRANSACTIONS_1 = "UPDATE "
-			+ TRANSACTION_TABLE + " SET " + TransactionColumns.TO_ACCOUNT_ID
-			+ "=0, " + TransactionColumns.TO_AMOUNT + "=0 " + "WHERE "
-			+ TransactionColumns.TO_ACCOUNT_ID + "=?";
+			+ TRANSACTION_TABLE + " SET " + TransactionColumns.to_account_id
+			+ "=0, " + TransactionColumns.to_amount + "=0 " + "WHERE "
+			+ TransactionColumns.to_account_id + "=?";
 	private static final String UPDATE_ORPHAN_TRANSACTIONS_2 = "UPDATE "
-			+ TRANSACTION_TABLE + " SET " + TransactionColumns.FROM_ACCOUNT_ID
-			+ "=" + TransactionColumns.TO_ACCOUNT_ID + ", "
-			+ TransactionColumns.FROM_AMOUNT + "="
-			+ TransactionColumns.TO_AMOUNT + ", "
-			+ TransactionColumns.TO_ACCOUNT_ID + "=0, "
-			+ TransactionColumns.TO_AMOUNT + "=0 " + "WHERE "
-			+ TransactionColumns.FROM_ACCOUNT_ID + "=? AND "
-			+ TransactionColumns.TO_ACCOUNT_ID + ">0";
+			+ TRANSACTION_TABLE + " SET " + TransactionColumns.from_account_id
+			+ "=" + TransactionColumns.to_account_id + ", "
+			+ TransactionColumns.from_amount + "="
+			+ TransactionColumns.to_amount + ", "
+			+ TransactionColumns.to_account_id + "=0, "
+			+ TransactionColumns.to_amount + "=0 " + "WHERE "
+			+ TransactionColumns.from_account_id + "=? AND "
+			+ TransactionColumns.to_account_id + ">0";
 
 	public int deleteAccount(long id) {
 		db.beginTransaction();
@@ -38,9 +38,9 @@ public class AccountRepository {
 			db.delete(TRANSACTION_ATTRIBUTE_TABLE,
 					TransactionAttributeColumns.TRANSACTION_ID
 							+ " in (SELECT _id from " + TRANSACTION_TABLE
-							+ " where " + TransactionColumns.FROM_ACCOUNT_ID
+							+ " where " + TransactionColumns.from_account_id
 							+ "=?)", sid);
-			db.delete(TRANSACTION_TABLE, TransactionColumns.FROM_ACCOUNT_ID
+			db.delete(TRANSACTION_TABLE, TransactionColumns.from_account_id
 					+ "=?", sid);
 			int count = db.delete(ACCOUNT_TABLE, "_id=?", sid);
 			db.setTransactionSuccessful();

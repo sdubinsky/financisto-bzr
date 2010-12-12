@@ -59,9 +59,6 @@ public class Transaction {
     @Column(name = "payee_id")
     public long payeeId;
 
-    @Column(name = "payee")
-    public String payee;
-
 	@Column(name = "note")
 	public String note;
 	
@@ -98,60 +95,62 @@ public class Transaction {
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
 
+    @Transient
+    public String payee;
+
     public ContentValues toValues() {
 		ContentValues values = new ContentValues();
-		values.put(TransactionColumns.CATEGORY_ID, categoryId);
-		values.put(TransactionColumns.PROJECT_ID, projectId);
-		values.put(TransactionColumns.DATETIME, dateTime);
-		values.put(TransactionColumns.LOCATION_ID, locationId);
-		values.put(TransactionColumns.PROVIDER, provider);
-		values.put(TransactionColumns.ACCURACY, accuracy);
-		values.put(TransactionColumns.LATITUDE, latitude);
-		values.put(TransactionColumns.LONGITUDE, longitude);
-		values.put(TransactionColumns.FROM_ACCOUNT_ID, fromAccountId);
-		values.put(TransactionColumns.TO_ACCOUNT_ID, toAccountId);
-        values.put(TransactionColumns.PAYEE_ID, payeeId);
-        values.put(TransactionColumns.PAYEE, payee);
-		values.put(TransactionColumns.NOTE, note);
-		values.put(TransactionColumns.FROM_AMOUNT, fromAmount);
-		values.put(TransactionColumns.TO_AMOUNT, toAmount);
-		values.put(TransactionColumns.IS_TEMPLATE, isTemplate);
-		values.put(TransactionColumns.TEMPLATE_NAME, templateName);
-		values.put(TransactionColumns.RECURRENCE, recurrence);
-		values.put(TransactionColumns.NOTIFICATION_OPTIONS, notificationOptions);
-		values.put(TransactionColumns.STATUS, status.name());
-		values.put(TransactionColumns.ATTACHED_PICTURE, attachedPicture);
-		values.put(TransactionColumns.IS_CCARD_PAYMENT, isCCardPayment);
-		values.put(TransactionColumns.LAST_RECURRENCE, lastRecurrence);
+		values.put(TransactionColumns.category_id.name(), categoryId);
+		values.put(TransactionColumns.project_id.name(), projectId);
+		values.put(TransactionColumns.datetime.name(), dateTime);
+		values.put(TransactionColumns.location_id.name(), locationId);
+		values.put(TransactionColumns.provider.name(), provider);
+		values.put(TransactionColumns.accuracy.name(), accuracy);
+		values.put(TransactionColumns.latitude.name(), latitude);
+		values.put(TransactionColumns.longitude.name(), longitude);
+		values.put(TransactionColumns.from_account_id.name(), fromAccountId);
+		values.put(TransactionColumns.to_account_id.name(), toAccountId);
+        values.put(TransactionColumns.payee_id.name(), payeeId);
+		values.put(TransactionColumns.note.name(), note);
+		values.put(TransactionColumns.from_amount.name(), fromAmount);
+		values.put(TransactionColumns.to_amount.name(), toAmount);
+		values.put(TransactionColumns.is_template.name(), isTemplate);
+		values.put(TransactionColumns.template_name.name(), templateName);
+		values.put(TransactionColumns.recurrence.name(), recurrence);
+		values.put(TransactionColumns.notification_options.name(), notificationOptions);
+		values.put(TransactionColumns.status.name(), status.name());
+		values.put(TransactionColumns.attached_picture.name(), attachedPicture);
+		values.put(TransactionColumns.is_ccard_payment.name(), isCCardPayment);
+		values.put(TransactionColumns.last_recurrence.name(), lastRecurrence);
 		return values;
 	}
 
 	public static Transaction fromCursor(Cursor c) {
-		long id = c.getLong(TransactionColumns.Indicies.ID);
+		long id = c.getLong(TransactionColumns._id.ordinal());
 		Transaction t = new Transaction();
 		t.id = id;
-		t.fromAccountId = c.getLong(TransactionColumns.Indicies.FROM_ACCOUNT_ID);
-		t.toAccountId = c.getLong(TransactionColumns.Indicies.TO_ACCOUNT_ID);
-		t.categoryId = c.getLong(TransactionColumns.Indicies.CATEGORY_ID);
-		t.projectId = c.getLong(TransactionColumns.Indicies.PROJECT_ID);
-        t.payee = c.getString(TransactionColumns.Indicies.PAYEE);
-		t.note = c.getString(TransactionColumns.Indicies.NOTE);
-		t.fromAmount = c.getLong(TransactionColumns.Indicies.FROM_AMOUNT);
-		t.toAmount = c.getLong(TransactionColumns.Indicies.TO_AMOUNT);
-		t.dateTime = c.getLong(TransactionColumns.Indicies.DATETIME);
-		t.locationId = c.getLong(TransactionColumns.Indicies.LOCATION_ID);
-		t.provider = c.getString(TransactionColumns.Indicies.PROVIDER);
-		t.accuracy = c.getFloat(TransactionColumns.Indicies.ACCURACY);
-		t.latitude = c.getDouble(TransactionColumns.Indicies.LATITUDE);
-		t.longitude = c.getDouble(TransactionColumns.Indicies.LONGITUDE);
-		t.isTemplate = c.getInt(TransactionColumns.Indicies.IS_TEMPLATE);
-		t.templateName = c.getString(TransactionColumns.Indicies.TEMPLATE_NAME);
-		t.recurrence = c.getString(TransactionColumns.Indicies.RECURRENCE);
-		t.notificationOptions = c.getString(TransactionColumns.Indicies.NOTIFICATION_OPTIONS);	
-		t.status = TransactionStatus.valueOf(c.getString(TransactionColumns.Indicies.STATUS));
-		t.attachedPicture = c.getString(TransactionColumns.Indicies.ATTACHED_PICTURE);
-		t.isCCardPayment = c.getInt(TransactionColumns.Indicies.IS_CCARD_PAYMENT);
-		t.lastRecurrence = c.getLong(TransactionColumns.Indicies.LAST_RECURRENCE);
+		t.fromAccountId = c.getLong(TransactionColumns.from_account_id.ordinal());
+		t.toAccountId = c.getLong(TransactionColumns.to_account_id.ordinal());
+		t.categoryId = c.getLong(TransactionColumns.category_id.ordinal());
+		t.projectId = c.getLong(TransactionColumns.project_id.ordinal());
+        t.payeeId = c.getLong(TransactionColumns.payee_id.ordinal());
+		t.note = c.getString(TransactionColumns.note.ordinal());
+		t.fromAmount = c.getLong(TransactionColumns.from_amount.ordinal());
+		t.toAmount = c.getLong(TransactionColumns.to_amount.ordinal());
+		t.dateTime = c.getLong(TransactionColumns.datetime.ordinal());
+		t.locationId = c.getLong(TransactionColumns.location_id.ordinal());
+		t.provider = c.getString(TransactionColumns.provider.ordinal());
+		t.accuracy = c.getFloat(TransactionColumns.accuracy.ordinal());
+		t.latitude = c.getDouble(TransactionColumns.latitude.ordinal());
+		t.longitude = c.getDouble(TransactionColumns.longitude.ordinal());
+		t.isTemplate = c.getInt(TransactionColumns.is_template.ordinal());
+		t.templateName = c.getString(TransactionColumns.template_name.ordinal());
+		t.recurrence = c.getString(TransactionColumns.recurrence.ordinal());
+		t.notificationOptions = c.getString(TransactionColumns.notification_options.ordinal());
+		t.status = TransactionStatus.valueOf(c.getString(TransactionColumns.status.ordinal()));
+		t.attachedPicture = c.getString(TransactionColumns.attached_picture.ordinal());
+		t.isCCardPayment = c.getInt(TransactionColumns.is_ccard_payment.ordinal());
+		t.lastRecurrence = c.getLong(TransactionColumns.last_recurrence.ordinal());
 		return t;
 	}		
 	
