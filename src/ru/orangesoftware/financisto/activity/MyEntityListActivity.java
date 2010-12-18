@@ -16,10 +16,8 @@ import android.os.Bundle;
 import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.EntityListAdapter;
-import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.MyEntity;
-import ru.orangesoftware.financisto.model.Project;
 
 import java.util.ArrayList;
 
@@ -81,7 +79,7 @@ public abstract class MyEntityListActivity<T extends MyEntity> extends AbstractL
 
 	@Override
 	protected void deleteItem(int position, final long id) {
-		em.deleteProject(id);
+        em.delete(clazz, id);
 		requeryCursor();
 	}
 

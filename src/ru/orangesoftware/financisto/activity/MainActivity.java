@@ -80,7 +80,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private static final int MENU_RESTORE_GDOCS = Menu.FIRST+8;
 	private static final int MENU_ENTITIES = Menu.FIRST+9;
 	private static final int MENU_MASS_OP = Menu.FIRST+10;
-	
+    private static final int MENU_DONATE = Menu.FIRST+11;
+
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
 	private String appVersion;
@@ -248,6 +249,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
 		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
+        menu.addSubMenu(0, MENU_DONATE, 0, R.string.donate);
 		menu.addSubMenu(0, MENU_ABOUT, 0, R.string.about);
 		return true;
 	}
@@ -284,6 +286,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		case MENU_ABOUT:
 			showDialog(1);
 			break;
+        case MENU_DONATE:
+            openBrowser("market://search?q=pname:ru.orangesoftware.financisto.support");
+            break;
 		case MENU_CSV_EXPORT:
 			doCsvExport();
 			break;
@@ -302,8 +307,18 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		}
 		return false;
 	}
-	
-	/**
+
+    private void openBrowser(String url) {
+        try {
+            Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+            startActivity(browserIntent);
+        } catch (Exception ex) {
+            //eventually market is not available
+            Toast.makeText(this, R.string.donate_error, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
 	 * Treat asynchronous requests to popup error messages
 	 * */
 	private Handler handler = new Handler() {
@@ -620,25 +635,25 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			LinearLayout layout = new LinearLayout(this);
 			inflater.inflate(R.layout.about, layout);
 			((TextView)layout.findViewById(R.id.appVersion)).setText(appVersion);
-			((Button)layout.findViewById(R.id.bWhatsNew)).setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					WebViewDialog.showWhatsNew(MainActivity.this);
-				}
-			});
-			((ImageButton)layout.findViewById(R.id.bTwitter)).setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/financisto"));
-					startActivity(intent);					
-				}
-			});
-			((Button)layout.findViewById(R.id.bCredits)).setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					WebViewDialog.showCredits(MainActivity.this);
-				}
-			});
+			layout.findViewById(R.id.bWhatsNew).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    WebViewDialog.showWhatsNew(MainActivity.this);
+                }
+            });
+			layout.findViewById(R.id.bTwitter).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/financisto"));
+                    startActivity(intent);
+                }
+            });
+			layout.findViewById(R.id.bCredits).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    WebViewDialog.showCredits(MainActivity.this);
+                }
+            });
 			Dialog d = new AlertDialog.Builder(this)
 				.setIcon(R.drawable.icon)
 				.setTitle(R.string.app_name)

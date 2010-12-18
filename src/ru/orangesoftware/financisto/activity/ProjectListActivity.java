@@ -35,7 +35,7 @@ public class ProjectListActivity extends MyEntityListActivity<Project> {
 
     @Override
     protected Class<? extends MyEntityActivity> getEditActivityClass() {
-        return PayeeActivity.class;
+        return ProjectActivity.class;
     }
 
     @Override

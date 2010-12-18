@@ -82,13 +82,13 @@ public abstract class MyEntityActivity<T extends MyEntity> extends Activity {
 			long id = intent.getLongExtra(ENTITY_ID_EXTRA, -1);
 			if (id != -1) {
 				entity = em.load(clazz, id);
-				editProject();
+				editEntity();
 			}
 		}
 		
 	}
 
-	private void editProject() {
+	private void editEntity() {
 		EditText title = (EditText)findViewById(R.id.title);
 		title.setText(entity.title);
 	}
