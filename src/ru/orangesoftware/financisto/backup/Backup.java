@@ -22,7 +22,8 @@ public final class Backup {
 	public static final String[] BACKUP_TABLES = {
 		"account","attributes","category_attribute",
 		"transaction_attribute","budget","category",
-		"currency","locations","project","transactions"};
+		"currency","locations","project","transactions",
+        "payee"};
 	
 	public static final String[] BACKUP_TABLES_WITH_SYSTEM_IDS = {
 		"attributes"};
