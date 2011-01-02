@@ -15,6 +15,10 @@ import static ru.orangesoftware.financisto.utils.Utils.text;
 
 import java.util.ArrayList;
 
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CategoryListAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
@@ -28,14 +32,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ScrollView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 public class CategoryActivity extends AbstractActivity {
 	
@@ -47,7 +43,12 @@ public class CategoryActivity extends AbstractActivity {
 	
 	private Cursor attributeCursor;
 	private ListAdapter attributeAdapter;
-	
+
+    private ToggleButton incomeExpenseButton;
+    private View incomeExpenseButtonNode;
+    private TextView incomeExpenseText;
+    private View incomeExpenseTextNode;
+
 	private EditText categoryTitle;
 	private TextView parentCategoryText;
 	private Cursor categoryCursor;
@@ -56,7 +57,10 @@ public class CategoryActivity extends AbstractActivity {
 	private ScrollView scrollView;
 	private LinearLayout attributesLayout;
 	private LinearLayout parentAttributesLayout;
-	
+
+    private int incomeColor;
+    private int expenseColor;
+
 	private Category category = new Category(-1);
 
 	@Override
@@ -65,7 +69,9 @@ public class CategoryActivity extends AbstractActivity {
 		setContentView(R.layout.category);
 
 		types = getResources().getStringArray(R.array.attribute_types);
-		
+        incomeColor = getResources().getColor(R.color.category_type_income);
+        expenseColor = getResources().getColor(R.color.category_type_expense);
+
 		scrollView = (ScrollView)findViewById(R.id.scroll);
 		
 		categoryTitle = new EditText(this);
@@ -94,11 +100,21 @@ public class CategoryActivity extends AbstractActivity {
 		
 		LinearLayout layout = (LinearLayout)findViewById(R.id.layout);		
 		parentCategoryText = x.addListNode(layout, R.id.category, R.string.parent, R.string.select_category);
-		x.addEditNode(layout, R.string.title, categoryTitle);							
-		attributesLayout = (LinearLayout)x.addTitleNode(layout, R.string.attributes).findViewById(R.id.layout);
+
+        incomeExpenseButton = new ToggleButton(this);
+        incomeExpenseButton.setBackgroundResource(R.drawable.btn_toggle_bg);
+        incomeExpenseButton.setTextOff(createIncomeExpenseButtonString(R.string.expense));
+        incomeExpenseButton.setTextOn(createIncomeExpenseButtonString(R.string.income));
+        incomeExpenseButtonNode = x.addEditNode(layout, R.string.type, incomeExpenseButton);
+
+        incomeExpenseText = x.addInfoNode(layout, R.id.type, R.string.type, R.string.expense);
+        incomeExpenseTextNode = (View) incomeExpenseText.getTag();
+
+		x.addEditNode(layout, R.string.title, categoryTitle);
+		attributesLayout = (LinearLayout)x.addTitleNodeNoDivider(layout, R.string.attributes).findViewById(R.id.layout);
 		x.addInfoNodePlus(attributesLayout, R.id.new_attribute, R.id.add_attribute, R.string.add_attribute);
 		addAttributes();				
-		parentAttributesLayout = (LinearLayout)x.addTitleNode(layout, R.string.parent_attributes).findViewById(R.id.layout);
+		parentAttributesLayout = (LinearLayout)x.addTitleNodeNoDivider(layout, R.string.parent_attributes).findViewById(R.id.layout);
 		addParentAttributes();		
 		
 		categoryAdapter = new CategoryListAdapter(
@@ -110,6 +126,7 @@ public class CategoryActivity extends AbstractActivity {
 			public void onClick(View view) {
 				if (checkEditText(categoryTitle, "title", true, 100)) {						
 					category.title = text(categoryTitle);
+                    setCategoryType(category);
 					int count = attributesLayout.getChildCount();
 					ArrayList<Attribute> attributes = new ArrayList<Attribute>(count);
 					for (int i=0; i<count; i++) {
@@ -121,7 +138,7 @@ public class CategoryActivity extends AbstractActivity {
 					}
 					long id = db.insertOrUpdate(category, attributes);
 					Intent data = new Intent();
-					data.putExtra(DatabaseHelper.CategoryColumns.ID, id);
+					data.putExtra(DatabaseHelper.CategoryColumns._id.name(), id);
 					setResult(RESULT_OK, data);
 					finish();						
 				}
@@ -139,13 +156,53 @@ public class CategoryActivity extends AbstractActivity {
 		
 		editCategory();
 	}
-	
+
+    private void setCategoryType(Category category) {
+        if (category.getParentId() > 0) {
+            category.copyTypeFromParent();
+        } else {
+            if (incomeExpenseButton.isChecked()) {
+                category.makeThisCategoryIncome();
+            } else {
+                category.makeThisCategoryExpense();
+            }
+        }
+    }
+
+    private SpannableString createIncomeExpenseButtonString(int stringId) {
+        SpannableString str = SpannableString.valueOf(getString(stringId));
+        str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, str.length(), 0);
+        return str;
+    }
+
 	private void editCategory() {
 		selectParentCategory(category.getParentId());
 		categoryTitle.setText(category.title);
 	}
 
-	private void addAttributes() {
+    private void updateIncomeExpenseType() {
+        if (category.getParentId() > 0) {
+            setVisibility(incomeExpenseButtonNode, View.GONE);
+            if (category.parent.isIncome()) {
+                incomeExpenseText.setText(R.string.income);
+                incomeExpenseText.setTextColor(incomeColor);
+            } else if (category.parent.isExpense()) {
+                incomeExpenseText.setText(R.string.expense);
+                incomeExpenseText.setTextColor(expenseColor);
+            } else {
+                incomeExpenseText.setText(R.string.type);
+                incomeExpenseText.setTextColor(Color.WHITE);
+            }
+            setVisibility(incomeExpenseTextNode, View.VISIBLE);
+        } else {
+            setVisibility(incomeExpenseTextNode, View.GONE);
+            incomeExpenseButton.setChecked(category.isIncome());
+            incomeExpenseButton.setEnabled(true);
+            setVisibility(incomeExpenseButtonNode, View.VISIBLE);
+        }
+    }
+
+    private void addAttributes() {
 		long categoryId = category.id;
 		if (categoryId == -1) {
 			categoryId = 0;
@@ -193,7 +250,7 @@ public class CategoryActivity extends AbstractActivity {
 		switch(id) {
 			case R.id.category:				
 				x.select(this, R.id.category, R.string.parent, categoryCursor, categoryAdapter, 
-						CategoryColumns.ID, category.getParentId());
+						CategoryColumns._id.name(), category.getParentId());
 				break;
 			case R.id.new_attribute:				
 				x.select(this, R.id.new_attribute, R.string.attribute, attributeCursor, attributeAdapter, 
@@ -233,11 +290,12 @@ public class CategoryActivity extends AbstractActivity {
 	}
 
 	private void selectParentCategory(long parentId) {
-		if (Utils.moveCursor(categoryCursor, CategoryColumns.ID, parentId) != -1) {
-			String title = categoryCursor.getString(CategoryColumns.Indicies.TITLE);
+		if (Utils.moveCursor(categoryCursor, CategoryColumns._id.name(), parentId) != -1) {
+			String title = categoryCursor.getString(CategoryColumns.title.ordinal());
 			parentCategoryText.setText(title);						
-			category.parent = new Category(parentId);
+			category.parent = Category.formCursor(categoryCursor);
 		}
+        updateIncomeExpenseType();
 	}
 	
 	@Override

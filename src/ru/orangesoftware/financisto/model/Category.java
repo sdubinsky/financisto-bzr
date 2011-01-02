@@ -48,10 +48,11 @@ public class Category extends CategoryEntity<Category> {
 	
 	public ContentValues toValues() {
 		ContentValues values = new ContentValues();
-		values.put(CategoryColumns.ID, id);
-		values.put(CategoryColumns.TITLE, title);
-		values.put(CategoryColumns.LEFT, left);
-		values.put(CategoryColumns.RIGHT, right);
+		values.put(CategoryColumns._id.name(), id);
+		values.put(CategoryColumns.title.name(), title);
+		values.put(CategoryColumns.left.name(), left);
+		values.put(CategoryColumns.right.name(), right);
+        values.put(CategoryColumns.type.name(), right);
 		return values;
 	}
 	
@@ -65,6 +66,7 @@ public class Category extends CategoryEntity<Category> {
 		sb.append(",level=").append(level);
 		sb.append(",left=").append(left);
 		sb.append(",right=").append(right);
+        sb.append(",type=").append(type);
 		sb.append("]");
 		return sb.toString();
 	}
@@ -101,15 +103,22 @@ public class Category extends CategoryEntity<Category> {
 	}
 
 	public static Category formCursor(Cursor c) {
-		long id = c.getLong(CategoryViewColumns.Indicies.ID);
+		long id = c.getLong(CategoryViewColumns._id.ordinal());
 		Category cat = new Category();
 		cat.id = id;
-		cat.title = c.getString(CategoryViewColumns.Indicies.TITLE);
-		cat.level = c.getInt(CategoryViewColumns.Indicies.LEVEL);
-		cat.left = c.getInt(CategoryViewColumns.Indicies.LEFT);
-		cat.right = c.getInt(CategoryViewColumns.Indicies.RIGHT);
-		cat.lastLocationId = c.getInt(CategoryViewColumns.Indicies.LAST_LOCATION_ID);
-		cat.lastProjectId = c.getInt(CategoryViewColumns.Indicies.LAST_PROJECT_ID);
+		cat.title = c.getString(CategoryViewColumns.title.ordinal());
+		cat.level = c.getInt(CategoryViewColumns.level.ordinal());
+		cat.left = c.getInt(CategoryViewColumns.left.ordinal());
+		cat.right = c.getInt(CategoryViewColumns.right.ordinal());
+        cat.type = c.getInt(CategoryViewColumns.type.ordinal());
+		cat.lastLocationId = c.getInt(CategoryViewColumns.last_location_id.ordinal());
+		cat.lastProjectId = c.getInt(CategoryViewColumns.last_project_id.ordinal());
 		return cat;
 	}
+
+    public void copyTypeFromParent() {
+        if (parent != null) {
+            this.type = parent.type;
+        }
+    }
 }

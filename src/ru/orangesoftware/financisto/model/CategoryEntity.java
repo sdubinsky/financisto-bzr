@@ -15,6 +15,9 @@ import javax.persistence.Transient;
 
 public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
 
+    private static final int TYPE_EXPENSE = 0;
+    private static final int TYPE_INCOME = 1;
+
 	@Transient
 	public T parent;
 	
@@ -24,6 +27,9 @@ public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
 	@Column(name = "right")
 	public int right;
 	
+    @Column(name = "type")
+    public int type;
+
 	@Transient
 	public CategoryTree<T> children;
 
@@ -37,11 +43,28 @@ public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
 			children = new CategoryTree<T>();
 		}
 		category.parent = (T)this;
+        category.type = this.type;
 		children.add(category);
 	}
 	
 	public boolean hasChildren() {
 		return children != null && !children.isEmpty();
 	}
-	
+
+    public boolean isExpense() {
+        return type == TYPE_EXPENSE;
+    }
+
+    public boolean isIncome() {
+        return type == TYPE_INCOME;
+    }
+
+    public void makeThisCategoryIncome() {
+        this.type = TYPE_INCOME;
+    }
+
+    public void makeThisCategoryExpense() {
+        this.type = TYPE_EXPENSE;
+    }
+
 }

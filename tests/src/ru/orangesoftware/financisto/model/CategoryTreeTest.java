@@ -1,37 +1,44 @@
-package ru.orangesoftware.financisto.test.recur;
+package ru.orangesoftware.financisto.model;
 
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.CategoryTree;
 import android.test.AndroidTestCase;
 
 public class CategoryTreeTest extends AndroidTestCase {
 
 	private CategoryTree<Category> tree;
 	private Category a;
-	private Category b;
-	private Category b1;
-	private Category c;
-	
-	@Override
+
+    @Override
 	protected void setUp() throws Exception {
-		a = createCategory(1, 1, 8);
+		a = createIncomeCategory(1, 1, 8);
 		a.title = "ZZZ";
 		a.addChild(createCategory(2, 2, 3));
 		a.addChild(createCategory(3, 4, 5));
 		a.addChild(createCategory(4, 6, 7));
-		b = createCategory(5, 9, 16);
+        Category b = createCategory(5, 9, 16);
 		b.title = "YYY";
-		b1 = createCategory(6, 11, 15);
+        Category b1 = createExpenseCategory(6, 11, 15);
 		b.addChild(b1);
 		b1.addChild(createCategory(7, 11, 12));
 		b1.addChild(createCategory(8, 13, 14));
-		c = createCategory(9, 17, 18);
+        Category c = createIncomeCategory(9, 17, 18);
 		c.title = "XXX";
 		tree = new CategoryTree<Category>();
 		tree.add(a);
 		tree.add(b);
 		tree.add(c);
 	}
+
+    private Category createIncomeCategory(long id, int left, int right) {
+        Category c = createCategory(id, left, right);
+        c.makeThisCategoryIncome();
+        return c;
+    }
+
+    private Category createExpenseCategory(long id, int left, int right) {
+        Category c = createCategory(id, left, right);
+        c.makeThisCategoryExpense();
+        return c;
+    }
 
 	private Category createCategory(long id, int left, int right) {
 		Category c = new Category(id);
@@ -40,7 +47,26 @@ public class CategoryTreeTest extends AndroidTestCase {
 		return c;
 	}
 
-	public void testShouldMoveCategoryWithNoChildrenUpCorrectly() {
+    public void testShouldCheckThatAddingChildCategoryAutomaticallyPopulatesCorrectType() {
+        assertTypesOfAllNodes();
+    }
+
+    private void assertTypesOfAllNodes() {
+        for (Category c : tree) {
+            assertTheSameTypeForAllChildren(c);
+        }
+    }
+
+    private void assertTheSameTypeForAllChildren(Category parent) {
+        if (parent.hasChildren()) {
+            for (Category child : parent.children) {
+                assertEquals("Parent and child should be of the same type", parent.type, child.type);
+                assertTheSameTypeForAllChildren(child);
+            }
+        }
+    }
+
+    public void testShouldMoveCategoryWithNoChildrenUpCorrectly() {
 		CategoryTree<Category> tree = a.children;
 		assertFalse(tree.moveCategoryUp(tree.size()));
 		assertFalse(tree.moveCategoryUp(-1));
@@ -54,6 +80,7 @@ public class CategoryTreeTest extends AndroidTestCase {
 		assertEquals(2, a1.id);
 		assertEquals(4, a1.left);
 		assertEquals(5, a1.right);
+        assertTypesOfAllNodes();
 	}
 	
 	public void testShouldMoveCategoryWithNoChildrenDownCorrectly() {
@@ -70,6 +97,7 @@ public class CategoryTreeTest extends AndroidTestCase {
 		assertEquals(2, a1.id);
 		assertEquals(4, a1.left);
 		assertEquals(5, a1.right);
+        assertTypesOfAllNodes();
 	}
 	
 	public void testShouldMoveCategoryWithChildrenUpCorrectly() {
@@ -91,6 +119,7 @@ public class CategoryTreeTest extends AndroidTestCase {
 		assertEquals(2, a1.id);
 		assertEquals(10, a1.left);
 		assertEquals(11, a1.right);
+        assertTypesOfAllNodes();
 	}
 
 	public void testShouldMoveCategoryWithChildrenDownCorrectly() {
@@ -112,6 +141,7 @@ public class CategoryTreeTest extends AndroidTestCase {
 		assertEquals(2, a1.id);
 		assertEquals(10, a1.left);
 		assertEquals(11, a1.right);
+        assertTypesOfAllNodes();
 	}
 
 	public void testShouldMoveCategoryWithNoChildrenToTopCorrectly() {
@@ -128,6 +158,7 @@ public class CategoryTreeTest extends AndroidTestCase {
 		assertEquals(2, a1.id);
 		assertEquals(4, a1.left);
 		assertEquals(5, a1.right);
+        assertTypesOfAllNodes();
 	}
 
 	public void testShouldMoveCategoryWithNoChildrenToBottomCorrectly() {
@@ -144,6 +175,7 @@ public class CategoryTreeTest extends AndroidTestCase {
 		assertEquals(3, a2.id);
 		assertEquals(6, a2.left);
 		assertEquals(7, a2.right);
+        assertTypesOfAllNodes();
 	}
 	
 	public void testShouldMoveCategoryWithChildrenToTopCorrectly() {
@@ -164,7 +196,8 @@ public class CategoryTreeTest extends AndroidTestCase {
 		Category a1 = a.children.getAt(0);
 		assertEquals(2, a1.id);
 		assertEquals(10, a1.left);
-		assertEquals(11, a1.right);		
+		assertEquals(11, a1.right);
+        assertTypesOfAllNodes();
 	}
 	
 	public void testShouldMoveCategoryWithChildrenToBottomCorrectly() {
@@ -186,6 +219,7 @@ public class CategoryTreeTest extends AndroidTestCase {
 		assertEquals(2, a1.id);
 		assertEquals(12, a1.left);
 		assertEquals(13, a1.right);
+        assertTypesOfAllNodes();
 	}
 	
 	public void testShouldSortByTitle() {
@@ -197,5 +231,6 @@ public class CategoryTreeTest extends AndroidTestCase {
 		assertEquals(5, b.id);
 		Category a = tree.getAt(2);
 		assertEquals(1, a.id);
+        assertTypesOfAllNodes();
 	}
 }

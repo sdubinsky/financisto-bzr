@@ -36,7 +36,13 @@ public class NodeInflater {
 		this.inflater = inflater;
 	}
 
-	public class Builder {
+    public View addDivider(LinearLayout layout) {
+        View divider = inflater.inflate(R.layout.edit_divider, layout, false);
+        layout.addView(divider);
+        return divider;
+    }
+
+    public class Builder {
 		protected final LinearLayout layout;
 		protected final View v;
 		
@@ -96,14 +102,13 @@ public class NodeInflater {
 		public View create() {
 			layout.addView(v);
 			if (divider) {
-				View divider = inflater.inflate(R.layout.edit_divider, layout, false);
-				layout.addView(divider);
-				v.setTag(divider);
-			}
+                View dividerView = addDivider(layout);
+                v.setTag(dividerView);
+            }
 			return v;
 		}
-		
-	}
+
+    }
 	
 	public class EditBuilder extends Builder {
 

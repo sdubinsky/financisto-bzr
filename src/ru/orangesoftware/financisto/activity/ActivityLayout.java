@@ -65,7 +65,9 @@ public class ActivityLayout {
 	public TextView addInfoNode(LinearLayout layout, int id, int labelId, int defaultValueResId) {
 		Builder b = inflater.new Builder(layout, R.layout.select_entry_simple);
 		View v = b.withId(id, listener).withLabel(labelId).withData(defaultValueResId).create();
-		return (TextView)v.findViewById(R.id.data);
+        TextView data = (TextView)v.findViewById(R.id.data);
+        data.setTag(v);
+		return data;
 	}
 	
 	public TextView addInfoNode(LinearLayout layout, int id, int labelId, String defaultValue) {
@@ -92,7 +94,9 @@ public class ActivityLayout {
 	public TextView addListNode(LinearLayout layout, int id, int labelId, int defaultValueResId) {
 		Builder b = inflater.new Builder(layout, R.layout.select_entry);
 		View v = b.withId(id, listener).withLabel(labelId).withData(defaultValueResId).create();
-		return (TextView)v.findViewById(R.id.data);
+        TextView data = (TextView)v.findViewById(R.id.data);
+        data.setTag(v);
+		return data;
 	}
 
 	public TextView addListNode(LinearLayout layout, int id, int labelId, String defaultValue) {
@@ -160,27 +164,12 @@ public class ActivityLayout {
 		return (ImageView)v.findViewById(R.id.picture);
 	}
 
-	public View addEditNode(LinearLayout layout, View view) {
-		EditBuilder b = inflater.new EditBuilder(layout, view);
-		return b.create();
-	}
-
 	public View addEditNode(LinearLayout layout, int labelId, View view) {
 		EditBuilder b = inflater.new EditBuilder(layout, view);
 		return b.withLabel(labelId).create();
 	}
 
-	public View addEditNode(LinearLayout layout, String label, View view) {
-		EditBuilder b = inflater.new EditBuilder(layout, view);
-		return b.withLabel(label).create();
-	}
-
-	public View addEditNodeWithoutDivider(LinearLayout layout, int labelId, View view) {
-		EditBuilder b = inflater.new EditBuilder(layout, view);
-		return b.withLabel(labelId).withNoDivider().create();
-	}
-	
-	private void selectSingleChoice(Context context, int titleId, ListAdapter adapter, int checkedItem, 
+	private void selectSingleChoice(Context context, int titleId, ListAdapter adapter, int checkedItem,
 			DialogInterface.OnClickListener onClickListener) {
 		new AlertDialog.Builder(context)
 		.setSingleChoiceItems(adapter, checkedItem, onClickListener)
@@ -260,4 +249,7 @@ public class ActivityLayout {
 		});
 	}
 
+    public void addDivider(LinearLayout layout) {
+        inflater.addDivider(layout);
+    }
 }

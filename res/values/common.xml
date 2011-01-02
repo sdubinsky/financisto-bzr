@@ -23,6 +23,8 @@
 	<color name="unreconciled_transaction_color">#737373</color>	
 	<color name="reconciled_transaction_color">#006a25</color>	
 	<color name="cleared_transaction_color">#79c471</color>	
+    <color name="category_type_income">#39b54a</color>
+    <color name="category_type_expense">#f26522</color>
 	<dimen name="picker_width">62dp</dimen>
 	<dimen name="calculator_button_width">50dp</dimen>
 	<dimen name="calculator_button_height">50dp</dimen>

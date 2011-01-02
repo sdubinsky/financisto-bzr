@@ -555,7 +555,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				break;
 			case R.id.category:
 				x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter, 
-						CategoryViewColumns.ID, selectedCategoryId);				
+						CategoryViewColumns._id.name(), selectedCategoryId);
 				break;
 			case R.id.category_add: {
 				Intent intent = new Intent(this, CategoryActivity.class);
@@ -668,24 +668,28 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 	
 	protected void selectCategory(long categoryId, boolean selectLast) {
-		if (Utils.moveCursor(categoryCursor, CategoryViewColumns.ID, categoryId) != -1) {
-			String title = categoryCursor.getString(CategoryViewColumns.Indicies.TITLE);
-			int level = categoryCursor.getInt(CategoryViewColumns.Indicies.LEVEL);
-			categoryText.setText(Category.getTitle(title, level));				
+		if (Utils.moveCursor(categoryCursor, CategoryViewColumns._id.name(), categoryId) != -1) {
+            Category category = Category.formCursor(categoryCursor);
+			categoryText.setText(Category.getTitle(category.title, category.level));
 			selectedCategoryId = categoryId;
 			addAttributes();
+            switchIncomeExpenseButton(category);
 			if (selectLast && isRememberLastLocation) {
-				long locationId = categoryCursor.getLong(CategoryViewColumns.Indicies.LAST_LOCATION_ID);
+				long locationId = categoryCursor.getLong(CategoryViewColumns.last_location_id.ordinal());
 				selectLocation(locationId);
 			}
 			if (selectLast && isRememberLastProject) {
-				long projectId = categoryCursor.getLong(CategoryViewColumns.Indicies.LAST_PROJECT_ID);
+				long projectId = categoryCursor.getLong(CategoryViewColumns.last_project_id.ordinal());
 				selectProject(projectId);
 			}
 		}
 	}
 
-	protected void selectProject(long projectId) {
+    protected void switchIncomeExpenseButton(Category category) {
+
+    }
+
+    protected void selectProject(long projectId) {
 		if (isShowProject) {
 			Project p = MyEntity.find(projects, projectId);
 			selectProject(p);
@@ -748,7 +752,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			switch (requestCode) {
 				case NEW_CATEGORY_REQUEST:
 					categoryCursor.requery();
-					long categoryId = data.getLongExtra(CategoryColumns.ID, -1);
+					long categoryId = data.getLongExtra(CategoryColumns._id.name(), -1);
 					if (categoryId != -1) {
 						selectCategory(categoryId);
 					}

@@ -128,9 +128,9 @@ public class CategoryByPeriodReport extends Report2DChart {
 			try {
 				long categoryId = filterIds.get(currentFilterOrder);
 				Category parent = em.getCategory(categoryId);
-				String where = CategoryColumns.LEFT+" BETWEEN ? AND ?";
+				String where = CategoryColumns.left+" BETWEEN ? AND ?";
 				String[] pars = new String[]{String.valueOf(parent.left), String.valueOf(parent.right)};
-				cursor = db.query(DatabaseHelper.CATEGORY_TABLE, new String[]{CategoryColumns.ID}, where, pars, null, null, null);
+				cursor = db.query(DatabaseHelper.CATEGORY_TABLE, new String[]{CategoryColumns._id.name()}, where, pars, null, null, null);
 				int[] categories = new int[cursor.getCount()+1];
 				int i=0;
 				while (cursor.moveToNext()) {

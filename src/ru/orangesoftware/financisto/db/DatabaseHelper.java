@@ -151,47 +151,29 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 
 	}
 	
-	public static class CategoryColumns {
-		public static final String ID = "_id";		
-		public static final String TITLE = "title";		
-		public static final String LEFT = "left";
-		public static final String RIGHT = "right";		
-		public static final String LAST_LOCATION_ID = "last_location_id";
-		public static final String LAST_PROJECT_ID = "last_project_id";
-		public static final String SORT_ORDER = "sort_order";
-
-		public static class Indicies {
-			public static final int ID = 0;
-			public static final int TITLE = 1;
-			public static final int LEFT = 2;
-			public static final int RIGHT = 3;
-		}
+	public static enum CategoryColumns {
+		_id,
+		title,
+		left,
+		right,
+        type,
+		last_location_id,
+		last_project_id,
+		sort_order
 	}
 
-	public static class CategoryViewColumns extends CategoryColumns {
-		public static final String LEVEL = "level";
-		
-		public static String[] NORMAL_PROJECTION = {
-			ID,
-			TITLE,
-			LEVEL,
-			LEFT,
-			RIGHT,
-			LAST_LOCATION_ID,
-			LAST_PROJECT_ID,
-			SORT_ORDER
-		};
-		
-		public static class Indicies {
-			public static final int ID = 0;
-			public static final int TITLE = 1;		
-			public static final int LEVEL = 2;
-			public static final int LEFT = 3;
-			public static final int RIGHT = 4;			
-			public static final int LAST_LOCATION_ID = 5;
-			public static final int LAST_PROJECT_ID = 6;
-			public static final int SORT_ORDER = 7;
-		}
+	public static enum CategoryViewColumns {
+        _id,
+        title,
+        level,
+        left,
+        right,
+        type,
+        last_location_id,
+        last_project_id,
+        sort_order;
+
+		public static String[] NORMAL_PROJECTION = asStringArray(CategoryViewColumns.values());
 	}
 
 	public static class EntityColumns {

@@ -12,17 +12,17 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.utils;
 
-import java.util.List;
-import java.util.Locale;
-
-import ru.orangesoftware.financisto.activity.AbstractTransactionActivity;
-import ru.orangesoftware.financisto.model.Currency;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import ru.orangesoftware.financisto.model.Currency;
+
+import java.util.List;
+import java.util.Locale;
 
 public class MyPreferences {
 
@@ -123,7 +123,7 @@ public class MyPreferences {
 
     public static boolean isShowTakePicture(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean("ntsl_show_picture", true);
+        return isCameraSupported(context) && sharedPreferences.getBoolean("ntsl_show_picture", true);
     }
 
     public static boolean isShowPayee(Context context) {
@@ -138,7 +138,7 @@ public class MyPreferences {
 
 	public static boolean isShowLocation(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		return sharedPreferences.getBoolean("ntsl_show_location", true);
+		return isLocationSupported(context) && sharedPreferences.getBoolean("ntsl_show_location", true);
 	}
 
 	public static int getLocationOrder(Context context) {
@@ -183,7 +183,6 @@ public class MyPreferences {
 	/**
 	 * Gets the reference currency registered on preferences to display chart reports.
 	 * @param context The activity context
-	 * @param dbAdapter Database adapter to query data from database
 	 * @return The currency registered as a reference to display chart reports or null if not configured yet.
 	 */
 	public static Currency getReferenceCurrency(Context context) {
@@ -333,8 +332,30 @@ public class MyPreferences {
         Log.i("MyPreferences", "Switching locale to "+conf.locale.getDisplayName());
         res.updateConfiguration(conf, dm);
 	}
-	
-	/**
+
+    public static boolean isCameraSupported(Context context) {
+        return isFeatureSupported(context, PackageManager.FEATURE_CAMERA);
+    }
+
+    public static boolean isLocationSupported(Context context) {
+        return isFeatureSupported(context, PackageManager.FEATURE_LOCATION);
+    }
+
+    public static boolean isLocationNetworkSupported(Context context) {
+        return isFeatureSupported(context, PackageManager.FEATURE_LOCATION_NETWORK);
+    }
+
+    public static boolean isLocationGPSSupported(Context context) {
+        return isFeatureSupported(context, PackageManager.FEATURE_LOCATION_GPS);
+    }
+
+    private static boolean isFeatureSupported(Context context, String feature) {
+        PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature(feature);
+    }
+
+
+    /**
 	 * 
 	 * @param context
 	 * @return

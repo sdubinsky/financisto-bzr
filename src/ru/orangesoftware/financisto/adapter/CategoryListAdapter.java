@@ -38,9 +38,9 @@ public class CategoryListAdapter extends ResourceCursorAdapter {
 	
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		long id = cursor.getLong(CategoryViewColumns.Indicies.ID);
-		int level = cursor.getInt(CategoryViewColumns.Indicies.LEVEL);
-		String title = cursor.getString(CategoryViewColumns.Indicies.TITLE);
+		long id = cursor.getLong(CategoryViewColumns._id.ordinal());
+		int level = cursor.getInt(CategoryViewColumns.level.ordinal());
+		String title = cursor.getString(CategoryViewColumns.title.ordinal());
 		TextView labelView = (TextView)view.findViewById(android.R.id.text1);
 		if (labelView != null) {
 			labelView.setText(Category.getTitle(title, level));

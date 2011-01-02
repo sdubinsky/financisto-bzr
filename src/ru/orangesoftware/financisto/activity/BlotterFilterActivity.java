@@ -260,7 +260,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ListAdapter adapter = TransactionUtils.createCategoryAdapter(db, this, cursor);
 			Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
 			long selectedId = c != null ? c.getLongValue1() : -1;
-			x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns.LEFT, selectedId);
+			x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns.left.name(), selectedId);
 		} break;
 		case R.id.category_clear:
 			clear(BlotterFilter.CATEGORY_LEFT, category);

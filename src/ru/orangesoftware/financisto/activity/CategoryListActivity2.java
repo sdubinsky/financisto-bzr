@@ -103,7 +103,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 		attributes = db.getAllAttributesMap();
 		updateAdapter();
 		long t1 = System.currentTimeMillis();
-		Log.d("CategoryListActivity", "Requery in "+(t1-t0)+"ms");
+		Log.d("CategoryListActivity2", "Requery in "+(t1-t0)+"ms");
 	}
 
 	private void updateAdapter() {

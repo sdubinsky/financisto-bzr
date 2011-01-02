@@ -616,5 +616,6 @@
     <string name="report_no_payee">There is no payee available for filtering in the report.</string>
     <string name="donate">Make a donation</string>
     <string name="donate_error">Android Market is not available on your device</string>
+    <string name="type">Type</string>
 
 </resources>

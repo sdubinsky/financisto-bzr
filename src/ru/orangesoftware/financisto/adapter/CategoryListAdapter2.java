@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import android.graphics.Color;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryTree;
@@ -40,12 +41,16 @@ public class CategoryListAdapter2 extends BaseAdapter {
 	
 	private final Drawable expandedDrawable;
 	private final Drawable collapsedDrawable;
+    private final int incomeColor;
+    private final int expenseColor;
 	
 	public CategoryListAdapter2(Context context, CategoryTree<Category> categories) {
 		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.categories = categories;
 		this.expandedDrawable = context.getResources().getDrawable(R.drawable.expander_ic_maximized);
 		this.collapsedDrawable = context.getResources().getDrawable(R.drawable.expander_ic_minimized);
+        this.incomeColor = context.getResources().getColor(R.color.category_type_income);
+        this.expenseColor = context.getResources().getColor(R.color.category_type_expense);
 		recreatePlainList();
 	}
 	
@@ -90,6 +95,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 		} else {
 			h = (Holder)convertView.getTag();
 		}
+        TextView indicator = h.indicator;
 		ImageView span = h.span;
 		TextView title = h.title;
 		TextView label = h.label;
@@ -116,7 +122,14 @@ public class CategoryListAdapter2 extends BaseAdapter {
 			label.setVisibility(View.VISIBLE);
 		} else {
 			label.setVisibility(View.GONE);
-		}		
+		}
+        if (c.isIncome()) {
+            indicator.setBackgroundColor(incomeColor);
+        } else if (c.isExpense()) {
+            indicator.setBackgroundColor(expenseColor);
+        } else {
+            indicator.setBackgroundColor(Color.WHITE);
+        }
 		return convertView;
 	}
 	
@@ -166,12 +179,14 @@ public class CategoryListAdapter2 extends BaseAdapter {
 
 	private static class Holder {
 		
+        public TextView indicator;
 		public ImageView span;
 		public TextView title;
 		public TextView label;
 
 		public static Holder create(View convertView) {
 			Holder h = new Holder();
+            h.indicator = (TextView)convertView.findViewById(R.id.indicator);
 			h.span = (ImageView)convertView.findViewById(R.id.span);
 			h.title = (TextView)convertView.findViewById(R.id.line1);
 			h.label = (TextView)convertView.findViewById(R.id.label);

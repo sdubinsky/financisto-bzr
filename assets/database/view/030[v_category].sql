@@ -4,6 +4,7 @@ SELECT
 	node.title as title,
 	node.left as left,
 	node.right as right,
+	node.type as type,
 	node.last_location_id as last_location_id,
 	node.last_project_id as last_project_id,
 	node.sort_order as sort_order,

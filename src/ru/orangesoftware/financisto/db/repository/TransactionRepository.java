@@ -496,8 +496,8 @@ public class TransactionRepository {
 	}
 	
 	public Category getCategory(long id) {
-		Cursor c = db.query(V_CATEGORY, new String[]{CategoryViewColumns.LEFT, CategoryViewColumns.RIGHT}, 
-				CategoryViewColumns.ID+"=?", new String[]{String.valueOf(id)}, null, null, null);
+		Cursor c = db.query(V_CATEGORY, new String[]{CategoryViewColumns.left.name(), CategoryViewColumns.right.name()},
+				CategoryViewColumns._id+"=?", new String[]{String.valueOf(id)}, null, null, null);
 		try {
 			if (c.moveToNext()) {				
 				Category cat = new Category();
