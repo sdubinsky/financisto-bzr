@@ -8,6 +8,8 @@
   
   Contributors:
       Denis Solonenko - initial API and implementation
+      Abdsandryk Souza - bill filtering, report 2D chart
+      Rodrigo Sousa - google docs backup
 -->
 <resources>
     <string name="accounts">Conti</string>
@@ -148,12 +150,40 @@
 	<string name="report_by_location_summary">Rapporti transazioni per posizione</string>
 	<string name="report_by_project">Per progetto</string>
 	<string name="report_by_project_summary">Rapporti transazioni per posizione</string>
+	
+	<string name="report_by_account_by_period">Per conto / periodo</string>
+	<string name="report_by_account_by_period_summary">Rapporti transazioni per conto e periodo</string>
+	<string name="report_by_category_by_period">Per categoria / periodo</string>
+	<string name="report_by_category_by_period_summary">Rapporti transazioni per categoria e periodo</string>
+	<string name="report_by_location_by_period">Per posizione / periodo</string>
+	<string name="report_by_location_by_period_summary">Rapporti transazioni per posizione e periodo</string>
+	<string name="report_by_project_by_period">Per progetto / periodo</string>
+	<string name="report_by_project_by_period_summary">Rapporti transazioni per progetto e periodo</string>
 	<string-array name="report_types">
 		<item>Per periodo</item>
 		<item>Per categoria</item>		
 		<item>Per posizione</item>
 		<item>Per progetto</item>
+		<item>Per conto/periodo</item>
+		<item>Per categoria/periodo</item>
+		<item>Per posizione/periodo</item>
+		<item>Per progetto/periodo</item>
 	</string-array>
+	<string name="period_today">Oggi</string>
+	<string name="period_yesterday">Ieri</string>
+	<string name="period_this_week">Questa settimana</string>
+	<string name="period_this_month">Questo mese</string>
+	<string name="period_last_week">Ultima settimana</string>
+	<string name="period_last_month">Ultimo mese</string>
+	<string name="report_preferences_not_set">Aggiusta le preferenze nelle impostazioni. Considerando la valuta e il periodo predefiniti.</string>
+	<string name="currency_not_set">Valuta di riferimento non impostata nelle preferenze. Considera il periodo predefinito.</string>
+	<string name="period_not_set">Periodo di riferimento non impostato nelle preferenze. Considera il periodo predefinito.</string>
+	<string name="report_no_category">Non ci sono categorie disponibili per filtrare il rapporto.</string>
+	<string name="report_no_project">Non ci sono progetti disponibili per filtrare il rapporto.</string>
+	<string name="report_no_account">Non ci sono conti disponibili per filtrare il rapporto.</string>
+	<string name="report_no_location">Non ci sono posizioni disponibili per filtrare il rapporto.</string>
+	<string name="no_account">Nessun conto</string>
+	
 	<string name="period_today">Oggi</string>
 	<string name="period_yesterday">Ieri</string>
 	<string name="period_this_week">Questa settimana</string>
@@ -179,6 +209,8 @@
 	<string name="decimals">\nDecimali</string>
 	<string name="decimal_separator">Separatore\ndecimali</string>
 	<string name="group_separator">Separatore\ngruppo</string>
+	<string name="field_separator">Separatore\ncampo</string>
+	<string name="include_header">Includi\nheader</string>
 	<string name="delete_account_confirm">Eliminare conto?</string>
 	<string name="delete_transaction_confirm">Eliminare transazione?</string>
 	<string name="delete_budget_confirm">Eliminare budget?</string>
@@ -256,6 +288,12 @@
 	<string name="gdocs_login_failed">Account Google non valido.</string>
 	<string name="gdocs_backup_failed">Errore inviando il backuo a Google Docs. Riprova.</string>
 	<string name="gdocs_restore_failed">Errore recuperando il file di backup. Riprova.</string>
+	
+    <string name="gdocs_folder_error">Errore nell\'accesso a Google Docs.</string>
+    <string name="gdocs_service_error">Errore nel servizio Google Docs.</string>
+    <string name="gdocs_io_error">Errore di comunicazione con Google Docs.</string>
+    <string name="package_info_error">Impossibile recuperare le informazioni de</string>	
+
 	<string name="success">Completato!</string>
 	<string name="fail">Fallito...</string>
 	<string name="duplicate">Copia</string>
@@ -270,6 +308,7 @@
 	<string name="duplicate_success_with_multiplier">Transazione copiata con data ed ora attuali (x%d)</string>	
 	<string name="no_category">Nessuna categoria</string>
 	<string name="no_project">Nessun progetto</string>
+	<string name="no_period">Nessun periodo</string>
 	<string name="current_location">Posizione corrente</string>
 	<string name="protection">Protezione</string>
 	<string name="transaction_screen">Nuova transazione</string>
@@ -361,6 +400,70 @@
 	<string name="user_password_summary">Password dell\'account Google</string>
 	<string name="backup_folder">Cartella backup</string>
 	<string name="backup_folder_summary">Il nome della cartella di Google Docs dove salvare il backup.</string>
+
+    <string name="report_preferences">Preferenze Rapporti</string>
+    <string name="all_reports_preferences">Preferenze Generali Rapporti</string>
+    <string name="category_by_period_preferences">Preferenze Rapporti Categoria per Periodo</string>
+    <string name="report_include_sub_categories">Include in lista le sottocategorie</string>
+	<string name="report_include_sub_categories_summary">Include le sottocategorie nelle liste delle categorie dei rapporti Categoria per Periodo</string>
+	<string name="report_add_sub_categories_result">Aggiungi esito sottocategorie</string>
+	<string name="report_add_sub_categories_result_summary">Aggiungi i risultati delle sottocategorie, in quelli delle categorie.</string>
+	<string name="report_consider_null_results">Considera valori nulli nelle statistiche.</string>
+	<string name="report_consider_null_results_summary">Considera valori nulli nella generazione delle statistiche (min, max e medio).</string>
+	<string name="report_include_no_filter">Includi Nessun &lt;Filtro&gt;</string>
+	<string name="report_include_no_filter_summary">Includi le transazioni non classificate nei filtri dei rapporti (Nessuna categoria, Nessun progetto e Posizione sconosciuta)</string>
+	<string name="report_reference_month">Mese di Riferimento</string>
+	<string name="report_reference_month_summary">Definisco il mese di riferimento che rappresenti la fine del periodo dei rapporti.</string>
+	<string name="report_last_quarter">Ultimo trimestre</string>
+	<string name="report_last_half_year">Ultimo semestre</string>
+	<string name="report_last_9_months">Ultimi 9 mesi</string>
+	<string name="report_last_year">Ultimo anno</string>
+	<string-array name="report_reference_month_entities">
+        <item>6 mesi fa</item>
+        <item>3 mesi fa</item>
+        <item>Ultimo mese</item>
+        <item>Mese corrente</item>
+        <item>Prossimo mese</item>
+        <item>3 mesi dopo</item>
+        <item>6 mesi dopo</item>
+    </string-array>
+	<string name="report_reference_period">Periodo di Riferimento</string>
+	<string name="report_reference_period_summary">Definisce il periodo di riferimento (numero o mesi) da considerare quando si aprono le statistiche rapporti.</string>
+	<string-array name="report_reference_period_entities">
+        <item>3 mesi</item>
+        <item>6 mesi</item>
+        <item>9 mesi</item>
+        <item>1 anni</item>
+    </string-array>
+	<string name="report_reference_currency">Valuta di Riferimento</string>
+	<string name="report_reference_currency_summary">Definisci la valura di riferimento da considerare quando sono richiesti i dati delle stasistiche rapporti.</string>
+	<string name="report_last_n_months">Ultimi $n mesi</string>
+	<string name="report_n_months_var">$n</string>
+	<string name="month_jan">GEN</string>
+	<string name="month_feb">FEB</string>
+	<string name="month_mar">MAR</string>
+	<string name="month_apr">APR</string>
+	<string name="month_mai">MAG</string>
+	<string name="month_jun">GIU</string>
+	<string name="month_jul">LUG</string>
+	<string name="month_aug">AGO</string>
+	<string name="month_sep">SET</string>
+	<string name="month_oct">OTT</string>
+	<string name="month_nov">NOV</string>
+	<string name="month_dec">DIC</string>
+	<string name="month_x_jan">Gennaio</string>
+	<string name="month_x_feb">Febbraio</string>
+	<string name="month_x_mar">Marzo</string>
+	<string name="month_x_apr">Aprile</string>
+	<string name="month_x_mai">Maggio</string>
+	<string name="month_x_jun">Giugno</string>
+	<string name="month_x_jul">Luglio</string>
+	<string name="month_x_aug">Agosto</string>
+	<string name="month_x_sep">Settembre</string>
+	<string name="month_x_oct">Ottobre</string>
+	<string name="month_x_nov">Novembre</string>
+	<string name="month_x_dec">Dicembre</string>	
+	
 	<string name="other">Altro</string>
 	<string name="send_error_reports">Invia rapporto errori</string>
 	<string name="send_error_reports_summary">Invia anonimanente i rapporti d\'errori ad orangesoftware.ru (necessita riavvio)</string>	
@@ -462,7 +565,6 @@
 	<string name="include_transfers_into_reports_summary">Includi i trasferimenti nei rapporti</string>
 	<string name="negative_opening_amount">Importo iniziale negativo</string>
 	<string name="negative_opening_amount_summary">Apri il conto con un importo negativo</string>
-
 	<string name="payment_day">Giorno pagamento</string>
 	<string name="closing_day">Giorno chiusura</string>
 	<string name="closing_day_hint">Giorno di chiusura conto</string>
@@ -487,6 +589,7 @@
 	<string name="enter_pin">Inserisci PIN</string>
 	<string name="mass_operations">Operazioni</string>
 	<string name="card_issuer_unionpay">UnionPay</string>
+	<string name="account_type_paypal">PayPal</string>
 	<string name="mass_operations_use_filter">Usa un filtro per cercare le transazioni</string>
 	<string name="mass_operations_clear_all">Pulisci tutto</string>			
 	<string name="mass_operations_reconcile">Riconcilia tutto</string>		
@@ -499,6 +602,20 @@
 	<string name="scheduled_transactions_restored">Le transazioni programmate sono state ripristinate</string>		
 	<string name="scheduled_transactions_have_been_restored">%d transazioni programmate dimenticate sono state ripristinate. Usa le operazioni di massa per pulirle o eliminarle.</string>
 	<string name="restore_missed_scheduled_transactions">Ripristina programmazioni mancanti</string>		
-	<string name="restore_missed_scheduled_transactions_summary">Le transazioni programmate mancanti verranno ripristinate con lo status \'Ripristinate\'</string>	
+	<string name="restore_missed_scheduled_transactions_summary">Le transazioni programmate mancanti verranno ripristinate con lo status \'Ripristinate\'</string>
+	
+	<string name="save_and_new">Salva & Nuovo</string>
+    <string name="show_picture">Mostra \'Cattura foto\'</string>
+    <string name="show_picture_summary">Mostra box \'Cattura foto\'</string>
+    <string name="payees">Beneficiari</string>
+    <string name="report_by_payee">Per beneficiario</string>
+	<string name="report_by_payee_summary">Rapporti transazioni per beneficiario</string>
+    <string name="report_by_payee_by_period">Per beneficiario / periodo</string>
+    <string name="report_by_payee_by_period_summary">Rapporti transazioni per beneficiario e periodo</string>
+    <string name="no_payee">Nessun beneficiario</string>
+    <string name="report_no_payee">Non ci sono beneficiari disponibili per filtrare il rapporto.</string>
+    <string name="donate">Fai una donazione</string>
+    <string name="donate_error">Il Market Android non è disponibile nel tuo dispositivo</string>
+    <string name="type">Tipo</string>	
 	
 </resources>
