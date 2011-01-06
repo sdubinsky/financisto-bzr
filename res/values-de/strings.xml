@@ -143,22 +143,22 @@
     <string name="select_report">Bitte Bericht auswählen</string>
     <string name="overall">Gesamt</string>
     <string name="report_by_period">Nach Zeitraum</string>
-    <string name="report_by_period_summary">Transaktionensberichte nach Zeitraum</string>
+    <string name="report_by_period_summary">Transaktionsberichte nach Zeitraum</string>
     <string name="report_by_category">Nach Kategorie</string>
-    <string name="report_by_category_summary">Transaktionensberichte nach Kategorie</string>
+    <string name="report_by_category_summary">Transaktionsberichte nach Kategorie</string>
     <string name="report_by_location">Nach Ort</string>
-    <string name="report_by_location_summary">Transaktionensberichte nach Ort</string>
+    <string name="report_by_location_summary">Transaktionsberichte nach Ort</string>
     <string name="report_by_project">Nach Projekt</string>
-    <string name="report_by_project_summary">Transaktionensberichte nach Projekt</string>
+    <string name="report_by_project_summary">Transaktionsberichte nach Projekt</string>
 
     <string name="report_by_account_by_period">Nach Konto / Zeitraum</string>
-    <string name="report_by_account_by_period_summary">Transaktionensberichte nach Konto und Zeitraum</string>
+    <string name="report_by_account_by_period_summary">Transaktionsberichte nach Konto und Zeitraum</string>
     <string name="report_by_category_by_period">Nach Kategorie / Zeitraum</string>
-    <string name="report_by_category_by_period_summary">Transaktionensberichte nach Kategorie und Zeitraum</string>
+    <string name="report_by_category_by_period_summary">Transaktionsberichte nach Kategorie und Zeitraum</string>
     <string name="report_by_location_by_period">Nach Ort / Zeitraum</string>
-    <string name="report_by_location_by_period_summary">Transaktionensberichte nach Ort und Zeitraum</string>
+    <string name="report_by_location_by_period_summary">Transaktionsberichte nach Ort und Zeitraum</string>
     <string name="report_by_project_by_period">Nach Projekt / Zeitraum</string>
-    <string name="report_by_project_by_period_summary">Transaktionensberichte nach Projekt und Zeitraum</string>
+    <string name="report_by_project_by_period_summary">Transaktionsberichte nach Projekt und Zeitraum</string>
     <string-array name="report_types">
         <item>Nach Zeitraum</item>
         <item>Nach Kategorie</item>        
@@ -510,11 +510,11 @@
     <string name="new_scheduled_transfer_text">Terminierter Transfer wurde erstellt</string>                    
     <string name="new_scheduled_transaction_title">Terminierte Transaktion</string>
     <string name="new_scheduled_transaction_text">Terminierte Transaktion wurde hinzugefügt</string>
-    <string name="new_scheduled_transaction_notification" formatted="false">%s wurde %s %s</string>
+    <string name="new_scheduled_transaction_notification">%1$s wurden %3$s %2$s</string>
     <string name="new_scheduled_transaction_debit">belastet</string>                    
     <string name="new_scheduled_transaction_credit">gutgeschrieben</string>                    
-    <string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) wurde transferiert von  %s nach %s</string>
-    <string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s wurde transferiert von  %s nach %s</string>
+    <string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) wurden transferiert von %s nach %s</string>
+    <string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s wurden transferiert von %s nach %s</string>
     
     <string name="notification">Mitteilung</string>        
     <string name="notification_options_on">An</string>    
@@ -602,5 +602,24 @@
     <string name="apply_mass_op" formatted="false">\'%s\' auf %d Transaktion(en) anwenden?</string>
     <string name="apply_mass_op_zero_count">Keine Transaktion ausgewählt</string>		
     <string name="entities">Instanzen</string>
+    <string name="transaction_status_restored">erstellt</string>
+    <string name="scheduled_transactions_restored">Terminierte Transaktionen erstellt</string>
+    <string name="scheduled_transactions_have_been_restored">%d ausgelassene terminierte Transatkionen wurden erstellt. Bitte nutzen Sie Massenoperationen um sie zu löschen oder deren Status zu ändern.</string>
+    <string name="restore_missed_scheduled_transactions">Erstellen ausgelassener terminierter Transaktionen</string>
+    <string name="restore_missed_scheduled_transactions_summary">Ausgelassene terminierte Transaktionen werden erstellt mit dem Status \'erstellt\'</string>
+
+    <string name="save_and_new">Speichern&amp;Neu</string>
+    <string name="show_picture">Zeige \'Bild anhängen\'</string>
+    <string name="show_picture_summary">Zeige \'Bild anhängen\' Box</string>
+    <string name="payees">Empfänger</string>
+    <string name="report_by_payee">nach Empfänger</string>
+    <string name="report_by_payee_summary">Transaktionsberichte nach Empfänger</string>
+    <string name="report_by_payee_by_period">Nach Emfänger / Zeitraum</string>
+    <string name="report_by_payee_by_period_summary">Transaktionsberichte nach Empfänger und Zeitraum</string>
+    <string name="no_payee">Kein Empfänger</string>
+    <string name="report_no_payee">Es existiert kein Empfänger um den Bericht zu filtern.</string>
+    <string name="donate">Spenden</string>
+    <string name="donate_error">Android Market ist auf dem Gerät nicht verfügbar</string>
+    <string name="type">Typ</string>
     
 </resources>
