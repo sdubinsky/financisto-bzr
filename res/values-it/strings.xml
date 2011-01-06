@@ -169,12 +169,6 @@
 		<item>Per posizione/periodo</item>
 		<item>Per progetto/periodo</item>
 	</string-array>
-	<string name="period_today">Oggi</string>
-	<string name="period_yesterday">Ieri</string>
-	<string name="period_this_week">Questa settimana</string>
-	<string name="period_this_month">Questo mese</string>
-	<string name="period_last_week">Ultima settimana</string>
-	<string name="period_last_month">Ultimo mese</string>
 	<string name="report_preferences_not_set">Aggiusta le preferenze nelle impostazioni. Considerando la valuta e il periodo predefiniti.</string>
 	<string name="currency_not_set">Valuta di riferimento non impostata nelle preferenze. Considera il periodo predefinito.</string>
 	<string name="period_not_set">Periodo di riferimento non impostato nelle preferenze. Considera il periodo predefinito.</string>
@@ -183,7 +177,7 @@
 	<string name="report_no_account">Non ci sono conti disponibili per filtrare il rapporto.</string>
 	<string name="report_no_location">Non ci sono posizioni disponibili per filtrare il rapporto.</string>
 	<string name="no_account">Nessun conto</string>
-	
+
 	<string name="period_today">Oggi</string>
 	<string name="period_yesterday">Ieri</string>
 	<string name="period_this_week">Questa settimana</string>
@@ -604,7 +598,7 @@
 	<string name="restore_missed_scheduled_transactions">Ripristina programmazioni mancanti</string>		
 	<string name="restore_missed_scheduled_transactions_summary">Le transazioni programmate mancanti verranno ripristinate con lo status \'Ripristinate\'</string>
 	
-	<string name="save_and_new">Salva & Nuovo</string>
+	<string name="save_and_new">Salva &amp; Nuovo</string>
     <string name="show_picture">Mostra \'Cattura foto\'</string>
     <string name="show_picture_summary">Mostra box \'Cattura foto\'</string>
     <string name="payees">Beneficiari</string>
