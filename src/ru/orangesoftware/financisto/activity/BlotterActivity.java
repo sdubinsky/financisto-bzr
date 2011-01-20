@@ -207,6 +207,7 @@ public class BlotterActivity extends AbstractListActivity {
 		}
 		Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
 		requeryCursor();
+        AccountWidget.updateWidgets(BlotterActivity.this);
 		return newId;
 	}
 

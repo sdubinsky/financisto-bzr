@@ -90,6 +90,7 @@ public class TransactionInfoDialog {
             if (ti.payee != null) {
                 add(layout, R.string.payee, ti.payee.title);
             }
+            add(layout, R.string.category, ti.category.title);
 			add(layout, R.string.amount, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
 		} else {
 			AccountType fromAccountType = AccountType.valueOf(ti.fromAccount.type);
@@ -98,8 +99,8 @@ public class TransactionInfoDialog {
 			AccountType toAccountType = AccountType.valueOf(ti.toAccount.type);
 			add(layout, R.string.account_to, ti.toAccount.title, toAccountType);
 			add(layout, R.string.amount_to, Utils.amountToString(ti.toAccount.currency, ti.toAmount));
+            add(layout, R.string.category, ti.category.title);
 		}
-		add(layout, R.string.category, ti.category.title);
 		List<TransactionAttributeInfo> attributes = em.getAttributesForTransaction(transactionId);
 		for (TransactionAttributeInfo tai : attributes) {
             String value = tai.getValue(parentActivity);
