@@ -78,11 +78,11 @@ public class TransactionActivity extends AbstractTransactionActivity {
             payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
             payeeText = new AutoCompleteTextView(this);
             payeeText.setThreshold(1);
-            payeeText.setAdapter(payeeAdapter);
             payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean hasFocus) {
                     if (hasFocus) {
+                        payeeText.setAdapter(payeeAdapter);
                         payeeText.selectAll();
                     }
                 }
