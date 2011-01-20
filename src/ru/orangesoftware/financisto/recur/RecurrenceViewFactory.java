@@ -193,12 +193,13 @@ public class RecurrenceViewFactory {
 
 		@Override
 		protected void stateToMap(HashMap<String, String> state) {
-			state.put(P_INTERVAL, geekyEditText.getText().toString());
+			state.put(P_INTERVAL, geekyEditText.getText().toString().toUpperCase());
 		}
 		
 		@Override
 		protected void stateFromMap(HashMap<String, String> state) {
-			geekyEditText.setText(state.get(P_INTERVAL));
+            String interval = state.get(P_INTERVAL);
+			geekyEditText.setText(interval != null ? interval.toUpperCase() : "");
 		}
 
 	}

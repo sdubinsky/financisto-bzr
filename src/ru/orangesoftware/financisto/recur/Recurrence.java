@@ -82,7 +82,7 @@ public class Recurrence {
 			try {
 				HashMap<String, String> map = RecurrenceViewFactory.parseState(pattern.params);
 				String rrule = map.get(RecurrenceViewFactory.P_INTERVAL);
-				return new RRule("RRULE:"+rrule);
+				return new RRule("RRULE:"+rrule.toUpperCase());
 			} catch (ParseException e) {
 				throw new IllegalArgumentException(pattern.params);
 			}
