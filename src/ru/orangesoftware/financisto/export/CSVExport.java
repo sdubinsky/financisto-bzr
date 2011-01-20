@@ -60,7 +60,7 @@ public class CSVExport extends Export {
 		if (includeHeader) {
 			Csv.Writer w = new Csv.Writer(bw).delimiter(fieldSeparator);
 			w.value("date").value("time").value("account").value("amount").value("currency");
-			w.value("category").value("parent").value("location").value("project").value("note");
+			w.value("category").value("parent").value("payee").value("location").value("project").value("note");
 			w.newLine();
 		}
 	}
@@ -99,20 +99,21 @@ public class CSVExport extends Export {
 			long fromAmount = cursor.getLong(BlotterColumns.from_amount.ordinal());
 			long toAmount = cursor.getLong(BlotterColumns.to_amount.ordinal());
 			String note = cursor.getString(BlotterColumns.note.ordinal());
-			writeLine(w, dt, fromAccountTitle, fromAmount, fromCurrencyId, category, "Transfer Out", project, note);
-			writeLine(w, dt, toAccountTitle, toAmount, toCurrencyId, category, "Transfer In", project, note);
+			writeLine(w, dt, fromAccountTitle, fromAmount, fromCurrencyId, category, "", "Transfer Out", project, note);
+			writeLine(w, dt, toAccountTitle, toAmount, toCurrencyId, category, "", "Transfer In", project, note);
 		} else {
 			String fromAccountTitle = cursor.getString(BlotterColumns.from_account_title.ordinal());
 			String note = cursor.getString(BlotterColumns.note.ordinal());
 			String location = cursor.getString(BlotterColumns.location.ordinal());
 			long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
 			long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
-			writeLine(w, dt, fromAccountTitle, amount, fromCurrencyId, category, location, project, note);
+            String payee = cursor.getString(BlotterColumns.payee.ordinal());
+			writeLine(w, dt, fromAccountTitle, amount, fromCurrencyId, category, payee, location, project, note);
 		}
 	}
 	
 	private void writeLine(Csv.Writer w, Date dt, String account, long amount, long currencyId, 
-			Category category, String location, String project, String note) {
+			Category category, String payee, String location, String project, String note) {
 		w.value(FORMAT_DATE_ISO_8601.format(dt));
 		w.value(FORMAT_TIME_ISO_8601.format(dt));
 		w.value(account);
@@ -122,6 +123,7 @@ public class CSVExport extends Export {
 		w.value(category != null ? category.title : "");
 		String sParent = buildPath(category);
 		w.value(sParent);
+        w.value(payee);
 		w.value(location);
 		w.value(project);
 		w.value(note);
@@ -132,11 +134,11 @@ public class CSVExport extends Export {
 		if (category == null || category.parent == null) {
 			return "";
 		} else {
-			String sParent = new String(category.parent.title);
+            StringBuilder sb = new StringBuilder(category.parent.title);
 			for (Category cat = category.parent.parent; cat != null; cat = cat.parent) {
-				sParent = cat.title + ":" + sParent;
+                sb.insert(0,":").insert(0, cat.title);
 			}
-			return sParent;
+			return sb.toString();
 		}
 	}
 
@@ -148,9 +150,4 @@ public class CSVExport extends Export {
 		return categoriesMap.get(id);
 	}
 	
-	public Category getCategoryParentById(HashMap<Long, Category> categoriesMap, long id) {
-		Category c = categoriesMap.get(id);
-		return c != null ? c.parent : null;
-	}
-
 }
