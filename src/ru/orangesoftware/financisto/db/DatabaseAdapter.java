@@ -427,7 +427,9 @@ public class DatabaseAdapter {
 
     private void insertPayee(Transaction t) {
         String payee = t.payee;
-        if (Utils.isNotEmpty(payee)) {
+        if (Utils.isEmpty(payee)) {
+            t.payeeId = 0;
+        } else {
             Payee p = em.insertPayee(payee);
             t.payeeId = p.id;
         }
