@@ -17,6 +17,8 @@ import java.util.HashMap;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.CategoryEntity;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.recur.Recurrence;
@@ -157,11 +159,20 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 			long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
 			sb.setLength(0);
 			u.setAmountText(sb, v.rightView, fromCurrency, amount, true);
-			if (amount > 0) {
-				v.iconView.setImageDrawable(icBlotterIncome);
-			} else if (amount < 0) {
-				v.iconView.setImageDrawable(icBlotterExpense);
-			}
+            if (amount == 0) {
+                int categoryType = cursor.getInt(BlotterColumns.category_type.ordinal());
+                if (categoryType == CategoryEntity.TYPE_INCOME) {
+                    v.iconView.setImageDrawable(icBlotterIncome);
+                } else if (categoryType == CategoryEntity.TYPE_EXPENSE) {
+                    v.iconView.setImageDrawable(icBlotterExpense);
+                }
+            } else {
+                if (amount > 0) {
+                    v.iconView.setImageDrawable(icBlotterIncome);
+                } else if (amount < 0) {
+                    v.iconView.setImageDrawable(icBlotterExpense);
+                }
+            }
 		}
 		if (isTemplate == 1) {
 			String templateName = cursor.getString(BlotterColumns.template_name.ordinal());

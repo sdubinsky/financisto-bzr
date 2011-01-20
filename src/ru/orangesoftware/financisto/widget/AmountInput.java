@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.widget;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
@@ -29,33 +30,21 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class AmountInput extends LinearLayout {
 
 	public static final String EXTRA_AMOUNT = "amount";
 	public static final String EXTRA_CURRENCY = "currency";
 
-	private static final AtomicInteger EDIT_AMOUNT_REQUEST = new AtomicInteger(
-			2000);
-
-	public static interface OnAmountChangedListener {
-		void onAmountChanged(long oldAmount, long newAmount);
-	}
+	private static final AtomicInteger EDIT_AMOUNT_REQUEST = new AtomicInteger(2000);
 
 	protected Activity owner;
 	private Currency currency;
 	private int decimals;
 
-	private TextView currencyView;
+	private ToggleButton currencyView;
 	private EditText primary;
 	private EditText secondary;
-	
-	private boolean isPositiveAmount = true;
-	private boolean allowNegativeAmount = false;
 	
 	private int requestId;
 	private OnAmountChangedListener onAmountChangedListener;
@@ -70,14 +59,26 @@ public class AmountInput extends LinearLayout {
 		initialize(context, null);
 	}
 	
-	public void setAllowNegativeAmount() {
-		allowNegativeAmount = true;
+    public void disableIncomeExpenseButton() {
+        currencyView.setEnabled(false);
+    }
+
+    public void setIncome() {
+        currencyView.setChecked(true);
+    }
+
+    public void setExpense() {
+        currencyView.setChecked(false);
+    }
+
+    public boolean isExpense() {
+        return currencyView.isEnabled() && !currencyView.isChecked();
+    }
+
+    public static interface OnAmountChangedListener {
+		void onAmountChanged(long oldAmount, long newAmount);
 	}
-	
-	public boolean allowNegativeAmount() {
-		return allowNegativeAmount;
-	}
-	
+
 	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
@@ -115,28 +116,30 @@ public class AmountInput extends LinearLayout {
 
 	private void initialize(Context context, AttributeSet attrs) {
 		requestId = EDIT_AMOUNT_REQUEST.incrementAndGet();
-		LayoutInflater inflater = LayoutInflater.from(context);
-		inflater.inflate(R.layout.amount_input, this, true);
-		ImageButton b = new ImageButton(context, attrs);
-		b.setImageResource(R.drawable.amount_input);
-		b.setOnClickListener(new OnClickListener() {
+		LayoutInflater layoutInflater = LayoutInflater.from(context);
+		layoutInflater.inflate(R.layout.amount_input, this, true);
+        findViewById(R.id.amount_input).setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View arg0) {
+			public void onClick(View v) {
 				startInputActivity(QuickAmountInput.class);
 			}
 		});
-		addView(b);
-		b = new ImageButton(context, attrs);
-		b.setImageResource(R.drawable.calculator);
-		b.setOnClickListener(new OnClickListener() {
+		findViewById(R.id.calculator).setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View arg0) {
+			public void onClick(View v) {
 				startInputActivity(CalculatorInput.class);
 			}
 		});
-		addView(b);
-
-		currencyView = (TextView) findViewById(R.id.currency);
+		currencyView = (ToggleButton) findViewById(R.id.currency);
+        currencyView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (onAmountChangedListener != null) {
+                    long amount = getAmount();
+                    onAmountChangedListener.onAmountChanged(-amount, amount);
+                }
+            }
+        });
 		primary = (EditText) findViewById(R.id.primary);
 		primary.setKeyListener(keyListener);
 		primary.addTextChangedListener(textWatcher);
@@ -180,10 +183,14 @@ public class AmountInput extends LinearLayout {
 					onDotOrComma();
 					return "";
 				}
-//				if (c == '-') {
-//					invertAmount();
-//					return "";
-//				}
+                if (c == '-') {
+                    setExpense();
+					return "";
+				}
+                if (c == '+') {
+                    setIncome();
+                    return "";
+                }
 			}
 			return super.filter(source, start, end, dest, dstart, dend);
 		}
@@ -225,13 +232,8 @@ public class AmountInput extends LinearLayout {
 		if (currency != null) {
 			intent.putExtra(EXTRA_CURRENCY, currency.id);
 		}
-		intent.putExtra(EXTRA_AMOUNT, getAmountString());
+		intent.putExtra(EXTRA_AMOUNT, getAbsAmountString());
 		owner.startActivityForResult(intent, requestId);
-	}
-
-	protected void invertAmount() {
-		isPositiveAmount = !isPositiveAmount;
-		setCurrency(currency);
 	}
 
 	protected void onDotOrComma() {
@@ -249,9 +251,13 @@ public class AmountInput extends LinearLayout {
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
 		if (currency != null) {
-			currencyView.setText((isPositiveAmount ? "" : "-")+currency.symbol);
+			currencyView.setText(currency.name);
+            currencyView.setTextOn(currency.name);
+            currencyView.setTextOff(currency.name);
 		} else {
-			currencyView.setText(isPositiveAmount ? "" : "-");
+            currencyView.setText("");
+            currencyView.setTextOn("");
+            currencyView.setTextOff("");
 		}
 	}
 
@@ -266,7 +272,11 @@ public class AmountInput extends LinearLayout {
 				try {
 					BigDecimal d = new BigDecimal(amount).setScale(2,
 							BigDecimal.ROUND_HALF_UP);
+                    boolean isExpense = isExpense();
 					setAmount(d.unscaledValue().longValue());
+                    if (isExpense) {
+                        setExpense();
+                    }
 					return true;
 				} catch (NumberFormatException ex) {
 					return false;
@@ -277,11 +287,18 @@ public class AmountInput extends LinearLayout {
 	}
 
 	public void setAmount(long amount) {
-		amount = Math.abs(amount);
-		long x = amount / 100;
-		long y = amount - 100 * x;
+		long absAmount = Math.abs(amount);
+		long x = absAmount / 100;
+		long y = absAmount - 100 * x;
 		primary.setText(String.valueOf(x));
 		secondary.setText(String.format("%02d", y));
+        if (amount != 0) {
+            if (amount > 0) {
+                setIncome();
+            } else {
+                setExpense();
+            }
+        }
 	}
 
 	public long getAmount() {
@@ -289,14 +306,15 @@ public class AmountInput extends LinearLayout {
 		String s = secondary.getText().toString();
 		long x = 100 * toLong(p);
 		long y = toLong(s);
-		return x + (s.length() == 1 ? 10 * y : y);
+		long amount = x + (s.length() == 1 ? 10 * y : y);
+        return isExpense() ? -amount : amount;
 	}
 
-	private String getAmountString() {
+	private String getAbsAmountString() {
 		String p = primary.getText().toString().trim();
 		String s = secondary.getText().toString().trim();
-		return (Utils.isNotEmpty(p) ? p : "0") + "."
-				+ (Utils.isNotEmpty(s) ? s : "0");
+        return (Utils.isNotEmpty(p) ? p : "0") + "."
+                + (Utils.isNotEmpty(s) ? s : "0");
 	}
 
 	private long toLong(String s) {

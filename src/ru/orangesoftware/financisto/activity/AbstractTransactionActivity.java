@@ -139,7 +139,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		df = new SimpleDateFormat("dd MMM yy"); //TODO ds: DateUtils.getShortDateFormat(this);
+		df = DateUtils.getLongDateFormat(this);
 		tf = DateUtils.getTimeFormat(this);
 		
 		long t0 = System.currentTimeMillis();

@@ -11,41 +11,27 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.text.InputFilter;
+import android.text.InputType;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.EntityEnumAdapter;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.AccountType;
-import ru.orangesoftware.financisto.model.CardIssuer;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.orb.EntityManager;
-import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.text.InputType;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class AccountActivity extends AbstractActivity {
 	
 	public static final String ACCOUNT_ID_EXTRA = "accountId";
 	
 	private static final int NEW_CURRENCY_REQUEST = 1;
-	
-	private int negativeAmountColor; 
 	
 	private AmountInput amountInput;
 	private AmountInput limitInput;
@@ -62,8 +48,7 @@ public class AccountActivity extends AbstractActivity {
 	private EditText issuerName;
 	private EditText sortOrderText;
 	private CheckBox isIncludedIntoTotals;
-	private CheckBox isNegativeOpeningAmount;
-	
+
 	private EntityEnumAdapter<AccountType> accountTypeAdapter;
 	private EntityEnumAdapter<CardIssuer> cardIssuerAdapter;
 	private ListAdapter currencyAdapter;	
@@ -81,8 +66,6 @@ public class AccountActivity extends AbstractActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.account);
-		
-		negativeAmountColor = getResources().getColor(R.color.negative_amount);
 		
 		accountTitle = new EditText(this);
 		accountTitle.setSingleLine();
@@ -164,8 +147,7 @@ public class AccountActivity extends AbstractActivity {
 
 		if (account.id == -1) {
 			x.addEditNode(layout, R.string.opening_amount, amountInput);
-			isNegativeOpeningAmount = x.addCheckboxNode(layout, R.id.negative_opening_amount, 
-					R.string.negative_opening_amount, R.string.negative_opening_amount_summary, false);
+            amountInput.setIncome();
 		}
 		
 		x.addEditNode(layout, R.string.sort_order, sortOrderText);
@@ -233,7 +215,7 @@ public class AccountActivity extends AbstractActivity {
 					t.fromAccountId = accountId;
 					t.categoryId = 0;
 					t.note = getResources().getText(R.string.opening_amount) + " (" +account.title + ")";
-					t.fromAmount = isNegativeOpeningAmount.isChecked() ? -amount : amount;
+					t.fromAmount = amount;
 					db.insertOrUpdate(t, null);
 				}
 				Intent intent = new Intent();
@@ -261,11 +243,7 @@ public class AccountActivity extends AbstractActivity {
 			case R.id.is_included_into_totals:
 				isIncludedIntoTotals.performClick();
 				break;
-			case R.id.negative_opening_amount:
-				isNegativeOpeningAmount.performClick();
-				changeColorOfTheAmountInput();
-				break;
-			case R.id.account_type:				
+			case R.id.account_type:
 				x.selectPosition(this, R.id.account_type, R.string.account_type, accountTypeAdapter, AccountType.valueOf(account.type).ordinal());
 				break;
 			case R.id.card_issuer:				
@@ -282,10 +260,6 @@ public class AccountActivity extends AbstractActivity {
 				break;
 		}
 	}	
-
-	private void changeColorOfTheAmountInput() {
-		amountInput.setColor(isNegativeOpeningAmount.isChecked() ? negativeAmountColor : Color.BLACK);
-	}
 
 	@Override
 	public void onSelectedId(int id, long selectedId) {

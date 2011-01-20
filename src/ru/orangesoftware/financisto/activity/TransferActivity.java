@@ -102,7 +102,7 @@ public class TransferActivity extends AbstractTransactionActivity {
 			double r = getRate();
 			if (r > 0) {
 				long amountFrom = amountInputFrom.getAmount();
-				long amountTo = (long)Math.round(r*amountFrom);
+				long amountTo = Math.round(r*amountFrom);
 				amountInputTo.setOnAmountChangedListener(null);
 				amountInputTo.setAmount(amountTo);
 				amountInputTo.setOnAmountChangedListener(onAmountToChangedListener);
@@ -142,13 +142,17 @@ public class TransferActivity extends AbstractTransactionActivity {
 		//amount from
 		amountInputFrom = new AmountInput(this);
 		amountInputFrom.setOwner(this);
-		amountInputFrom.setOnAmountChangedListener(onAmountFromChangedListener);
+        amountInputFrom.setIncome();
+        amountInputFrom.disableIncomeExpenseButton();
 		x.addEditNode(layout, R.string.amount_from, amountInputFrom);
 		//amount to & rate 
 		amountInputTo = new AmountInput(this);
 		amountInputTo.setOwner(this);
-		amountInputTo.setOnAmountChangedListener(onAmountToChangedListener);
+        amountInputTo.setIncome();
+        amountInputTo.disableIncomeExpenseButton();
 		amountInputToNode = x.addEditNode(layout, R.string.amount_to, amountInputTo);
+        amountInputTo.setOnAmountChangedListener(onAmountToChangedListener);
+        amountInputFrom.setOnAmountChangedListener(onAmountFromChangedListener);
 		setVisibility(amountInputToNode, View.GONE);
 		rateInfoNode = addRateNode(layout);
 		rate = (EditText)rateInfoNode.findViewById(R.id.rate);

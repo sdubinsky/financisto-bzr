@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Category;
@@ -30,8 +31,6 @@ import android.widget.TextView;
 
 public class CategoryListAdapter2 extends BaseAdapter {
 
-	private static final int P = 10;
-	
 	private final LayoutInflater inflater;
 	private CategoryTree<Category> categories;
 	private HashMap<Long, String> attributes;
@@ -43,14 +42,18 @@ public class CategoryListAdapter2 extends BaseAdapter {
 	private final Drawable collapsedDrawable;
     private final int incomeColor;
     private final int expenseColor;
-	
+
+    private final int levelPadding;
+
 	public CategoryListAdapter2(Context context, CategoryTree<Category> categories) {
 		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.categories = categories;
-		this.expandedDrawable = context.getResources().getDrawable(R.drawable.expander_ic_maximized);
-		this.collapsedDrawable = context.getResources().getDrawable(R.drawable.expander_ic_minimized);
-        this.incomeColor = context.getResources().getColor(R.color.category_type_income);
-        this.expenseColor = context.getResources().getColor(R.color.category_type_expense);
+        Resources resources = context.getResources();
+        this.expandedDrawable = resources.getDrawable(R.drawable.expander_ic_maximized);
+		this.collapsedDrawable = resources.getDrawable(R.drawable.expander_ic_minimized);
+        this.incomeColor = resources.getColor(R.color.category_type_income);
+        this.expenseColor = resources.getColor(R.color.category_type_expense);
+        this.levelPadding = resources.getDimensionPixelSize(R.dimen.category_padding);
 		recreatePlainList();
 	}
 	
@@ -101,21 +104,25 @@ public class CategoryListAdapter2 extends BaseAdapter {
 		TextView label = h.label;
 		final Category c = getItem(position);
 		title.setText(c.title);
+        int padding  = levelPadding*(c.level-1);
 		if (c.hasChildren()) {
 			span.setImageDrawable(state.contains(c.id) ? expandedDrawable : collapsedDrawable);
 			span.setClickable(true);
 			span.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View v) {
-					onListItemClick(position, c.id);
+					onListItemClick(c.id);
 				}
 			});
-			convertView.setPadding(P*(c.level-1), 0, 0, 0);
+            span.setPadding(padding, 0, 0, 0);
 			span.setVisibility(View.VISIBLE);
+            padding += collapsedDrawable.getBounds().width();
 		} else {
-			convertView.setPadding(P*c.level, 0, 0, 0);
+            padding += levelPadding/2;
 			span.setVisibility(View.GONE);
 		}
+        title.setPadding(padding, 0, 0, 0);
+        label.setPadding(padding, 0, 0, 0);
 		long id = c.id;
 		if (attributes != null && attributes.containsKey(id)) {
 			label.setText(attributes.get(id));
@@ -133,7 +140,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 		return convertView;
 	}
 	
-	public void onListItemClick(int position, long id) {
+	public void onListItemClick(long id) {
 		if (state.contains(id)) {
 			state.remove(id);
 		} else {

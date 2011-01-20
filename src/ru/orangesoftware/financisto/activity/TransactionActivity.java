@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Payee;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.utils.MyPreferences;
@@ -28,27 +29,26 @@ import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
 import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public class TransactionActivity extends AbstractTransactionActivity {
-	
+
 	public static final String CURRENT_BALANCE_EXTRA = "accountCurrentBalance";
 
 	private static final int MENU_TURN_GPS_ON = Menu.FIRST;
-	
+
     private AutoCompleteTextView payeeText;
     private SimpleCursorAdapter payeeAdapter;
-	private ToggleButton incomeExpenseButton;
-	private TextView differenceText; 
+	private TextView differenceText;
 	private boolean isUpdateBalanceMode = false;
     private boolean isShowPayee = true;
 	private long currentBalance;
 	private Utils u;
-	
+
 	public TransactionActivity() {
 	}
 
 	protected int getLayoutId() {
 		return MyPreferences.isUseFixedLayout(this) ? R.layout.transaction_fixed : R.layout.transaction_free;
 	}
-	
+
 	@Override
 	protected void internalOnCreate() {
 		u = new Utils(this);
@@ -56,22 +56,20 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		if (intent != null) {
 			if (intent.hasExtra(CURRENT_BALANCE_EXTRA)) {
 				currentBalance = intent.getLongExtra(CURRENT_BALANCE_EXTRA, 0);
-				isUpdateBalanceMode = true;				
-			}			
+				isUpdateBalanceMode = true;
+			}
 		}
 		if (transaction.isTemplateLike()) {
 			setTitle(transaction.isTemplate() ? R.string.transaction_template : R.string.transaction_schedule);
-			if (transaction.isTemplate()) {			
+			if (transaction.isTemplate()) {
 				dateText.setEnabled(false);
-				timeText.setEnabled(false);			
-			}			
+				timeText.setEnabled(false);
+			}
 		}
 	}
 
 	@Override
-	protected void createListNodes(LinearLayout layout) {		
-		incomeExpenseButton = (ToggleButton)findViewById(R.id.bIncomeExpense);
-		incomeExpenseButton.setChecked(false);		
+	protected void createListNodes(LinearLayout layout) {
 		//account
 		accountText = x.addListNode(layout, R.id.account, R.string.account, R.string.select_account);
         //payee
@@ -91,27 +89,40 @@ public class TransactionActivity extends AbstractTransactionActivity {
             });
             x.addEditNode(layout, R.string.payee, payeeText);
         }
+		//category
+		categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
 		//amount
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
 		x.addEditNode(layout, isUpdateBalanceMode ? R.string.new_balance : R.string.amount, amountInput);
-		//category
-		categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
 		// difference
 		if (isUpdateBalanceMode) {
 			differenceText = x.addInfoNode(layout, -1, R.string.difference, "0");
-			incomeExpenseButton.setEnabled(false);
 			amountInput.setAmount(currentBalance);
 			amountInput.setOnAmountChangedListener(new OnAmountChangedListener(){
 				@Override
 				public void onAmountChanged(long oldAmount, long newAmount) {
 					long balanceDifference = newAmount-currentBalance;
 					u.setAmountText(differenceText, amountInput.getCurrency(), balanceDifference, true);
-					incomeExpenseButton.setChecked(balanceDifference > 0);
 				}
 			});
+            if (currentBalance >= 0) {
+                amountInput.setIncome();
+            } else {
+                amountInput.setExpense();
+            }
 		}
 	}
+
+    protected void switchIncomeExpenseButton(Category category) {
+        if (!isUpdateBalanceMode) {
+            if (category.isIncome()) {
+                amountInput.setIncome();
+            } else {
+                amountInput.setExpense();
+            }
+        }
+    }
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
@@ -135,7 +146,6 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		selectAccount(transaction.fromAccountId, false);
         selectPayee(transaction.payeeId);
 		amountInput.setAmount(transaction.fromAmount);
-		incomeExpenseButton.setChecked(transaction.fromAmount >= 0);		
 	}
 
 	private void updateTransactionFromUI() {
@@ -146,9 +156,9 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		transaction.fromAccountId = selectedAccountId;
 		long amount = amountInput.getAmount();
 		if (isUpdateBalanceMode) {
-			amount = Math.abs(amount - currentBalance);
+			amount -= currentBalance;
 		}
-		transaction.fromAmount = incomeExpenseButton.isChecked() ? amount : -amount;
+		transaction.fromAmount = amount;
 	}
 
     private void selectPayee(long payeeId) {

@@ -52,6 +52,14 @@
 		<item name="android:background">@drawable/btn_circle</item>
 		<item name="android:src">@drawable/ic_btn_round_bottom</item>
 	</style>
+    <style name="UpDownButton">
+        <item name="android:background">@drawable/btn_circle</item>
+        <item name="android:src">@drawable/ic_btn_round_updown</item>
+    </style>
+    <style name="CalcButton">
+        <item name="android:background">@drawable/btn_circle</item>
+        <item name="android:src">@drawable/ic_btn_round_calc</item>
+    </style>
 	<style name="TallTitleBarTheme" parent="android:Theme.NoTitleBar">
 		<item name="android:windowContentOverlay">@null</item>
 	</style>

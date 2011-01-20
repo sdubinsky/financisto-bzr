@@ -11,6 +11,7 @@ SELECT
 	cat.title as category_title,
 	cat.left as category_left,
 	cat.right as category_right,
+	cat.type as category_type,
 	p._id as project_id,
 	p.title as project,
 	loc._id as location_id,

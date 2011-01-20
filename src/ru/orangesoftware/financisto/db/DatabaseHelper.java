@@ -106,6 +106,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         category_title,
         category_left,
         category_right,
+        category_type,
         project_id,
         project,
         location_id,

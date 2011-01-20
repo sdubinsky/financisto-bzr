@@ -15,8 +15,8 @@ import javax.persistence.Transient;
 
 public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
 
-    private static final int TYPE_EXPENSE = 0;
-    private static final int TYPE_INCOME = 1;
+    public static final int TYPE_EXPENSE = 0;
+    public static final int TYPE_INCOME = 1;
 
 	@Transient
 	public T parent;
