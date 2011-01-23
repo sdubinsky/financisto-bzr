@@ -42,7 +42,8 @@ public class AmountInput extends LinearLayout {
 	private Currency currency;
 	private int decimals;
 
-	private ToggleButton currencyView;
+    private ToggleButton toggleView;
+	private TextView currencyView;
 	private EditText primary;
 	private EditText secondary;
 	
@@ -60,19 +61,19 @@ public class AmountInput extends LinearLayout {
 	}
 	
     public void disableIncomeExpenseButton() {
-        currencyView.setEnabled(false);
+        toggleView.setEnabled(false);
     }
 
     public void setIncome() {
-        currencyView.setChecked(true);
+        toggleView.setChecked(true);
     }
 
     public void setExpense() {
-        currencyView.setChecked(false);
+        toggleView.setChecked(false);
     }
 
     public boolean isExpense() {
-        return currencyView.isEnabled() && !currencyView.isChecked();
+        return toggleView.isEnabled() && !toggleView.isChecked();
     }
 
     public static interface OnAmountChangedListener {
@@ -130,8 +131,9 @@ public class AmountInput extends LinearLayout {
 				startInputActivity(CalculatorInput.class);
 			}
 		});
-		currencyView = (ToggleButton) findViewById(R.id.currency);
-        currencyView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+        currencyView = (TextView) findViewById(R.id.currency);
+		toggleView = (ToggleButton) findViewById(R.id.toggle);
+        toggleView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (onAmountChangedListener != null) {
@@ -250,15 +252,7 @@ public class AmountInput extends LinearLayout {
 
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
-		if (currency != null) {
-			currencyView.setText(currency.name);
-            currencyView.setTextOn(currency.name);
-            currencyView.setTextOff(currency.name);
-		} else {
-            currencyView.setText("");
-            currencyView.setTextOn("");
-            currencyView.setTextOff("");
-		}
+        currencyView.setText(currency != null ? currency.symbol : "");
 	}
 
 	public void setOwner(Activity owner) {

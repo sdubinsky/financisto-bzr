@@ -10,13 +10,17 @@
 -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="wrap_content" android:layout_width="fill_parent">
+    <TextView android:layout_width="wrap_content"
+		android:id="@+id/currency" android:text=""
+		android:layout_height="fill_parent" android:gravity="center_vertical"
+		android:textStyle="bold" android:textSize="20sp"/>
     <ToggleButton android:layout_width="60dp"
-        android:id="@+id/currency"
+        android:id="@+id/toggle"
         android:textOn="+"
         android:textOff="-"
         android:background="@drawable/btn_toggle_bg"
         android:layout_height="fill_parent" />
-	<EditText android:layout_height="fill_parent"
+    <EditText android:layout_height="fill_parent"
 		android:textStyle="bold" android:singleLine="true"
 		android:layout_width="wrap_content" android:layout_weight="1"
 		android:textSize="20sp" android:gravity="right|center_vertical"
@@ -27,7 +31,7 @@
 		android:textStyle="bold" android:textSize="30sp"/>
 	<EditText android:layout_height="fill_parent"
 		android:textStyle="bold" android:singleLine="true"
-		android:layout_width="60dp"
+		android:layout_width="50dp"
 		android:textSize="20sp" android:gravity="left|center_vertical"
 		android:id="@+id/secondary"  android:numeric="integer" 
 		android:maxLength="2" android:phoneNumber="true"/>
