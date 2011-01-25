@@ -350,7 +350,7 @@ public class DatabaseAdapter {
 		try {
 			long now = System.currentTimeMillis();
 			Transaction transaction = getTransaction(id);
-			transaction.lastRecurrence = now+1000;
+			transaction.lastRecurrence = now;
 			updateTransaction(transaction);
 			transaction.id = -1;
 			transaction.isTemplate = isTemplate;
@@ -414,7 +414,6 @@ public class DatabaseAdapter {
 	}
 
 	private long insertTransaction(Transaction t) {
-        insertPayee(t);
 		long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
 		if (t.isNotTemplateLike()) {
 			updateAccountTotalAmount(t.fromAccountId, t.fromAmount);
@@ -425,18 +424,16 @@ public class DatabaseAdapter {
 		return id;
 	}
 
-    private void insertPayee(Transaction t) {
-        String payee = t.payee;
+    public long insertPayee(String payee) {
         if (Utils.isEmpty(payee)) {
-            t.payeeId = 0;
+            return 0;
         } else {
             Payee p = em.insertPayee(payee);
-            t.payeeId = p.id;
+            return p.id;
         }
     }
 
     private void updateTransaction(Transaction t) {
-        insertPayee(t);
 		if (t.isNotTemplateLike()) {
 			Transaction oldT = getTransaction(t.id);
 			updateAccountTotalAmount(oldT.fromAccountId, oldT.fromAmount, t.fromAccountId, t.fromAmount);

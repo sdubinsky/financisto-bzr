@@ -6,10 +6,8 @@ import android.test.RenamingDelegatingContext;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Payee;
-import ru.orangesoftware.financisto.model.Transaction;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class MyDatabaseTest extends AndroidTestCase {
 
@@ -27,18 +25,6 @@ public class MyDatabaseTest extends AndroidTestCase {
     @Override
     public void tearDown() throws Exception {
         db.close();
-    }
-
-    public void testShouldSavePayeeWhenTransactionInserted() {
-        // given
-        String payee = "Payee1";
-        Transaction t = new Transaction();
-        t.payee = payee;
-        // when
-        long transactionId = db.insertOrUpdate(t, null);
-        // then
-        assertTrue("Transaction should be inserted!", transactionId > 0);
-        assertTrue("Payee should be inserted!", t.payeeId > 0);
     }
 
     public void testShouldSavePayeeOnlyOnce() {

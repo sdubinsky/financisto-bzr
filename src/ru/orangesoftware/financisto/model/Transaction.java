@@ -95,9 +95,6 @@ public class Transaction {
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
 
-    @Transient
-    public String payee;
-
     public ContentValues toValues() {
 		ContentValues values = new ContentValues();
 		values.put(TransactionColumns.category_id.name(), categoryId);

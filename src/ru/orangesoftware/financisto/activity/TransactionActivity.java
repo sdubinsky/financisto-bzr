@@ -151,7 +151,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	private void updateTransactionFromUI() {
 		updateTransactionFromUI(transaction);
         if (isShowPayee) {
-            transaction.payee = text(payeeText);
+            transaction.payeeId = db.insertPayee(text(payeeText));
         }
 		transaction.fromAccountId = selectedAccountId;
 		long amount = amountInput.getAmount();
