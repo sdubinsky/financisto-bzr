@@ -229,7 +229,7 @@
 	<string name="account_type_cash">Hotovost</string>
 	<string name="account_type_bank">Bankovní účet</string>
 	<string name="account_type_debit_card">Debetní karta</string>
-	<string name="account_type_credit_card">Platební karta</string>
+	<string name="account_type_credit_card">Kreditní karta</string>
 	<string name="account_type_asset">Aktivum</string>	
 	<string name="account_type_liability">Pasivum</string>
 	<string name="account_type_other">Jiný</string>
@@ -315,7 +315,7 @@
 	<string name="transaction_screen_summary">Předvolby pro obrazovku nové operace/převodu</string>
 	<string name="screen_layout">Rozložení obrazovky</string>
 	<string name="show_location">Zobrazit polohu</string>	
-	<string name="show_location_summary">Zobrazit menu poloha</string>
+	<string name="show_location_summary">Zobrazí menu poloha</string>
 	<string name="show_location_order">Pořadí poloh</string>	
 	<string name="show_location_order_summary">Relativní pozice pro menu poloha</string>
 	<string name="show_payee">Zobrazit příjemce</string>	
@@ -327,7 +327,7 @@
 	<string name="show_note_order">Pořadí poznámek</string>	
 	<string name="show_note_order_summary">Relativní pozice poznámkového políčka</string>
 	<string name="show_project">Zobrazit projekt</string>	
-	<string name="show_project_summary">Zobrazit menu projekt</string>
+	<string name="show_project_summary">Zobrazí menu projekt</string>
 	<string name="show_project_order">Pořadí projektů</string>	
 	<string name="show_project_order_summary">Relativní pozice projektového menu</string>
 	<string name="remember_selection">Zapamatovat výběr</string>
