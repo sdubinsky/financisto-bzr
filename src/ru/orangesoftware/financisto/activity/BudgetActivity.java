@@ -99,6 +99,8 @@ public class BudgetActivity extends AbstractActivity {
 
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
+        amountInput.setIncome();
+        amountInput.disableIncomeExpenseButton();
 		x.addEditNode(layout, R.string.amount, amountInput);
 
 		periodRecurText = x.addListNode(layout, R.id.period_recur, R.string.period_recur, R.string.no_recur);

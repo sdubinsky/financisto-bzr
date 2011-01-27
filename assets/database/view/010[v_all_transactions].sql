@@ -26,7 +26,8 @@ SELECT
 	t.template_name as template_name,
 	t.recurrence as recurrence,
 	t.notification_options as notification_options,
-	t.status as status
+	t.status as status,
+	t.is_ccard_payment as is_ccard_payment
 FROM 
 	transactions as t	
 	INNER JOIN account as a1 ON a1._id=t.from_account_id

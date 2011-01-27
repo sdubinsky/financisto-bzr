@@ -164,108 +164,53 @@ public class DatabaseAdapter {
 
 	/**
 	 * [Bill Filtering] Returns all the expenses (negative amount) for a given Account in a given period.
-	 * @param accountId Account id.
-	 * @param start Start date.
-	 * @param end End date.
-	 * @return Transactions (negative amount) of the given Account, from start date to end date.
 	 */
-	public Cursor getAllExpenses(String accountId, String start, String end) {
+	public Cursor getAllExpenses(long accountId, long startDate, long endDate) {
 		// query
-		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +"<? AND "+
-					   	   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
-		
-		String whereTo = TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +"<? AND "+
-		   				 TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
-		try {
-			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereFrom, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.datetime.name());
-			
-			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereTo, new String[]{accountId, "0", start, end}, null, null, TransactionColumns.datetime.name());
-			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
-			return c;
-		} catch(SQLiteException e) {
-			return null;
-		}
+		String where = BlotterColumns.from_account_id +"=? AND "+BlotterColumns.from_amount +"<? AND "+
+					   	   BlotterColumns.datetime +">? AND "+BlotterColumns.datetime +"<?";
+        return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION,
+                where, new String[]{String.valueOf(accountId), "0", String.valueOf(startDate), String.valueOf(endDate)},
+                null, null, BlotterColumns.datetime.name());
 	}
 	
 	
 	/**
 	 * [Bill Filtering] Returns the credits (positive amount) for a given Account in a given period, excluding payments.
-	 * @param accountId Account id.
-	 * @param start Start date.
-	 * @param end End date.
-	 * @return Transactions (positive amount) of the given Account, from start date to end date.
 	 */
-	public Cursor getCredits(String accountId, String start, String end) {
+	public Cursor getCredits(long accountId, long startDate, long endDate) {
 		// query
-		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +">? AND "+
-					   	   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
-					       TransactionColumns.is_ccard_payment +"=?";
+		String where = BlotterColumns.from_account_id +"=? AND "+BlotterColumns.from_amount +">? AND "+
+					   	   BlotterColumns.datetime +">? AND "+BlotterColumns.datetime +"<? AND "+
+					       BlotterColumns.is_ccard_payment +"=?";
 		
-		String whereTo = TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +">? AND "+
-						 TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
-						 TransactionColumns.is_ccard_payment +"=?";
-		
-		try {
-			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereFrom, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.datetime.name());
-			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   whereTo, new String[]{accountId, "0", start, end, "0"}, null, null, TransactionColumns.datetime.name());
-			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
-			return c;
-		} catch(SQLiteException e) {
-			return null;
-		}
+        return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION,
+                where, new String[]{String.valueOf(accountId), "0", String.valueOf(startDate), String.valueOf(endDate), "0"},
+                null, null, BlotterColumns.datetime.name());
 	}
 	
 	/**
 	 * [Bill Filtering] Returns all the payments for a given Credit Card Account in a given period.
-	 * @param accountId Account id.
-	 * @param start Start date.
-	 * @param end End date.
-	 * @return Transactions of the given Account, from start date to end date.
 	 */
-	public Cursor getPayments(String accountId, String start, String end) {
-		// query direct payments
-		String whereFrom = TransactionColumns.from_account_id +"=? AND "+TransactionColumns.from_amount +">? AND "+
-						   TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
-						   TransactionColumns.is_ccard_payment +"=?";
-		
-		String whereTo =  TransactionColumns.to_account_id +"=? AND "+TransactionColumns.to_amount +">? AND "+
-						  TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<? AND "+
-						  TransactionColumns.is_ccard_payment +"=?";
-		
-		try {
-			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   	whereFrom, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.datetime.name());
-			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-						whereTo, new String[]{accountId, "0", start, end, "1"}, null, null, TransactionColumns.datetime.name());
-			Cursor c = new MergeCursor(new Cursor[] {c1, c2});
-			return c;
-		} catch(SQLiteException e) {
-			return null;
-		}
+	public Cursor getPayments(long accountId, long startDate, long endDate) {
+		String where = BlotterColumns.from_account_id +"=? AND "+BlotterColumns.from_amount +">? AND "+
+						   BlotterColumns.datetime +">? AND "+BlotterColumns.datetime +"<? AND "+
+						   BlotterColumns.is_ccard_payment +"=?";
+        return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION,
+                where, new String[]{String.valueOf(accountId), "0", String.valueOf(startDate), String.valueOf(endDate), "1"},
+                null, null, BlotterColumns.datetime.name());
 	}
 	
     /**
      * [Monthly view] Returns all the transactions for a given Account in a given period (month).
-     * @param accountId Account id.
-     * @param start Start date.
-     * @param end End date.
-     * @return Transactions (negative value) of the given Account, from start date to end date.
      */
-    public Cursor getAllTransactions(String accountId, String start, String end) {
+    public Cursor getAllTransactions(long accountId, long startDate, long endDate) {
         // query
-        String where = "("+TransactionColumns.from_account_id +"=? OR "+TransactionColumns.to_account_id +"=?) AND "+
-                       TransactionColumns.datetime +">? AND "+TransactionColumns.datetime +"<?";
-        try {
-            Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-                       where, new String[]{accountId, accountId, start, end}, null, null, TransactionColumns.datetime.name());
-            return c;
-        } catch(SQLiteException e) {
-            return null;
-        }
+        String where = BlotterColumns.from_account_id +"=? AND "+
+                       BlotterColumns.datetime +">? AND "+BlotterColumns.datetime +"<?";
+        return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION,
+                   where, new String[]{String.valueOf(accountId), String.valueOf(startDate), String.valueOf(endDate)},
+                null, null, BlotterColumns.datetime.name());
     }
     
 	public Cursor getTransactions(WhereFilter filter) {
