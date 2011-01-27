@@ -7,7 +7,8 @@ import java.util.HashMap;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MonthlyViewActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
@@ -92,15 +93,15 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	     */
 	    private void updateListItem(Holder h, Context context, Cursor c) {
 	    	// get amount of expense
-	    	int valueCol = c.getColumnIndex(TransactionColumns.from_amount.name());
+	    	int valueCol = c.getColumnIndex(BlotterColumns.from_amount.name());
 	    	long value = c.getLong(valueCol);
 	    	// is scheduled?
-	    	boolean isScheduled = c.getInt(c.getColumnIndex(TransactionColumns.is_template.name()))==2;
+	    	boolean isScheduled = c.getInt(c.getColumnIndex(BlotterColumns.is_template.name()))==2;
 	        
 	        // get columns values or needed parameters
-	        long date = c.getLong(TransactionColumns.datetime.ordinal());
-	        String note = c.getString(TransactionColumns.note.ordinal());
-	        long locId = c.getLong(TransactionColumns.location_id.ordinal());
+	        long date = c.getLong(BlotterColumns.datetime.ordinal());
+	        String note = c.getString(BlotterColumns.note.ordinal());
+	        long locId = c.getLong(BlotterColumns.location_id.ordinal());
 	        String location = null;
 	        String desc = "";
 	        boolean future = date>Calendar.getInstance().getTimeInMillis();

@@ -1,18 +1,5 @@
 package ru.orangesoftware.financisto.activity;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.CreditCardStatementAdapter;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.AccountType;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.utils.Utils;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -24,6 +11,20 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.CreditCardStatementAdapter;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.db.MyEntityManager;
+import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.AccountType;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Display the credit card bill, including scheduled and future transactions for a given period.
@@ -36,8 +37,7 @@ public class MonthlyViewActivity extends ListActivity {
 	private Cursor transactionsCursor;
 	
 	private long accountId = 0;
-	private Account account;
-	private Currency currency;
+    private Currency currency;
 	private boolean isCreditCard = false;
 	private boolean isStatementPreview = false;
 	
@@ -111,7 +111,7 @@ public class MonthlyViewActivity extends ListActivity {
 		
 		// set currency based on account
 		MyEntityManager em = dbAdapter.em();
-		account = em.getAccount(accountId);
+        Account account = em.getAccount(accountId);
 		
         // get current month and year
 		Calendar cal = Calendar.getInstance();
@@ -143,7 +143,7 @@ public class MonthlyViewActivity extends ListActivity {
 					setCCardTitle();
 					setCCardInterval();
 				} else {
-					title = (account.title==null||account.title.length()==0?account.cardIssuer:account.title);
+					title = (account.title==null|| account.title.length()==0? account.cardIssuer: account.title);
 					paymentDay = 1;
 					closingDay = 31;
 					setTitle();
@@ -154,7 +154,7 @@ public class MonthlyViewActivity extends ListActivity {
 					totalLabel.setText(getResources().getString(R.string.monthly_result));
 				}
 			} else {
-				if (account.title==null||account.title.length()==0) {
+				if (account.title==null|| account.title.length()==0) {
 					if (isCreditCard) {
 						// title = <CARD_ISSUER>
 						title = account.cardIssuer;
@@ -322,26 +322,18 @@ public class MonthlyViewActivity extends ListActivity {
 		
 		if (isStatementPreview) {
 			// display expenses and credits separated	    	
-			Cursor expenses = dbAdapter.getAllExpenses(String.valueOf(accountId), 
-    													  String.valueOf(open.getTimeInMillis()), 
-    													  String.valueOf(close.getTimeInMillis()));
-			Cursor credits = dbAdapter.getCredits(String.valueOf(accountId), 
-					  									String.valueOf(open.getTimeInMillis()), 
-					  									String.valueOf(close.getTimeInMillis()));
-			Cursor payments = dbAdapter.getPayments(String.valueOf(accountId), 
-														String.valueOf(open.getTimeInMillis()), 
-														String.valueOf(close.getTimeInMillis()));
+			Cursor expenses = dbAdapter.getAllExpenses(accountId, open.getTimeInMillis(), close.getTimeInMillis());
+			Cursor credits = dbAdapter.getCredits(accountId, open.getTimeInMillis(), close.getTimeInMillis());
+			Cursor payments = dbAdapter.getPayments(accountId, open.getTimeInMillis(), close.getTimeInMillis());
 			transactionsCursor = new MergeCursor(new Cursor[] { getHeader(HEADER_PAYMENTS, payments.getCount()), payments, 
 																getHeader(HEADER_CREDITS, credits.getCount()), credits, 
 																getHeader(HEADER_EXPENSES, expenses.getCount()), expenses});
 			
 		} else {
 			// account filtering: credit card transactions, from open to close date
-			transactionsCursor = dbAdapter.getAllTransactions(String.valueOf(accountId), 
-    													  String.valueOf(open.getTimeInMillis()), 
-    													  String.valueOf(close.getTimeInMillis()));
+			transactionsCursor = dbAdapter.getAllTransactions(accountId, open.getTimeInMillis(), close.getTimeInMillis());
 		}
-    	
+
     	TextView totalText = (TextView)findViewById(R.id.monthly_result);
     	
     	if (transactionsCursor == null || transactionsCursor.getCount()==0) {
@@ -352,13 +344,13 @@ public class MonthlyViewActivity extends ListActivity {
     		
     		// hide list and display empty message
     		this.getListView().setVisibility(View.GONE);
-    		((TextView)findViewById(android.R.id.empty)).setVisibility(View.VISIBLE);
+    		findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
 
     	} else { // display data
      		startManagingCursor(transactionsCursor);
     		
     		// Mapping data from database
-    		String[] from = new String[] {TransactionColumns.datetime.name(), TransactionColumns.note.name(), TransactionColumns.from_amount.name()};
+    		String[] from = new String[] {BlotterColumns.datetime.name(), BlotterColumns.note.name(), BlotterColumns.from_amount.name()};
     		int[] to = new int[] {R.id.list_date, R.id.list_note, R.id.list_value};
     		
     		// Mapping data to view
@@ -385,7 +377,7 @@ public class MonthlyViewActivity extends ListActivity {
     		
     		// display list and hide empty message
     		this.getListView().setVisibility(View.VISIBLE);
-    		((TextView)findViewById(android.R.id.empty)).setVisibility(View.GONE);
+    		findViewById(android.R.id.empty).setVisibility(View.GONE);
     	}
     }
 	
@@ -401,15 +393,15 @@ public class MonthlyViewActivity extends ListActivity {
 		if (isStatementPreview) {
 			// exclude payments
 			for (int i=0; i<cursor.getCount(); i++) {
-				if (cursor.getInt(cursor.getColumnIndex(TransactionColumns.is_ccard_payment.name()))==0) {
-					total += cursor.getLong(cursor.getColumnIndex(TransactionColumns.from_amount.name()));
+				if (cursor.getInt(cursor.getColumnIndex(BlotterColumns.is_ccard_payment.name()))==0) {
+					total += cursor.getLong(cursor.getColumnIndex(BlotterColumns.from_amount.name()));
 				}
 				cursor.moveToNext();
 			}
 		} else {
 			// consider all transactions
 			for (int i=0; i<cursor.getCount(); i++) {
-				total += cursor.getLong(cursor.getColumnIndex(TransactionColumns.from_amount.name()));
+				total += cursor.getLong(cursor.getColumnIndex(BlotterColumns.from_amount.name()));
 				cursor.moveToNext();
 			}
 		}
@@ -471,30 +463,14 @@ public class MonthlyViewActivity extends ListActivity {
 	}
 	
 	private Cursor getHeader(String type, int count) {
-		MatrixCursor header = new MatrixCursor(new String[] {
-				TransactionColumns._id.name(),
-				TransactionColumns.from_account_id.name(),
-				TransactionColumns.to_account_id.name(),
-				TransactionColumns.category_id.name(),
-				TransactionColumns.project_id.name(),
-				TransactionColumns.note.name(),
-				TransactionColumns.from_amount.name(),
-				TransactionColumns.to_amount.name(),
-				TransactionColumns.datetime.name(),
-				TransactionColumns.location_id.name(),
-				TransactionColumns.provider.name(),
-				TransactionColumns.accuracy.name(),
-				TransactionColumns.latitude.name(),
-				TransactionColumns.longitude.name(),
-				TransactionColumns.is_template.name(),
-				TransactionColumns.template_name.name(),
-				TransactionColumns.recurrence.name(),
-				TransactionColumns.notification_options.name(),
-				TransactionColumns.status.name(),
-				TransactionColumns.attached_picture.name(),
-				TransactionColumns.is_ccard_payment.name(), type});
-		if (count>0) {
-			header.addRow(new Object[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,count});
+        String[] headerColumns = new String[BlotterColumns.NORMAL_PROJECTION.length+1];
+        System.arraycopy(BlotterColumns.NORMAL_PROJECTION, 0, headerColumns, 0, BlotterColumns.NORMAL_PROJECTION.length);
+        headerColumns[headerColumns.length-1] = type;
+		MatrixCursor header = new MatrixCursor(headerColumns);
+		if (count > 0) {
+            Object[] columns = new Object[headerColumns.length];
+            columns[columns.length-1] = count;
+			header.addRow(columns);
 		}
 		return header;
 	}

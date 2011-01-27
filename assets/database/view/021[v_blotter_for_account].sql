@@ -28,6 +28,7 @@ SELECT
 	t.recurrence as recurrence,
 	t.notification_options as notification_options,
 	t.status as status,
+	t.is_ccard_payment as is_ccard_payment,
 	t.to_account_id as is_transfer
 FROM 
 	transactions as t		
@@ -69,6 +70,7 @@ SELECT
 	t.recurrence as recurrence,
 	t.notification_options as notification_options,
 	t.status as status,
+	t.is_ccard_payment as is_ccard_payment,
 	1 as is_transfer
 FROM 
 	transactions as t		
