@@ -116,7 +116,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 			});
             span.setPadding(padding, 0, 0, 0);
 			span.setVisibility(View.VISIBLE);
-            padding += collapsedDrawable.getBounds().width();
+            padding += collapsedDrawable.getMinimumWidth();
 		} else {
             padding += levelPadding/2;
 			span.setVisibility(View.GONE);
