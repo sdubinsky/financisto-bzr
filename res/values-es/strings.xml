@@ -45,19 +45,19 @@
 	<string name="amount">Importe</string>
 	<string name="date">Fecha</string>	
 	<string name="time">Hora</string>
-	<string name="parent">Categoría principal</string>
+	<string name="parent">Es subcategoría de</string>
 	<string name="total">Total:</string>
 	<string name="filter">Filtrar</string>
 	<string name="no_filter">No filtrar</string>
 	<string name="transfer">Traspaso</string>
 	<string name="confirmation">Confirmación</string>	
-	<string name="delete_category_dialog">¿Eliminar esta categoría principal junto con todas sus categorías secundarias (si las hubiera)?</string>
+	<string name="delete_category_dialog">¿Eliminar esta categoría junto con todas sus subcategorías (si las hubiera)?</string>
 	<string name="currency_delete_alert">No se puede eliminar esta divisa porque aún está en uso.</string>	
 	<string name="yes">Sí</string>
 	<string name="no">No</string>
 	<string name="error">Error</string>
-	<string name="include_subcategories">Incluir categorías secundarias</string>
-	<string name="include_subcategories_summary">Añadir también los registros secundarios al cómputo principal</string>
+	<string name="include_subcategories">Incluir subcategorías</string>
+	<string name="include_subcategories_summary">Añadir las transacciones incluidas en subcategorías</string>
 	<string name="start_date">Fecha inicial</string>
 	<string name="end_date">Fecha final</string>
 	<string name="budget">Presupuesto</string>
@@ -206,7 +206,7 @@
 	<string name="currency_code_hint">Código ISO 4217</string>
 	<string name="is_default">Es por defecto</string>
 	<string name="is_included_into_totals">Incluir dentro de los totales</string>
-	<string name="is_included_into_totals_summary">Incluir las transacciones de esta cuenta dentro de los totales.</string>
+	<string name="is_included_into_totals_summary">Incluir las transacciones de esta cuenta dentro de los totales</string>
 	<string name="decimals">\nDecimales</string>
 	<string name="decimal_separator">Separador\nDecimal</string>
 	<string name="group_separator">Separador\nde\ngrupo</string>
@@ -293,7 +293,7 @@
     <string name="gdocs_folder_error">Error de acceso a la carpeta de respaldo en Google Docs.</string>
     <string name="gdocs_service_error">Error de servicio en Google Docs.</string>
     <string name="gdocs_io_error">Error de conexión con Google Docs.</string>
-    <string name="package_info_error">Error de recuperación de la información del paquete Financisto.</string>
+    <string name="package_info_error">No fue posible acceder a la información del paquete Financisto.</string>
     
 	<string name="success">Tarea completada.</string>
 	<string name="fail">Fallo...</string>
@@ -406,15 +406,15 @@
     <string name="all_reports_preferences">General Report Preferences</string>
     <string name="category_by_period_preferences">Category by Period Report Preferences</string>
     <string name="report_include_sub_categories">Include sub Categories in list</string>
-	<string name="report_include_sub_categories_summary">Include sub categories in the Category by Period Reports list of categories.</string>
+	<string name="report_include_sub_categories_summary">Include sub categories in the Category by Period Reports list of categories</string>
 	<string name="report_add_sub_categories_result">Add sub Categories result</string>
-	<string name="report_add_sub_categories_result_summary">Add sub categories result to the result of a root category.</string>
+	<string name="report_add_sub_categories_result_summary">Add sub categories result to the result of a root category</string>
 	<string name="report_consider_null_results">Consider nulls in statistics</string>
-	<string name="report_consider_null_results_summary">Consider null result when generating statistics (min, max and mean).</string>
+	<string name="report_consider_null_results_summary">Consider null result when generating statistics (min, max and mean)</string>
 	<string name="report_include_no_filter">Include No &lt;Filter&gt;</string>
 	<string name="report_include_no_filter_summary">Include non classified transactions to reports filters lists (No category, No Project and Unknown Location)</string>
 	<string name="report_reference_month">Reference Month</string>
-	<string name="report_reference_month_summary">Define the Reference Month that represents the end of the report period.</string>
+	<string name="report_reference_month_summary">Define the Reference Month that represents the end of the report period</string>
 	<string name="report_last_quarter">Last quarter</string>
 	<string name="report_last_half_year">Last half year</string>
 	<string name="report_last_9_months">Last 9 months</string>
@@ -429,7 +429,7 @@
         <item>6 months later</item>
     </string-array>
 	<string name="report_reference_period">Period of Reference</string>
-	<string name="report_reference_period_summary">Define the period of reference (number of months) to be considered when opening report charts.</string>
+	<string name="report_reference_period_summary">Define the period of reference (number of months) to be considered when opening report charts</string>
 	<string-array name="report_reference_period_entities">
         <item>3 months</item>
         <item>6 months</item>
@@ -437,7 +437,7 @@
         <item>1 year</item>
     </string-array>
 	<string name="report_reference_currency">Reference Currency</string>
-	<string name="report_reference_currency_summary">Define the reference currency to be considered when request data for report charts.</string>
+	<string name="report_reference_currency_summary">Define the reference currency to be considered when request data for report charts</string>
 	<string name="report_last_n_months">Last $n months</string>
 	<string name="report_n_months_var">$n</string>
 	<string name="month_jan">ENE</string>
@@ -556,8 +556,8 @@
 	<string name="enable_widget_summary">Mostrar el saldo total de la cuenta en el widget</string>		
 	<string name="attach_picture">Adjuntar imagen</string>		
 	<string name="new_picture">Hacer una foto</string>		
-	<string name="report_by_sub_category">Por Categoría Secundaria</string>
-	<string name="report_by_sub_category_summary">Informe de transacciones por categoría secundaria</string>
+	<string name="report_by_sub_category">Por Subcategoría</string>
+	<string name="report_by_sub_category_summary">Informe de transacciones por subcategoría</string>
 
 	<string name="credits">Créditos</string>
 	<string name="sort_by_title">Ordenar por título</string>
@@ -580,7 +580,7 @@
 	<string name="payment_day_error">El día del pago no es válido.</string>
 	<string name="statement_error">Debe fijar los días del pago y del cierre de esta tarjeta de crédito en las propiedades de la cuenta.</string>
 	<string name="is_ccard_payment">Pago con Tarjeta de Crédito</string>
-	<string name="is_ccard_payment_summary">Not Include into bill total</string>
+	<string name="is_ccard_payment_summary">No incluir en el recuento total</string>
 	<string name="header_payments">Pagos</string>
 	<string name="header_credits">Various Credits</string>
 	<string name="header_expenses">Gastos</string>	
