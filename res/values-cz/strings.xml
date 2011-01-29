@@ -65,7 +65,7 @@
 	<string name="period_from">Období Od</string>
 	<string name="period_to">Období Do</string>
 	<string name="period_recur">Období opakování</string>
-	<string name="preferences">Předvolby</string>
+	<string name="preferences">Nastavení</string>
 	<string name="amount_picker">Vybírač částky</string>
 	<string name="integer_part_title">Počet číslic</string>
 	<string name="use_hundredth_title">Použít desetiny</string>
@@ -175,9 +175,9 @@
 	<string name="sum_result_label">Suma:</string>
 	<string name="report_init_res">0</string>
 	<string name="no_data_to_report">Pro zobrazení zprávy nejou dostatečná data.</string>
-	<string name="report_preferences_not_set">Upravte předvolby v menu Předvolby Zpráv. Předpokládá se implicitní měna a období.</string>
-	<string name="currency_not_set">Vztažná měna není v předvolbách nastavena.Předpokládá se implicitní měna.</string>
-	<string name="period_not_set">Období zprávy není v předvolbách nastaveno. Předpokládá se implicitní období.</string>
+	<string name="report_preferences_not_set">Upravte nastavení v menu Nastavení Zpráv. Předpokládá se implicitní měna a období.</string>
+	<string name="currency_not_set">Vztažná měna není v nastavení dostupná.Předpokládá se implicitní měna.</string>
+	<string name="period_not_set">Období zprávy není v nastavené zvoleno. Předpokládá se implicitní období.</string>
 	<string name="report_no_category">Pro filtrování zprávy není dostupná žádná kategorie.</string>
 	<string name="report_no_project">Pro filtrování zprávy není dostupný žádný projekt.</string>
 	<string name="report_no_account">Pro filtrování zprávy není dostupný žádný účet.</string>
@@ -263,7 +263,7 @@
 	<string name="more_products">Další produkty..</string>
 	<string name="pin_protection">Zabezpečení PIN</string>	
 	<string name="pin_protection_summary">Pro ochranu přístupu PINem zaškrtněte</string>
-	<string name="pin_protection_notify">Prosím nastavte PIN v předvolbách</string>
+	<string name="pin_protection_notify">Prosím nastavte PIN v nastavení</string>
 	<string name="change_pin">Změnit PIN</string>	
 	<string name="change_pin_summary">Změní PIN.</string>
 	<string name="pin">PIN</string>
@@ -283,8 +283,8 @@
 	<string name="restore_database_success">Databáze byla úspěšně obnovena.</string>
 	<string name="gdocs_connection_failed">Nelze se připojit ke Google Docs.</string>
 	<string name="gdocs_folder_not_found">Zálohovací adresář na Google Docs nebyl nalezen.</string>
-	<string name="gdocs_credentials_not_configured">Prosím nastavte v předvolbách přihlašovací údaje do Google Docs.</string>
-	<string name="gdocs_folder_not_configured">Prosím nastavte v předvolbách zálohovací adresář Google Docs.</string>
+	<string name="gdocs_credentials_not_configured">Prosím zadejte v Nastavení přihlašovací údaje do Google Docs.</string>
+	<string name="gdocs_folder_not_configured">Prosím zvolte v Nastavení zálohovací adresář Google Docs.</string>
 	<string name="gdocs_login_failed">Neplatené přihlašovací údaje do Google Docs.</string>
 	<string name="gdocs_backup_failed">Chyba během odesílání zálohy na Google Docs. Zkuste to prosím znovu.</string>
 	<string name="gdocs_restore_failed">Chyba při získávání zálohovacího souboru. Zkuste to prosím znovu.</string>
@@ -312,7 +312,7 @@
 	<string name="current_location">Současná poloha</string>
 	<string name="protection">Ochrana</string>
 	<string name="transaction_screen">Obrazovka nové operace</string>
-	<string name="transaction_screen_summary">Předvolby pro obrazovku nové operace/převodu</string>
+	<string name="transaction_screen_summary">Nastavení pro obrazovku nové operace/převodu</string>
 	<string name="screen_layout">Rozložení obrazovky</string>
 	<string name="show_location">Zobrazit polohu</string>	
 	<string name="show_location_summary">Zobrazí menu poloha</string>
@@ -401,14 +401,14 @@
 	<string name="backup_folder">Zálohovací adresář</string>
 	<string name="backup_folder_summary">Adresář v Google Docs k ukládání záloh.</string>
 
-    <string name="report_preferences">Předvolby zpráv</string>
-    <string name="all_reports_preferences">Hlavní předvolby zpráv</string>
-    <string name="category_by_period_preferences">Předvolby kategorie za období</string>
+    <string name="report_preferences">Nastavení zpráv</string>
+    <string name="all_reports_preferences">Hlavní nastavení zpráv</string>
+    <string name="category_by_period_preferences">Nastavení kategorie za období</string>
     <string name="report_include_sub_categories">Seznam včetně podkategorií</string>
 	<string name="report_include_sub_categories_summary">Seznam kategorií za období včetně podkategorií.</string>
 	<string name="report_add_sub_categories_result">Přidat výsledek podkategorií</string>
 	<string name="report_add_sub_categories_result_summary">Přidat výsledek pokategorií k výsledku  vrchní kategorie.</string>
-	<string name="report_consider_null_results">Zahrnou nuly do tatistik</string>
+	<string name="report_consider_null_results">Zahrnou nuly do tatistik/string>
 	<string name="report_consider_null_results_summary">Zahrnout nulové výsledky do generování statistik (min, max, střed).</string>
 	<string name="report_include_no_filter">Včetně bez &lt;filtru&gt;</string>
 	<string name="report_include_no_filter_summary">Včetně nezařazených operací na seznamu filtru zpráv (Bez kategorie, Bez projektu a Neznámá poloha)</string>
@@ -577,7 +577,7 @@
 	<string name="monthly_result">Měsíční zůstatek</string>
 	<string name="closing_day_error">Neplatný závěrečný den.</string>
 	<string name="payment_day_error">Neplatný den splatnosti.</string>
-	<string name="statement_error">Prosím nastavte den splatnosti a závěrečný den této kreditky v předvolbách účtu.</string>
+	<string name="statement_error">Prosím nastavte den splatnosti a závěrečný den této kreditky v nastavení účtu.</string>
 	<string name="is_ccard_payment">Platba kreditní kartou</string>
 	<string name="is_ccard_payment_summary">Nezahrnovat do zůstatku</string>
 	<string name="header_payments">Platby</string>
