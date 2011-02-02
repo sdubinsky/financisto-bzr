@@ -98,7 +98,7 @@ public class RecurActivity extends Activity {
 			}
 		});
 		
-		addSpinnerItems(sInterval, new RecurInterval[]{RecurInterval.NO_RECUR, RecurInterval.MONTHLY});
+		addSpinnerItems(sInterval, new RecurInterval[]{RecurInterval.NO_RECUR, RecurInterval.WEEKLY, RecurInterval.MONTHLY});
 		addSpinnerItems(sPeriod, periods);
 		
 		LayoutInflater inflater = getLayoutInflater();
@@ -305,12 +305,7 @@ public class RecurActivity extends Activity {
 	}
 
 	private void editWeekly(View v, Recur recur) {
-		Weekly w = (Weekly)recur;
-		DayOfWeek[] days = DayOfWeek.values();
-		for (DayOfWeek d : days) {
-			CheckBox cb = (CheckBox)v.findViewById(d.checkboxId);
-			cb.setChecked(w.isSet(d));
-		}
+		return;
 	}
 
 	private void editSemiMonthly(View v, Recur recur) {
@@ -338,15 +333,12 @@ public class RecurActivity extends Activity {
 
 	private boolean updateWeekly(View v, Recur r) {
 		Weekly w = (Weekly)r;
+		int i = startDate.get(Calendar.DAY_OF_WEEK);
 		DayOfWeek[] days = DayOfWeek.values();
 		for (DayOfWeek d : days) {
-			CheckBox cb = (CheckBox)v.findViewById(d.checkboxId);
-			if (cb.isChecked()) {
-				w.set(d);
-			} else {
-				w.unset(d);
-			}
+			w.unset(d);
 		}
+		w.set(days[i - 1]);
 		return true;
 	}
 

@@ -34,7 +34,17 @@ public class RecurUtils {
 		NO_RECUR(0, R.string.recur_interval_no_recur),
 		EVERY_X_DAY(R.layout.recur_every_x_day, R.string.recur_interval_every_x_day),
 		DAILY(0, R.string.recur_interval_daily),
-		WEEKLY(R.layout.recur_weekly, R.string.recur_interval_weekly),		
+		WEEKLY(R.layout.recur_weekly, R.string.recur_interval_weekly){
+			@Override
+			public Period next(long startDate) {
+				Calendar c = Calendar.getInstance();
+				c.setTimeInMillis(startDate);
+				startDate = DateUtils.startOfDay(c).getTimeInMillis();
+				c.add(Calendar.DAY_OF_MONTH, 6);
+				long endDate = DateUtils.endOfDay(c).getTimeInMillis();
+				return new Period(PeriodType.CUSTOM, startDate, endDate);
+			}
+		},		
 		MONTHLY(0, R.string.recur_interval_monthly){
 			@Override
 			public Period next(long startDate) {
