@@ -34,14 +34,23 @@ public abstract class Export {
 	public static final File EXPORT_PATH =  new File(Environment.getExternalStorageDirectory(), "financisto");
 
 	public String export() throws Exception {
-		String fileName = generateFilename();
 		File path = getPath();
 		path.mkdirs();
-		File file = new File(path, fileName);		
-		FileOutputStream outputStream = new FileOutputStream(file);
-		generateBackup(outputStream);
-		return fileName;
+        String fileName = generateFilename();
+        File file = new File(path, fileName);
+        FileOutputStream outputStream = new FileOutputStream(file);
+        try {
+            export(outputStream);
+        } finally {
+            outputStream.flush();
+            outputStream.close();
+        }
+        return fileName;
 	}
+
+    protected void export(OutputStream outputStream) throws Exception {
+        generateBackup(outputStream);
+    }
 	
 	/**
 	 * Backup database to google docs
@@ -72,23 +81,19 @@ public abstract class Export {
 		return fileName;
 	}
 	
-	private String generateFilename()
-	{
+	private String generateFilename() {
 		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd'_'HHmmss'_'SSS");
 		return df.format(new Date())+getExtension();
 	}
 	
-	private void generateBackup(OutputStream outputStream) throws Exception 
-	{
+	private void generateBackup(OutputStream outputStream) throws Exception {
 		OutputStreamWriter osw = new OutputStreamWriter(outputStream, "UTF-8");
 		BufferedWriter bw = new BufferedWriter(osw, 65536);
-
 		try {			
 			writeHeader(bw);
 			writeBody(bw);
 			writeFooter(bw);
-		}
-		finally {
+		} finally {
 			bw.close();
 		}	
 	}
