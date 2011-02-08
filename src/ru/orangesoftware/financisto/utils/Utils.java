@@ -78,7 +78,9 @@ public class Utils {
 			s = s.substring(0, s.length()-1);
 		}
 		sb.append(s);
-		sb.append(" ").append(c.symbol);
+        if (isNotEmpty(c.symbol)) {
+		    sb.append(" ").append(c.symbol);
+        }
 		return sb;		
 	}
 	

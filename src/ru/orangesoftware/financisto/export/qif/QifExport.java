@@ -25,9 +25,11 @@ import java.util.ArrayList;
 public class QifExport extends Export {
 
     private final DatabaseAdapter db;
+    private final WhereFilter filter;
 
-    public QifExport(DatabaseAdapter db) {
+    public QifExport(DatabaseAdapter db, WhereFilter filter) {
         this.db = db;
+        this.filter = filter;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class QifExport extends Export {
         ArrayList<Account> accounts = db.em().getAllAccountsList();
         for (Account a : accounts) {
             QifAccount qifAccount = writeAccount(qifWriter, a);
-            writeTransactionsForAccount(qifWriter, qifAccount, WhereFilter.empty().eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(a.id)));
+            writeTransactionsForAccount(qifWriter, qifAccount, a);
         }
     }
 
@@ -51,8 +53,8 @@ public class QifExport extends Export {
         return qifAccount;
     }
 
-    private void writeTransactionsForAccount(QifBufferedWriter qifWriter, QifAccount qifAccount, WhereFilter filter) throws IOException {
-        Cursor c = db.getBlotter(filter);
+    private void writeTransactionsForAccount(QifBufferedWriter qifWriter, QifAccount qifAccount, Account account) throws IOException {
+        Cursor c = getBlotterForAccount(account);
         try {
             boolean addHeader = true;
             while (c.moveToNext()) {
@@ -66,6 +68,12 @@ public class QifExport extends Export {
         } finally {
             c.close();
         }
+    }
+
+    private Cursor getBlotterForAccount(Account account) {
+        WhereFilter accountFilter = WhereFilter.copyOf(filter);
+        accountFilter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
+        return db.getBlotter(accountFilter);
     }
 
     @Override
