@@ -7,44 +7,49 @@ import java.util.Calendar;
  * User: Denis Solonenko
  * Date: 2/8/11 8:32 PM
  */
-public class MockDate {
+public class MockDateTime {
 
     private final Calendar c = Calendar.getInstance();
 
-    private MockDate() {}
+    private MockDateTime() {}
 
-    public static MockDate thisYear() {
-        return new MockDate();
+    public static MockDateTime on() {
+        return new MockDateTime();
     }
 
-    public MockDate jan() {
+    public MockDateTime year(int year) {
+        c.set(Calendar.YEAR, year);
+        return this;
+    }
+
+    public MockDateTime jan() {
         c.set(Calendar.MONTH, Calendar.JANUARY);
         return this;
     }
 
-    public MockDate feb() {
+    public MockDateTime feb() {
         c.set(Calendar.MONTH, Calendar.FEBRUARY);
         return this;
     }
 
-    public MockDate day(int day) {
+    public MockDateTime day(int day) {
         c.set(Calendar.DAY_OF_MONTH, day);
         return this;
     }
 
-    public MockDate atMidnight() {
+    public MockDateTime atMidnight() {
         return at(0, 0, 0, 0);
     }
 
-    public MockDate atNoon() {
+    public MockDateTime atNoon() {
         return at(12, 0, 0, 0);
     }
 
-    public MockDate atDayEnd() {
+    public MockDateTime atDayEnd() {
         return at(23, 59, 59, 999);
     }
 
-    public MockDate at(int hh, int mm, int ss, int ms) {
+    public MockDateTime at(int hh, int mm, int ss, int ms) {
         c.set(Calendar.HOUR_OF_DAY, hh);
         c.set(Calendar.MINUTE, mm);
         c.set(Calendar.SECOND, ss);

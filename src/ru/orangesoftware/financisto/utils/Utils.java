@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 
@@ -203,4 +204,7 @@ public class Utils {
 		return manager.getPackageInfo(context.getPackageName(), 0);                         			
 	}
 
+    public static String emptyString(String s) {
+        return s != null ? s : "";
+    }
 }

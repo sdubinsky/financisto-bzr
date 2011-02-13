@@ -17,10 +17,12 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Category;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class QifExport extends Export {
 
@@ -54,6 +56,7 @@ public class QifExport extends Export {
     }
 
     private void writeTransactionsForAccount(QifBufferedWriter qifWriter, QifAccount qifAccount, Account account) throws IOException {
+        HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
         Cursor c = getBlotterForAccount(account);
         try {
             boolean addHeader = true;
@@ -63,6 +66,7 @@ public class QifExport extends Export {
                     addHeader = false;
                 }
                 QifTransaction qifTransaction = QifTransaction.fromBlotterCursor(c);
+                qifTransaction.userCategoriesCache(categoriesMap);
                 qifTransaction.writeTo(qifWriter);
             }
         } finally {
