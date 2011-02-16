@@ -18,6 +18,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.CategoryTree;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -28,10 +29,14 @@ public class QifExport extends Export {
 
     private final DatabaseAdapter db;
     private final WhereFilter filter;
+    private final CategoryTree<Category> categories;
+    private final HashMap<Long, Category> categoriesMap;
 
     public QifExport(DatabaseAdapter db, WhereFilter filter) {
         this.db = db;
         this.filter = filter;
+        this.categories = db.getAllCategoriesTree(false);
+        this.categoriesMap = categories.asMap();
     }
 
     @Override
@@ -42,6 +47,30 @@ public class QifExport extends Export {
     @Override
     protected void writeBody(BufferedWriter bw) throws IOException {
         QifBufferedWriter qifWriter = new QifBufferedWriter(bw);
+        writeCategories(qifWriter);
+        writeAccountsAndTransactions(qifWriter);
+    }
+
+    private void writeCategories(QifBufferedWriter qifWriter) throws IOException {
+        if (!categories.isEmpty()) {
+            qifWriter.writeCategoriesHeader();
+            for (Category c : categories) {
+                writeCategory(qifWriter, c);
+            }
+        }
+    }
+
+    private void writeCategory(QifBufferedWriter qifWriter, Category c) throws IOException {
+        QifCategory qifCategory = QifCategory.fromCategory(c);
+        qifCategory.writeTo(qifWriter);
+        if (c.hasChildren()) {
+            for (Category child : c.children) {
+                writeCategory(qifWriter, child);
+            }
+        }
+    }
+
+    private void writeAccountsAndTransactions(QifBufferedWriter qifWriter) throws IOException {
         ArrayList<Account> accounts = db.em().getAllAccountsList();
         for (Account a : accounts) {
             QifAccount qifAccount = writeAccount(qifWriter, a);
@@ -56,7 +85,6 @@ public class QifExport extends Export {
     }
 
     private void writeTransactionsForAccount(QifBufferedWriter qifWriter, QifAccount qifAccount, Account account) throws IOException {
-        HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
         Cursor c = getBlotterForAccount(account);
         try {
             boolean addHeader = true;

@@ -28,4 +28,15 @@ public class QifBufferedWriter {
     public void end() throws IOException {
         bw.write("^\n");
     }
+
+    public void writeAccountsHeader() throws IOException {
+        bw.write("!Account");
+        newLine();
+    }
+
+    public void writeCategoriesHeader() throws IOException {
+        bw.write("!Type:Cat");
+        newLine();
+    }
+
 }

@@ -44,7 +44,8 @@ public class QifTransaction {
         qifWriter.write("D").write(DATE_FORMAT.format(date)).newLine();
         qifWriter.write("T").write(Utils.amountToString(Currency.EMPTY, amount)).newLine();
         if (categoryId > 0) {
-            qifWriter.write("L").write(buildCategoryPath(categoryId)).newLine();
+            QifCategory qifCategory = QifCategory.fromCategory(getCategoryById(categoryId));
+            qifWriter.write("L").write(qifCategory.name).newLine();
         }
         if (Utils.isNotEmpty(payee)) {
             qifWriter.write("P").write(payee).newLine();
@@ -53,18 +54,6 @@ public class QifTransaction {
             qifWriter.write("M").write(memo).newLine();
         }
         qifWriter.end();
-    }
-
-    private String buildCategoryPath(long categoryId) {
-        Category c = getCategoryById(categoryId);
-        if (c != null) {
-            StringBuilder sb = new StringBuilder(c.title);
-			for (Category cat = c.parent; cat != null; cat = cat.parent) {
-                sb.insert(0,"/").insert(0, cat.title);
-			}
-			return sb.toString();
-        }
-        return "";
     }
 
     private Category getCategoryById(long categoryId) {

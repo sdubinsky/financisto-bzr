@@ -39,11 +39,18 @@ public class QIFExportTest extends AbstractDbTest {
 
     public void test_should_export_account_with_a_couple_of_transactions() throws Exception {
         Account a = createFirstAccount();
-        Category p1 = createCategory("P1");
+        Category p1 = createExpenseCategory("P1");
         Category c1 = createCategory(p1, "c1");
         MockTransaction.withDb(db).account(a).amount(1000).category(p1).dateTime(MockDateTime.on().year(2011).feb().day(8)).create();
         MockTransaction.withDb(db).account(a).amount(-2056).category(c1).payee("Payee 1").note("Some note here...").dateTime(MockDateTime.on().year(2011).feb().day(7)).create();
         assertEquals(
+                "!Type:Cat\n"+
+                "NP1\n"+
+                "E\n"+
+                "^\n"+
+                "NP1:c1\n"+
+                "E\n"+
+                "^\n"+
                 "!Account\n"+
                 "NMy Cash Account\n"+
                 "TCash\n"+
@@ -55,7 +62,7 @@ public class QIFExportTest extends AbstractDbTest {
                 "^\n"+
                 "D07/02/2011\n"+
                 "T-20.56\n"+
-                "LP1/c1\n"+
+                "LP1:c1\n"+
                 "PPayee 1\n"+
                 "MSome note here...\n"+
                 "^\n",
@@ -119,6 +126,36 @@ public class QIFExportTest extends AbstractDbTest {
                 exportAsString(filter));
     }
 
+    public void test_should_export_categories() throws Exception {
+        createCategories();
+        assertEquals(
+                "!Type:Cat\n"+
+                "NA1\n"+
+                "I\n"+
+                "^\n"+
+                "NA1:aa1\n"+
+                "I\n"+
+                "^\n"+
+                "NA1:aa2\n"+
+                "I\n"+
+                "^\n"+
+                "NB2\n"+
+                "E\n"+
+                "^\n"+
+                "NB2:bb1\n"+
+                "E\n"+
+                "^\n",
+                exportAsString());
+    }
+
+    private void createCategories() {
+        Category a1 = createIncomeCategory("A1");
+        createCategory(a1, "aa1");
+        createCategory(a1, "aa2");
+        Category b1 = createExpenseCategory("B2");
+        createCategory(b1, "bb1");
+    }
+
     private WhereFilter createFebruaryOnlyFilter() {
         String start = String.valueOf(MockDateTime.on().year(2011).feb().day(1).atMidnight().asLong());
         String end = String.valueOf(MockDateTime.on().year(2011).feb().day(28).atDayEnd().asLong());
@@ -171,9 +208,18 @@ public class QIFExportTest extends AbstractDbTest {
         return c;
     }
 
-    private Category createCategory(String name) {
+    private Category createExpenseCategory(String name) {
+        return createCategory(name, Category.TYPE_EXPENSE);
+    }
+
+    private Category createIncomeCategory(String name) {
+        return createCategory(name, Category.TYPE_INCOME);
+    }
+
+    private Category createCategory(String name, int type) {
         Category c = new Category();
         c.title = name;
+        c.type = type;
         c.id = db.insertOrUpdate(c, new ArrayList<Attribute>());
         return c;
     }

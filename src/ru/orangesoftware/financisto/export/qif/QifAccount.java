@@ -47,7 +47,7 @@ public class QifAccount {
     }
 
     public void writeTo(QifBufferedWriter bw) throws IOException {
-        bw.write("!Account").newLine();
+        bw.writeAccountsHeader();
         bw.write("N").write(memo).newLine();
         bw.write("T").write(type).newLine();
         bw.end();
