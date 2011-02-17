@@ -603,7 +603,6 @@
 	<string name="scheduled_transactions_have_been_restored">%d missed scheduled transactions have been restored. Please use Mass Operations to clear/delete them.</string>		
 	<string name="restore_missed_scheduled_transactions">Restore missed schedules</string>		
 	<string name="restore_missed_scheduled_transactions_summary">Missed scheduled transactions will be restored with \'Restored\' status</string>
-
     <string name="save_and_new">Save&amp;New</string>
     <string name="show_picture">Show \'Take picture\'</string>
     <string name="show_picture_summary">Show \'Take picture\' box</string>
@@ -617,5 +616,8 @@
     <string name="donate">Make a donation</string>
     <string name="donate_error">Android Market is not available on your device</string>
     <string name="type">Type</string>
+
+    <string name="qif_export">QIF Export</string>
+    <string name="qif_export_inprogress">Exporting data to QIF..</string>
 
 </resources>
