@@ -14,7 +14,6 @@ package ru.orangesoftware.financisto.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
@@ -128,7 +127,7 @@ public class DatabaseAdapter {
 		long t0 = System.currentTimeMillis();
 		try {
 			String sortOrder = getBlotterSortOrder(filter);
-			return db.query(V_BLOTTER, BlotterColumns.NORMAL_PROJECTION, 
+			return db.query(V_BLOTTER, BlotterColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null, 
 				sortOrder);
 		} finally {

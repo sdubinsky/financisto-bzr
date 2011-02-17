@@ -8,11 +8,10 @@ import ru.orangesoftware.financisto.export.qif.QifExport;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.MockDateTime;
 import ru.orangesoftware.financisto.test.MockTransaction;
+import ru.orangesoftware.financisto.test.MockTransfer;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Created by IntelliJ IDEA.
@@ -124,6 +123,36 @@ public class QIFExportTest extends AbstractDbTest {
                 "T-20.00\n"+
                 "^\n",
                 exportAsString(filter));
+    }
+
+    public void test_should_export_transfers() throws Exception {
+        createTransfers();
+        assertEquals(
+                "!Account\n"+
+                "NMy Cash Account\n"+
+                "TCash\n"+
+                "^\n"+
+                "!Type:Cash\n"+
+                "D08/02/2011\n"+
+                "T20.00\n"+
+                "L[My Bank Account]\n"+
+                "^\n"+
+                "!Account\n"+
+                "NMy Bank Account\n"+
+                "TBank\n"+
+                "^\n"+
+                "!Type:Bank\n"+
+                "D08/02/2011\n"+
+                "T-20.00\n"+
+                "L[My Cash Account]\n"+
+                "^\n",
+                exportAsString());
+    }
+
+    private void createTransfers() {
+        Account a1 = createFirstAccount();
+        Account a2 = createSecondAccount();
+        MockTransfer.withDb(db).fromAccount(a2).fromAmount(-2000).toAccount(a1).toAmount(2000).dateTime(MockDateTime.on().year(2011).feb().day(8)).create();
     }
 
     public void test_should_export_categories() throws Exception {

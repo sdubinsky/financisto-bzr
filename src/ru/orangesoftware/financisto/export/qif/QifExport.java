@@ -105,7 +105,7 @@ public class QifExport extends Export {
     private Cursor getBlotterForAccount(Account account) {
         WhereFilter accountFilter = WhereFilter.copyOf(filter);
         accountFilter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
-        return db.getBlotter(accountFilter);
+        return db.getTransactions(accountFilter);
     }
 
     @Override

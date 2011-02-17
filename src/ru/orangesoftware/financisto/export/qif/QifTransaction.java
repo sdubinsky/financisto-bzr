@@ -29,6 +29,8 @@ public class QifTransaction {
     private String payee;
     private String memo;
     private long categoryId;
+    private long toAccountId;
+    private String toAccountTitle;
 
     public static QifTransaction fromBlotterCursor(Cursor c) {
         QifTransaction t = new QifTransaction();
@@ -37,13 +39,17 @@ public class QifTransaction {
         t.payee = c.getString(BlotterColumns.payee.ordinal());
         t.memo = c.getString(BlotterColumns.note.ordinal());
         t.categoryId = c.getLong(BlotterColumns.category_id.ordinal());
+        t.toAccountId = c.getLong(BlotterColumns.to_account_id.ordinal());
+        t.toAccountTitle = c.getString(BlotterColumns.to_account_title.ordinal());
         return t;
     }
 
     public void writeTo(QifBufferedWriter qifWriter) throws IOException {
         qifWriter.write("D").write(DATE_FORMAT.format(date)).newLine();
         qifWriter.write("T").write(Utils.amountToString(Currency.EMPTY, amount)).newLine();
-        if (categoryId > 0) {
+        if (toAccountId > 0) {
+            qifWriter.write("L[").write(toAccountTitle).write("]").newLine();
+        } else if (categoryId > 0) {
             QifCategory qifCategory = QifCategory.fromCategory(getCategoryById(categoryId));
             qifWriter.write("L").write(qifCategory.name).newLine();
         }
