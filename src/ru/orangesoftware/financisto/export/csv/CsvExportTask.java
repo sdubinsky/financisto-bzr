@@ -1,7 +1,8 @@
-package ru.orangesoftware.financisto.export;
+package ru.orangesoftware.financisto.export.csv;
 
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.model.Currency;
 import android.app.ProgressDialog;
 import android.content.Context;

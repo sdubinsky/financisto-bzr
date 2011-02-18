@@ -16,9 +16,9 @@
 		android:layout_marginRight="10dp" />
 	<TextView android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:layout_marginLeft="3dp"
-		android:text="@string/period"></TextView>
+		android:text="@string/period"/>
 	<Button android:layout_height="wrap_content" android:id="@+id/bPeriod"
-		android:layout_width="fill_parent"></Button>
+		android:layout_width="fill_parent"/>
 	<View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
 		android:layout_width="fill_parent" android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp" />
@@ -28,34 +28,34 @@
 		android:stretchColumns="*">
 		<TableRow>
 			<TextView android:layout_marginLeft="3dp"
-				android:text="@string/decimals"></TextView>
+				android:text="@string/decimals"/>
 			<TextView android:layout_marginLeft="3dp"
-				android:text="@string/decimal_separator"></TextView>
+				android:text="@string/decimal_separator"/>
 			<TextView android:layout_marginLeft="3dp"
-				android:text="@string/group_separator"></TextView>
+				android:text="@string/group_separator"/>
 		</TableRow>
 		<TableRow>
 			<Spinner android:id="@+id/spinnerDecimals"
-				android:entries="@array/decimals"></Spinner>
+				android:entries="@array/decimals"/>
 			<Spinner android:id="@+id/spinnerDecimalSeparators"
-				android:entries="@array/decimal_separators"></Spinner>
+				android:entries="@array/decimal_separators"/>
 			<Spinner android:id="@+id/spinnerGroupSeparators"
-				android:entries="@array/group_separators"></Spinner>
+				android:entries="@array/group_separators"/>
 		</TableRow>
 		<View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
 			android:layout_width="fill_parent" android:layout_marginLeft="10dp"
 			android:layout_marginRight="10dp" />
 		<TableRow>
 			<TextView android:layout_marginLeft="3dp"
-				android:text="@string/field_separator"></TextView>
+				android:text="@string/field_separator"/>
 			<TextView android:layout_marginLeft="3dp"
-				android:text="@string/include_header"></TextView>
+				android:text="@string/include_header"/>
 		</TableRow>
 		<TableRow>
 			<Spinner android:id="@+id/spinnerFieldSeparator"
-				android:entries="@array/field_separators"></Spinner>
+				android:entries="@array/field_separators"/>
 			<CheckBox android:id="@+id/checkboxIncludeHeader"
-				android:checked="true"></CheckBox>
+				android:checked="true"/>
 		</TableRow>
 	</TableLayout>
 	

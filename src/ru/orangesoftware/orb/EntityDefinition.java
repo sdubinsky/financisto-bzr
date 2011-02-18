@@ -119,6 +119,14 @@ class EntityDefinition {
 		}
 	}
 
+    public void setId(Object entity, long id) {
+        try {
+            idField.field.setLong(entity, id);
+        } catch (Exception e) {
+            throw new PersistenceException("Unable to set id for "+entity, e);
+        }
+    }
+
 	public String getColumnForField(String field) {
 		if (field.indexOf('.') > 0) {
 			String[] path = field.split("\\.");

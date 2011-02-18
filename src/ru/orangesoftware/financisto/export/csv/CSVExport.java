@@ -8,7 +8,7 @@
  * Contributors:
  *     Denis Solonenko - initial API and implementation
  ******************************************************************************/
-package ru.orangesoftware.financisto.export;
+package ru.orangesoftware.financisto.export.csv;
 
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_DATE_ISO_8601;
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_TIME_ISO_8601;
@@ -23,6 +23,7 @@ import java.util.HashMap;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
@@ -72,9 +73,8 @@ public class CSVExport extends Export {
 			HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
 			Cursor c = db.getBlotter(filter);
 			try {			
-				StringBuilder sb = new StringBuilder();
 				while (c.moveToNext()) {
-					writeLine(w, c, categoriesMap, sb);			
+					writeLine(w, c, categoriesMap);
 				}					
 			} finally {
 				c.close();
@@ -84,7 +84,7 @@ public class CSVExport extends Export {
 		}
 	}
 
-	private void writeLine(Csv.Writer w, Cursor cursor, HashMap<Long, Category> categoriesMap, StringBuilder sb) {
+	private void writeLine(Csv.Writer w, Cursor cursor, HashMap<Long, Category> categoriesMap) {
 		long date = cursor.getLong(BlotterColumns.datetime.ordinal());
 		Date dt = new Date(date);
 		long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());

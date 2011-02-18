@@ -51,9 +51,10 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.dialog.WebViewDialog;
 import ru.orangesoftware.financisto.export.BackupExportTask;
-import ru.orangesoftware.financisto.export.CsvExportTask;
+import ru.orangesoftware.financisto.export.csv.CsvExportTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
+import ru.orangesoftware.financisto.export.qif.QifExportTask;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.EntityEnum;
@@ -69,7 +70,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	
 	private static final int ACTIVITY_PIN = 1;
 	private static final int ACTIVITY_CSV_EXPORT = 2;
-	
+    private static final int ACTIVITY_QIF_EXPORT = 3;
+
 	private static final int MENU_PREFERENCES = Menu.FIRST+1;
 	private static final int MENU_ABOUT = Menu.FIRST+2;
 	private static final int MENU_BACKUP = Menu.FIRST+3;
@@ -81,6 +83,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private static final int MENU_ENTITIES = Menu.FIRST+9;
 	private static final int MENU_MASS_OP = Menu.FIRST+10;
     private static final int MENU_DONATE = Menu.FIRST+11;
+    private static final int MENU_QIF_EXPORT = Menu.FIRST+12;
 
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
@@ -144,14 +147,25 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 				currency.groupSeparator = data.getStringExtra(CsvExportActivity.CSV_EXPORT_GROUP_SEPARATOR);
 				doCsvExport(filter, currency, fieldSeparator, includeHeader);
 			}
+		} else if (requestCode == ACTIVITY_QIF_EXPORT) {
+			if (resultCode == RESULT_OK) {
+				WhereFilter filter = WhereFilter.fromIntent(data);
+                long[] selectedAccounts = data.getLongArrayExtra(QifExportActivity.SELECTED_ACCOUNTS);
+                doQifExport(filter, selectedAccounts);
+			}
 		}
 	}
 	
-	private void doCsvExport(WhereFilter filter, Currency currency, char fieldSeparaotr, boolean includeHeader) {
+	private void doCsvExport(WhereFilter filter, Currency currency, char fieldSeparator, boolean includeHeader) {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
-		new CsvExportTask(this, d, filter, currency, fieldSeparaotr, includeHeader).execute((String[])null);
+		new CsvExportTask(this, d, filter, currency, fieldSeparator, includeHeader).execute((String[])null);
 	}
 	
+    private void doQifExport(WhereFilter filter, long[] selectedAccounts) {
+        ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.qif_export_inprogress), true);
+        new QifExportTask(this, d, filter, selectedAccounts).execute((String[])null);
+    }
+
 	private void initialLoad() {
 		long t2, t1, t0 = System.currentTimeMillis();
 		DatabaseAdapter db = new DatabaseAdapter(this);
@@ -249,6 +263,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
 		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
+        menu.addSubMenu(0, MENU_QIF_EXPORT, 0, R.string.qif_export);
         menu.addSubMenu(0, MENU_DONATE, 0, R.string.donate);
 		menu.addSubMenu(0, MENU_ABOUT, 0, R.string.about);
 		return true;
@@ -292,6 +307,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		case MENU_CSV_EXPORT:
 			doCsvExport();
 			break;
+        case MENU_QIF_EXPORT:
+            doQifExport();
+            break;
 		case MENU_BACKUP:
 			doBackup();
 			break;
@@ -392,6 +410,11 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		Intent intent = new Intent(this, CsvExportActivity.class);
 		startActivityForResult(intent, ACTIVITY_CSV_EXPORT);
 	}
+
+    private void doQifExport() {
+        Intent intent = new Intent(this, QifExportActivity.class);
+        startActivityForResult(intent, ACTIVITY_QIF_EXPORT);
+    }
 
 	private String selectedBackupFile;
 	private Properties backupFiles;

@@ -31,6 +31,11 @@ public class TransactionUtils {
 				new String[]{"e_"+AccountColumns.TITLE}, new int[]{android.R.id.text1});		
 	}
 
+    public static ListAdapter createAccountMultiChoiceAdapter(Context context, Cursor accountCursor) {
+        return new SimpleCursorAdapter(context, android.R.layout.simple_list_item_multiple_choice, accountCursor,
+                new String[]{"e_"+AccountColumns.TITLE}, new int[]{android.R.id.text1});
+    }
+
 	public static ListAdapter createCurrencyAdapter(Context context, Cursor currencyCursor) {
 		return new SimpleCursorAdapter(context, android.R.layout.simple_spinner_dropdown_item, currencyCursor, 
 				new String[]{"e_name"}, new int[]{android.R.id.text1});		

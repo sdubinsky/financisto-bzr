@@ -115,7 +115,9 @@ public abstract class EntityManager {
 		long id = ed.getId(entity);
 		if (id <= 0) {
 			values.remove(ed.idField.columnName);
-			return db.insertOrThrow(ed.tableName, null, values);
+			id = db.insertOrThrow(ed.tableName, null, values);
+            ed.setId(entity, id);
+            return id;
 		} else {
 			db.update(ed.tableName, values, ed.idField.columnName+"=?", new String[]{String.valueOf(id)});
 			return id;

@@ -19,11 +19,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ACCOUNT")
-public class Account {
-	
-	@Id
-	@Column(name = "_id")
-	public long id = -1;
+public class Account extends MyEntity {
 	
 	@Column(name = "creation_date")
 	public long creationDate;
@@ -31,9 +27,6 @@ public class Account {
 	@JoinColumn(name = "currency_id")
 	public Currency currency;
 
-	@Column(name = "title")
-	public String title;
-	
 	@Column(name = "type")
 	public String type = AccountType.CASH.name();
 	
@@ -67,11 +60,10 @@ public class Account {
 	@Column(name = "last_category_id")
 	public long lastCategoryId;
 	
-	/** parameters for credit card bills filtering */
 	@Column(name = "closing_day")
 	public int closingDay;
 	
 	@Column(name = "payment_day")
 	public int paymentDay;
-	/***********************************************/
+
 }

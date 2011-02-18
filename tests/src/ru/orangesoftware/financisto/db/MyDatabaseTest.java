@@ -9,7 +9,7 @@ import ru.orangesoftware.financisto.model.Payee;
 
 import java.util.ArrayList;
 
-public class MyDatabaseTest extends AndroidTestCase {
+public class MyDatabaseTest extends AbstractDbTest {
 
     DatabaseAdapter db;
     MyEntityManager em;
