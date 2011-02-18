@@ -19,6 +19,11 @@
 		android:text="@string/period"/>
 	<Button android:layout_height="wrap_content" android:id="@+id/bPeriod"
 		android:layout_width="fill_parent"/>
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="fill_parent" android:layout_marginLeft="3dp"
+        android:text="@string/accounts"/>
+    <Button android:layout_height="wrap_content" android:id="@+id/bAccounts"
+        android:layout_width="fill_parent" android:text="@string/all_accounts"/>
 	<View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
 		android:layout_width="fill_parent" android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp" />

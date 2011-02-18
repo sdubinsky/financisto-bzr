@@ -26,7 +26,7 @@ import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class AbstractExportActivity extends Activity {
+public abstract class AbstractExportActivity extends Activity {
 
     private final int layoutId;
 	private final WhereFilter filter = WhereFilter.empty();
@@ -63,6 +63,7 @@ public class AbstractExportActivity extends Activity {
             public void onClick(View view) {
                 Intent data = new Intent();
                 filter.toIntent(data);
+                updateResultIntentFromUi(data);
                 setResult(RESULT_OK, data);
                 finish();
             }
@@ -76,9 +77,18 @@ public class AbstractExportActivity extends Activity {
                 finish();
             }
         });
-		
+
+        internalOnCreate();
 		updatePeriod();
 	}
+
+    protected abstract void internalOnCreate();
+
+    protected abstract void updateResultIntentFromUi(Intent data);
+
+    public void clearFilter() {
+        filter.clear();
+    }
 
 	private void updatePeriod() {
 		DateTimeCriteria c = filter.getDateTime();

@@ -20,6 +20,9 @@ import java.util.ArrayList;
  */
 public class QIFExportTest extends AbstractDbTest {
 
+    Account a1;
+    Account a2;
+
     public void test_should_export_empty_file() throws Exception {
         String output = exportAsString();
         assertNotNull(output);
@@ -97,6 +100,23 @@ public class QIFExportTest extends AbstractDbTest {
                 "T54.00\n" +
                 "^\n",
                 exportAsString());
+    }
+
+    public void test_should_export_only_selected_accounts() throws Exception {
+        createSampleData();
+        assertEquals(
+                "!Account\n" +
+                "NMy Bank Account\n" +
+                "TBank\n" +
+                "^\n" +
+                "!Type:Bank\n" +
+                "D08/02/2011\n" +
+                "T-20.00\n" +
+                "^\n" +
+                "D02/01/2011\n" +
+                "T54.00\n" +
+                "^\n",
+                exportAsString(new long[]{a2.id}));
     }
 
     public void test_should_export_only_transactions_in_the_specified_range() throws Exception {
@@ -192,11 +212,11 @@ public class QIFExportTest extends AbstractDbTest {
     }
 
     private void createSampleData() {
-        Account a1 = createFirstAccount();
+        a1 = createFirstAccount();
         MockTransaction.withDb(db).account(a1).amount(1000).dateTime(MockDateTime.on().year(2011).feb().day(8)).create();
         MockTransaction.withDb(db).account(a1).amount(-2345).dateTime(MockDateTime.on().year(2011).feb().day(7)).create();
         MockTransaction.withDb(db).account(a1).amount(-6780).dateTime(MockDateTime.on().year(2011).jan().day(1).atNoon()).create();
-        Account a2 = createSecondAccount();
+        a2 = createSecondAccount();
         MockTransaction.withDb(db).account(a2).amount(-2000).dateTime(MockDateTime.on().year(2011).feb().day(8)).create();
         MockTransaction.withDb(db).account(a2).amount(5400).dateTime(MockDateTime.on().year(2011).jan().day(2).atMidnight()).create();
     }
@@ -262,12 +282,21 @@ public class QIFExportTest extends AbstractDbTest {
     }
 
     private String exportAsString() throws Exception {
-        return exportAsString(WhereFilter.empty());
+        return exportAsString(WhereFilter.empty(), null);
     }
 
     private String exportAsString(WhereFilter filter) throws Exception {
+        return exportAsString(filter, null);
+    }
+
+    private String exportAsString(long[] accounts) throws Exception {
+        return exportAsString(WhereFilter.empty(), accounts);
+    }
+
+    private String exportAsString(WhereFilter filter, long[] accounts) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         QifExport export = new QifExport(db, filter);
+        export.exportOnlySelectedAccounts(accounts);
         export.export(bos);
         String s = new String(bos.toByteArray(), "UTF-8");
         Log.d("QIF", s);

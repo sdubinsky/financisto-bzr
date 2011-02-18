@@ -32,11 +32,17 @@ public class QifExport extends Export {
     private final CategoryTree<Category> categories;
     private final HashMap<Long, Category> categoriesMap;
 
+    private long[] selectedAccounts;
+
     public QifExport(DatabaseAdapter db, WhereFilter filter) {
         this.db = db;
         this.filter = filter;
         this.categories = db.getAllCategoriesTree(false);
         this.categoriesMap = categories.asMap();
+    }
+
+    public void exportOnlySelectedAccounts(long[] selectedAccounts) {
+        this.selectedAccounts = selectedAccounts;
     }
 
     @Override
@@ -73,9 +79,23 @@ public class QifExport extends Export {
     private void writeAccountsAndTransactions(QifBufferedWriter qifWriter) throws IOException {
         ArrayList<Account> accounts = db.em().getAllAccountsList();
         for (Account a : accounts) {
-            QifAccount qifAccount = writeAccount(qifWriter, a);
-            writeTransactionsForAccount(qifWriter, qifAccount, a);
+            if (isSelectedAccount(a)) {
+                QifAccount qifAccount = writeAccount(qifWriter, a);
+                writeTransactionsForAccount(qifWriter, qifAccount, a);
+            }
         }
+    }
+
+    private boolean isSelectedAccount(Account a) {
+        if (selectedAccounts == null || selectedAccounts.length == 0) {
+            return true;
+        }
+        for (long id : selectedAccounts) {
+            if (id == a.id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private QifAccount writeAccount(QifBufferedWriter qifWriter, Account a) throws IOException {

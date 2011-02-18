@@ -150,7 +150,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		} else if (requestCode == ACTIVITY_QIF_EXPORT) {
 			if (resultCode == RESULT_OK) {
 				WhereFilter filter = WhereFilter.fromIntent(data);
-                doQifExport(filter);
+                long[] selectedAccounts = data.getLongArrayExtra(QifExportActivity.SELECTED_ACCOUNTS);
+                doQifExport(filter, selectedAccounts);
 			}
 		}
 	}
@@ -160,9 +161,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		new CsvExportTask(this, d, filter, currency, fieldSeparator, includeHeader).execute((String[])null);
 	}
 	
-    private void doQifExport(WhereFilter filter) {
+    private void doQifExport(WhereFilter filter, long[] selectedAccounts) {
         ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.qif_export_inprogress), true);
-        new QifExportTask(this, d, filter).execute((String[])null);
+        new QifExportTask(this, d, filter, selectedAccounts).execute((String[])null);
     }
 
 	private void initialLoad() {

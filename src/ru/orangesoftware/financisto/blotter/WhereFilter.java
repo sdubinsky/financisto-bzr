@@ -288,12 +288,12 @@ public class WhereFilter {
 
 	public boolean isTemplate() {
 		Criteria c = get(BlotterFilter.IS_TEMPLATE);
-		return c != null ? c.getLongValue1() == 1 : false;
+		return c != null && c.getLongValue1() == 1;
 	}
 	
 	public boolean isSchedule() {
 		Criteria c = get(BlotterFilter.IS_TEMPLATE);
-		return c != null ? c.getLongValue1() == 2 : false;
+		return c != null && c.getLongValue1() == 2;
 	}
 
 	public String getTitle() {
@@ -312,7 +312,7 @@ public class WhereFilter {
 		private Operation(String op) {
 			this.op = op;
 		}		
-	};
+	}
 
 	public static class Criteria {
 		
@@ -321,7 +321,7 @@ public class WhereFilter {
 		}
 		
 		public static Criteria btw(String column, String value1, String value2) {
-			return new Criteria(column, Operation.BTW, new String[]{value1, value2});
+			return new Criteria(column, Operation.BTW, value1, value2);
 		}		
 			
 		public static Criteria gt(String column, String value) {
