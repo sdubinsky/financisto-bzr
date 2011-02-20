@@ -191,7 +191,9 @@ public class RecurrenceActivity extends AbstractActivity {
 			} break;
 			case R.id.result: {
 				try {
-					Recurrence r = Recurrence.parse(stateToString());
+                    String stateAsString = stateToString();
+                    Log.d("RRULE", stateAsString);
+					Recurrence r = Recurrence.parse(stateAsString);
 					RRule rrule = r.createRRule();
 					Log.d("RRULE", rrule.toIcal());
 					Date startDate = recurrence.getStartDate().getTime();

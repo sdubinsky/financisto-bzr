@@ -1,6 +1,7 @@
 package ru.orangesoftware.financisto.test;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,6 +60,10 @@ public class MockDateTime {
 
     public long asLong() {
         return c.getTimeInMillis();
+    }
+
+    public Date asDate() {
+        return c.getTime();
     }
 
 }

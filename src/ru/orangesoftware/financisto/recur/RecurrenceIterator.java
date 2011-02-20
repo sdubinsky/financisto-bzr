@@ -27,14 +27,9 @@ public class RecurrenceIterator {
 		ri.advanceTo(date);
 	}
 
-	public static RecurrenceIterator create(RRule rrule) {
-		return create(rrule, new Date());
-	}
-
 	public static RecurrenceIterator create(RRule rrule, Date startDate) {
 		DateIterator ri = DateIteratorFactory.createDateIterator(rrule, startDate, TimeUtils.utcTimezone());
 		return new RecurrenceIterator(ri);
 	}
-	
 
 }
