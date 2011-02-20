@@ -567,7 +567,17 @@
 	<string name="negative_opening_amount_summary">Open account with negative opening amount</string>
 	<string name="payment_day">Payment day</string>
 	<string name="closing_day">Closing day</string>
+	<string name="payment_day_hint">The day on which you pay your credit card bill.</string>
 	<string name="closing_day_hint">Day on which the bill closes</string>
+	
+	<string name="closing_day_title">Statement Closing Date</string>
+	<string name="reference_period">Reference Period</string>
+	<string name="regular_closing_day">Use regular closing day</string>
+	<string name="custom_closing_day">Use a custom closing day</string>
+	<string name="alert_invalid_closing_day">Invalid value. Please insert a closing day for the reference month.</string>
+	<string name="alert_null_closing_day">Please insert a new closing day.</string>
+	<string name="alert_regular_closing_day">Custom closing day must be different from regular closing day.</string>
+	
 	<string name="ccard_statement">Statements</string>
 	<string name="monthly_view">Month Preview</string>	
 	<string name="credit_card_statement">Credit Card Statement</string>

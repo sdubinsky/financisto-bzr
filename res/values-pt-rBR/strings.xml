@@ -550,8 +550,17 @@
 	<string name="credits">Créditos</string>
 	
 	<string name="payment_day">Dia do pagamento</string>
+	<string name="payment_day_hint">O dia de vencimento da fatura do cartão.</string>
 	<string name="closing_day">Dia do fechamento</string>
 	<string name="closing_day_hint">Dia em que a fatura é gerada.</string>
+	<string name="closing_day_title">Dia de fechamento da fatura</string>
+	<string name="reference_period">Período de Referência</string>
+	<string name="regular_closing_day">Use o dia de fechamento regular</string>
+	<string name="custom_closing_day">Use um dia de fechamento personalizado</string>
+	<string name="alert_invalid_closing_day">Valor inválido. Favor inserir um dia de fechamento para o mês de referência.</string>
+	<string name="alert_null_closing_day">Favor inserir um novo dia de fechamento do cartão.</string>
+	<string name="alert_regular_closing_day">O dia de fechamento personalizado deve ser diferente do dia de fechamento regular.</string>
+	
 	<string name="ccard_statement">Previsão de Fatura</string>
 	<string name="monthly_view">Balanço Mensal</string>	
 	<string name="credit_card_statement">Fatura do Cartão de Crédito</string>

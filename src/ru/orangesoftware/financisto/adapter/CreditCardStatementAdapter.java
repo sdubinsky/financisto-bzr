@@ -7,8 +7,7 @@ import java.util.HashMap;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MonthlyViewActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
-import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
@@ -29,6 +28,7 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	    
 	    private Utils u;
 	    private Currency currency;
+	    private long account;
 	    
 	    private final int scheduledStyle = Typeface.ITALIC;
 	    private final int scheduledColor;
@@ -51,12 +51,13 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	     * @param to Id of the columns in layout.
 	     * @param cur The credit card base currency.
 	     */
-	    public CreditCardStatementAdapter (DatabaseAdapter dba, Context context, int layout, Cursor c, String[] from, int[] to, Currency cur) {
+	    public CreditCardStatementAdapter (DatabaseAdapter dba, Context context, int layout, Cursor c, String[] from, int[] to, Currency cur, long account) {
 	        super(context, layout, c, from, to);
 	        this.dba = dba;
 	        this.layout = layout;
 	        u = new Utils(context);
 	        this.currency = cur;
+	        this.account = account;
 	        futureColor = context.getResources().getColor(R.color.future_color);
 	        scheduledColor = context.getResources().getColor(R.color.scheduled);
 	        negativeColor = context.getResources().getColor(R.color.negative_amount);
@@ -92,16 +93,26 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	     * @param c The cursor with all the bill transactions
 	     */
 	    private void updateListItem(Holder h, Context context, Cursor c) {
+	    	
+	    	if (c.isClosed()) {
+	    		return;
+	    	}
+	    	
 	    	// get amount of expense
-	    	int valueCol = c.getColumnIndex(BlotterColumns.from_amount.name());
+	    	int valueCol = c.getColumnIndex(TransactionColumns.from_amount.name());
+	    	// to consider correct value from transfers
+	    	if (c.getLong(c.getColumnIndex(TransactionColumns.to_account_id.name()))==account) {
+	    		valueCol = c.getColumnIndex(TransactionColumns.to_amount.name());
+	    	}
+	    	
 	    	long value = c.getLong(valueCol);
 	    	// is scheduled?
-	    	boolean isScheduled = c.getInt(c.getColumnIndex(BlotterColumns.is_template.name()))==2;
+	    	boolean isScheduled = c.getInt(c.getColumnIndex(TransactionColumns.is_template.name()))==2;
 	        
 	        // get columns values or needed parameters
-	        long date = c.getLong(BlotterColumns.datetime.ordinal());
-	        String note = c.getString(BlotterColumns.note.ordinal());
-	        long locId = c.getLong(BlotterColumns.location_id.ordinal());
+	    	long date = c.getLong(TransactionColumns.datetime.ordinal());
+	        String note = c.getString(TransactionColumns.note.ordinal());
+	        long locId = c.getLong(TransactionColumns.location_id.ordinal());
 	        String location = null;
 	        String desc = "";
 	        boolean future = date>Calendar.getInstance().getTimeInMillis();
