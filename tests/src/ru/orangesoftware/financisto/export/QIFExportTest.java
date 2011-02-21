@@ -6,12 +6,13 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.QifExport;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.test.MockDateTime;
 import ru.orangesoftware.financisto.test.MockTransaction;
 import ru.orangesoftware.financisto.test.MockTransfer;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+
+import static ru.orangesoftware.financisto.test.MockDateTime.date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,8 +44,8 @@ public class QIFExportTest extends AbstractDbTest {
         Account a = createFirstAccount();
         Category p1 = createExpenseCategory("P1");
         Category c1 = createCategory(p1, "c1");
-        MockTransaction.withDb(db).account(a).amount(1000).category(p1).dateTime(MockDateTime.on().year(2011).feb().day(8)).create();
-        MockTransaction.withDb(db).account(a).amount(-2056).category(c1).payee("Payee 1").note("Some note here...").dateTime(MockDateTime.on().year(2011).feb().day(7)).create();
+        MockTransaction.withDb(db).account(a).amount(1000).category(p1).dateTime(date(2011, 2, 8)).create();
+        MockTransaction.withDb(db).account(a).amount(-2056).category(c1).payee("Payee 1").note("Some note here...").dateTime(date(2011, 2, 7)).create();
         assertEquals(
                 "!Type:Cat\n"+
                 "NP1\n"+
@@ -172,7 +173,7 @@ public class QIFExportTest extends AbstractDbTest {
     private void createTransfers() {
         Account a1 = createFirstAccount();
         Account a2 = createSecondAccount();
-        MockTransfer.withDb(db).fromAccount(a2).fromAmount(-2000).toAccount(a1).toAmount(2000).dateTime(MockDateTime.on().year(2011).feb().day(8)).create();
+        MockTransfer.withDb(db).fromAccount(a2).fromAmount(-2000).toAccount(a1).toAmount(2000).dateTime(date(2011, 2, 8)).create();
     }
 
     public void test_should_export_categories() throws Exception {
@@ -206,19 +207,19 @@ public class QIFExportTest extends AbstractDbTest {
     }
 
     private WhereFilter createFebruaryOnlyFilter() {
-        String start = String.valueOf(MockDateTime.on().year(2011).feb().day(1).atMidnight().asLong());
-        String end = String.valueOf(MockDateTime.on().year(2011).feb().day(28).atDayEnd().asLong());
+        String start = String.valueOf(date(2011, 2, 1).atMidnight().asLong());
+        String end = String.valueOf(date(2011, 2, 28).atDayEnd().asLong());
         return WhereFilter.empty().btw(BlotterFilter.DATETIME, start, end);
     }
 
     private void createSampleData() {
         a1 = createFirstAccount();
-        MockTransaction.withDb(db).account(a1).amount(1000).dateTime(MockDateTime.on().year(2011).feb().day(8)).create();
-        MockTransaction.withDb(db).account(a1).amount(-2345).dateTime(MockDateTime.on().year(2011).feb().day(7)).create();
-        MockTransaction.withDb(db).account(a1).amount(-6780).dateTime(MockDateTime.on().year(2011).jan().day(1).atNoon()).create();
+        MockTransaction.withDb(db).account(a1).amount(1000).dateTime(date(2011, 2, 8)).create();
+        MockTransaction.withDb(db).account(a1).amount(-2345).dateTime(date(2011, 2, 7)).create();
+        MockTransaction.withDb(db).account(a1).amount(-6780).dateTime(date(2011, 1, 1).atNoon()).create();
         a2 = createSecondAccount();
-        MockTransaction.withDb(db).account(a2).amount(-2000).dateTime(MockDateTime.on().year(2011).feb().day(8)).create();
-        MockTransaction.withDb(db).account(a2).amount(5400).dateTime(MockDateTime.on().year(2011).jan().day(2).atMidnight()).create();
+        MockTransaction.withDb(db).account(a2).amount(-2000).dateTime(date(2011, 2, 8)).create();
+        MockTransaction.withDb(db).account(a2).amount(5400).dateTime(date(2011, 1, 2).atMidnight()).create();
     }
 
     private Account createFirstAccount() {

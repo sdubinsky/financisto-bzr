@@ -18,24 +18,12 @@ public class MockDateTime {
         return new MockDateTime();
     }
 
-    public MockDateTime year(int year) {
-        c.set(Calendar.YEAR, year);
-        return this;
-    }
-
-    public MockDateTime jan() {
-        c.set(Calendar.MONTH, Calendar.JANUARY);
-        return this;
-    }
-
-    public MockDateTime feb() {
-        c.set(Calendar.MONTH, Calendar.FEBRUARY);
-        return this;
-    }
-
-    public MockDateTime day(int day) {
-        c.set(Calendar.DAY_OF_MONTH, day);
-        return this;
+    public static MockDateTime date(int year, int month, int day) {
+        MockDateTime dt = new MockDateTime();
+        dt.c.set(Calendar.YEAR, year);
+        dt.c.set(Calendar.MONTH, month-1);
+        dt.c.set(Calendar.DAY_OF_MONTH, day);
+        return dt;
     }
 
     public MockDateTime atMidnight() {

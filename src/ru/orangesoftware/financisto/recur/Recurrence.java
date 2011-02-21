@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import android.util.Log;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.utils.DateUtils;
 import android.content.Context;
@@ -23,6 +24,8 @@ import com.google.ical.values.RRule;
 
 public class Recurrence {
 
+    // TODO ds: replace with time holder
+    // only HH:mm:ss should be used in RRULE, not the date part
 	private Calendar startDate;
 	public RecurrencePattern pattern;
 	public RecurrencePeriod period;
@@ -77,7 +80,18 @@ public class Recurrence {
 		startDate.set(Calendar.MILLISECOND, 0);
 	}
 
-	public RRule createRRule() {
+    public DateRecurrenceIterator createIterator(Date startDate) {
+        RRule rrule = createRRule();
+        try {
+            Log.d("RRULE", "Creating iterator for "+rrule.toIcal());
+            return DateRecurrenceIterator.create(rrule, startDate);
+        } catch (ParseException e) {
+            Log.w("RRULE", "Unable to create iterator for "+rrule.toIcal());
+            return DateRecurrenceIterator.empty();
+        }
+    }
+
+	private RRule createRRule() {
 		if (pattern.frequency == RecurrenceFrequency.GEEKY) {
 			try {
 				HashMap<String, String> map = RecurrenceViewFactory.parseState(pattern.params);

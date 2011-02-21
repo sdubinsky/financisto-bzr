@@ -12,12 +12,15 @@ package ru.orangesoftware.financisto.recur;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
+import com.google.ical.util.TimeUtils;
+import com.google.ical.values.*;
 import ru.orangesoftware.financisto.utils.DateUtils;
 
 import com.google.ical.compat.javautil.DateIteratorFactory;
-import com.google.ical.values.RRule;
 
 public class RecurrencePeriod {
 
@@ -65,9 +68,51 @@ public class RecurrencePeriod {
 			} catch (ParseException e) {
 				throw new IllegalArgumentException(params);
 			}
-			r.setUntil(DateIteratorFactory.dateToDateValue(c.getTime(), true));
+			r.setUntil(dateToDateValue(c.getTime()));
 			break;
 		}
 	}
+
+    static Date dateValueToDate(DateValue dvUtc) {
+        GregorianCalendar c = new GregorianCalendar(TimeUtils.utcTimezone());
+        c.clear();
+        if (dvUtc instanceof TimeValue) {
+            TimeValue tvUtc = (TimeValue) dvUtc;
+            c.set(dvUtc.year(),
+                    dvUtc.month() - 1,  // java.util's dates are zero-indexed
+                    dvUtc.day(),
+                    tvUtc.hour(),
+                    tvUtc.minute(),
+                    tvUtc.second());
+        } else {
+            c.set(dvUtc.year(),
+                    dvUtc.month() - 1,  // java.util's dates are zero-indexed
+                    dvUtc.day(),
+                    0,
+                    0,
+                    0);
+        }
+        return c.getTime();
+    }
+
+    static DateValue dateToDateValue(Date date) {
+        GregorianCalendar c = new GregorianCalendar(TimeUtils.utcTimezone());
+        c.setTime(date);
+        int h = c.get(Calendar.HOUR_OF_DAY),
+                m = c.get(Calendar.MINUTE),
+                s = c.get(Calendar.SECOND);
+        if (0 == (h | m | s)) {
+            return new DateValueImpl(c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH) + 1,
+                    c.get(Calendar.DAY_OF_MONTH));
+        } else {
+            return new DateTimeValueImpl(c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH) + 1,
+                    c.get(Calendar.DAY_OF_MONTH),
+                    h,
+                    m,
+                    s);
+        }
+    }
 
 }

@@ -15,15 +15,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import com.google.ical.values.RRule;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.RestoredTransaction;
 import ru.orangesoftware.financisto.model.SystemAttribute;
 import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.recur.DateRecurrenceIterator;
 import ru.orangesoftware.financisto.recur.Recurrence;
-import ru.orangesoftware.financisto.recur.RecurrenceIterator;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.util.*;
@@ -117,7 +116,7 @@ public class RecurrenceScheduler {
 				if (t.recurrence != null) {
 					long lastRecurrence = t.lastRecurrence;
 					if (lastRecurrence > 0) {
-						RecurrenceIterator ri = createIterator(t.recurrence, lastRecurrence);
+						DateRecurrenceIterator ri = createIterator(t.recurrence, lastRecurrence);
 						while (ri.hasNext()) {
 							Date nextDate = ri.next();
 							if (nextDate.after(endDate)) {
@@ -262,7 +261,7 @@ public class RecurrenceScheduler {
 	}
 	
 	public Date calculateNextDate(String recurrence, long now) {
-		RecurrenceIterator ri = createIterator(recurrence, now);
+		DateRecurrenceIterator ri = createIterator(recurrence, now);
 		if (ri.hasNext()) {
 			return ri.next();
 		} else {
@@ -270,13 +269,10 @@ public class RecurrenceScheduler {
 		}
 	}
 
-	private RecurrenceIterator createIterator(String recurrence, long now) {
+	private DateRecurrenceIterator createIterator(String recurrence, long now) {
 		Recurrence r = Recurrence.parse(recurrence);
-		Date startDate = r.getStartDate().getTime();
-		RRule rrule = r.createRRule();
-		RecurrenceIterator c = RecurrenceIterator.create(rrule, startDate);
-		Date advanceDate = new Date(now);
-		c.advanceTo(advanceDate);
+        Date advanceDate = new Date(now);
+		DateRecurrenceIterator c = r.createIterator(advanceDate);
 		return c;
 	}
 
