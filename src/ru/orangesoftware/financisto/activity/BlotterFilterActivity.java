@@ -57,6 +57,8 @@ public class BlotterFilterActivity extends AbstractActivity {
 	
 	private DateFormat df;
 	private String[] sortBlotterEntries;
+
+    private String filterValueNotFound;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,8 @@ public class BlotterFilterActivity extends AbstractActivity {
 		
 		df = DateUtils.getShortDateFormat(this);
 		sortBlotterEntries = getResources().getStringArray(R.array.sort_blotter_entries);
-		
+        filterValueNotFound = getString(R.string.filter_value_not_found);
+
 		LinearLayout layout = (LinearLayout)findViewById(R.id.layout);
 		period = x.addListNodeMinus(layout, R.id.period, R.id.period_clear, R.string.period, R.string.no_filter);
 		account = x.addListNodeMinus(layout, R.id.account, R.id.account_clear, R.string.account, R.string.no_filter);
@@ -77,7 +80,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 		location = x.addListNodeMinus(layout, R.id.location, R.id.location_clear, R.string.location, R.string.no_filter);
 		status = x.addListNodeMinus(layout, R.id.status, R.id.status_clear, R.string.transaction_status, R.string.no_filter);
 		sortOrder = x.addListNodeMinus(layout, R.id.sort_order, R.id.sort_order_clear, R.string.sort_order, sortBlotterEntries[0]);
-		
+
 		Button bOk = (Button)findViewById(R.id.bOK);
 		bOk.setOnClickListener(new OnClickListener(){
 			@Override
@@ -135,38 +138,30 @@ public class BlotterFilterActivity extends AbstractActivity {
 	private void updateLocationFromFilter() {
 		Criteria c = filter.get(BlotterFilter.LOCATION_ID);
 		if (c != null) {
-			MyLocation loc = em.getLocation(c.getLongValue1());
-			location.setText(loc.name);
+			MyLocation loc = em.get(MyLocation.class, c.getLongValue1());
+			location.setText(loc != null ? loc.name : filterValueNotFound);
 		} else {
 			location.setText(R.string.no_filter);
 		}
 	}
 
 	private void updateProjectFromFilter() {
-		Criteria c = filter.get(BlotterFilter.PROJECT_ID);
-		if (c != null) {
-			Project p = em.load(Project.class, c.getLongValue1());
-			project.setText(p.title);
-		} else {
-			project.setText(R.string.no_filter);
-		}
+        updateEntityFromFilter(BlotterFilter.PROJECT_ID, Project.class, project);
 	}
 
     private void updatePayeeFromFilter() {
-        Criteria c = filter.get(BlotterFilter.PAYEE_ID);
-        if (c != null) {
-            Payee p = em.load(Payee.class, c.getLongValue1());
-            payee.setText(p.title);
-        } else {
-            payee.setText(R.string.no_filter);
-        }
+        updateEntityFromFilter(BlotterFilter.PAYEE_ID, Payee.class, payee);
     }
 
 	private void updateCategoryFromFilter() {
 		Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
 		if (c != null) {
 			Category cat = db.getCategoryByLeft(c.getLongValue1());
-			category.setText(cat.title);
+            if (cat.id > 0) {
+			    category.setText(cat.title);
+            } else {
+                category.setText(filterValueNotFound);
+            }
 		} else {
 			category.setText(R.string.no_filter);
 		}
@@ -189,25 +184,11 @@ public class BlotterFilterActivity extends AbstractActivity {
 	}
 
 	private void updateAccountFromFilter() {
-		Criteria c = filter.get(BlotterFilter.FROM_ACCOUNT_ID);
-		if (c != null) {
-			Account a = em.getAccount(c.getLongValue1());
-			if (a != null) {
-				account.setText(a.title);
-			}
-		} else {
-			account.setText(R.string.no_filter);
-		}
+        updateEntityFromFilter(BlotterFilter.FROM_ACCOUNT_ID, Account.class, account);
 	}
 
 	private void updateCurrencyFromFilter() {
-		Criteria c = filter.get(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID);
-		if (c != null) {
-			Currency cur = em.load(Currency.class, c.getLongValue1());
-			currency.setText(cur.name);
-		} else {
-			currency.setText(R.string.no_filter);
-		}
+        updateEntityFromFilter(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID, Currency.class, currency);
 	}
 
 	private void updateStatusFromFilter() {
@@ -219,6 +200,20 @@ public class BlotterFilterActivity extends AbstractActivity {
 			status.setText(R.string.no_filter);
 		}
 	}
+
+    private <T extends MyEntity> void updateEntityFromFilter(String filterCriteriaName, Class<T> entityClass, TextView filterView) {
+        Criteria c = filter.get(filterCriteriaName);
+        if (c != null) {
+            T e = em.get(entityClass, c.getLongValue1());
+            if (e != null) {
+                filterView.setText(e.title);
+            } else {
+                filterView.setText(filterValueNotFound);
+            }
+        } else {
+            filterView.setText(R.string.no_filter);
+        }
+    }
 
 	@Override
 	protected void onClick(View v, int id) {
