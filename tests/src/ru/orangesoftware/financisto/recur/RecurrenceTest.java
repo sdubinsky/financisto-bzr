@@ -20,7 +20,7 @@ public class RecurrenceTest extends AndroidTestCase {
 
     public void test_should_schedule_correctly_monthly_last_working_day() throws ParseException {
         assertDates(
-                "2010-06-30T16:00:00~MONTHLY:count@1#interval@1#monthly_pattern_params_0@LAST-WEEKDAY#monthly_pattern_0@SPECIFIC_DAY#~INDEFINETELY:null",
+                "2010-06-30T15:20:00~MONTHLY:count@1#interval@1#monthly_pattern_params_0@LAST-WEEKDAY#monthly_pattern_0@SPECIFIC_DAY#~INDEFINETELY:null",
                 date(2011, 2, 18).at(15, 20, 0, 0),
                 "2011-02-28 15:20:00,2011-03-31 15:20:00,...");
     }

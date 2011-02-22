@@ -2,6 +2,7 @@ package ru.orangesoftware.financisto.recur;
 
 import com.google.ical.iter.RecurrenceIterator;
 import com.google.ical.iter.RecurrenceIteratorFactory;
+import com.google.ical.util.TimeUtils;
 import com.google.ical.values.RRule;
 
 import java.text.ParseException;
@@ -29,7 +30,7 @@ public class DateRecurrenceIterator {
 
 	public static DateRecurrenceIterator create(RRule rrule, Date startDate) throws ParseException {
         RecurrenceIterator ri = RecurrenceIteratorFactory.createRecurrenceIterator(rrule,
-                dateToDateValue(startDate), TimeZone.getDefault());
+                dateToDateValue(startDate), TimeUtils.utcTimezone());
 		return new DateRecurrenceIterator(ri);
 	}
 

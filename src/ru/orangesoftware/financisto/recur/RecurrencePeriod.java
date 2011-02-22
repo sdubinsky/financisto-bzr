@@ -10,17 +10,15 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.recur;
 
+import com.google.ical.util.TimeUtils;
+import com.google.ical.values.*;
+import ru.orangesoftware.financisto.utils.DateUtils;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-
-import com.google.ical.util.TimeUtils;
-import com.google.ical.values.*;
-import ru.orangesoftware.financisto.utils.DateUtils;
-
-import com.google.ical.compat.javautil.DateIteratorFactory;
 
 public class RecurrencePeriod {
 

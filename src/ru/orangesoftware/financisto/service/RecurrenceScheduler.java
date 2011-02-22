@@ -156,10 +156,11 @@ public class RecurrenceScheduler {
 	public ArrayList<TransactionInfo> getSortedSchedules(long now) {
 		long t0 = System.currentTimeMillis();
 		try {
-			 ArrayList<TransactionInfo> list = em.getAllScheduledTransactions();
-			 calculateNextScheduleDate(list, now);
-			 sortTransactionsByScheduleDate(list, now);
-			 return list;
+            ArrayList<TransactionInfo> list = em.getAllScheduledTransactions();
+            Log.i(TAG, "Got "+list.size()+" scheduled transactions");
+			calculateNextScheduleDateForAllTransactions(list, now);
+			sortTransactionsByScheduleDate(list, now);
+			return list;
 		} finally {
 			Log.i(TAG, "getSortedSchedules="+(System.currentTimeMillis()-t0)+"ms");
 		}
@@ -182,13 +183,14 @@ public class RecurrenceScheduler {
             Log.i(TAG, "Scheduling alarm for "+transaction.id+" at "+scheduleTime);
             return true;
         }
+        Log.i(TAG, "Transactions "+transaction.id+" with next date/time "+transaction.nextDateTime+" is not selected for schedule");
         return false;
     }
 
     public boolean rescheduleTransaction(Context context, TransactionInfo transaction) {
         if (transaction.recurrence != null) {
             long now = System.currentTimeMillis()+1000;
-            calculateNextDate(transaction, now);
+            calculateAndSetNextDateTimeOnTransaction(transaction, now);
             return scheduleAlarm(context, transaction, now);
         }
         return false;
@@ -245,21 +247,22 @@ public class RecurrenceScheduler {
 		Collections.sort(list, new RecurrenceComparator(now));
 	}
 
-	private long calculateNextScheduleDate(ArrayList<TransactionInfo> list, long now) {
+	private long calculateNextScheduleDateForAllTransactions(ArrayList<TransactionInfo> list, long now) {
 		for (TransactionInfo t : list) {
-			if (t.recurrence != null) {
-				calculateNextDate(t, now);
-			} else {
-				t.nextDateTime = new Date(t.dateTime);
-			}
-		 }
+            calculateAndSetNextDateTimeOnTransaction(t, now);
+        }
 		return now;
 	}
 
-	public Date calculateNextDate(TransactionInfo transaction, long now) {
-		return transaction.nextDateTime = calculateNextDate(transaction.recurrence, now);
-	}
-	
+    private void calculateAndSetNextDateTimeOnTransaction(TransactionInfo t, long now) {
+        if (t.recurrence != null) {
+            t.nextDateTime = calculateNextDate(t.recurrence, now);
+        } else {
+            t.nextDateTime = new Date(t.dateTime);
+        }
+        Log.i(TAG, "Calculated schedule time for "+t.id+" is "+t.nextDateTime);
+    }
+
 	public Date calculateNextDate(String recurrence, long now) {
 		DateRecurrenceIterator ri = createIterator(recurrence, now);
 		if (ri.hasNext()) {
@@ -272,10 +275,7 @@ public class RecurrenceScheduler {
 	private DateRecurrenceIterator createIterator(String recurrence, long now) {
 		Recurrence r = Recurrence.parse(recurrence);
         Date advanceDate = new Date(now);
-		DateRecurrenceIterator c = r.createIterator(advanceDate);
-		return c;
+        return r.createIterator(advanceDate);
 	}
-
-
 
 }
