@@ -45,7 +45,6 @@ import ru.orangesoftware.orb.EntityManager;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static ru.orangesoftware.financisto.utils.ThumbnailUtil.*;
