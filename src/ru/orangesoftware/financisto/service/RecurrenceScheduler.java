@@ -178,7 +178,7 @@ public class RecurrenceScheduler {
         if (shouldSchedule(transaction, now)) {
             Date scheduleTime = transaction.nextDateTime;
             AlarmManager service = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-            PendingIntent pendingIntent = createPendingIntentForScheduledAlarm(context, transaction);
+            PendingIntent pendingIntent = createPendingIntentForScheduledAlarm(context, transaction.id);
             service.set(AlarmManager.RTC_WAKEUP, scheduleTime.getTime(), pendingIntent);
             Log.i(TAG, "Scheduling alarm for "+transaction.id+" at "+scheduleTime);
             return true;
@@ -200,10 +200,17 @@ public class RecurrenceScheduler {
         return transaction.nextDateTime != null && now < transaction.nextDateTime.getTime();
     }
 
-    private PendingIntent createPendingIntentForScheduledAlarm(Context context, TransactionInfo transaction) {
+    public void cancelPendingIntentForSchedule(Context context, long transactionId) {
+        Log.i(TAG, "Cancelling pending alarm for "+transactionId);
+        AlarmManager service = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent intent = createPendingIntentForScheduledAlarm(context, transactionId);
+        service.cancel(intent);
+    }
+
+    private PendingIntent createPendingIntentForScheduledAlarm(Context context, long transactionId) {
         Intent intent = new Intent("ru.orangesoftware.financisto.SCHEDULED_ALARM");
-        intent.putExtra(SCHEDULED_TRANSACTION_ID, transaction.id);
-        return PendingIntent.getBroadcast(context, (int)transaction.id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        intent.putExtra(SCHEDULED_TRANSACTION_ID, transactionId);
+        return PendingIntent.getBroadcast(context, (int)transactionId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     /**

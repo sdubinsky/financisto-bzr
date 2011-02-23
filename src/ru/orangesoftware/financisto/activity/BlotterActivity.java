@@ -61,7 +61,6 @@ public class BlotterActivity extends AbstractListActivity {
 	
 	private BlotterTotalsCalculationTask calculationTask;
 
-	protected boolean suppressRequery;
 	protected boolean saveFilter;
 	protected WhereFilter blotterFilter;
 	protected boolean filterAccounts = false;
@@ -259,19 +258,23 @@ public class BlotterActivity extends AbstractListActivity {
 			public void onClick(DialogInterface arg0, int arg1) {
 				db.deleteTransaction(id);
 				requeryCursor();
-				AccountWidget.updateWidgets(BlotterActivity.this);
+                afterDeletingTransaction(id);
 			}
 		})
 		.setNegativeButton(R.string.no, null)
 		.show();
 	}
 
+    protected void afterDeletingTransaction(long id) {
+        AccountWidget.updateWidgets(this);
+    }
+
 	@Override
 	public void editItem(int position, long id) {
-		editTransaction(position, id, false);
+		editTransaction(id, false);
 	}
 	
-	protected void editTransaction(int position, long id, boolean duplicate) {
+	protected void editTransaction(long id, boolean duplicate) {
 		Transaction t = db.getTransaction(id);
 		if (t.isTransfer()) {
 			Intent intent = new Intent(BlotterActivity.this, TransferActivity.class);
