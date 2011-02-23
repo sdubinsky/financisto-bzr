@@ -630,5 +630,6 @@
     <string name="qif_export">QIF Export</string>
     <string name="qif_export_inprogress">Exporting data to QIF..</string>
     <string name="all_accounts">All accounts</string>
+    <string name="filter_value_not_found">Not found..</string>
 
 </resources>

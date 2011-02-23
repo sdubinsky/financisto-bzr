@@ -24,7 +24,7 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 @Entity
 @Table(name = "currency")
-public class Currency {
+public class Currency extends MyEntity {
 
 	public static final Currency EMPTY = new Currency();
 	
@@ -33,13 +33,6 @@ public class Currency {
 		EMPTY.decimals = 2;
 	}
 
-	@Id
-	@Column(name = "_id")
-	public long id = -1;
-
-	@Column(name = "title")
-	public String title;
-	
 	@Column(name = "name")
 	public String name;
 	

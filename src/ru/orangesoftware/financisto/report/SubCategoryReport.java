@@ -43,17 +43,21 @@ public class SubCategoryReport extends AbstractReport {
 		filterTransfers(filter);
 		Cursor c = db.db().query(V_REPORT_SUB_CATEGORY, DatabaseHelper.SubCategoryReportColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null, "left");
-		CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
-			@Override
-			public CategoryAmount createNode(Cursor c) {
-				return new CategoryAmount(c);
-			}
-		});
+        try {
+            CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
+                @Override
+                public CategoryAmount createNode(Cursor c) {
+                    return new CategoryAmount(c);
+                }
+            });
 
-		ArrayList<GraphUnitTree> roots = createTree(amounts, 0);
-		ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
-		flatenTree(roots, units);
-		return units;
+            ArrayList<GraphUnitTree> roots = createTree(amounts, 0);
+            ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
+            flatenTree(roots, units);
+            return units;
+        } finally {
+            c.close();
+        }
 	}
 	
 	private ArrayList<GraphUnitTree> createTree(CategoryTree<CategoryAmount> amounts, int level) {
