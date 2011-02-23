@@ -264,10 +264,6 @@ public class MonthlyViewActivity extends ListActivity {
 		this.closingDate = new GregorianCalendar(close.get(Calendar.YEAR), 
 				  								 close.get(Calendar.MONTH),
 				  								 close.get(Calendar.DAY_OF_MONTH));
-
-		//SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"); 
-		//Log.v("DATES", "From = "+formatter.format(open.getTime()));
-		//Log.v("DATES", "To   = "+formatter.format(close.getTime()));
 		
 		// Verify custom closing date
 		int periodKey = Integer.parseInt(Integer.toString(close.get(Calendar.MONTH))+
@@ -382,8 +378,6 @@ public class MonthlyViewActivity extends ListActivity {
     		// hide list and display empty message
     		this.getListView().setVisibility(View.GONE);
     		setListAdapter(null);
-    		Log.v("visibility", "set list adapter to null");
-    		
     		findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
 
     	} else { // display data
@@ -516,16 +510,6 @@ public class MonthlyViewActivity extends ListActivity {
 		case RESULT_OK:
 			int update = data.getIntExtra(CCardStatementClosingDayActivity.UPDATE_VIEW, 0);
 			if (update>0) {
-				//if (transactionsCursor != null) {
-		    	//	transactionsCursor.close();
-		    	//}
-		    	//dbAdapter.close();
-				//initialize();
-				
-				//this.getListView().setVisibility(View.GONE);
-				//this.getListView().invalidate();
-	    		//findViewById(android.R.id.empty).setVisibility(View.GONE);
-	    		//findViewById(android.R.id.empty).invalidate();
 				setCCardTitle();
 				setCCardInterval();
 			}
