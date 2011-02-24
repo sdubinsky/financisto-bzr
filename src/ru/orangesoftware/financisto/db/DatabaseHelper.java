@@ -274,14 +274,12 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String IS_TRANSFER = "is_transfer";
 		
 		public static String[] NORMAL_PROJECTION = {ID, NAME, CURRENCY_ID, AMOUNT, DATETIME, IS_TRANSFER};
-		
+
 		public static interface Indicies {
 			public static final int ID = 0;
 			public static final int NAME = 1; 
 			public static final int CURRENCY_ID = 2; 
 			public static final int AMOUNT = 3;
-			public static final int DATETIME = 4;
-			public static final int IS_TRANSFER = 5;
 		}
 	}
 

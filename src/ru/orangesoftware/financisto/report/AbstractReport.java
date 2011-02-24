@@ -10,10 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.report;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import ru.orangesoftware.financisto.activity.BlotterActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
@@ -49,8 +46,8 @@ public abstract class AbstractReport implements Report {
 	
 	protected ArrayList<GraphUnit> queryReport(DatabaseAdapter db, String table, WhereFilter filter) {
 		filterTransfers(filter);
-		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,  
-				filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
+		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,
+                filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
 		return getUnitsFromCursorAndSort(c);
 	}
 
@@ -70,7 +67,7 @@ public abstract class AbstractReport implements Report {
 	
 	private ArrayList<GraphUnit> getUnitsFromCursor(Cursor c, boolean sort) {
 		try {
-			Set<GraphUnit> units = sort ? new TreeSet<GraphUnit>() : new LinkedHashSet<GraphUnit>();
+			ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
 			GraphUnit u = null;
 			long lastId = -1;
 			while (c.moveToNext()) {
@@ -91,7 +88,13 @@ public abstract class AbstractReport implements Report {
 			if (u != null) {
 				units.add(u);
 			}
-			return new ArrayList<GraphUnit>(units);
+            if (sort) {
+                for (GraphUnit unit : units) {
+                    unit.calculateMaxAmount();
+                }
+                Collections.sort(units);
+            }
+			return units;
 		} finally {
 			c.close();
 		}

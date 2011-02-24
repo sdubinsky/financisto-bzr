@@ -12,12 +12,17 @@ package ru.orangesoftware.financisto.activity;
 
 import java.util.ArrayList;
 
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.view.Window;
+import android.view.animation.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ReportAdapter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.report.PeriodReport;
@@ -37,15 +42,19 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
 	private DatabaseAdapter db;
 	private ImageButton bFilter;
 	private Report currentReport;
+    private ReportAsyncTask reportTask;
 	
 	private WhereFilter filter = WhereFilter.empty();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.report);
-		
-		db = new DatabaseAdapter(this);
+
+        applyAnimationToListView();
+
+        db = new DatabaseAdapter(this);
 		db.open();
 		
 		bFilter = (ImageButton)findViewById(R.id.bFilter);
@@ -61,40 +70,86 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
 		Intent intent = getIntent();
 		if (intent != null) {
 			filter = WhereFilter.fromIntent(intent);
+            if (filter.isEmpty()) {
+                filter = WhereFilter.fromSharedPreferences(getPreferences(0));
+            }
 			currentReport = ReportsListActivity.createReport(this, intent.getExtras());
 			selectReport();
 		}
+
+        applyFilter();
 	}
 
-	@Override
+    private void applyAnimationToListView() {
+        AnimationSet set = new AnimationSet(true);
+
+        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(50);
+        set.addAnimation(animation);
+
+        animation = new TranslateAnimation(
+            Animation.RELATIVE_TO_SELF, 0.0f,Animation.RELATIVE_TO_SELF, 0.0f,
+            Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
+        );
+        animation.setDuration(100);
+        set.addAnimation(animation);
+
+        LayoutAnimationController controller = new LayoutAnimationController(set, 0.5f);
+        ListView listView = getListView();
+        listView.setLayoutAnimation(controller);
+    }
+
+    @Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		if (currentReport != null) {
-			Intent intent = currentReport.createActivityIntent(this, db, filter, id);
+			Intent intent = currentReport.createActivityIntent(this, db, WhereFilter.copyOf(filter), id);
 			startActivity(intent);
 		}
 	}
 
 	private void selectReport() {
-		ArrayList<GraphUnit> units = currentReport.getReport(db, filter);
-		ReportAdapter adapter = new ReportAdapter(this, units);
-		if (currentReport instanceof PeriodReport) {
-			bFilter.setEnabled(false);
-		} else {
-			TextView tv = (TextView)findViewById(R.id.period);
-			Criteria c = filter.get(ReportColumns.DATETIME);
-			if (c != null) {
-				tv.setText(DateUtils.formatDateRange(this, c.getLongValue1(), c.getLongValue2(), 
-						DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_ABBREV_MONTH));
-			} else {
-				tv.setText(R.string.no_filter);
-			}
-			bFilter.setEnabled(true);			
-		}
-		setListAdapter(adapter);
+        cancelCurrentReportTask();
+        reportTask = new ReportAsyncTask();
+        reportTask.execute();
 	}
 
-	@Override
+    private void cancelCurrentReportTask() {
+        if (reportTask != null) {
+            reportTask.cancel(true);
+        }
+    }
+
+    private void applyFilter() {
+        TextView tv = (TextView)findViewById(R.id.period);
+        if (currentReport instanceof PeriodReport) {
+            disableFilter();
+            tv.setVisibility(View.GONE);
+        } else {
+            Criteria c = filter.get(ReportColumns.DATETIME);
+            if (c != null) {
+                tv.setText(DateUtils.formatDateRange(this, c.getLongValue1(), c.getLongValue2(),
+                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH));
+            } else {
+                tv.setText(R.string.no_filter);
+            }
+            enableFilter();
+            tv.setVisibility(View.VISIBLE);
+        }
+    }
+
+    protected void disableFilter() {
+        bFilter.setEnabled(false);
+        bFilter.setImageResource(R.drawable.ic_menu_filter_off);
+    }
+
+    protected void enableFilter() {
+        bFilter.setEnabled(true);
+        bFilter.setImageResource(filter.isEmpty() ? R.drawable.ic_menu_filter_off : R.drawable.ic_menu_filter_on);
+    }
+
+    @Override
 	protected void onDestroy() {
+        cancelCurrentReportTask();
 		db.close();
 		super.onDestroy();
 	}
@@ -109,13 +164,44 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
 		if (requestCode == 1) {
 			if (resultCode == RESULT_FIRST_USER) {
 				filter.clearDateTime();
+                saveFilter();
 				selectReport();
 			} else if (resultCode == RESULT_OK) {
 				DateTimeCriteria c = WhereFilter.dateTimeFromIntent(data);
 				filter.put(c);
+                saveFilter();
 				selectReport();
 			}
 		}
-	}		
+	}
+
+    private void saveFilter() {
+        SharedPreferences preferences = getPreferences(0);
+        filter.toSharedPreferences(preferences);
+        applyFilter();
+    }
 	
+    private class ReportAsyncTask extends AsyncTask<Void, Void, ArrayList<GraphUnit>> {
+
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+            ((TextView)findViewById(android.R.id.empty)).setText(R.string.calculating);
+        }
+
+        @Override
+        protected ArrayList<GraphUnit> doInBackground(Void...voids) {
+            return currentReport.getReport(db, WhereFilter.copyOf(filter));
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<GraphUnit> units) {
+            setProgressBarIndeterminateVisibility(false);
+            ((TextView)findViewById(android.R.id.empty)).setText(R.string.empty_report);
+            ReportAdapter adapter = new ReportAdapter(ReportActivity.this, units);
+            setListAdapter(adapter);
+        }
+
+    }
+
 }

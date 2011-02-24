@@ -17,19 +17,12 @@
 	<ListView android:id="@android:id/list" android:layout_width="fill_parent"
 		android:layout_weight="1" android:layout_height="wrap_content" android:scrollbarStyle="outsideInset">
 	</ListView>
-	<!-- ScrollView android:layout_width="fill_parent"
-		android:layout_weight="1" android:layout_height="wrap_content">
-		<LinearLayout android:id="@+id/layout"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:orientation="vertical" android:padding="5dp">
-		</LinearLayout>
-	</ScrollView-->
+    <TextView android:id="@id/android:empty"
+        android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:layout_weight="1" android:gravity="center" android:text="@string/empty_report" />
 	<LinearLayout android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:background="#FFF"
 		android:paddingTop="2dp">
-		
-		<!-- Spinner android:id="@+id/spinnerCurrency"
-			android:layout_height="wrap_content" android:layout_width="wrap_content" /-->
 		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/bFilter"
 			android:src="@drawable/ic_menu_filter_off"/>
