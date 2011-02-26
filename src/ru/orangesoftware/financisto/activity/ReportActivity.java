@@ -10,32 +10,38 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.view.Window;
-import android.view.animation.*;
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.ReportAdapter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
-import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
-import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
-import ru.orangesoftware.financisto.graph.GraphUnit;
-import ru.orangesoftware.financisto.report.PeriodReport;
-import ru.orangesoftware.financisto.report.Report;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.animation.*;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.ReportAdapter;
+import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
+import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
+import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
+import ru.orangesoftware.financisto.graph.Amount;
+import ru.orangesoftware.financisto.graph.GraphUnit;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.Total;
+import ru.orangesoftware.financisto.report.AbstractReport;
+import ru.orangesoftware.financisto.report.PeriodReport;
+import ru.orangesoftware.financisto.report.Report;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ReportActivity extends ListActivity implements RequeryCursorActivity {
 	
@@ -197,11 +203,44 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
         @Override
         protected void onPostExecute(ArrayList<GraphUnit> units) {
             setProgressBarIndeterminateVisibility(false);
-            ((TextView)findViewById(android.R.id.empty)).setText(R.string.empty_report);
+            displayTotal(units);
+            ((TextView) findViewById(android.R.id.empty)).setText(R.string.empty_report);
             ReportAdapter adapter = new ReportAdapter(ReportActivity.this, units);
             setListAdapter(adapter);
         }
 
+    }
+
+    private void displayTotal(ArrayList<GraphUnit> units) {
+        Total[] totals = calculateTotals(units);
+        ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
+        TextView totalText = (TextView)findViewById(R.id.total);
+        BlotterTotalsCalculationTask.setTotals(this, totalTextFlipper, totalText, totals);
+    }
+
+    private Total[] calculateTotals(ArrayList<GraphUnit> units) {
+        HashMap<Long, Total> map = new HashMap<Long, Total>();
+        for (GraphUnit u : units) {
+            for (Amount a : u.amounts.values()) {
+                Total t = getOrCreate(map, a.currency);
+                long amount = a.amount;
+                if (amount > 0) {
+                    t.amount += amount;
+                } else {
+                    t.balance += amount;
+                }
+            }
+        }
+        return map.values().toArray(new Total[map.size()]);
+    }
+
+    private Total getOrCreate(HashMap<Long, Total> map, Currency currency) {
+        Total t = map.get(currency.id);
+        if (t == null) {
+            t = new Total(currency, true);
+            map.put(currency.id, t);
+        }
+        return t;
     }
 
 }

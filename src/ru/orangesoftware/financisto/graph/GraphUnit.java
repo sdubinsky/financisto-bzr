@@ -46,7 +46,7 @@ public class GraphUnit implements Comparable<GraphUnit> {
     public void calculateMaxAmount() {
         long maxAmount = 0;
         for (Amount a : amounts.values()) {
-            maxAmount = Math.max(maxAmount, Math.abs(a.getAmount()));
+            maxAmount = Math.max(maxAmount, Math.abs(a.amount));
         }
         this.maxAmount = maxAmount;
     }

@@ -30,7 +30,7 @@ import android.database.Cursor;
 
 public abstract class AbstractReport implements Report {
 	
-	protected static final GraphStyle DEFAULT_STYLE = new GraphStyle.Builder().build();
+	public static final GraphStyle DEFAULT_STYLE = new GraphStyle.Builder().build();
 	
 	protected final Context context;
 	protected final boolean includeTransfers;

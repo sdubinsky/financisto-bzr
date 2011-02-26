@@ -125,7 +125,10 @@ public class Utils {
 	}
 
 	public static TextAppearanceSpan getAmountSpan(Context context, long amount) {
-		return new TextAppearanceSpan(context, amount >= 0 ? R.style.TextAppearance_PositiveAmount : R.style.TextAppearance_NegativeAmount);
+		return new TextAppearanceSpan(context,
+                amount == 0
+                        ? R.style.TextAppearance_ZeroAmount
+                        : (amount > 0 ? R.style.TextAppearance_PositiveAmount : R.style.TextAppearance_NegativeAmount));
 	}
 	
 	public static int moveCursor(Cursor cursor, String idColumnName, long id) {
@@ -143,7 +146,7 @@ public class Utils {
 	}
 
 	public static void setTotal(Context context, TextView textView, Total t) {
-		final SpannableStringBuilder sb = new SpannableStringBuilder();		
+		SpannableStringBuilder sb = new SpannableStringBuilder();
 		sb.append(Utils.amountToString(t.currency, t.amount, false));
 		int x = sb.length();
 		sb.setSpan(getAmountSpan(context, t.amount), 0, x, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);

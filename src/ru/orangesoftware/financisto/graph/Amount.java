@@ -17,12 +17,11 @@ import ru.orangesoftware.financisto.utils.Utils;
 public class Amount {	
 	
 	public final Currency currency;
-	private long amount;
-	
+	public long amount;
+
 	public int amountTextWidth;
 	public int amountTextHeight;
-	public int lineWidth;
-		
+
 	public Amount(Currency currency, long amount) {
 		this.currency = currency;
 		this.amount = amount;
@@ -32,11 +31,8 @@ public class Amount {
 		return Utils.amountToString(currency, amount, true);
 	}
 	
-	public long getAmount() {
-		return amount;
-	}
-	
 	public void add(long amount) {
 		this.amount += amount;
 	}
+
 }
