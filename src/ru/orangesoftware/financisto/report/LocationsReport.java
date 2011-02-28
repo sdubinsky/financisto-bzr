@@ -29,7 +29,7 @@ public class LocationsReport extends AbstractReport {
 	}
 
 	@Override
-	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {
+	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
 		return queryReport(db, V_REPORT_LOCATIONS, filter);
 	}
 

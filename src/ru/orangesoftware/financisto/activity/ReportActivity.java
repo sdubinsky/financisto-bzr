@@ -39,6 +39,7 @@ import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.report.AbstractReport;
 import ru.orangesoftware.financisto.report.PeriodReport;
 import ru.orangesoftware.financisto.report.Report;
+import ru.orangesoftware.financisto.report.ReportData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -187,7 +188,7 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
         applyFilter();
     }
 	
-    private class ReportAsyncTask extends AsyncTask<Void, Void, ArrayList<GraphUnit>> {
+    private class ReportAsyncTask extends AsyncTask<Void, Void, ReportData> {
 
         @Override
         protected void onPreExecute() {
@@ -196,51 +197,25 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
         }
 
         @Override
-        protected ArrayList<GraphUnit> doInBackground(Void...voids) {
+        protected ReportData doInBackground(Void...voids) {
             return currentReport.getReport(db, WhereFilter.copyOf(filter));
         }
 
         @Override
-        protected void onPostExecute(ArrayList<GraphUnit> units) {
+        protected void onPostExecute(ReportData data) {
             setProgressBarIndeterminateVisibility(false);
-            displayTotal(units);
+            displayTotal(data.totals);
             ((TextView) findViewById(android.R.id.empty)).setText(R.string.empty_report);
-            ReportAdapter adapter = new ReportAdapter(ReportActivity.this, units);
+            ReportAdapter adapter = new ReportAdapter(ReportActivity.this, data.units);
             setListAdapter(adapter);
         }
 
     }
 
-    private void displayTotal(ArrayList<GraphUnit> units) {
-        Total[] totals = calculateTotals(units);
+    private void displayTotal(Total[] totals) {
         ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
         TextView totalText = (TextView)findViewById(R.id.total);
         BlotterTotalsCalculationTask.setTotals(this, totalTextFlipper, totalText, totals);
-    }
-
-    private Total[] calculateTotals(ArrayList<GraphUnit> units) {
-        HashMap<Long, Total> map = new HashMap<Long, Total>();
-        for (GraphUnit u : units) {
-            for (Amount a : u.amounts.values()) {
-                Total t = getOrCreate(map, a.currency);
-                long amount = a.amount;
-                if (amount > 0) {
-                    t.amount += amount;
-                } else {
-                    t.balance += amount;
-                }
-            }
-        }
-        return map.values().toArray(new Total[map.size()]);
-    }
-
-    private Total getOrCreate(HashMap<Long, Total> map, Currency currency) {
-        Total t = map.get(currency.id);
-        if (t == null) {
-            t = new Total(currency, true);
-            map.put(currency.id, t);
-        }
-        return t;
     }
 
 }

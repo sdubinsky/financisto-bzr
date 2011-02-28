@@ -38,7 +38,7 @@ public class CategoryReport2 extends AbstractReport {
 	}
 
 	@Override
-	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {
+	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
 		filter.eq("parent_id", String.valueOf(parentCategoryId));
 		return queryReport(db, V_REPORT_CATEGORY, filter);
 	}

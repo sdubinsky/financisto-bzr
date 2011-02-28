@@ -19,9 +19,11 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
+import ru.orangesoftware.financisto.graph.Amount;
 import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.content.Context;
@@ -44,28 +46,22 @@ public abstract class AbstractReport implements Report {
 		return name;
 	}
 	
-	protected ArrayList<GraphUnit> queryReport(DatabaseAdapter db, String table, WhereFilter filter) {
+	protected ReportData queryReport(DatabaseAdapter db, String table, WhereFilter filter) {
 		filterTransfers(filter);
 		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
-		return getUnitsFromCursorAndSort(c);
+		ArrayList<GraphUnit> units = getUnitsFromCursor(c);
+        Total[] totals = calculateTotals(units);
+        return new ReportData(units, totals);
 	}
 
-	protected void filterTransfers(WhereFilter filter) {
+    protected void filterTransfers(WhereFilter filter) {
 		if (!includeTransfers) {
 			filter.put(Criteria.eq(ReportColumns.IS_TRANSFER, "0"));
 		}
 	}
 
-	protected ArrayList<GraphUnit> getUnitsFromCursor(Cursor c) {
-		return getUnitsFromCursor(c, false);
-	}
-	
-	protected ArrayList<GraphUnit> getUnitsFromCursorAndSort(Cursor c) {
-		return getUnitsFromCursor(c, true);
-	}
-	
-	private ArrayList<GraphUnit> getUnitsFromCursor(Cursor c, boolean sort) {
+	private ArrayList<GraphUnit> getUnitsFromCursor(Cursor c) {
 		try {
 			ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
 			GraphUnit u = null;
@@ -88,12 +84,10 @@ public abstract class AbstractReport implements Report {
 			if (u != null) {
 				units.add(u);
 			}
-            if (sort) {
-                for (GraphUnit unit : units) {
-                    unit.calculateMaxAmount();
-                }
-                Collections.sort(units);
+            for (GraphUnit unit : units) {
+                unit.calculateMaxAmount();
             }
+            Collections.sort(units);
 			return units;
 		} finally {
 			c.close();
@@ -114,6 +108,31 @@ public abstract class AbstractReport implements Report {
 			c.close();
 		}
 	}
+
+    protected Total[] calculateTotals(ArrayList<? extends GraphUnit> units) {
+        HashMap<Long, Total> map = new HashMap<Long, Total>();
+        for (GraphUnit u : units) {
+            for (Amount a : u.amounts.values()) {
+                Total t = getOrCreate(map, a.currency);
+                long amount = a.amount;
+                if (amount > 0) {
+                    t.amount += amount;
+                } else {
+                    t.balance += amount;
+                }
+            }
+        }
+        return map.values().toArray(new Total[map.size()]);
+    }
+
+    private Total getOrCreate(HashMap<Long, Total> map, Currency currency) {
+        Total t = map.get(currency.id);
+        if (t == null) {
+            t = new Total(currency, true);
+            map.put(currency.id, t);
+        }
+        return t;
+    }
 
 	protected long getId(Cursor c) {
 		return c.getLong(0);
