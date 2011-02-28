@@ -25,6 +25,20 @@ public class RecurrenceTest extends AndroidTestCase {
                 "2011-02-28 15:20:00,2011-03-31 15:20:00,2011-04-29 15:20:00,...");
     }
 
+    public void test_should_schedule_correctly_on_the_same_day_if_the_schedule_time_is_after_the_current_time() throws Exception {
+        assertDates(
+                "2011-02-27T19:30:00~DAILY:interval@1#~INDEFINETELY:null",
+                date(2011, 2, 27).at(12, 0, 0, 0),
+                "2011-02-27 19:30:00,2011-02-28 19:30:00,...");
+    }
+
+    public void test_should_schedule_correctly_on_the_next_day_if_the_scheduled_time_is_before_the_current_time() throws Exception {
+        assertDates(
+                "2011-02-27T19:30:00~DAILY:interval@1#~INDEFINETELY:null",
+                date(2011, 2, 27).at(20, 0, 0, 0),
+                "2011-02-28 19:30:00,2011-03-01 19:30:00,...");
+    }
+
     private void assertDates(String pattern, MockDateTime startDateTime, String datesAsString) throws ParseException {
         Recurrence r = Recurrence.parse(pattern);
         DateRecurrenceIterator ri = r.createIterator(startDateTime.asDate());

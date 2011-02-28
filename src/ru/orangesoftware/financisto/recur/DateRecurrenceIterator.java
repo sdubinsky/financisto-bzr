@@ -28,9 +28,10 @@ public class DateRecurrenceIterator {
 		return dateValueToDate(ri.next());
 	}
 
-	public static DateRecurrenceIterator create(RRule rrule, Date startDate) throws ParseException {
+	public static DateRecurrenceIterator create(RRule rrule, Date nowDate, Date startDate) throws ParseException {
         RecurrenceIterator ri = RecurrenceIteratorFactory.createRecurrenceIterator(rrule,
                 dateToDateValue(startDate), TimeUtils.utcTimezone());
+        ri.advanceTo(dateToDateValue(nowDate));
 		return new DateRecurrenceIterator(ri);
 	}
 

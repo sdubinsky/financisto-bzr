@@ -92,7 +92,7 @@ public class Recurrence {
             c.set(Calendar.MINUTE, this.startDate.get(Calendar.MINUTE));
             c.set(Calendar.SECOND, this.startDate.get(Calendar.SECOND));
             c.set(Calendar.MILLISECOND, 0);
-            return DateRecurrenceIterator.create(rrule, c.getTime());
+            return DateRecurrenceIterator.create(rrule, startDate, c.getTime());
         } catch (ParseException e) {
             Log.w("RRULE", "Unable to create iterator for "+rrule.toIcal());
             return DateRecurrenceIterator.empty();
