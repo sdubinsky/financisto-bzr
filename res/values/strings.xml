@@ -632,5 +632,6 @@
     <string name="all_accounts">All accounts</string>
     <string name="filter_value_not_found">Not found..</string>
     <string name="empty_report">Empty report</string>
+    <string name="day_of_month">Day of month</string>
 
 </resources>
