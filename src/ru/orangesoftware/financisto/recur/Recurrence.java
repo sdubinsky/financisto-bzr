@@ -82,17 +82,20 @@ public class Recurrence {
 		startDate.set(Calendar.MILLISECOND, 0);
 	}
 
-    public DateRecurrenceIterator createIterator(Date startDate) {
+    public DateRecurrenceIterator createIterator(Date now) {
         RRule rrule = createRRule();
         try {
             Log.d("RRULE", "Creating iterator for "+rrule.toIcal());
+            if (now.before(startDate.getTime())) {
+                now = startDate.getTime();
+            }
             Calendar c = Calendar.getInstance();
-            c.setTime(startDate);
-            c.set(Calendar.HOUR_OF_DAY, this.startDate.get(Calendar.HOUR_OF_DAY));
-            c.set(Calendar.MINUTE, this.startDate.get(Calendar.MINUTE));
-            c.set(Calendar.SECOND, this.startDate.get(Calendar.SECOND));
+            c.setTime(now);
+            c.set(Calendar.HOUR_OF_DAY, startDate.get(Calendar.HOUR_OF_DAY));
+            c.set(Calendar.MINUTE, startDate.get(Calendar.MINUTE));
+            c.set(Calendar.SECOND, startDate.get(Calendar.SECOND));
             c.set(Calendar.MILLISECOND, 0);
-            return DateRecurrenceIterator.create(rrule, startDate, c.getTime());
+            return DateRecurrenceIterator.create(rrule, now, c.getTime());
         } catch (ParseException e) {
             Log.w("RRULE", "Unable to create iterator for "+rrule.toIcal());
             return DateRecurrenceIterator.empty();
