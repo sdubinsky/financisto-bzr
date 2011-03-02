@@ -1,13 +1,13 @@
 package ru.orangesoftware.financisto.recur;
 
 import android.test.AndroidTestCase;
-import ru.orangesoftware.financisto.test.MockDateTime;
+import ru.orangesoftware.financisto.test.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static ru.orangesoftware.financisto.test.MockDateTime.date;
+import static ru.orangesoftware.financisto.test.DateTime.date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +39,7 @@ public class RecurrenceTest extends AndroidTestCase {
                 "2011-02-28 19:30:00,2011-03-01 19:30:00,...");
     }
 
-    private void assertDates(String pattern, MockDateTime startDateTime, String datesAsString) throws ParseException {
+    private void assertDates(String pattern, DateTime startDateTime, String datesAsString) throws ParseException {
         Recurrence r = Recurrence.parse(pattern);
         DateRecurrenceIterator ri = r.createIterator(startDateTime.asDate());
         assertTrue(ri.hasNext());

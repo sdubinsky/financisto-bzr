@@ -2,7 +2,6 @@ package ru.orangesoftware.financisto.test;
 
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Transaction;
 
 /**
@@ -10,45 +9,40 @@ import ru.orangesoftware.financisto.model.Transaction;
  * User: Denis Solonenko
  * Date: 2/13/11 8:52 PM
  */
-public class MockTransaction {
+public class TransferBuilder {
 
     private final DatabaseAdapter db;
     private final Transaction t = new Transaction();
 
-    private MockTransaction(DatabaseAdapter db) {
+    public static TransferBuilder withDb(DatabaseAdapter db) {
+        return new TransferBuilder(db);
+    }
+
+    private TransferBuilder(DatabaseAdapter db) {
         this.db = db;
     }
 
-    public static MockTransaction withDb(DatabaseAdapter db) {
-        return new MockTransaction(db);
-    }
-
-    public MockTransaction account(Account a) {
+    public TransferBuilder fromAccount(Account a) {
         t.fromAccountId = a.id;
         return this;
     }
 
-    public MockTransaction amount(long amount) {
+    public TransferBuilder fromAmount(long amount) {
         t.fromAmount = amount;
         return this;
     }
 
-    public MockTransaction payee(String payee) {
-        t.payeeId = db.insertPayee(payee);
+    public TransferBuilder toAccount(Account a) {
+        t.toAccountId = a.id;
         return this;
     }
 
-    public MockTransaction note(String note) {
-        t.note = note;
+    public TransferBuilder toAmount(long amount) {
+        t.toAmount = amount;
         return this;
     }
 
-    public MockTransaction category(Category c) {
-        t.categoryId = c.id;
-        return this;
-    }
-
-    public MockTransaction dateTime(MockDateTime dateTime) {
+    public TransferBuilder dateTime(DateTime dateTime) {
         t.dateTime = dateTime.asLong();
         return this;
     }

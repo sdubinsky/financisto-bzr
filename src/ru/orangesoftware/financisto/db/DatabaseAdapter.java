@@ -404,6 +404,10 @@ public class DatabaseAdapter {
 		}
 	}
 
+    public long insertOrUpdate(Transaction transaction) {
+        return insertOrUpdate(transaction, null);
+    }
+
 	public long insertOrUpdate(Transaction transaction, LinkedList<TransactionAttribute> attributes) {
 		db.beginTransaction();
 		try {

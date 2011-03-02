@@ -6,13 +6,14 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.QifExport;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.test.MockTransaction;
-import ru.orangesoftware.financisto.test.MockTransfer;
+import ru.orangesoftware.financisto.test.CurrencyBuilder;
+import ru.orangesoftware.financisto.test.TransactionBuilder;
+import ru.orangesoftware.financisto.test.TransferBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-import static ru.orangesoftware.financisto.test.MockDateTime.date;
+import static ru.orangesoftware.financisto.test.DateTime.date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -44,8 +45,8 @@ public class QIFExportTest extends AbstractDbTest {
         Account a = createFirstAccount();
         Category p1 = createExpenseCategory("P1");
         Category c1 = createCategory(p1, "c1");
-        MockTransaction.withDb(db).account(a).amount(1000).category(p1).dateTime(date(2011, 2, 8)).create();
-        MockTransaction.withDb(db).account(a).amount(-2056).category(c1).payee("Payee 1").note("Some note here...").dateTime(date(2011, 2, 7)).create();
+        TransactionBuilder.withDb(db).account(a).amount(1000).category(p1).dateTime(date(2011, 2, 8)).create();
+        TransactionBuilder.withDb(db).account(a).amount(-2056).category(c1).payee("Payee 1").note("Some note here...").dateTime(date(2011, 2, 7)).create();
         assertEquals(
                 "!Type:Cat\n"+
                 "NP1\n"+
@@ -173,7 +174,7 @@ public class QIFExportTest extends AbstractDbTest {
     private void createTransfers() {
         Account a1 = createFirstAccount();
         Account a2 = createSecondAccount();
-        MockTransfer.withDb(db).fromAccount(a2).fromAmount(-2000).toAccount(a1).toAmount(2000).dateTime(date(2011, 2, 8)).create();
+        TransferBuilder.withDb(db).fromAccount(a2).fromAmount(-2000).toAccount(a1).toAmount(2000).dateTime(date(2011, 2, 8)).create();
     }
 
     public void test_should_export_categories() throws Exception {
@@ -214,12 +215,12 @@ public class QIFExportTest extends AbstractDbTest {
 
     private void createSampleData() {
         a1 = createFirstAccount();
-        MockTransaction.withDb(db).account(a1).amount(1000).dateTime(date(2011, 2, 8)).create();
-        MockTransaction.withDb(db).account(a1).amount(-2345).dateTime(date(2011, 2, 7)).create();
-        MockTransaction.withDb(db).account(a1).amount(-6780).dateTime(date(2011, 1, 1).atNoon()).create();
+        TransactionBuilder.withDb(db).account(a1).amount(1000).dateTime(date(2011, 2, 8)).create();
+        TransactionBuilder.withDb(db).account(a1).amount(-2345).dateTime(date(2011, 2, 7)).create();
+        TransactionBuilder.withDb(db).account(a1).amount(-6780).dateTime(date(2011, 1, 1).atNoon()).create();
         a2 = createSecondAccount();
-        MockTransaction.withDb(db).account(a2).amount(-2000).dateTime(date(2011, 2, 8)).create();
-        MockTransaction.withDb(db).account(a2).amount(5400).dateTime(date(2011, 1, 2).atMidnight()).create();
+        TransactionBuilder.withDb(db).account(a2).amount(-2000).dateTime(date(2011, 2, 8)).create();
+        TransactionBuilder.withDb(db).account(a2).amount(5400).dateTime(date(2011, 1, 2).atMidnight()).create();
     }
 
     private Account createFirstAccount() {
@@ -249,11 +250,11 @@ public class QIFExportTest extends AbstractDbTest {
     }
 
     private Currency createCurrency() {
-        Currency c = new Currency();
-        c.title = "Singapore Dollar";
-        c.name = "SGD";
-        c.symbol = "S$";
-        em.saveOrUpdate(c);
+        Currency c = CurrencyBuilder.withDb(db)
+                .title("Singapore Dollar")
+                .name("SGD")
+                .symbol("S$")
+                .create();
         assertNotNull(em.load(Currency.class, c.id));
         return c;
     }

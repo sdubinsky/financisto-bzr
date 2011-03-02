@@ -9,7 +9,7 @@ import android.test.RenamingDelegatingContext;
  * User: Denis Solonenko
  * Date: 2/7/11 7:22 PM
  */
-public class AbstractDbTest extends AndroidTestCase {
+public abstract class AbstractDbTest extends AndroidTestCase {
 
     protected DatabaseAdapter db;
     protected MyEntityManager em;

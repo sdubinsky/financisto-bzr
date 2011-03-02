@@ -8,37 +8,37 @@ import java.util.Date;
  * User: Denis Solonenko
  * Date: 2/8/11 8:32 PM
  */
-public class MockDateTime {
+public class DateTime {
 
     private final Calendar c = Calendar.getInstance();
 
-    private MockDateTime() {}
+    private DateTime() {}
 
-    public static MockDateTime on() {
-        return new MockDateTime();
+    public static DateTime on() {
+        return new DateTime();
     }
 
-    public static MockDateTime date(int year, int month, int day) {
-        MockDateTime dt = new MockDateTime();
+    public static DateTime date(int year, int month, int day) {
+        DateTime dt = new DateTime();
         dt.c.set(Calendar.YEAR, year);
         dt.c.set(Calendar.MONTH, month-1);
         dt.c.set(Calendar.DAY_OF_MONTH, day);
         return dt;
     }
 
-    public MockDateTime atMidnight() {
+    public DateTime atMidnight() {
         return at(0, 0, 0, 0);
     }
 
-    public MockDateTime atNoon() {
+    public DateTime atNoon() {
         return at(12, 0, 0, 0);
     }
 
-    public MockDateTime atDayEnd() {
+    public DateTime atDayEnd() {
         return at(23, 59, 59, 999);
     }
 
-    public MockDateTime at(int hh, int mm, int ss, int ms) {
+    public DateTime at(int hh, int mm, int ss, int ms) {
         c.set(Calendar.HOUR_OF_DAY, hh);
         c.set(Calendar.MINUTE, mm);
         c.set(Calendar.SECOND, ss);
