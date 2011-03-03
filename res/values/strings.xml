@@ -390,7 +390,7 @@
 	<string name="use_fixed_layout">Use fixed layout</string>
 	<string name="use_fixed_layout_summary">Fix OK/Cancel buttons in the layout</string>
 	<string name="no_data">No data</string>
-	<string name="calculating">Calculating..</string>
+	<string name="calculating">Calculating...</string>
 	<string name="budget_mode">Ease conditions</string>
 	<string name="budget_mode_summary">Use less restrictive conditions (category OR project) to filter transactions</string>
 	<string name="gdocs_backup">Google Docs Backup</string>
@@ -628,9 +628,9 @@
     <string name="type">Type</string>
 
     <string name="qif_export">QIF Export</string>
-    <string name="qif_export_inprogress">Exporting data to QIF..</string>
+    <string name="qif_export_inprogress">Exporting data to QIF...</string>
     <string name="all_accounts">All accounts</string>
-    <string name="filter_value_not_found">Not found..</string>
+    <string name="filter_value_not_found">Not found...</string>
     <string name="empty_report">Empty report</string>
     <string name="day_of_month">Day of month</string>
 
