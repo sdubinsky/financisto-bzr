@@ -32,26 +32,20 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
-import ru.orangesoftware.financisto.graph.Amount;
-import ru.orangesoftware.financisto.graph.GraphUnit;
-import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.report.AbstractReport;
 import ru.orangesoftware.financisto.report.PeriodReport;
 import ru.orangesoftware.financisto.report.Report;
 import ru.orangesoftware.financisto.report.ReportData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class ReportActivity extends ListActivity implements RequeryCursorActivity {
-	
+
 	private DatabaseAdapter db;
 	private ImageButton bFilter;
 	private Report currentReport;
     private ReportAsyncTask reportTask;
 	
 	private WhereFilter filter = WhereFilter.empty();
+    private boolean saveFilter = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +73,7 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
 			filter = WhereFilter.fromIntent(intent);
             if (filter.isEmpty()) {
                 filter = WhereFilter.fromSharedPreferences(getPreferences(0));
+                saveFilter = true;
             }
 			currentReport = ReportsListActivity.createReport(this, intent.getExtras());
 			selectReport();
@@ -183,8 +178,10 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
 	}
 
     private void saveFilter() {
-        SharedPreferences preferences = getPreferences(0);
-        filter.toSharedPreferences(preferences);
+        if (saveFilter) {
+            SharedPreferences preferences = getPreferences(0);
+            filter.toSharedPreferences(preferences);
+        }
         applyFilter();
     }
 	

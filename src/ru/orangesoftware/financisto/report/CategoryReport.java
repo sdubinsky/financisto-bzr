@@ -30,6 +30,10 @@ public class CategoryReport extends AbstractReport {
 
 	@Override
 	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
+        // fixing a bug with saving incorrect filter fot this report
+        // have to remove it here
+        filter.remove("left");
+        filter.remove("right");
 		return queryReport(db, V_REPORT_CATEGORY, filter);
 	}
 	
