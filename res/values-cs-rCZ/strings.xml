@@ -408,7 +408,7 @@
 	<string name="report_include_sub_categories_summary">Seznam kategorií za období včetně podkategorií.</string>
 	<string name="report_add_sub_categories_result">Přidat výsledek podkategorií</string>
 	<string name="report_add_sub_categories_result_summary">Přidat výsledek pokategorií k výsledku  vrchní kategorie.</string>
-	<string name="report_consider_null_results">Zahrnou nuly do tatistik</string>
+	<string name="report_consider_null_results">Zahrnou nuly do statistik</string>
 	<string name="report_consider_null_results_summary">Zahrnout nulové výsledky do generování statistik (min, max, střed).</string>
 	<string name="report_include_no_filter">Včetně bez &lt;filtru&gt;</string>
 	<string name="report_include_no_filter_summary">Včetně nezařazených operací na seznamu filtru zpráv (Bez kategorie, Bez projektu a Neznámá poloha)</string>
