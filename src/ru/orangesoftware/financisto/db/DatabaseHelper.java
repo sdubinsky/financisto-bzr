@@ -50,6 +50,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	public static final String TRANSACTION_ATTRIBUTE_TABLE = "transaction_attribute";
 	public static final String LOCATIONS_TABLE = "locations";
     public static final String PAYEE_TABLE = "payee";
+    public static final String CCARD_CLOSING_DATE_TABLE = "ccard_closing_date";
 
 	public static final String V_ALL_TRANSACTIONS = "v_all_transactions";
 	public static final String V_BLOTTER = "v_blotter";
@@ -273,14 +274,12 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String IS_TRANSFER = "is_transfer";
 		
 		public static String[] NORMAL_PROJECTION = {ID, NAME, CURRENCY_ID, AMOUNT, DATETIME, IS_TRANSFER};
-		
+
 		public static interface Indicies {
 			public static final int ID = 0;
 			public static final int NAME = 1; 
 			public static final int CURRENCY_ID = 2; 
 			public static final int AMOUNT = 3;
-			public static final int DATETIME = 4;
-			public static final int IS_TRANSFER = 5;
 		}
 	}
 
@@ -305,6 +304,16 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String RESOLVED_ADDRESS = "resolved_address";
 		
 		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, PROVIDER, ACCURACY, LATITUDE, LONGITUDE, IS_PAYEE, RESOLVED_ADDRESS};		
+	}
+	
+
+	public static class CreditCardClosingDateColumns {
+		
+		public static final String ACCOUNT_ID = "account_id";
+		// Period key in database (MMYYYY), where MM = 0 to 11
+		public static final String PERIOD = "period";
+		public static final String CLOSING_DAY = "closing_day";
+		
 	}
 	
 }

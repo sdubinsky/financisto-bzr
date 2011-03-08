@@ -164,53 +164,130 @@ public class DatabaseAdapter {
 
 	/**
 	 * [Bill Filtering] Returns all the expenses (negative amount) for a given Account in a given period.
+	 * @param accountId Account id.
+	 * @param start Start date.
+	 * @param end End date.
+	 * @return Transactions (negative amount) of the given Account, from start date to end date.
 	 */
 	public Cursor getAllExpenses(long accountId, long startDate, long endDate) {
-		// query
-		String where = BlotterColumns.from_account_id +"=? AND "+BlotterColumns.from_amount +"<? AND "+
-					   	   BlotterColumns.datetime +">? AND "+BlotterColumns.datetime +"<?";
-        return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION,
-                where, new String[]{String.valueOf(accountId), "0", String.valueOf(startDate), String.valueOf(endDate)},
-                null, null, BlotterColumns.datetime.name());
+        // query
+		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+"<? AND "+
+						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
+						   TransactionColumns.is_template+"!=?";
+		
+		String whereTo = TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+"<? AND "+
+						 TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
+						 TransactionColumns.is_template+"!=?";
+		try {
+			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					    whereFrom, new String[]{String.valueOf(accountId), "0", 
+						String.valueOf(startDate), String.valueOf(endDate), "1"}, 
+						null, null, TransactionColumns.datetime.name());
+			
+			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					    whereTo, new String[]{String.valueOf(accountId), "0", 
+						String.valueOf(startDate), String.valueOf(endDate), "1"}, 
+						null, null, TransactionColumns.datetime.name());
+			
+			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
+			return c;
+		} catch(SQLiteException e) {
+			return null;
+		}
 	}
 	
 	
 	/**
 	 * [Bill Filtering] Returns the credits (positive amount) for a given Account in a given period, excluding payments.
+	 * @param accountId Account id.
+	 * @param start Start date.
+	 * @param end End date.
+	 * @return Transactions (positive amount) of the given Account, from start date to end date.
 	 */
 	public Cursor getCredits(long accountId, long startDate, long endDate) {
-		// query
-		String where = BlotterColumns.from_account_id +"=? AND "+BlotterColumns.from_amount +">? AND "+
-					   	   BlotterColumns.datetime +">? AND "+BlotterColumns.datetime +"<? AND "+
-					       BlotterColumns.is_ccard_payment +"=?";
+        // query
+		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+">? AND "+
+						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
+						   TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"!=?";
 		
-        return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION,
-                where, new String[]{String.valueOf(accountId), "0", String.valueOf(startDate), String.valueOf(endDate), "0"},
-                null, null, BlotterColumns.datetime.name());
+		String whereTo = TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+">? AND "+
+						 TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
+						 TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"!=?";
+		
+		try {
+			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   	whereFrom, new String[]{String.valueOf(accountId), "0", 
+					    String.valueOf(startDate), String.valueOf(endDate), "0", "1"}, 
+					    null, null, TransactionColumns.datetime.name());
+			
+			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					    whereTo, new String[]{String.valueOf(accountId), "0", 
+						String.valueOf(startDate), String.valueOf(endDate), "0", "1"}, 
+						null, null, TransactionColumns.datetime.name());
+			
+			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
+			return c;
+		} catch(SQLiteException e) {
+			return null;
+		}
 	}
 	
 	/**
 	 * [Bill Filtering] Returns all the payments for a given Credit Card Account in a given period.
+	 * @param accountId Account id.
+	 * @param start Start date.
+	 * @param end End date.
+	 * @return Transactions of the given Account, from start date to end date.
 	 */
 	public Cursor getPayments(long accountId, long startDate, long endDate) {
-		String where = BlotterColumns.from_account_id +"=? AND "+BlotterColumns.from_amount +">? AND "+
-						   BlotterColumns.datetime +">? AND "+BlotterColumns.datetime +"<? AND "+
-						   BlotterColumns.is_ccard_payment +"=?";
-        return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION,
-                where, new String[]{String.valueOf(accountId), "0", String.valueOf(startDate), String.valueOf(endDate), "1"},
-                null, null, BlotterColumns.datetime.name());
+        // query direct payments
+		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+">? AND "+
+						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
+						   TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"!=?";
+		
+		String whereTo =  TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+">? AND "+
+						  TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
+						  TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"!=?";
+		
+		try {
+			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+					   	whereFrom, new String[]{String.valueOf(accountId), "0", 
+						String.valueOf(startDate), String.valueOf(endDate), "1", "1"}, 
+						null, null, TransactionColumns.datetime.name());
+			
+			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+						whereTo, new String[]{String.valueOf(accountId), "0", 
+						String.valueOf(startDate), String.valueOf(endDate), "1", "1"}, 
+						null, null, TransactionColumns.datetime.name());
+			
+			Cursor c = new MergeCursor(new Cursor[] {c1, c2});
+			return c;
+		} catch(SQLiteException e) {
+			return null;
+		}
 	}
 	
     /**
      * [Monthly view] Returns all the transactions for a given Account in a given period (month).
+     * @param accountId Account id.
+     * @param start Start date.
+     * @param end End date.
+     * @return Transactions (negative value) of the given Account, from start date to end date.
      */
     public Cursor getAllTransactions(long accountId, long startDate, long endDate) {
         // query
-        String where = BlotterColumns.from_account_id +"=? AND "+
-                       BlotterColumns.datetime +">? AND "+BlotterColumns.datetime +"<?";
-        return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION,
-                   where, new String[]{String.valueOf(accountId), String.valueOf(startDate), String.valueOf(endDate)},
-                null, null, BlotterColumns.datetime.name());
+        String where = "("+TransactionColumns.from_account_id+"=? OR "+TransactionColumns.to_account_id+"=?) AND "+
+        			   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
+        			   TransactionColumns.is_template+"!=?";       
+        try {
+            Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
+                       where, new String[]{String.valueOf(accountId), String.valueOf(accountId), 
+            		   String.valueOf(startDate), String.valueOf(endDate), "1"}, null, null, 
+            		   TransactionColumns.datetime.name());
+            return c;
+        } catch(SQLiteException e) {
+            return null;
+        }
     }
     
 	public Cursor getTransactions(WhereFilter filter) {
@@ -326,6 +403,10 @@ public class DatabaseAdapter {
 			db.endTransaction();
 		}
 	}
+
+    public long insertOrUpdate(Transaction transaction) {
+        return insertOrUpdate(transaction, null);
+    }
 
 	public long insertOrUpdate(Transaction transaction, LinkedList<TransactionAttribute> attributes) {
 		db.beginTransaction();
@@ -1170,6 +1251,76 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * @param accountId
+	 * @param period
+	 * @return
+	 */
+	public int getCustomClosingDay(long accountId, int period) {
+		String where = CreditCardClosingDateColumns.ACCOUNT_ID+"=? AND "+
+					   CreditCardClosingDateColumns.PERIOD+"=?";
+		
+		Cursor c = db.query(CCARD_CLOSING_DATE_TABLE, new String[] {CreditCardClosingDateColumns.CLOSING_DAY}, 
+			    where, new String[]{Long.toString(accountId), Integer.toString(period)}, null, null, null);
+		
+		int res = 0;
+		try {
+			if (c!=null) {
+				if (c.getCount()>0) {
+					c.moveToFirst();
+					res = c.getInt(0);
+				} else {
+					res = 0;
+				}
+			} else {
+				// there is no custom closing day in database for the given account id an period
+				res =  0;
+			}
+		} catch(SQLiteException e) {
+			res = 0;
+		} finally {
+			c.close();
+		}
+		return res;
+	}
+	
 
+	/**
+	 * @param accountId
+	 * @param period
+	 * @param closingDay
+	 */
+	public void setCustomClosingDay(long accountId, int period, int closingDay) {
+		ContentValues values = new ContentValues();
+        values.put(CreditCardClosingDateColumns.ACCOUNT_ID, Long.toString(accountId));
+        values.put(CreditCardClosingDateColumns.PERIOD, Integer.toString(period));
+        values.put(CreditCardClosingDateColumns.CLOSING_DAY, Integer.toString(closingDay));
+		db.insert(CCARD_CLOSING_DATE_TABLE, null, values);
+	}
+	
+	/**
+	 * 
+	 * @param accountId
+	 * @param period
+	 */
+	public void deleteCustomClosingDay(long accountId, int period) {
+		String where = CreditCardClosingDateColumns.ACCOUNT_ID+"=? AND "+
+		   			   CreditCardClosingDateColumns.PERIOD+"=?";
+		String[] args = new String[] {Long.toString(accountId), Integer.toString(period)};
+		db.delete(CCARD_CLOSING_DATE_TABLE, where, args);
+	}
+	
+	/**
+	 * @param accountId
+	 * @param period
+	 * @param closingDay
+	 */
+	public void updateCustomClosingDay(long accountId, int period, int closingDay) {
+		// delete previous content
+		deleteCustomClosingDay(accountId, period);
+		
+		// save new value
+		setCustomClosingDay(accountId, period, closingDay);
+	}
 }
 

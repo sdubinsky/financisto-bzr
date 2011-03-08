@@ -53,7 +53,7 @@ public class GraphWidget extends View {
 		canvas.drawText(name, x, y+style.nameHeight, style.namePaint);
 		y += style.nameHeight+style.textDy;
 		for (Amount a : u.amounts.values()) {
-			long amount = a.getAmount();				
+			long amount = a.amount;
 			int lineWidth = Math.max(1, (int)(1.0*Math.abs(amount)/maxAmount*(w-style.textDy-maxAmountWidth)));
 			style.linePaint.setColor(amount == 0 ? zeroLineColor : (amount > 0 ? positiveLineColor : negativeLineColor));
 			canvas.drawRect(x, y, x+lineWidth, y+style.lineHeight, style.linePaint);

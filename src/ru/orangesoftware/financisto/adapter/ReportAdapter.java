@@ -39,7 +39,7 @@ public class ReportAdapter extends BaseAdapter {
 				u.style.amountPaint.getTextBounds(amountText, 0, amountText.length(), rect);
 				a.amountTextWidth = (int)rect.width();
 				a.amountTextHeight = (int)rect.height();
-				maxAmount = Math.max(maxAmount, Math.abs(a.getAmount()));
+				maxAmount = Math.max(maxAmount, Math.abs(a.amount));
 				maxAmountWidth = Math.max(maxAmountWidth, a.amountTextWidth);			
 			}			
 		}

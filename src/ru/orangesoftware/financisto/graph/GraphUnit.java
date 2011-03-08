@@ -20,7 +20,8 @@ public class GraphUnit implements Comparable<GraphUnit> {
 	public final String name;
 	public final GraphStyle style;
 	public final HashMap<String, Amount> amounts = new HashMap<String, Amount>(2);
-	long sum = 0;
+
+    private long maxAmount;
 	
 	public GraphUnit(long id, String name, GraphStyle style) {
 		this.id = id;
@@ -29,6 +30,9 @@ public class GraphUnit implements Comparable<GraphUnit> {
 	}
 	
 	public void addAmount(Currency currency, long amount) {
+        if (amount == 0) {
+            return;
+        }
 		String key = currency.symbol+(amount >= 0 ? "_1" : "_2");
 		Amount a = amounts.get(key);
 		if (a == null) {
@@ -37,16 +41,19 @@ public class GraphUnit implements Comparable<GraphUnit> {
 		} else {
 			a.add(amount);
 		}
-		sum += Math.abs(amount);
 	}
-	
+
+    public void calculateMaxAmount() {
+        long maxAmount = 0;
+        for (Amount a : amounts.values()) {
+            maxAmount = Math.max(maxAmount, Math.abs(a.amount));
+        }
+        this.maxAmount = maxAmount;
+    }
+
 	@Override
 	public int compareTo(GraphUnit another) {
-		return another.sum == this.sum 
-		? (another.id == this.id ? 0 : (this.name.compareTo(another.name))) 
-		: (another.sum > this.sum ? 1 : -1);
+		return another.maxAmount > this.maxAmount ? 1 : -1;
 	}
-	
-	
-	
+
 }

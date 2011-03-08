@@ -57,8 +57,8 @@ public class LocationByPeriodReport extends Report2DChart {
 	public String getFilterName() {
 		if (filterIds.size()>0) {
 			long locationId = filterIds.get(currentFilterOrder);
-			MyLocation location = em.getLocation(locationId);
-			if (location!=null) {
+			MyLocation location = em.get(MyLocation.class, locationId);
+			if (location != null) {
 				return location.name;
 			} else {
 				return context.getString(R.string.current_location);

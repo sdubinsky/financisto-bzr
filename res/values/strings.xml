@@ -144,7 +144,7 @@
 	<string name="overall">Overall</string>
 	<string name="report_by_period">By Period</string>
 	<string name="report_by_period_summary">Transactions report by period</string>
-	<string name="report_by_category">By Category</string>
+	<string name="report_by_category">By Category (All)</string>
 	<string name="report_by_category_summary">Transactions report by category</string>
 	<string name="report_by_location">By Location</string>
 	<string name="report_by_location_summary">Transactions report by location</string>
@@ -555,7 +555,7 @@
 	<string name="enable_widget_summary">Show account total on the widget</string>		
 	<string name="attach_picture">Attach picture</string>		
 	<string name="new_picture">Take a picture</string>		
-	<string name="report_by_sub_category">By Sub-Category</string>
+	<string name="report_by_sub_category">By Category (Top-down)</string>
 	<string name="report_by_sub_category_summary">Transactions report by sub-category</string>
 
 	<string name="credits">Credits</string>
@@ -567,7 +567,17 @@
 	<string name="negative_opening_amount_summary">Open account with negative opening amount</string>
 	<string name="payment_day">Payment day</string>
 	<string name="closing_day">Closing day</string>
+	<string name="payment_day_hint">The day on which you pay your credit card bill.</string>
 	<string name="closing_day_hint">Day on which the bill closes</string>
+	
+	<string name="closing_day_title">Statement Closing Date</string>
+	<string name="reference_period">Reference Period</string>
+	<string name="regular_closing_day">Use regular closing day</string>
+	<string name="custom_closing_day">Use a custom closing day</string>
+	<string name="alert_invalid_closing_day">Invalid value. Please insert a closing day for the reference month.</string>
+	<string name="alert_null_closing_day">Please insert a new closing day.</string>
+	<string name="alert_regular_closing_day">Custom closing day must be different from regular closing day.</string>
+	
 	<string name="ccard_statement">Statements</string>
 	<string name="monthly_view">Month Preview</string>	
 	<string name="credit_card_statement">Credit Card Statement</string>
@@ -603,7 +613,6 @@
 	<string name="scheduled_transactions_have_been_restored">%d missed scheduled transactions have been restored. Please use Mass Operations to clear/delete them.</string>		
 	<string name="restore_missed_scheduled_transactions">Restore missed schedules</string>		
 	<string name="restore_missed_scheduled_transactions_summary">Missed scheduled transactions will be restored with \'Restored\' status</string>
-
     <string name="save_and_new">Save&amp;New</string>
     <string name="show_picture">Show \'Take picture\'</string>
     <string name="show_picture_summary">Show \'Take picture\' box</string>
@@ -617,5 +626,12 @@
     <string name="donate">Make a donation</string>
     <string name="donate_error">Android Market is not available on your device</string>
     <string name="type">Type</string>
+
+    <string name="qif_export">QIF Export</string>
+    <string name="qif_export_inprogress">Exporting data to QIF...</string>
+    <string name="all_accounts">All accounts</string>
+    <string name="filter_value_not_found">Not found...</string>
+    <string name="empty_report">Empty report</string>
+    <string name="day_of_month">Day of month</string>
 
 </resources>

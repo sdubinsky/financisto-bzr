@@ -23,7 +23,7 @@ public final class Backup {
 		"account","attributes","category_attribute",
 		"transaction_attribute","budget","category",
 		"currency","locations","project","transactions",
-        "payee"};
+        "payee","ccard_closing_date"};
 	
 	public static final String[] BACKUP_TABLES_WITH_SYSTEM_IDS = {
 		"attributes"};

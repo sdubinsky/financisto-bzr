@@ -8,7 +8,7 @@
  * Contributors:
  *     Denis Solonenko - initial API and implementation
  ******************************************************************************/
-package ru.orangesoftware.financisto.export;
+package ru.orangesoftware.financisto.export.csv;
 
 import java.io.BufferedReader;
 import java.io.Closeable;

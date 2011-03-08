@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 
@@ -78,7 +79,9 @@ public class Utils {
 			s = s.substring(0, s.length()-1);
 		}
 		sb.append(s);
-		sb.append(" ").append(c.symbol);
+        if (isNotEmpty(c.symbol)) {
+		    sb.append(" ").append(c.symbol);
+        }
 		return sb;		
 	}
 	
@@ -122,7 +125,10 @@ public class Utils {
 	}
 
 	public static TextAppearanceSpan getAmountSpan(Context context, long amount) {
-		return new TextAppearanceSpan(context, amount >= 0 ? R.style.TextAppearance_PositiveAmount : R.style.TextAppearance_NegativeAmount);
+		return new TextAppearanceSpan(context,
+                amount == 0
+                        ? R.style.TextAppearance_ZeroAmount
+                        : (amount > 0 ? R.style.TextAppearance_PositiveAmount : R.style.TextAppearance_NegativeAmount));
 	}
 	
 	public static int moveCursor(Cursor cursor, String idColumnName, long id) {
@@ -140,7 +146,7 @@ public class Utils {
 	}
 
 	public static void setTotal(Context context, TextView textView, Total t) {
-		final SpannableStringBuilder sb = new SpannableStringBuilder();		
+		SpannableStringBuilder sb = new SpannableStringBuilder();
 		sb.append(Utils.amountToString(t.currency, t.amount, false));
 		int x = sb.length();
 		sb.setSpan(getAmountSpan(context, t.amount), 0, x, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -201,4 +207,7 @@ public class Utils {
 		return manager.getPackageInfo(context.getPackageName(), 0);                         			
 	}
 
+    public static String emptyString(String s) {
+        return s != null ? s : "";
+    }
 }

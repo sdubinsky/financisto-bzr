@@ -1,16 +1,9 @@
 package ru.orangesoftware.financisto.activity;
 
-import android.app.ListActivity;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.MergeCursor;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CreditCardStatementAdapter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -20,11 +13,21 @@ import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
-
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import android.app.ListActivity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 /**
  * Display the credit card bill, including scheduled and future transactions for a given period.
@@ -37,6 +40,7 @@ public class MonthlyViewActivity extends ListActivity {
 	private Cursor transactionsCursor;
 	
 	private long accountId = 0;
+	private Account account;
     private Currency currency;
 	private boolean isCreditCard = false;
 	private boolean isStatementPreview = false;
@@ -50,6 +54,7 @@ public class MonthlyViewActivity extends ListActivity {
 	private String monthStr;
 	private int year = 0;
 	private String yearStr;
+	private Calendar closingDate;
 	
 	private ImageButton bPrevious;
 	private ImageButton bNext;
@@ -111,12 +116,14 @@ public class MonthlyViewActivity extends ListActivity {
 		
 		// set currency based on account
 		MyEntityManager em = dbAdapter.em();
-        Account account = em.getAccount(accountId);
+        account = em.getAccount(accountId);
 		
-        // get current month and year
-		Calendar cal = Calendar.getInstance();
-		month = cal.get(Calendar.MONTH) + 1;
-		year = cal.get(Calendar.YEAR);
+        if (month==0 && year==0) {
+	        // get current month and year in first launch
+			Calendar cal = Calendar.getInstance();
+			month = cal.get(Calendar.MONTH) + 1;
+			year = cal.get(Calendar.YEAR);
+        }
 		
 		// set part of the title, based on account name: "<CCARD> Bill"
 		if (account != null) {
@@ -254,6 +261,31 @@ public class MonthlyViewActivity extends ListActivity {
 		close.set(Calendar.MINUTE, 59);
 		close.set(Calendar.SECOND, 59);
 		
+		this.closingDate = new GregorianCalendar(close.get(Calendar.YEAR), 
+				  								 close.get(Calendar.MONTH),
+				  								 close.get(Calendar.DAY_OF_MONTH));
+		
+		// Verify custom closing date
+		int periodKey = Integer.parseInt(Integer.toString(close.get(Calendar.MONTH))+
+					 	Integer.toString(close.get(Calendar.YEAR)));
+		
+		int cd = dbAdapter.getCustomClosingDay(accountId, periodKey);
+		if (cd>0) {
+			// use custom closing day
+			close.set(Calendar.DAY_OF_MONTH, cd);
+		}
+		
+		// Verify custom opening date = closing day of previous month + 1
+		periodKey = Integer.parseInt(Integer.toString(open.get(Calendar.MONTH))+
+				 	Integer.toString(open.get(Calendar.YEAR)));
+		
+		int od = dbAdapter.getCustomClosingDay(accountId, periodKey);
+		if (od>0) {
+			// use custom closing day
+			open.set(Calendar.DAY_OF_MONTH, od);
+			open.add(Calendar.DAY_OF_MONTH, +1);
+		}
+		
 		fillData(open, close);
 	}
 	
@@ -325,6 +357,7 @@ public class MonthlyViewActivity extends ListActivity {
 			Cursor expenses = dbAdapter.getAllExpenses(accountId, open.getTimeInMillis(), close.getTimeInMillis());
 			Cursor credits = dbAdapter.getCredits(accountId, open.getTimeInMillis(), close.getTimeInMillis());
 			Cursor payments = dbAdapter.getPayments(accountId, open.getTimeInMillis(), close.getTimeInMillis());
+			
 			transactionsCursor = new MergeCursor(new Cursor[] { getHeader(HEADER_PAYMENTS, payments.getCount()), payments, 
 																getHeader(HEADER_CREDITS, credits.getCount()), credits, 
 																getHeader(HEADER_EXPENSES, expenses.getCount()), expenses});
@@ -336,7 +369,7 @@ public class MonthlyViewActivity extends ListActivity {
 
     	TextView totalText = (TextView)findViewById(R.id.monthly_result);
     	
-    	if (transactionsCursor == null || transactionsCursor.getCount()==0) {
+    	if (transactionsCursor == null || transactionsCursor.isClosed() || transactionsCursor.getCount()==0) {
     		// display total = 0
     		u.setAmountText(totalText, currency, 0, false);
     		totalText.setTextColor(Color.BLACK);
@@ -344,6 +377,7 @@ public class MonthlyViewActivity extends ListActivity {
     		
     		// hide list and display empty message
     		this.getListView().setVisibility(View.GONE);
+    		setListAdapter(null);
     		findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
 
     	} else { // display data
@@ -354,7 +388,7 @@ public class MonthlyViewActivity extends ListActivity {
     		int[] to = new int[] {R.id.list_date, R.id.list_note, R.id.list_value};
     		
     		// Mapping data to view
-    		CreditCardStatementAdapter expenses = new CreditCardStatementAdapter(dbAdapter, this, R.layout.credit_card_transaction, transactionsCursor, from, to, currency);
+    		CreditCardStatementAdapter expenses = new CreditCardStatementAdapter(dbAdapter, this, R.layout.credit_card_transaction, transactionsCursor, from, to, currency, accountId);
     		expenses.setStatementPreview(isStatementPreview);
     		setListAdapter(expenses);
     		
@@ -390,18 +424,31 @@ public class MonthlyViewActivity extends ListActivity {
 	private long calculateTotal(Cursor cursor) {
 		long total = 0;
 		cursor.moveToFirst();
+		int fromAccountIdCol = cursor.getColumnIndex(BlotterColumns.from_account_id.name());
+		int toAccountIdCol = cursor.getColumnIndex(BlotterColumns.to_account_id.name());
+		
 		if (isStatementPreview) {
 			// exclude payments
 			for (int i=0; i<cursor.getCount(); i++) {
 				if (cursor.getInt(cursor.getColumnIndex(BlotterColumns.is_ccard_payment.name()))==0) {
-					total += cursor.getLong(cursor.getColumnIndex(BlotterColumns.from_amount.name()));
+					if (cursor.getInt(cursor.getColumnIndex(BlotterColumns.is_ccard_payment.name()))==0) {
+						if (cursor.getLong(fromAccountIdCol)==accountId) {
+							total += cursor.getLong(cursor.getColumnIndex(BlotterColumns.from_amount.name()));	
+						} else if (cursor.getLong(toAccountIdCol)==accountId) {
+							total += cursor.getLong(cursor.getColumnIndex(BlotterColumns.to_amount.name()));	
+						}
+					}
 				}
 				cursor.moveToNext();
 			}
 		} else {
 			// consider all transactions
 			for (int i=0; i<cursor.getCount(); i++) {
-				total += cursor.getLong(cursor.getColumnIndex(BlotterColumns.from_amount.name()));
+				if (cursor.getLong(fromAccountIdCol)==accountId) {
+					total += cursor.getLong(cursor.getColumnIndex(BlotterColumns.from_amount.name()));	
+				} else if (cursor.getLong(toAccountIdCol)==accountId) {
+					total += cursor.getLong(cursor.getColumnIndex(BlotterColumns.to_amount.name()));	
+				}
 				cursor.moveToNext();
 			}
 		}
@@ -458,8 +505,18 @@ public class MonthlyViewActivity extends ListActivity {
 	// Update view 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
-		setCCardInterval();
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (resultCode) {
+		case RESULT_OK:
+			int update = data.getIntExtra(CCardStatementClosingDayActivity.UPDATE_VIEW, 0);
+			if (update>0) {
+				setCCardTitle();
+				setCCardInterval();
+			}
+			break;
+		case RESULT_CANCELED:
+			break;
+		}
 	}
 	
 	private Cursor getHeader(String type, int count) {
@@ -475,5 +532,39 @@ public class MonthlyViewActivity extends ListActivity {
 		return header;
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		// Allow changes on credit card closing date (for statements preview only)
+		if (isStatementPreview) {
+			MenuInflater inflater = getMenuInflater();
+			inflater.inflate(R.menu.statement_preview_menu, menu);
+			return true;
+		} else {
+			return super.onCreateOptionsMenu(menu);
+		}
+		
+	}
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		Intent intent = new Intent(this, CCardStatementClosingDayActivity.class);
+		
+		int closingDay = getClosingDate(month, year).get(Calendar.DAY_OF_MONTH);
+		
+		switch (item.getItemId()) {
+			case R.id.opt_menu_closing_day:
+				// call credit card closing day sending period
+	    		intent.putExtra(CCardStatementClosingDayActivity.PERIOD_MONTH, closingDate.get(Calendar.MONTH));
+	    		intent.putExtra(CCardStatementClosingDayActivity.PERIOD_YEAR, closingDate.get(Calendar.YEAR));
+	    		intent.putExtra(CCardStatementClosingDayActivity.ACCOUNT, accountId);
+	    		intent.putExtra(CCardStatementClosingDayActivity.REGULAR_CLOSING_DAY, closingDay);
+	    		startActivityForResult(intent, 16);
+	            return true;
+	            
+			default:
+	            return super.onOptionsItemSelected(item);
+		}
+    }
 }

@@ -149,12 +149,18 @@
 	<string name="report_by_location_summary">Отчёт по местоположениям</string>
 	<string name="report_by_project">По проектам</string>
 	<string name="report_by_project_summary">Отчёт по проектам</string>
-	<string-array name="report_types">
-		<item>По периодам</item>
-		<item>По категориям</item>		
-		<item>По местоположениям</item>
-		<item>По проектам</item>
-	</string-array>
+    <string name="report_by_payee">По получателям платежа</string>
+    <string name="report_by_payee_summary">Отчёт по получателям</string>
+    <string name="report_by_payee_by_period">По получателям платежа за период</string>
+    <string name="report_by_payee_by_period_summary">Отчёт по получателям платежа за период времени</string>
+    <string name="report_by_account_by_period">По аккаунтам за период</string>
+    <string name="report_by_account_by_period_summary">Отчёт по счетам за период времени</string>
+    <string name="report_by_category_by_period">По категориям за период</string>
+    <string name="report_by_category_by_period_summary">Отчёт по категориям за период времени</string>
+    <string name="report_by_location_by_period">По местоположениям за период</string>
+    <string name="report_by_location_by_period_summary">Отчёт по местоположениям за период времени</string>
+    <string name="report_by_project_by_period">По проектам за период</string>
+    <string name="report_by_project_by_period_summary">Отчёт по проектам за период времени</string>
 	<string name="period_today">Сегодня</string>
 	<string name="period_yesterday">Вчера</string>
 	<string name="period_this_week">Текущая неделя</string>
@@ -352,7 +358,7 @@
 	<string name="use_fixed_layout">Использовать фиксированый экран</string>
 	<string name="use_fixed_layout_summary">Зафиксировать кнопки OK/Отмена на экране</string>
 	<string name="no_data">Нет данных</string>
-	<string name="calculating">Рассчитываю..</string>
+	<string name="calculating">Рассчитываю...</string>
 	<string name="budget_mode">Смягчить условия</string>
 	<string name="budget_mode_summary">Использовать менее ограничительные условия (категория ИЛИ проект) для фильтрации транзакций</string>
 	<string name="gdocs_backup">Резерв. копии на Google Docs</string>
@@ -499,5 +505,118 @@
 	<string name="scheduled_transactions_have_been_restored">Восстановлено %d пропущенных транзакций. Используйте масс. операции для работы с ними.</string>		
 	<string name="restore_missed_scheduled_transactions">Восстанавливать пропущенные транзакции</string>		
 	<string name="restore_missed_scheduled_transactions_summary">Пропущенные запланированные транзакции будут восстановлены со статусом \'Восстановлено\'</string>		
-	
+
+
+	<string name="max_result_label">Макс:</string>
+	<string name="min_result_label">Мин:</string>
+	<string name="mean_result_label">Сред:</string>
+	<string name="sum_result_label">Сум:</string>
+	<string name="no_data_to_report">Нет данных для отображения.</string>
+	<string name="report_preferences_not_set">Измените настройки в меню "Настройки отчетов" - используются значения по умолчанию для валюты и периода.</string>
+	<string name="currency_not_set">Валюта не указана в настройках - используется значение по-умолчанию.</string>
+	<string name="period_not_set">Период не указан в настройках - используются значение по-умолчанию.</string>
+	<string name="report_no_category">Не найдены категории по указанному фильтру.</string>
+	<string name="report_no_project">Не найдены проекты по указанному фильтру.</string>
+	<string name="report_no_account">Не найдены счета по указанному фильтру.</string>
+	<string name="report_no_location">Не найдены местоположения по указанному фильтру.</string>
+	<string name="no_account">Счет не указан</string>
+	<string name="field_separator">Разделитель\nполей</string>
+	<string name="include_header">Включать\nзаголовок</string>
+    <string name="gdocs_folder_error">Ошибка доступа к папке в Google Docs.</string>
+    <string name="gdocs_service_error">Системная ошибка Google Docs.</string>
+    <string name="gdocs_io_error">Ошибка связи с Google Docs.</string>
+    <string name="package_info_error">Не удалось получить информацию о пакете Financisto.</string>
+	<string name="no_period">Период не указан</string>
+
+
+    <string name="report_preferences">Настройки отчетов</string>
+    <string name="all_reports_preferences">Основные настройки отчетов</string>
+    <string name="category_by_period_preferences">Настройки для отчетав по категориям</string>
+    <string name="report_include_sub_categories">Включать под-категории в список</string>
+	<string name="report_include_sub_categories_summary">Включать под-категории в отчете в список всех категорий.</string>
+	<string name="report_add_sub_categories_result">Суммировать под-категориии</string>
+	<string name="report_add_sub_categories_result_summary">Суммировать результат по под-категориям с корневой категорией.</string>
+	<string name="report_consider_null_results">Включать null-значения в статистику</string>
+	<string name="report_consider_null_results_summary">Включать null-значения при подсчете статистики (мин, макс и сред).</string>
+	<string name="report_include_no_filter">Включать &lt;без фильтра&gt;</string>
+	<string name="report_include_no_filter_summary">Включать транзакции с незаполненными категориями, проектами и с текущим местоположением</string>
+	<string name="report_reference_month">Отчетный месяц</string>
+	<string name="report_reference_month_summary">Укажите отчетный месяц, который указывает конец периода в отчете.</string>
+	<string name="report_last_quarter">За последнюю четверть</string>
+	<string name="report_last_half_year">За последние пол-года</string>
+	<string name="report_last_9_months">За последние 9 месяцев</string>
+	<string name="report_last_year">За последний год</string>
+	<string-array name="report_reference_month_entities">
+        <item>6 месяцев назад</item>
+        <item>3 месяца назад</item>
+        <item>Последний месяц</item>
+        <item>Текущий месяц</item>
+        <item>Следующий месяц</item>
+        <item>3 месяца спустя</item>
+        <item>6 месяцев спустя</item>
+    </string-array>
+	<string name="report_reference_period">Отчетный период</string>
+	<string name="report_reference_period_summary">Укажите период (кол-во месяцев) для графиков в отчете.</string>
+	<string-array name="report_reference_period_entities">
+        <item>3 месяца</item>
+        <item>6 месяцев</item>
+        <item>9 месяцев</item>
+        <item>1 год</item>
+    </string-array>
+	<string name="report_reference_currency">Отчетная валюта</string>
+	<string name="report_reference_currency_summary">Укажите валюту для использования в отчетах.</string>
+	<string name="report_last_n_months">Последние $n месяцев(а)</string>
+	<string name="report_n_months_var">$n</string>
+	<string name="month_jan">ЯНВ</string>
+	<string name="month_feb">ФЕВ</string>
+	<string name="month_mar">МАР</string>
+	<string name="month_apr">АПР</string>
+	<string name="month_mai">МАЙ</string>
+	<string name="month_jun">ИЮН</string>
+	<string name="month_jul">ИЮЛ</string>
+	<string name="month_aug">АВГ</string>
+	<string name="month_sep">СЕН</string>
+	<string name="month_oct">ОКТ</string>
+	<string name="month_nov">НОЯ</string>
+	<string name="month_dec">ДЕК</string>
+	<string name="month_x_jan">Январь</string>
+	<string name="month_x_feb">Февраль</string>
+	<string name="month_x_mar">Март</string>
+	<string name="month_x_apr">Апрель</string>
+	<string name="month_x_mai">Май</string>
+	<string name="month_x_jun">Июнь</string>
+	<string name="month_x_jul">Июль</string>
+	<string name="month_x_aug">Август</string>
+	<string name="month_x_sep">Сентябрь</string>
+	<string name="month_x_oct">Октябрь</string>
+	<string name="month_x_nov">Ноябот</string>
+	<string name="month_x_dec">Декабрь</string>
+
+	<string name="payment_day_hint">День, в который Вы платите по выписке за кредитную карту.</string>
+
+	<string name="closing_day_title">Рассчётный день по выписке</string>
+	<string name="reference_period">Отчетный период</string>
+	<string name="regular_closing_day">Использовать регулярный день</string>
+	<string name="custom_closing_day">Указать другой день</string>
+	<string name="alert_invalid_closing_day">Неправильное значение. Укажите рассчётный день для отчетного месяца.</string>
+	<string name="alert_null_closing_day">Укажите новый рассчётный день.</string>
+	<string name="alert_regular_closing_day">Указанный день должен отличаться от регулярного.</string>
+
+    <string name="save_and_new">Сохранить&amp;Новая</string>
+    <string name="show_picture">Показать \'Прикрепить фото\'</string>
+    <string name="show_picture_summary">Показывать поле \'Прикрепить фото\'</string>
+    <string name="payees">Получатели платежа</string>
+    <string name="no_payee">Получатель не указан</string>
+    <string name="report_no_payee">Не найдены получатели по указанному фильтру.</string>
+    <string name="donate">Сделать пожертвование</string>
+    <string name="donate_error">Android Market не доступен на Вашем устройстве</string>
+    <string name="type">Тип</string>
+
+    <string name="qif_export">Экспорт в QIF</string>
+    <string name="qif_export_inprogress">Экспортирование данных в QIF..</string>
+    <string name="all_accounts">Все счета</string>
+    <string name="filter_value_not_found">Не найден..</string>
+    <string name="empty_report">Пустой отчет</string>
+    <string name="day_of_month">День месяца</string>
+
 </resources>

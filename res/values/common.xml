@@ -85,7 +85,7 @@
 	</string-array>
 	<string-array name="ui_language_values">
 		<item>default</item>
-        <item>cz</item>
+        <item>cs-CZ</item>
 		<item>de</item>
 		<item>fr</item>
 		<item>es</item>

@@ -90,6 +90,7 @@ public class AccountActivity extends AbstractActivity {
 		
 		paymentDayText = new EditText(this);
 		paymentDayText.setInputType(InputType.TYPE_CLASS_NUMBER);
+		paymentDayText.setHint(R.string.payment_day_hint);
 		paymentDayText.setSingleLine();
 		/************************************/
 		
@@ -345,8 +346,12 @@ public class AccountActivity extends AbstractActivity {
 		sortOrderText.setText(String.valueOf(account.sortOrder));
 		
 		/******** bill filtering ********/
-		closingDayText.setText(String.valueOf(account.closingDay));
-		paymentDayText.setText(String.valueOf(account.paymentDay));
+		if (account.closingDay>0) {
+			closingDayText.setText(String.valueOf(account.closingDay));
+		} 
+		if (account.paymentDay>0) {
+			paymentDayText.setText(String.valueOf(account.paymentDay));
+		}
 		/********************************/		
 		
 		isIncludedIntoTotals.setChecked(account.isIncludeIntoTotals);

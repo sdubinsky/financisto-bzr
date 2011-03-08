@@ -10,19 +10,16 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.report;
 
-import java.util.ArrayList;
-
+import android.content.Context;
+import android.content.Intent;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.graph.GraphUnit;
-import android.content.Context;
-import android.content.Intent;
 
 public interface Report {
 	
-	ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter);
-	
+	ReportData getReport(DatabaseAdapter db, WhereFilter filter);
+
 	Criteria getCriteriaForId(DatabaseAdapter db, long id);
 
 	Intent createActivityIntent(Context context, DatabaseAdapter db, WhereFilter filter, long id);

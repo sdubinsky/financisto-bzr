@@ -15,9 +15,6 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.graph.GraphUnit;
-
-import java.util.ArrayList;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_PAYEES;
 
@@ -28,7 +25,7 @@ public class PayeesReport extends AbstractReport {
 	}
 
 	@Override
-	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {
+	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
 		return queryReport(db, V_REPORT_PAYEES, filter);
 	}
 

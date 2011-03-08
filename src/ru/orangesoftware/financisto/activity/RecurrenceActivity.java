@@ -17,7 +17,7 @@ import java.util.Date;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.recur.Recurrence;
 import ru.orangesoftware.financisto.recur.RecurrenceFrequency;
-import ru.orangesoftware.financisto.recur.RecurrenceIterator;
+import ru.orangesoftware.financisto.recur.DateRecurrenceIterator;
 import ru.orangesoftware.financisto.recur.RecurrencePattern;
 import ru.orangesoftware.financisto.recur.RecurrencePeriod;
 import ru.orangesoftware.financisto.recur.RecurrenceUntil;
@@ -191,13 +191,10 @@ public class RecurrenceActivity extends AbstractActivity {
 			} break;
 			case R.id.result: {
 				try {
-					Recurrence r = Recurrence.parse(stateToString());
-					RRule rrule = r.createRRule();
-					Log.d("RRULE", rrule.toIcal());
-					Date startDate = recurrence.getStartDate().getTime();
-					Log.d("DTSTART", startDate.toString());
-					RecurrenceIterator ri = RecurrenceIterator.create(rrule, startDate);
-					ri.advanceTo(new Date());
+                    String stateAsString = stateToString();
+                    Log.d("RRULE", stateAsString);
+					Recurrence r = Recurrence.parse(stateAsString);
+					DateRecurrenceIterator ri = r.createIterator(new Date());
 					StringBuilder sb = new StringBuilder();
 					DateFormat df = DateUtils.getMediumDateFormat(this);
 					String n = String.format("%n");

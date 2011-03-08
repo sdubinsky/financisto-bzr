@@ -27,6 +27,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
 import ru.orangesoftware.financisto.graph.GraphUnit;
+import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.DateUtils.Period;
 import android.content.Context;
 import android.database.Cursor;
@@ -42,7 +43,7 @@ public class PeriodReport extends AbstractReport {
 	}
 
 	@Override
-	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {		
+	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
 		WhereFilter newFilter = WhereFilter.empty();
 		Criteria criteria = filter.get(ReportColumns.CURRENCY_ID);
 		if (criteria != null) {
@@ -60,7 +61,8 @@ public class PeriodReport extends AbstractReport {
 				units.add(u);
 			}
 		}
-		return units;
+        Total[] totals = calculateTotals(units);
+		return new ReportData(units, totals);
 	}
 
 	@Override

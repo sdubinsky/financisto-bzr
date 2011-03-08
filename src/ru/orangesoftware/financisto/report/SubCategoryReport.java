@@ -22,10 +22,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.CategoryEntity;
-import ru.orangesoftware.financisto.model.CategoryTree;
-import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import android.content.Context;
@@ -39,21 +36,26 @@ public class SubCategoryReport extends AbstractReport {
 	}
 
 	@Override
-	public ArrayList<GraphUnit> getReport(DatabaseAdapter db, WhereFilter filter) {
+	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
 		filterTransfers(filter);
 		Cursor c = db.db().query(V_REPORT_SUB_CATEGORY, DatabaseHelper.SubCategoryReportColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null, "left");
-		CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
-			@Override
-			public CategoryAmount createNode(Cursor c) {
-				return new CategoryAmount(c);
-			}
-		});
+        try {
+            CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
+                @Override
+                public CategoryAmount createNode(Cursor c) {
+                    return new CategoryAmount(c);
+                }
+            });
 
-		ArrayList<GraphUnitTree> roots = createTree(amounts, 0);
-		ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
-		flatenTree(roots, units);
-		return units;
+            ArrayList<GraphUnitTree> roots = createTree(amounts, 0);
+            ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
+            flatenTree(roots, units);
+            Total[] totals = calculateTotals(roots);
+            return new ReportData(units, totals);
+        } finally {
+            c.close();
+        }
 	}
 	
 	private ArrayList<GraphUnitTree> createTree(CategoryTree<CategoryAmount> amounts, int level) {

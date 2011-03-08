@@ -76,10 +76,6 @@ public class MyEntityManager extends EntityManager {
 	 * LOCATION
 	 * =============================================== */
 	
-	public MyLocation getLocation(long id) {
-		return load(MyLocation.class, id);
-	}
-
 	public Cursor getAllLocations(boolean includeCurrentLocation) {
 		Query<MyLocation> q = createQuery(MyLocation.class); 
 		if (!includeCurrentLocation) {

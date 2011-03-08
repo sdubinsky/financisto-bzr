@@ -19,8 +19,11 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import org.omg.IOP.TAG_ORB_TYPE;
 import ru.orangesoftware.financisto.model.Currency;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,6 +57,18 @@ public class MyPreferences {
 	}
 
 	public static boolean isPinRequired = true;
+
+    private static Method hasSystemFeatureMethod;
+
+    static {
+        // hack for 1.5/1.6 devices
+        try {
+            hasSystemFeatureMethod = PackageManager.class.getMethod("hasSystemFeature", new Class[] { String.class } );
+       } catch (NoSuchMethodException ex) {
+            hasSystemFeatureMethod = null;
+       }
+
+    }
 
 	public static boolean isUseGps(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -350,8 +365,17 @@ public class MyPreferences {
     }
 
     private static boolean isFeatureSupported(Context context, String feature) {
-        PackageManager pm = context.getPackageManager();
-        return pm.hasSystemFeature(feature);
+        if (hasSystemFeatureMethod != null) {
+            PackageManager pm = context.getPackageManager();
+            try {
+                return (Boolean)hasSystemFeatureMethod.invoke(pm, feature);
+            } catch (Exception e) {
+                Log.w("Financisto", "Some problems executing PackageManager.hasSystemFeature("+feature+")", e);
+                return false;
+            }
+        }
+        Log.i("Financisto", "It's an old device - no PackageManager.hasSystemFeature");
+        return true;
     }
 
 
