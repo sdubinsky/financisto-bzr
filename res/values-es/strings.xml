@@ -31,7 +31,7 @@
     <string name="currency">Divisa</string>    
     <string name="add_currency">Añadir Divisa</string>
     <string name="opening_amount">Saldo inicial</string>
-    <string name="limit_amount">Importe límite</string>
+    <string name="limit_amount">Límite de crédito</string>
 	<string name="amount_in" formatted="false">Importe en &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">Examinar</string>
 	<string name="edit">Editar</string>
@@ -76,6 +76,7 @@
 	<string name="select_category">Debe seleccionar una categoría...</string>
 	<string name="select_project">Debe seleccionar un proyecto...</string>	
 	<string name="warning">Aviso</string>
+	
 	<string name="no_accounts">Antes se debe comenzar con la creación de una cuenta. Toque el icono de abajo con el \'+\' verde para ello...</string>
 	<string name="no_budgets">Sin dotaciones</string>
 	<string name="no_transactions">Sin transacciones</string>
@@ -177,6 +178,8 @@
 	<string name="report_init_res">0</string>
 	<string name="no_data_to_report">No hay datos disponibles para poder mostrar el extracto.</string>
 	<string name="report_preferences_not_set">Establezca una Divisa y un Periodo Por Defecto en el menú Preferencias para Extractos.</string>
+
+
 	<string name="currency_not_set">No se ha establecido la Divisa de referencia en las Preferencias. Establezca la divisa por defecto.</string>
 	<string name="period_not_set">No se ha establecido el Periodo de referencia en las Preferencias. Establezca el periodo por defecto.</string>
 	<string name="report_no_category">No existe ninguna categoría disponible para filtrar en el extracto.</string>
@@ -219,6 +222,7 @@
 	<string name="delete_budget_recurring_confirm">¿Eliminar dotación presupuestaria periódica?</string>
 	<string name="delete_budget_one_entry">NO, solo esta</string>	
 	<string name="delete_budget_all_entries">SI, todas ídem</string>
+
 	<string name="edit_recurring_budget">Se está editando una dotación presupuestaria periódica, los cambios afectarán a todas sus partidas.</string>	
 	<string-array name="account_types">
 		<item>Banco</item>
@@ -247,6 +251,8 @@
 	<string name="sort_accounts">Listado de cuentas</string>
 	<string name="sort_accounts_summary">Establece el sentido para el listado de cuentas (requiere reinicio)</string>
 	<string-array name="sort_accounts_entities">
+	
+	
 		<item>Por Listado Ascendente</item>
 		<item>Por Listado Descendente</item>
 		<item>Por Orden Alfabético</item>
@@ -323,7 +329,8 @@
 	<string name="show_payee_summary">Mostrar campo de texto para el beneficiario</string>
 	<string name="show_payee_order">Posición Beneficiario</string>	
 	<string name="show_payee_order_summary">Posición relativa en el formulario para el campo Beneficiario</string>
-	<string name="show_note">Mostrar Concepto</string>	
+	<string name="show_note">Mostrar Concepto</string>
+	
 	<string name="show_note_summary">Mostrar campo de texto para introducir el concepto por el que se realiza la transacción</string>
 	<string name="show_note_order">Posición Concepto</string>	
 	<string name="show_note_order_summary">Posición relativa en el formulario para el campo Concepto</string>
@@ -388,11 +395,12 @@
 	<string name="shortcut_new_transaction">Atajo \'Nueva Transacción\'</string>	
 	<string name="shortcut_new_transfer">Atajo \'Nuevo Traspaso\'</string>
 	<string name="shortcut_summary">Añadir este atajo a la Pantalla de Inicio</string>
-	<string name="use_fixed_layout">Use fixed layout</string>
-	<string name="use_fixed_layout_summary">Fix OK/Cancel buttons in the layout</string>
+	<string name="use_fixed_layout">Fijar a la pantalla</string>
+	<string name="use_fixed_layout_summary">Los botones del formulario siempre se mantendrán visibles</string>
 	<string name="no_data">Sin datos</string>
 	<string name="calculating">Calculando...</string>
 	<string name="budget_mode">Condiciones simplificadas</string>
+
 	<string name="budget_mode_summary">Usar condiciones menos restrictivas (categoría o proyecto) para filtrar las transacciones</string>
 	<string name="gdocs_backup">Respaldo en Google Docs</string>
 	<string name="user_login">Usuario</string>
@@ -554,8 +562,8 @@
 	<string name="include_credit_summary">Incluye los créditos (cargos y abonos) en el cómputo de la dotación presupuestaria</string>	
 	<string name="enable_widget">Activar widget</string>
 	<string name="enable_widget_summary">Mostrar el saldo total de la cuenta en el widget</string>		
-	<string name="attach_picture">Adjuntar imagen</string>		
-	<string name="new_picture">Hacer una foto</string>		
+	<string name="attach_picture">Adjuntar foto</string>		
+	<string name="new_picture">Toque aquí para tomar una foto</string>		
 	<string name="report_by_sub_category">Por Subcategoría</string>
 	<string name="report_by_sub_category_summary">Extracto de transacciones por subcategoría</string>
 
@@ -568,7 +576,17 @@
 	<string name="negative_opening_amount_summary">Crear cuenta con saldo negativo de apertura</string>
 	<string name="payment_day">Día del pago</string>
 	<string name="closing_day">Día del cierre</string>
+	<string name="payment_day_hint">Día en el que se carga la factura mensual de la tarjeta de crédito</string>
 	<string name="closing_day_hint">Día en el que se cierra el extracto mensual</string>
+	
+	<string name="closing_day_title">Statement Closing Date</string>
+	<string name="reference_period">Reference Period</string>
+	<string name="regular_closing_day">Use regular closing day</string>
+	<string name="custom_closing_day">Use a custom closing day</string>
+	<string name="alert_invalid_closing_day">Invalid value. Please insert a closing day for the reference month.</string>
+	<string name="alert_null_closing_day">Please insert a new closing day.</string>
+	<string name="alert_regular_closing_day">Custom closing day must be different from regular closing day.</string>
+	
 	<string name="ccard_statement">Extractos</string>
 	<string name="monthly_view">Vista Previa del Mes</string>	
 	<string name="credit_card_statement">Extracto Tarjeta de Crédito</string>
@@ -578,14 +596,15 @@
 	<string name="monthly_result">Balance del mes</string>
 	<string name="closing_day_error">El día del cierre no es válido.</string>
 	<string name="payment_day_error">El día del pago no es válido.</string>
+
 	<string name="statement_error">Debe fijar los días del pago y del cierre de esta tarjeta de crédito en las propiedades de dicha cuenta.</string>
 	<string name="is_ccard_payment">Pago con Tarjeta de Crédito</string>
 	<string name="is_ccard_payment_summary">No incluir en el cómputo total</string>
 	<string name="header_payments">Pagos</string>
 	<string name="header_credits">Various Credits</string>
 	<string name="header_expenses">Gastos</string>	
-	<string name="ui_language">Localizar</string>
-	<string name="ui_language_summary">Definir el idioma de la interfaz de usuario (requiere reinicio)</string>
+	<string name="ui_language">Configuración regional</string>
+	<string name="ui_language_summary">Definir el lenguaje de la interfaz de usuario (requiere reinicio)</string>
 	
 	<string name="enter_pin">Introducir PIN</string>
 	<string name="mass_operations">Operaciones masivas</string>
@@ -604,10 +623,9 @@
 	<string name="scheduled_transactions_have_been_restored">%d missed scheduled transactions have been restored. Please use Mass Operations to clear/delete them.</string>		
 	<string name="restore_missed_scheduled_transactions">Restore missed schedules</string>		
 	<string name="restore_missed_scheduled_transactions_summary">Missed scheduled transactions will be restored with \'Restored\' status</string>
-
-    <string name="save_and_new">Save&amp;New</string>
-    <string name="show_picture">Show \'Take picture\'</string>
-    <string name="show_picture_summary">Show \'Take picture\' box</string>
+    <string name="save_and_new">Guardar&nbsp;&amp;&nbsp;Nuevo</string>
+    <string name="show_picture">Mostrar \'Adjuntar foto\'</string>
+    <string name="show_picture_summary">Dar la opción de tomar una foto del momento de la transacción</string>
     <string name="payees">Beneficiarios</string>
     <string name="report_by_payee">Por Beneficiarios</string>
     <string name="report_by_payee_summary">Extracto de transacciones por beneficiario</string>
@@ -618,5 +636,12 @@
     <string name="donate">Hacer una donación</string>
     <string name="donate_error">Android Market no está disponible en su dispositivo</string>
     <string name="type">Type</string>
+
+    <string name="qif_export">QIF Export</string>
+    <string name="qif_export_inprogress">Exporting data to QIF...</string>
+    <string name="all_accounts">All accounts</string>
+    <string name="filter_value_not_found">Not found...</string>
+    <string name="empty_report">Empty report</string>
+    <string name="day_of_month">Day of month</string>
 
 </resources>
