@@ -10,6 +10,7 @@
       Denis Solonenko - initial API and implementation
       Abdsandryk Souza - bill filtering, report 2D chart
       Rodrigo Sousa - google docs backup
+	  
 -->
 <resources>
     <string name="accounts">Accounts</string>
