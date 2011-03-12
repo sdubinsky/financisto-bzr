@@ -7,31 +7,31 @@
   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
   
   Contributors:
-      Denis Solonenko - initial API and implementation
-      Abdsandryk Souza - bill filtering, report 2D chart
-      Rodrigo Sousa - google docs backup
+	  Denis Solonenko - initial API and implementation
+	  Abdsandryk Souza - bill filtering, report 2D chart
+	  Rodrigo Sousa - google docs backup
 	  
 -->
 <resources>
-    <string name="accounts">Accounts</string>
-    <string name="blotter">Blotter</string>
-    <string name="currencies">Currencies</string>
-    <string name="categories">Categories</string>
-    <string name="budgets">Budgets</string>
-    <string name="projects">Projects</string>
-    <string name="ok">OK</string>
-    <string name="clear">Clear</string>
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-    <string name="close">Close</string>
-    <string name="edit_account">Edit Account</string>
-    <string name="add_account">Add account</string>
-    <string name="title">Title</string>
-    <string name="payee">Payee</string>
-    <string name="currency">Currency</string>    
-    <string name="add_currency">Add Currency</string>
-    <string name="opening_amount">Opening amount</string>
-    <string name="limit_amount">Limit amount</string>
+	<string name="accounts">Accounts</string>
+	<string name="blotter">Blotter</string>
+	<string name="currencies">Currencies</string>
+	<string name="categories">Categories</string>
+	<string name="budgets">Budgets</string>
+	<string name="projects">Projects</string>
+	<string name="ok">OK</string>
+	<string name="clear">Clear</string>
+	<string name="save">Save</string>
+	<string name="cancel">Cancel</string>
+	<string name="close">Close</string>
+	<string name="edit_account">Edit Account</string>
+	<string name="add_account">Add account</string>
+	<string name="title">Title</string>
+	<string name="payee">Payee</string>
+	<string name="currency">Currency</string>
+	<string name="add_currency">Add Currency</string>
+	<string name="opening_amount">Opening amount</string>
+	<string name="limit_amount">Limit amount</string>
 	<string name="amount_in" formatted="false">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">View</string>
 	<string name="edit">Edit</string>
@@ -151,7 +151,7 @@
 	<string name="report_by_location_summary">Transactions report by location</string>
 	<string name="report_by_project">By Project</string>
 	<string name="report_by_project_summary">Transactions report by project</string>
-	
+
 	<string name="report_by_account_by_period">By Account / Period</string>
 	<string name="report_by_account_by_period_summary">Transactions report by account and period</string>
 	<string name="report_by_category_by_period">By Category / Period</string>
@@ -184,7 +184,7 @@
 	<string name="report_no_account">There is no account available for filtering in the report.</string>
 	<string name="report_no_location">There is no location available for filtering in the report.</string>
 	<string name="no_account">No account</string>
-	
+
 	<string name="period_today">Today</string>
 	<string name="period_yesterday">Yesterday</string>
 	<string name="period_this_week">This week</string>
@@ -200,8 +200,8 @@
 		<item>Last month</item>
 		<item>Custom</item>
 	</string-array>
-    <string name="currency_name">Name</string>
-    <string name="currency_symbol">Symbol</string>
+	<string name="currency_name">Name</string>
+	<string name="currency_symbol">Symbol</string>
 	<string name="currency_code">Code</string>
 	<string name="currency_code_hint">ISO 4217 code</string>
 	<string name="is_default">Is default</string>
@@ -289,12 +289,12 @@
 	<string name="gdocs_login_failed">Google account login or password not valid.</string>
 	<string name="gdocs_backup_failed">Error sending backup file to Google Docs. Please try again.</string>
 	<string name="gdocs_restore_failed">Error retrieving backup file. Please try again.</string>
-	
-    <string name="gdocs_folder_error">Error accessing the folder in Google Docs.</string>
-    <string name="gdocs_service_error">Error service not available in Google Docs.</string>
-    <string name="gdocs_io_error">Error connecting with Google Docs.</string>
-    <string name="package_info_error">It was not possible to access the package information Financisto.</string>
-    
+
+	<string name="gdocs_folder_error">Error accessing the folder in Google Docs.</string>
+	<string name="gdocs_service_error">Error service not available in Google Docs.</string>
+	<string name="gdocs_io_error">Error connecting with Google Docs.</string>
+	<string name="package_info_error">It was not possible to access the package information Financisto.</string>
+
 	<string name="success">Success!</string>
 	<string name="fail">Fail...</string>
 	<string name="duplicate">Duplicate</string>
@@ -402,10 +402,10 @@
 	<string name="backup_folder">Backup Folder</string>
 	<string name="backup_folder_summary">Folder on Google Docs to store backup files</string>
 
-    <string name="report_preferences">Report Preferences</string>
-    <string name="all_reports_preferences">General Report Preferences</string>
-    <string name="category_by_period_preferences">Category by Period Report Preferences</string>
-    <string name="report_include_sub_categories">Include sub Categories in list</string>
+	<string name="report_preferences">Report Preferences</string>
+	<string name="all_reports_preferences">General Report Preferences</string>
+	<string name="category_by_period_preferences">Category by Period Report Preferences</string>
+	<string name="report_include_sub_categories">Include sub Categories in list</string>
 	<string name="report_include_sub_categories_summary">Include sub categories in the Category by Period Reports list of categories</string>
 	<string name="report_add_sub_categories_result">Add sub Categories result</string>
 	<string name="report_add_sub_categories_result_summary">Add sub categories result to the result of a root category</string>
@@ -420,22 +420,22 @@
 	<string name="report_last_9_months">Last 9 months</string>
 	<string name="report_last_year">Last year</string>
 	<string-array name="report_reference_month_entities">
-        <item>6 months ago</item>
-        <item>3 months ago</item>
-        <item>Last month</item>
-        <item>Current month</item>
-        <item>Next month</item>
-        <item>3 months later</item>
-        <item>6 months later</item>
-    </string-array>
+		<item>6 months ago</item>
+		<item>3 months ago</item>
+		<item>Last month</item>
+		<item>Current month</item>
+		<item>Next month</item>
+		<item>3 months later</item>
+		<item>6 months later</item>
+	</string-array>
 	<string name="report_reference_period">Period of Reference</string>
 	<string name="report_reference_period_summary">Define the period of reference (number of months) to be considered when opening report charts</string>
 	<string-array name="report_reference_period_entities">
-        <item>3 months</item>
-        <item>6 months</item>
-        <item>9 months</item>
-        <item>1 year</item>
-    </string-array>
+		<item>3 months</item>
+		<item>6 months</item>
+		<item>9 months</item>
+		<item>1 year</item>
+	</string-array>
 	<string name="report_reference_currency">Reference Currency</string>
 	<string name="report_reference_currency_summary">Define the reference currency to be considered when request data for report charts</string>
 	<string name="report_last_n_months">Last $n months</string>
@@ -570,7 +570,7 @@
 	<string name="closing_day">Closing day</string>
 	<string name="payment_day_hint">The day on which you pay your credit card bill.</string>
 	<string name="closing_day_hint">Day on which the bill closes</string>
-	
+
 	<string name="closing_day_title">Statement Closing Date</string>
 	<string name="reference_period">Reference Period</string>
 	<string name="regular_closing_day">Use regular closing day</string>
@@ -578,7 +578,7 @@
 	<string name="alert_invalid_closing_day">Invalid value. Please insert a closing day for the reference month.</string>
 	<string name="alert_null_closing_day">Please insert a new closing day.</string>
 	<string name="alert_regular_closing_day">Custom closing day must be different from regular closing day.</string>
-	
+
 	<string name="ccard_statement">Statements</string>
 	<string name="monthly_view">Month Preview</string>	
 	<string name="credit_card_statement">Credit Card Statement</string>
@@ -596,7 +596,7 @@
 	<string name="header_expenses">Expenses</string>	
 	<string name="ui_language">Locale</string>
 	<string name="ui_language_summary">Set language of user interface (requires restart!)</string>
-	
+
 	<string name="enter_pin">Enter PIN</string>
 	<string name="mass_operations">Mass operations</string>
 	<string name="card_issuer_unionpay">UnionPay</string>
@@ -614,25 +614,25 @@
 	<string name="scheduled_transactions_have_been_restored">%d missed scheduled transactions have been restored. Please use Mass Operations to clear/delete them.</string>		
 	<string name="restore_missed_scheduled_transactions">Restore missed schedules</string>		
 	<string name="restore_missed_scheduled_transactions_summary">Missed scheduled transactions will be restored with \'Restored\' status</string>
-    <string name="save_and_new">Save&amp;New</string>
-    <string name="show_picture">Show \'Take picture\'</string>
-    <string name="show_picture_summary">Show \'Take picture\' box</string>
-    <string name="payees">Payees</string>
-    <string name="report_by_payee">By Payee</string>
-    <string name="report_by_payee_summary">Transactions report by payee</string>
-    <string name="report_by_payee_by_period">By Payee / Period</string>
-    <string name="report_by_payee_by_period_summary">Transactions report by payee and period</string>
-    <string name="no_payee">No payees</string>
-    <string name="report_no_payee">There is no payee available for filtering in the report.</string>
-    <string name="donate">Make a donation</string>
-    <string name="donate_error">Android Market is not available on your device</string>
-    <string name="type">Type</string>
+	<string name="save_and_new">Save&amp;New</string>
+	<string name="show_picture">Show \'Take picture\'</string>
+	<string name="show_picture_summary">Show \'Take picture\' box</string>
+	<string name="payees">Payees</string>
+	<string name="report_by_payee">By Payee</string>
+	<string name="report_by_payee_summary">Transactions report by payee</string>
+	<string name="report_by_payee_by_period">By Payee / Period</string>
+	<string name="report_by_payee_by_period_summary">Transactions report by payee and period</string>
+	<string name="no_payee">No payees</string>
+	<string name="report_no_payee">There is no payee available for filtering in the report.</string>
+	<string name="donate">Make a donation</string>
+	<string name="donate_error">Android Market is not available on your device</string>
+	<string name="type">Type</string>
 
-    <string name="qif_export">QIF Export</string>
-    <string name="qif_export_inprogress">Exporting data to QIF...</string>
-    <string name="all_accounts">All accounts</string>
-    <string name="filter_value_not_found">Not found...</string>
-    <string name="empty_report">Empty report</string>
-    <string name="day_of_month">Day of month</string>
+	<string name="qif_export">QIF Export</string>
+	<string name="qif_export_inprogress">Exporting data to QIF...</string>
+	<string name="all_accounts">All accounts</string>
+	<string name="filter_value_not_found">Not found...</string>
+	<string name="empty_report">Empty report</string>
+	<string name="day_of_month">Day of month</string>
 
 </resources>
