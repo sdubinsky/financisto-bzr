@@ -7,31 +7,31 @@
   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
   
   Contributors:
-      Denis Solonenko - initial API and implementation
-      Abdsandryk Souza - bill filtering, report 2D chart
-      Rodrigo Sousa - google docs backup
-      Fran Valenzuela - spanish translation
+	  Denis Solonenko - initial API and implementation
+	  Abdsandryk Souza - bill filtering, report 2D chart
+	  Rodrigo Sousa - google docs backup
+	  Fran Valenzuela - spanish translation
 -->
 <resources>
-    <string name="accounts">Cuentas</string>
-    <string name="blotter">Registros</string>
-    <string name="currencies">Divisas</string>
-    <string name="categories">Categorías</string>
-    <string name="budgets">Presupuestos</string>
-    <string name="projects">Proyectos</string>
-    <string name="ok">OK</string>
-    <string name="clear">Borrar</string>
-    <string name="save">Guardar</string>
-    <string name="cancel">Cancelar</string>
-    <string name="close">Cerrar</string>
-    <string name="edit_account">Editar Cuenta</string>
-    <string name="add_account">Añadir Cuenta</string>
-    <string name="title">Nombre</string>
-    <string name="payee">Beneficiario</string>
-    <string name="currency">Divisa</string>    
-    <string name="add_currency">Añadir Divisa</string>
-    <string name="opening_amount">Importe inicial</string>
-    <string name="limit_amount">Importe límite</string>
+	<string name="accounts">Cuentas</string>
+	<string name="blotter">Registros</string>
+	<string name="currencies">Divisas</string>
+	<string name="categories">Categorías</string>
+	<string name="budgets">Dotaciones</string>
+	<string name="projects">Proyectos</string>
+	<string name="ok">OK</string>
+	<string name="clear">Borrar</string>
+	<string name="save">Guardar</string>
+	<string name="cancel">Cancelar</string>
+	<string name="close">Cerrar</string>
+	<string name="edit_account">Editar Cuenta</string>
+	<string name="add_account">Añadir Cuenta</string>
+	<string name="title">Nombre</string>
+	<string name="payee">Beneficiario</string>
+	<string name="currency">Divisa</string>
+	<string name="add_currency">Añadir Divisa</string>
+	<string name="opening_amount">Saldo inicial</string>
+	<string name="limit_amount">Límite de crédito</string>
 	<string name="amount_in" formatted="false">Importe en &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">Examinar</string>
 	<string name="edit">Editar</string>
@@ -45,22 +45,22 @@
 	<string name="amount">Importe</string>
 	<string name="date">Fecha</string>	
 	<string name="time">Hora</string>
-	<string name="parent">Categoría principal</string>
+	<string name="parent">¿Incluir como Subcategoría?</string>
 	<string name="total">Total:</string>
 	<string name="filter">Filtrar</string>
 	<string name="no_filter">No filtrar</string>
 	<string name="transfer">Traspaso</string>
 	<string name="confirmation">Confirmación</string>	
-	<string name="delete_category_dialog">¿Eliminar esta categoría principal junto con todas sus categorías secundarias (si las hubiera)?</string>
+	<string name="delete_category_dialog">¿Eliminar esta categoría junto con todas sus subcategorías (si las hubiera)?</string>
 	<string name="currency_delete_alert">No se puede eliminar esta divisa porque aún está en uso.</string>	
 	<string name="yes">Sí</string>
 	<string name="no">No</string>
 	<string name="error">Error</string>
-	<string name="include_subcategories">Incluir categorías secundarias</string>
-	<string name="include_subcategories_summary">Añadir también los registros secundarios al cómputo principal</string>
+	<string name="include_subcategories">Incluir subcategorías</string>
+	<string name="include_subcategories_summary">Añadir las transacciones incluidas en subcategorías</string>
 	<string name="start_date">Fecha inicial</string>
 	<string name="end_date">Fecha final</string>
-	<string name="budget">Presupuesto</string>
+	<string name="budget">Dotación</string>
 	<string name="no_limit">Sin límite</string>
 	<string name="period">Periodo</string>
 	<string name="period_from">Periodo Desde</string>
@@ -77,7 +77,7 @@
 	<string name="select_project">Debe seleccionar un proyecto...</string>	
 	<string name="warning">Aviso</string>
 	<string name="no_accounts">Antes se debe comenzar con la creación de una cuenta. Toque el icono de abajo con el \'+\' verde para ello...</string>
-	<string name="no_budgets">Sin presupuestos</string>
+	<string name="no_budgets">Sin dotaciones</string>
 	<string name="no_transactions">Sin transacciones</string>
 	<string name="no_categories">Sin categorías</string>
 	<string name="no_currencies">Sin divisas</string>
@@ -106,7 +106,7 @@
 	<string name="no_fix">Ubicación desconocida</string>
 	<string name="attribute">Atributo</string>	
 	<string name="attributes">Atributos</string>
-	<string name="parent_attributes">Atributos categoría principal</string>
+	<string name="parent_attributes">Atributos heredados</string>
 	<string name="change_attributes">Cambiar atributos</string>
 	<string name="calculator">Calculadora</string>
 	<string name="no_attributes">Sin atributos</string>
@@ -121,7 +121,7 @@
 	<string name="attribute_type">Tipo</string>
 	<string name="attribute_name">Nombre</string>
 	<string name="attribute_values">Valores</string>
-	<string name="attribute_values_hint">Use ; (punto y coma) como separador para introducir distintos valores</string>
+	<string name="attribute_values_hint">Use punto y coma [;] como separador para introducir distintos valores</string>
 	<string name="attribute_default_value">Valor por defecto</string>
 	<string name="checkbox_values">Sí/No</string>
 	<string name="checkbox_values_yes">Sí</string>
@@ -134,7 +134,7 @@
 	<string name="move_marker_to_center">Centrar marcador</string>
 	<string name="move_go_to_marker">Ir al marcador</string>
 	<string name="tap_location">Toque el marcador \'Mi ubicación\' para ajustar manualmente la ubicación</string>
-	<string name="note">Nota</string>
+	<string name="note">Concepto</string>
 	<string name="service_is_not_available">El servicio no está disponible. Por favor, inténtelo de nuevo más tarde</string>	
 	<string name="resolve_address">Resolver dirección</string>
 	<string name="resolving_address">Resolviendo dirección...</string>
@@ -145,13 +145,13 @@
 	<string name="overall">Global</string>
 	<string name="report_by_period">Por Periodo</string>
 	<string name="report_by_period_summary">Informe de transacciones por periodo</string>
-	<string name="report_by_category">Por Categoría</string>
-	<string name="report_by_category_summary">Informe de transacciones por categoría</string>
+	<string name="report_by_category">Por Categoría (vista independiente)</string>
+	<string name="report_by_category_summary">Informe de transacciones en subcategorías por separado</string>
 	<string name="report_by_location">Por Ubicación</string>
 	<string name="report_by_location_summary">Informe de transacciones por ubicación</string>
 	<string name="report_by_project">Por Proyecto</string>
 	<string name="report_by_project_summary">Informe de transacciones por proyecto</string>
-	
+
 	<string name="report_by_account_by_period">Por Cuenta / Periodo</string>
 	<string name="report_by_account_by_period_summary">Informe de transacciones por cuenta y periodo</string>
 	<string name="report_by_category_by_period">Por Categoría / Periodo</string>
@@ -184,7 +184,7 @@
 	<string name="report_no_account">No existe ninguna cuenta disponible para filtrar en el informe.</string>
 	<string name="report_no_location">No existe ninguna ubicación disponible para filtrar en el informe.</string>
 	<string name="no_account">Sin cuenta</string>
-	
+
 	<string name="period_today">Hoy</string>
 	<string name="period_yesterday">Ayer</string>
 	<string name="period_this_week">Esta semana</string>
@@ -200,26 +200,26 @@
 		<item>Mes anterior</item>
 		<item>Personalizado</item>
 	</string-array>
-    <string name="currency_name">Nombre</string>
-    <string name="currency_symbol">Símbolo</string>
+	<string name="currency_name">Nombre</string>
+	<string name="currency_symbol">Símbolo</string>
 	<string name="currency_code">Código</string>
 	<string name="currency_code_hint">Código ISO 4217</string>
-	<string name="is_default">Es por defecto</string>
-	<string name="is_included_into_totals">Incluir dentro de los totales</string>
-	<string name="is_included_into_totals_summary">Incluir las transacciones de esta cuenta dentro de los totales.</string>
-	<string name="decimals">\nDecimales</string>
-	<string name="decimal_separator">Separador\nDecimal</string>
-	<string name="group_separator">Separador\nde\ngrupo</string>
-	<string name="field_separator">Separador\nde\ncampo</string>
+	<string name="is_default">Establecer como predeterminada</string>
+	<string name="is_included_into_totals">Incluir dentro del balance total</string>
+	<string name="is_included_into_totals_summary">Incluir las transacciones de esta cuenta para el cómputo total</string>
+	<string name="decimals">Decimales\nmostrados</string>
+	<string name="decimal_separator">Separador\ndecimal</string>
+	<string name="group_separator">Separador\nmillares</string>
+	<string name="field_separator">Separador\nde&nbsp;campo</string>
 	<string name="include_header">Incluir\ncabecera</string>
 	<string name="delete_account_confirm">¿Eliminar la cuenta?</string>
 	<string name="delete_transaction_confirm">¿Eliminar la transacción?</string>
-	<string name="delete_budget_confirm">¿Eliminar presupuesto?</string>
-	<string name="delete_budget_recurring_select">Existen varios rangos de este presupuesto periódico. ¿Cuáles desea eliminar?</string>
-	<string name="delete_budget_recurring_confirm">¿Eliminar presupuesto periódico?</string>
-	<string name="delete_budget_one_entry">Solo este rango</string>	
-	<string name="delete_budget_all_entries">Todos los rangos</string>
-	<string name="edit_recurring_budget">Está editando un presupuesto periódico, los cambios afectarán a todos sus rangos.</string>	
+	<string name="delete_budget_confirm">¿Eliminar dotación presupuestaria?</string>
+	<string name="delete_budget_recurring_select">Existen otras partidas periódicas con esta dotación presupuestaria. ¿También desea eliminarlas?</string>
+	<string name="delete_budget_recurring_confirm">¿Eliminar dotación presupuestaria periódica?</string>
+	<string name="delete_budget_one_entry">NO, solo esta</string>	
+	<string name="delete_budget_all_entries">SI, todas ellas</string>
+	<string name="edit_recurring_budget">Se está editando una dotación presupuestaria periódica, los cambios afectarán a todas sus partidas.</string>	
 	<string-array name="account_types">
 		<item>Banco</item>
 		<item>Efectivo</item>
@@ -231,27 +231,27 @@
 	<string name="account_type_bank">Cuenta Bancaria</string>
 	<string name="account_type_debit_card">Tarjeta de Débito</string>
 	<string name="account_type_credit_card">Tarjeta de Crédito</string>
-	<string name="account_type_asset">Activos</string>	
-	<string name="account_type_liability">Pasivos</string>
-	<string name="account_type_other">Otros</string>
+	<string name="account_type_asset">Activo</string>	
+	<string name="account_type_liability">Pasivo</string>
+	<string name="account_type_other">Definida</string>
 	<string name="card_type">Clase de Tarjeta</string>
 	<string name="card_number">Número de la Tarjeta</string>
 	<string name="card_number_hint">Últimos 4 dígitos del número de la tarjeta</string>
 	<string name="issuer">Entidad</string>
 	<string name="cash">Efectivo</string>	
-	<string name="sort_order">Listado</string>
+	<string name="sort_order">Posición de lista</string>
 	<string name="force_gps_location">Forzar Ubicación GPS</string>
 	<string name="whats_new">¿Qué hay de nuevo?</string>
 	<string name="attribute_delete_alert">Se eliminará el atributo de las categorías y las transacciones donde se estuviera usando.</string>
 	<string name="user_interface">Interfaz de usuario</string>
-	<string name="sort_accounts">Listado de cuentas</string>
+	<string name="sort_accounts">Vista de cuentas</string>
 	<string name="sort_accounts_summary">Establece el sentido para el listado de cuentas (requiere reinicio)</string>
 	<string-array name="sort_accounts_entities">
 		<item>Por Listado Ascendente</item>
 		<item>Por Listado Descendente</item>
 		<item>Por Orden Alfabético</item>
 	</string-array>
-	<string name="sort_locations">Listado de ubicaciones</string>
+	<string name="sort_locations">Vista de ubicaciones</string>
 	<string name="sort_locations_summary">Establece el orden para el listado de ubicaciones</string>
 	<string-array name="sort_locations_entities">
 		<item>Por Nombre</item>
@@ -273,13 +273,13 @@
 	<string name="restore">Restaurar</string>
 	<string name="backup_database">Salvaguardar Datos</string>
 	<string name="backup_database_inprogress">Salvando respaldo de la base de datos...</string>
-	<string name="backup_database_gdocs">Crear Respaldo en Google Docs</string>
+	<string name="backup_database_gdocs">Crear Respaldo en GDocs</string>
 	<string name="backup_database_gdocs_inprogress">Salvando respaldo de la base de datos...</string>
-	<string name="csv_export">Exportar Datos en CSV</string>
+	<string name="csv_export">Exportar como CSV</string>
 	<string name="csv_export_inprogress">Exportando base de datos en formato CSV...</string>	
 	<string name="restore_database">Restaurar Datos</string>
 	<string name="restore_database_inprogress">Restaurando respaldo de la base de datos...</string>
-	<string name="restore_database_gdocs">Restaurar desde Google Docs</string>
+	<string name="restore_database_gdocs">Restaurar desde GDocs</string>
 	<string name="restore_database_inprogress_gdocs">Restaurando respaldo de la base de datos...</string>
 	<string name="restore_database_success">La base de datos ha sido restaurada con éxito.</string>
 	<string name="gdocs_connection_failed">Ha sido imposible realizar la conexión con Google Docs.</string>
@@ -289,18 +289,18 @@
 	<string name="gdocs_login_failed">Las credenciales de inicio de sesión en Google Docs no son válidas.</string>
 	<string name="gdocs_backup_failed">Error de envío de la copia de respaldo a Google Docs.</string>
 	<string name="gdocs_restore_failed">Error de recuperación de la copia de respaldo en Google Docs.</string>
-	
-    <string name="gdocs_folder_error">Error de acceso a la carpeta de respaldo en Google Docs.</string>
-    <string name="gdocs_service_error">Error de servicio en Google Docs.</string>
-    <string name="gdocs_io_error">Error de conexión con Google Docs.</string>
-    <string name="package_info_error">Error de recuperación de la información del paquete Financisto.</string>
-    
+
+	<string name="gdocs_folder_error">Error de acceso a la carpeta de respaldo en Google Docs.</string>
+	<string name="gdocs_service_error">Error de servicio en Google Docs.</string>
+	<string name="gdocs_io_error">Error de conexión con Google Docs.</string>
+	<string name="package_info_error">No fue posible acceder a la información del paquete Financisto.</string>
+
 	<string name="success">Tarea completada.</string>
 	<string name="fail">Fallo...</string>
 	<string name="duplicate">Duplicado</string>
-	<string name="select_from_account">Please select from account..</string>	
-	<string name="select_to_account">Please select to account..</string>
-	<string name="update_balance">Actualizar saldo</string>
+	<string name="select_from_account">Debe seleccionar una cuenta de origen...</string>	
+	<string name="select_to_account">Debe seleccionar una cuenta de destino...</string>
+	<string name="update_balance">Reajustar saldo</string>
 	<string name="close_account">Cerrar cuenta</string>
 	<string name="reopen_account">Reabrir cuenta</string>
 	<string name="difference">Diferencia</string>
@@ -323,29 +323,29 @@
 	<string name="show_payee_summary">Mostrar campo de texto para el beneficiario</string>
 	<string name="show_payee_order">Posición Beneficiario</string>	
 	<string name="show_payee_order_summary">Posición relativa en el formulario para el campo Beneficiario</string>
-	<string name="show_note">Mostrar Nota</string>	
-	<string name="show_note_summary">Mostrar campo de texto para una nota informativa</string>
-	<string name="show_note_order">Posición Nota</string>	
-	<string name="show_note_order_summary">Posición relativa en el formulario para el campo Nota</string>
+	<string name="show_note">Mostrar Concepto</string>
+	<string name="show_note_summary">Mostrar campo de texto para introducir el concepto por el que se realiza la transacción</string>
+	<string name="show_note_order">Posición Concepto</string>	
+	<string name="show_note_order_summary">Posición relativa en el formulario para el campo Concepto</string>
 	<string name="show_project">Mostrar Proyecto</string>	
 	<string name="show_project_summary">Mostrar lista desplegable de proyectos existentes</string>
 	<string name="show_project_order">Posición Proyecto</string>	
 	<string name="show_project_order_summary">Posición relativa en el formulario para el campo Proyecto</string>
 	<string name="remember_selection">Recordar esta selección</string>
 	<string name="remember_last_account">Recordar Cuenta</string>	
-	<string name="remember_last_account_summary">Recordar la última cuenta seleccionada</string>
+	<string name="remember_last_account_summary">Recordar en los formularios la última cuenta seleccionada</string>
 	<string name="remember_last_category">Recordar Categoría</string>	
-	<string name="remember_last_category_summary">Recordar la última categoría para la cuenta seleccionada</string>
+	<string name="remember_last_category_summary">Recordar también la última categoría para la ulterior cuenta seleccionada</string>
 	<string name="remember_last_location">Recordar Ubicación</string>	
-	<string name="remember_last_location_summary">Recordar la última ubicación para la categoría seleccionada</string>
+	<string name="remember_last_location_summary">Recordar también la última ubicación para la ulterior categoría seleccionada</string>
 	<string name="remember_last_project">Recordar Proyecto</string>	
-	<string name="remember_last_project_summary">Recordar el último proyecto para la categoría seleccionada</string>
+	<string name="remember_last_project_summary">Recordar también el último proyecto para la ulterior categoría seleccionada</string>
 	<string name="position_move_top">Mover al principio</string>
 	<string name="position_move_up">Subir</string>
 	<string name="position_move_down">Bajar</string>
 	<string name="position_move_bottom">Mover al final</string>
-	<string name="add_sibling">Add sibling</string>
-	<string name="add_child">Add child</string>
+	<string name="add_sibling">Añadir hermano</string>
+	<string name="add_child">Añadir hijo</string>
 	<string name="interval">Intervalo</string>
 	<string name="recur_interval">Intervalo Repetido</string>
 	<string name="recur_interval_no_recur">Sin repeticiones</string>
@@ -388,12 +388,12 @@
 	<string name="shortcut_new_transaction">Atajo \'Nueva Transacción\'</string>	
 	<string name="shortcut_new_transfer">Atajo \'Nuevo Traspaso\'</string>
 	<string name="shortcut_summary">Añadir este atajo a la Pantalla de Inicio</string>
-	<string name="use_fixed_layout">Use fixed layout</string>
-	<string name="use_fixed_layout_summary">Fix OK/Cancel buttons in the layout</string>
+	<string name="use_fixed_layout">Fijar a la pantalla</string>
+	<string name="use_fixed_layout_summary">Los botones de los formularios siempre se mantendrán visibles</string>
 	<string name="no_data">Sin datos</string>
 	<string name="calculating">Calculando...</string>
-	<string name="budget_mode">Condiciones simplificadas</string>
-	<string name="budget_mode_summary">Usar condiciones menos restrictivas (categoría o proyecto) para filtrar las transacciones</string>
+	<string name="budget_mode">Filtrado simplificado</string>
+	<string name="budget_mode_summary">Solo se deberá cumplir un criterio [Categoría OR Proyecto] y no ambos</string>
 	<string name="gdocs_backup">Respaldo en Google Docs</string>
 	<string name="user_login">Usuario</string>
 	<string name="user_login_summary">Nombre de usuario de la cuenta de Google</string>
@@ -402,43 +402,43 @@
 	<string name="backup_folder">Carpeta de Respaldo</string>
 	<string name="backup_folder_summary">Carpeta en Google Docs donde almacenar las copias de respaldo</string>
 
-    <string name="report_preferences">Report Preferences</string>
-    <string name="all_reports_preferences">General Report Preferences</string>
-    <string name="category_by_period_preferences">Category by Period Report Preferences</string>
-    <string name="report_include_sub_categories">Include sub Categories in list</string>
-	<string name="report_include_sub_categories_summary">Include sub categories in the Category by Period Reports list of categories.</string>
-	<string name="report_add_sub_categories_result">Add sub Categories result</string>
-	<string name="report_add_sub_categories_result_summary">Add sub categories result to the result of a root category.</string>
-	<string name="report_consider_null_results">Consider nulls in statistics</string>
-	<string name="report_consider_null_results_summary">Consider null result when generating statistics (min, max and mean).</string>
-	<string name="report_include_no_filter">Include No &lt;Filter&gt;</string>
-	<string name="report_include_no_filter_summary">Include non classified transactions to reports filters lists (No category, No Project and Unknown Location)</string>
-	<string name="report_reference_month">Reference Month</string>
-	<string name="report_reference_month_summary">Define the Reference Month that represents the end of the report period.</string>
-	<string name="report_last_quarter">Last quarter</string>
-	<string name="report_last_half_year">Last half year</string>
-	<string name="report_last_9_months">Last 9 months</string>
-	<string name="report_last_year">Last year</string>
+	<string name="report_preferences">Preferencias de Informe</string>
+	<string name="all_reports_preferences">Propiedades Generales</string>
+	<string name="category_by_period_preferences">Propiedades por Categoría / Periodo</string>
+	<string name="report_include_sub_categories">Incluir Subcategorías en el listado</string>
+	<string name="report_include_sub_categories_summary">Incluir subcategorías en el listado de informes de categorías por periodo</string>
+	<string name="report_add_sub_categories_result">Añadir subtotales al principal</string>
+	<string name="report_add_sub_categories_result_summary">Añadir la suma de las subcategorías al cómputo total de la categoría principal que las encuadre</string>
+	<string name="report_consider_null_results">Permitir valores nulos</string>
+	<string name="report_consider_null_results_summary">Convertir en un rango cero cada valor nulo al generar las estadísticas (Min, Max y Media)</string>
+	<string name="report_include_no_filter">Incluir las \'Sin\' &lt;Filtro&gt;</string>
+	<string name="report_include_no_filter_summary">Incluir las transacciones no clasificadas en los filtros de los listados de informes (\'Sin Categoría\', \'Sin Proyecto\' y \'Sin Ubicación\' conocida)</string>
+	<string name="report_reference_month">Mes de referencia</string>
+	<string name="report_reference_month_summary">Definir el mes de referencia hasta el que se prolongará el periodo del informe</string>
+	<string name="report_last_quarter">Último trimestre</string>
+	<string name="report_last_half_year">Último semestre</string>
+	<string name="report_last_9_months">Últimos 9 meses</string>
+	<string name="report_last_year">Último año</string>
 	<string-array name="report_reference_month_entities">
-        <item>6 months ago</item>
-        <item>3 months ago</item>
-        <item>Last month</item>
-        <item>Current month</item>
-        <item>Next month</item>
-        <item>3 months later</item>
-        <item>6 months later</item>
-    </string-array>
-	<string name="report_reference_period">Period of Reference</string>
-	<string name="report_reference_period_summary">Define the period of reference (number of months) to be considered when opening report charts.</string>
+		<item>6 meses anteriores</item>
+		<item>3 meses anteriores</item>
+		<item>Mes anterior</item>
+		<item>Mes actual</item>
+		<item>Mes próximo</item>
+		<item>3 meses posteriores</item>
+		<item>6 meses posteriores</item>
+	</string-array>
+	<string name="report_reference_period">Periodo de Referencia</string>
+	<string name="report_reference_period_summary">Definir el periodo de referencia (número de meses) que abarcará el gráfico del informe</string>
 	<string-array name="report_reference_period_entities">
-        <item>3 months</item>
-        <item>6 months</item>
-        <item>9 months</item>
-        <item>1 year</item>
-    </string-array>
-	<string name="report_reference_currency">Reference Currency</string>
-	<string name="report_reference_currency_summary">Define the reference currency to be considered when request data for report charts.</string>
-	<string name="report_last_n_months">Last $n months</string>
+		<item>3 meses</item>
+		<item>6 meses</item>
+		<item>9 meses</item>
+		<item>1 año</item>
+	</string-array>
+	<string name="report_reference_currency">Divisa de referencia</string>
+	<string name="report_reference_currency_summary">Definir la divisa de referencia por la que se harán las peticiones de datos para los informes gráficos</string>
+	<string name="report_last_n_months">Últimos $n meses</string>
 	<string name="report_n_months_var">$n</string>
 	<string name="month_jan">ENE</string>
 	<string name="month_feb">FEB</string>
@@ -468,7 +468,7 @@
 	<string name="other">Otro</string>
 	<string name="send_error_reports">Enviar informes de errores</string>
 	<string name="send_error_reports_summary">Enviar informes de errores anónimos a www.orangesoftware.ru (requiere reinicio)</string>	
-	<string name="template_name">Nombre de la plantilla</string>
+	<string name="template_name">Nombre Plantilla</string>
 	<string name="transaction_templates">Plantillas</string>
 	<string name="transaction_template">Transacción (Plantilla)</string>	
 	<string name="transfer_template">Traspaso (Plantilla)</string>	
@@ -483,18 +483,18 @@
 	<string name="recurrence_pattern">Patrón de repetición</string>
 	<string name="recurrence_period">Periodo de repetición</string>	
 	<string name="recurrence_period_starts_on">Comienzan el</string>	
-	<string name="recurrence_weekly_days">Repeat on</string>
+	<string name="recurrence_weekly_days">En los días de la semana</string>
 	<string name="recurrence_monthly_pattern">Patrón mensual</string>	
 	<string name="recurrence_monthly_every_nth_day">Mediante númeración</string>
 	<string name="recurrence_monthly_specific_day">Mediante posición</string>
-	<string name="recur_interval_semi_monthly_1">1st day</string>	
-	<string name="recur_interval_semi_monthly_2">2nd day</string>	
+	<string name="recur_interval_semi_monthly_1">1er día</string>	
+	<string name="recur_interval_semi_monthly_2">2do día</string>	
 	<string name="recurrence_none">Sin repetición</string>
 	<string name="specify_value">Especifique un valor...</string>		
 	<string name="recurrence_evaluate">Evaluar las fechas</string>	
-	<string name="first">Primero</string>		
+	<string name="first">Primer</string>		
 	<string name="second">Segundo</string>		
-	<string name="third">Tercero</string>		
+	<string name="third">Tercer</string>		
 	<string name="fourth">Cuarto</string>		
 	<string name="last">Último</string>	
 	<string name="day">día</string>
@@ -509,15 +509,15 @@
 	<string name="saturday">Sábado</string>
 	<string name="transaction_schedule">Transacción (Programada)</string>	
 	<string name="transfer_schedule">Traspaso (Programado)</string>	
-	<string name="recurrence_period_starts_on_date">Starts on date</string>	
-	<string name="recurrence_period_starts_on_time">Starts on time</string>	
+	<string name="recurrence_period_starts_on_date">Fecha de comienzo</string>	
+	<string name="recurrence_period_starts_on_time">Hora de comienzo</string>	
 	<string name="new_scheduled_transfer_title">Traspaso programado</string>					
 	<string name="new_scheduled_transfer_text">El traspaso programado ha sido efectuado</string>					
 	<string name="new_scheduled_transaction_title">Transacción programada</string>
-	<string name="new_scheduled_transaction_text">La transferencia programada ha sido registrada</string>
+	<string name="new_scheduled_transaction_text">La transacción programada ha sido registrada</string>
 	<string name="new_scheduled_transaction_notification" formatted="false">%s ha sido %s %s</string>
-	<string name="new_scheduled_transaction_debit">debited to</string>					
-	<string name="new_scheduled_transaction_credit">credited to</string>					
+	<string name="new_scheduled_transaction_debit">cargado en</string>					
+	<string name="new_scheduled_transaction_credit">abonado en</string>					
 	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) ha sido traspasado desde %s hacia %s</string>
 	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s ha sido traspasado desde %s hacia %s</string>
 	<string name="notification">Notificación</string>		
@@ -534,89 +534,105 @@
 	<string name="notification_options_led_yellow">Amarillo</string>					
 	<string name="notification_options_led_red">Rojo</string>					
 	<string name="notification_options_led_pink">Rosa</string>	
-	<string name="notification_options_text" formatted="false">Sonido:%s Vibración:%s Led:%s</string>
+	<string name="notification_options_text" formatted="false">Sonido:%s Vibración:%s LED:%s</string>
 	<string name="notification_options_custom">Personalizado</string>	
-	<string name="notification_options_default">Default</string>
-	<string name="notification_sound">Ringtone</string>
+	<string name="notification_options_default">Predeterminado</string>
+	<string name="notification_sound">Melodía</string>
 	<string name="notification_vibra">Vibración</string>
-	<string name="notification_led">Led</string>
+	<string name="notification_led">LED</string>
 	<string name="transaction_status">Estado</string>
 	<string name="transaction_status_pending">Pendiente</string>
-	<string name="transaction_status_unreconciled">Cursado</string>
-	<string name="transaction_status_cleared">Abonado</string>
-	<string name="transaction_status_reconciled">Consignado</string>
+	<string name="transaction_status_unreconciled">Sin Conciliar</string>
+	<string name="transaction_status_cleared">Compensado</string>
+	<string name="transaction_status_reconciled">Reconciliado</string>
 	<string name="scheduled">(programado)</string>
 	<string name="expired">(vencido)</string>
 	<string name="pending">(pendiente)</string>
 	<string name="system_attribute_delete_after_expired">Eliminar al vencimiento</string>
-	<string name="no_transaction_found">No transaction found, please restart Financisto...</string>
-	<string name="include_credit">Incluir créditos</string>	
-	<string name="include_credit_summary">Incluye los créditos (cargos o abonos) en el total del presupuesto</string>	
-	<string name="enable_widget">Activar widget</string>
-	<string name="enable_widget_summary">Mostrar el saldo total de la cuenta en el widget</string>		
-	<string name="attach_picture">Adjuntar imagen</string>		
-	<string name="new_picture">Hacer una foto</string>		
-	<string name="report_by_sub_category">Por Categoría Secundaria</string>
-	<string name="report_by_sub_category_summary">Informe de transacciones por categoría secundaria</string>
+	<string name="no_transaction_found">Ninguna transacción localizada. Por favor, reinicie Financisto...</string>
+	<string name="include_credit">Incluir Abonos</string>	
+	<string name="include_credit_summary">Incluye los abonos (ingresos o retornos) en el cómputo de la dotación presupuestaria</string>	
+	<string name="enable_widget">Activar Widget</string>
+	<string name="enable_widget_summary">Mostrar el saldo total de las cuentas en el widget</string>		
+	<string name="attach_picture">Adjuntar una foto</string>		
+	<string name="new_picture">Toque aquí para activar la cámara</string>		
+	<string name="report_by_sub_category">Por Categoría (vista jerárquica)</string>
+	<string name="report_by_sub_category_summary">Informe de transacciones por ramas de subcategorías</string>
 
 	<string name="credits">Créditos</string>
-	<string name="sort_by_title">Ordenar por título</string>
-	<string name="sort_all_by_title">Ordenar todo por título</string>
+	<string name="sort_by_title">Orden interno alfabético</string>
+	<string name="sort_all_by_title">Ordenar todo alfabéticamente</string>
 	<string name="include_transfers_into_reports">Traspasos en los informes</string>
 	<string name="include_transfers_into_reports_summary">Incluir los traspasos en los informes</string>
-	<string name="negative_opening_amount">Apertura con importe negativo</string>
-	<string name="negative_opening_amount_summary">Crear cuenta con importe negativo de apertura</string>
+	<string name="negative_opening_amount">Apertura con saldo negativo</string>
+	<string name="negative_opening_amount_summary">Crear cuenta con saldo negativo de apertura</string>
 	<string name="payment_day">Día del pago</string>
-	<string name="closing_day">Día del Cierre</string>
+	<string name="closing_day">Día del cierre</string>
+	<string name="payment_day_hint">Día en el que se carga la factura mensual de la tarjeta de crédito</string>
 	<string name="closing_day_hint">Día en el que se cierra el extracto mensual</string>
+
+	<string name="closing_day_title">Día de Cierre del Extracto</string>
+	<string name="reference_period">Periodo de Referencia</string>
+	<string name="regular_closing_day">Utilizar el día de cierre habitual</string>
+	<string name="custom_closing_day">Utilizar un día de cierre personalizado</string>
+	<string name="alert_invalid_closing_day">Valor incorrecto. Introduzca un día de cierre válido para el mes del periodo de referencia.</string>
+	<string name="alert_null_closing_day">Debe introducir un nuevo día de cierre.</string>
+	<string name="alert_regular_closing_day">El día de cierre personaliado debe ser diferente del día de cierre habitual. Escoja otro.</string>
+
 	<string name="ccard_statement">Extractos</string>
 	<string name="monthly_view">Vista Previa del Mes</string>	
 	<string name="credit_card_statement">Extracto Tarjeta de Crédito</string>
 	<string name="ccard_statement_title">Extracto &lt;ccard&gt;</string>
 	<string name="ccard_par">&lt;ccard&gt;</string>
-	<string name="bill_on">Bill on </string>
+	<string name="bill_on">Factura prevista el </string>
 	<string name="monthly_result">Balance del mes</string>
 	<string name="closing_day_error">El día del cierre no es válido.</string>
 	<string name="payment_day_error">El día del pago no es válido.</string>
-	<string name="statement_error">Debe fijar los días del pago y del cierre de esta tarjeta de crédito en las propiedades de la cuenta.</string>
-	<string name="is_ccard_payment">Pago con Tarjeta de Crédito</string>
-	<string name="is_ccard_payment_summary">Not Include into bill total</string>
+	<string name="statement_error">Debe fijar los días del pago y del cierre de esta tarjeta de crédito en las propiedades de su cuenta.</string>
+	<string name="is_ccard_payment">¿Pago Al Contado con Tarjeta?</string>
+	<string name="is_ccard_payment_summary">Excluir del cómputo total de su extracto mensual</string>
 	<string name="header_payments">Pagos</string>
-	<string name="header_credits">Various Credits</string>
-	<string name="header_expenses">Gastos</string>	
-	<string name="ui_language">Localizar</string>
-	<string name="ui_language_summary">Definir el idioma de la interfaz de usuario (requiere reinicio)</string>
-	
+	<string name="header_credits">Abonos</string>
+	<string name="header_expenses">Cargos</string>	
+	<string name="ui_language">Configuración regional</string>
+	<string name="ui_language_summary">Definir el lenguaje de la interfaz de usuario (requiere reinicio)</string>
+
 	<string name="enter_pin">Introducir PIN</string>
 	<string name="mass_operations">Operaciones masivas</string>
 	<string name="card_issuer_unionpay">UnionPay</string>
 	<string name="account_type_paypal">PayPal</string>	
-	<string name="mass_operations_use_filter">Usar un filtro para buscar transacciones</string>
-	<string name="mass_operations_clear_all">Borrar todo</string>			
-	<string name="mass_operations_reconcile">Consignar todo</string>		
+	<string name="mass_operations_use_filter">No se encuentran transacciones para el filtrado actual. Cambie el criterio de búsqueda.</string>
+	<string name="mass_operations_clear_all">Compensar todo</string>			
+	<string name="mass_operations_reconcile">Reconciliar todo</string>		
 	<string name="mass_operations_delete">Eliminar todo</string>		
-	<string name="proceed">Proceed</string>	
-	<string name="apply_mass_op" formatted="false">Apply \'%s\' on %d transaction(s)?</string>
+	<string name="proceed">Proceder</string>	
+	<string name="apply_mass_op" formatted="false">Se va a aplicar \'%s\' en %d transacciones, ¿está de acuerdo?</string>
 	<string name="apply_mass_op_zero_count">No hay transacciones seleccionadas...</string>		
-	<string name="entities">Entidades</string>
+	<string name="entities">Identificadores</string>
 	<string name="transaction_status_restored">Restaurado</string>	
-	<string name="scheduled_transactions_restored">Las transacciones programadas se han restaurado...</string>		
-	<string name="scheduled_transactions_have_been_restored">%d missed scheduled transactions have been restored. Please use Mass Operations to clear/delete them.</string>		
-	<string name="restore_missed_scheduled_transactions">Restore missed schedules</string>		
-	<string name="restore_missed_scheduled_transactions_summary">Missed scheduled transactions will be restored with \'Restored\' status</string>
+	<string name="scheduled_transactions_restored">Las transacciones programadas han sido restauradas...</string>		
+	<string name="scheduled_transactions_have_been_restored">%d transacciones programadas en desuso han sido restauradas. Use Operaciones Masivas para actualizar su estado o eliminarlas.</string>		
+	<string name="restore_missed_scheduled_transactions">Restaurar programación en desuso</string>		
+	<string name="restore_missed_scheduled_transactions_summary">Transacciones programadas en desuso se restablecerán con el estado \'Restaurado\'</string>
+	<string name="save_and_new">Guardar&nbsp;&amp;&nbsp;Nuevo</string>
+	<string name="show_picture">Mostrar \'Adjuntar una foto\'</string>
+	<string name="show_picture_summary">Mostrar la opción de activar la cámara para fotografiar la ubicación actual</string>
+	<string name="payees">Beneficiarios</string>
+	<string name="report_by_payee">Por Beneficiarios</string>
+	<string name="report_by_payee_summary">Informe de transacciones por beneficiario</string>
+	<string name="report_by_payee_by_period">Por Beneficiario / Periodo</string>
+	<string name="report_by_payee_by_period_summary">Informe de transacciones por beneficiario y periodo</string>
+	<string name="no_payee">Sin beneficiarios</string>
+	<string name="report_no_payee">No hay disponible ningún beneficiario para filtrar en el informe.</string>
+	<string name="donate">Hacer una donación</string>
+	<string name="donate_error">Android Market no está disponible en su dispositivo</string>
+	<string name="type">Modalidad</string>
 
-    <string name="save_and_new">Save&amp;New</string>
-    <string name="show_picture">Show \'Take picture\'</string>
-    <string name="show_picture_summary">Show \'Take picture\' box</string>
-    <string name="payees">Beneficiarios</string>
-    <string name="report_by_payee">Por Beneficiarios</string>
-    <string name="report_by_payee_summary">Informe de transacciones por beneficiario</string>
-    <string name="report_by_payee_by_period">Por Beneficiario / Periodo</string>
-    <string name="report_by_payee_by_period_summary">Informe de transacciones por beneficiario y periodo</string>
-    <string name="no_payee">Sin beneficiarios</string>
-    <string name="report_no_payee">No hay disponible ningún beneficiario para filtrar en el informe.</string>
-    <string name="donate">Hacer una donación</string>
-    <string name="donate_error">Android Market no está disponible en su dispositivo</string>
-    <string name="type">Type</string>
+	<string name="qif_export">Exportar como QIF</string>
+	<string name="qif_export_inprogress">Exportando datos en formato QIF...</string>
+	<string name="all_accounts">Todas las Cuentas</string>
+	<string name="filter_value_not_found">Sin datos que procesar...</string>
+	<string name="empty_report">Informe sin datos que procesar</string>
+	<string name="day_of_month">Día del mes</string>
 
 </resources>

@@ -7,12 +7,12 @@
   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
   
   Contributors:
-      Denis Solonenko - initial API and implementation
+	  Denis Solonenko - initial API and implementation
 -->
 <resources>
-    <string name="app_name">Financisto</string>
-    <string name="app_description">Open-source personal budget manager</string>
-    <string name="about_copyright1">Released under GNU GPL v2</string>
+	<string name="app_name">Financisto</string>
+	<string name="app_description">Open-source personal budget manager</string>
+	<string name="about_copyright1">Released under GNU GPL v2</string>
 	<color name="scheduled">#7cc623</color>
 	<color name="positive_amount">#39b54a</color>
 	<color name="negative_amount">#f26522</color>
@@ -23,8 +23,8 @@
 	<color name="unreconciled_transaction_color">#737373</color>	
 	<color name="reconciled_transaction_color">#006a25</color>	
 	<color name="cleared_transaction_color">#79c471</color>	
-    <color name="category_type_income">#39b54a</color>
-    <color name="category_type_expense">#f26522</color>
+	<color name="category_type_income">#39b54a</color>
+	<color name="category_type_expense">#f26522</color>
 	<dimen name="picker_width">62dp</dimen>
 	<dimen name="calculator_button_width">50dp</dimen>
 	<dimen name="calculator_button_height">50dp</dimen>
@@ -73,8 +73,9 @@
 	</string-array>
 	<string-array name="ui_language_entities">
 		<item>&lt;default&gt;</item>
-        <item>Čeština</item>
+		<item>Čeština</item>
 		<item>Deutsch</item>
+		<item>Español</item>
 		<item>Français</item>
 		<item>Italiano</item>
 		<item>Português (Brasil)</item>
@@ -84,8 +85,9 @@
 	</string-array>
 	<string-array name="ui_language_values">
 		<item>default</item>
-        <item>cs-CZ</item>
+		<item>cs-CZ</item>
 		<item>de</item>
+		<item>es</item>
 		<item>fr</item>
 		<item>it</item>
 		<item>pt-BR</item>
@@ -107,22 +109,22 @@
 		<item>ASC</item>
 	</string-array>
 	<string-array name="report_reference_period_values">
-        <item>3</item>
-        <item>6</item>
-        <item>9</item>
-        <item>12</item>
-    </string-array>
-    <string-array name="report_reference_month_values">
-        <item>-6</item>
-        <item>-3</item>
-        <item>-1</item>
-        <item>0</item>
-        <item>1</item>
-        <item>3</item>
-        <item>6</item>
-    </string-array>
+		<item>3</item>
+		<item>6</item>
+		<item>9</item>
+		<item>12</item>
+	</string-array>
+	<string-array name="report_reference_month_values">
+		<item>-6</item>
+		<item>-3</item>
+		<item>-1</item>
+		<item>0</item>
+		<item>1</item>
+		<item>3</item>
+		<item>6</item>
+	</string-array>
 	<string name="widget_2x1">Financisto 2x1</string>
-    <string name="currency_symbol_hint">$ £ ¥ π</string>
+	<string name="currency_symbol_hint">$ £ ¥ π</string>
    	<string name="card_issuer_visa">Visa</string>
 	<string name="card_issuer_electron">Visa Electron</string>
 	<string name="card_issuer_mastercard">Mastercard</string>
@@ -133,6 +135,6 @@
 	<string name="card_issuer_discover">Discover</string>	
 	<string name="card_issuer_nets">NETS</string>	
 	<string name="recur_rrule">RFC-2445 RRULE</string>
-    <dimen name="category_padding">10dp</dimen>
+	<dimen name="category_padding">10dp</dimen>
 
 </resources>
