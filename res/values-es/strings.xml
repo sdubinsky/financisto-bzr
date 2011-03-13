@@ -210,7 +210,7 @@
 	<string name="decimals">Decimales\nmostrados</string>
 	<string name="decimal_separator">Separador\ndecimal</string>
 	<string name="group_separator">Separador\nmillares</string>
-	<string name="field_separator">Separador\nde&nbsp;campo</string>
+	<string name="field_separator">Separador\nde campo</string>
 	<string name="include_header">Incluir\ncabecera</string>
 	<string name="delete_account_confirm">¿Eliminar la cuenta?</string>
 	<string name="delete_transaction_confirm">¿Eliminar la transacción?</string>
@@ -614,7 +614,7 @@
 	<string name="scheduled_transactions_have_been_restored">%d transacciones programadas en desuso han sido restauradas. Use Operaciones Masivas para actualizar su estado o eliminarlas.</string>		
 	<string name="restore_missed_scheduled_transactions">Restaurar programación en desuso</string>		
 	<string name="restore_missed_scheduled_transactions_summary">Transacciones programadas en desuso se restablecerán con el estado \'Restaurado\'</string>
-	<string name="save_and_new">Guardar&nbsp;&amp;&nbsp;Nuevo</string>
+	<string name="save_and_new">Guardar &amp; Nuevo</string>
 	<string name="show_picture">Mostrar \'Adjuntar una foto\'</string>
 	<string name="show_picture_summary">Mostrar la opción de activar la cámara para fotografiar la ubicación actual</string>
 	<string name="payees">Beneficiarios</string>
