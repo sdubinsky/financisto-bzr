@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.activity;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.ContentValues;
@@ -25,9 +24,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.*;
-import android.view.View.OnClickListener;
-import android.widget.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
+import android.widget.ListAdapter;
+import android.widget.TabHost;
+import android.widget.Toast;
 import api.wireless.gdata.client.AbstructParserFactory;
 import api.wireless.gdata.client.GDataParserFactory;
 import api.wireless.gdata.client.ServiceDataClient;
@@ -51,9 +53,9 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.dialog.WebViewDialog;
 import ru.orangesoftware.financisto.export.BackupExportTask;
-import ru.orangesoftware.financisto.export.csv.CsvExportTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
+import ru.orangesoftware.financisto.export.csv.CsvExportTask;
 import ru.orangesoftware.financisto.export.qif.QifExportTask;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
@@ -299,7 +301,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			startActivity(new Intent(this, MassOpActivity.class));
 			break;
 		case MENU_ABOUT:
-			showDialog(1);
+            startActivity(new Intent(this, AboutActivity.class));
 			break;
         case MENU_DONATE:
             openBrowser("market://search?q=pname:ru.orangesoftware.financisto.support");
@@ -649,43 +651,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			return MainActivity.this.getString(R.string.restore_database_success);
 		}
 
-	}
-
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		if (id == 1) {
-			LayoutInflater inflater = getLayoutInflater(); 
-			LinearLayout layout = new LinearLayout(this);
-			inflater.inflate(R.layout.about, layout);
-			((TextView)layout.findViewById(R.id.appVersion)).setText(appVersion);
-			layout.findViewById(R.id.bWhatsNew).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View arg0) {
-                    WebViewDialog.showWhatsNew(MainActivity.this);
-                }
-            });
-			layout.findViewById(R.id.bTwitter).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View arg0) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/financisto"));
-                    startActivity(intent);
-                }
-            });
-			layout.findViewById(R.id.bCredits).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View arg0) {
-                    WebViewDialog.showCredits(MainActivity.this);
-                }
-            });
-			Dialog d = new AlertDialog.Builder(this)
-				.setIcon(R.drawable.icon)
-				.setTitle(R.string.app_name)
-				.setView(layout)
-				.create();
-			d.setCanceledOnTouchOutside(true);
-			return d;
-		}
-		return super.onCreateDialog(id);
 	}
 
 	private enum MenuEntities implements EntityEnum {

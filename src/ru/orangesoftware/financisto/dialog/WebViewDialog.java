@@ -10,14 +10,14 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.dialog;
 
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.utils.Utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.webkit.WebView;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.Utils;
 
 public class WebViewDialog {
 
