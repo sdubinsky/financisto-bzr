@@ -49,7 +49,7 @@ public class AmountPicker extends LinearLayout implements NumberPicker.OnChanged
         	TextView dotText = new TextView(context);
         	dotText.setText(".");
         	dotText.setGravity(Gravity.BOTTOM);
-        	dotText.setTextSize(pickerWidth);
+        	dotText.setTextSize(pickerWidth/2);
         	addView(dotText, lpWrapFill);
         	addPickers(context, lpFixedWrap, fractions);
         }
