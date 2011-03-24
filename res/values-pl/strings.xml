@@ -153,13 +153,13 @@
 	<string name="report_by_project_summary">Raport transakcji według projektu</string>
 
 	<string name="report_by_account_by_period">Według rachunku / okresu</string>
-	<string name="report_by_account_by_period_summary">Report transakcji według rachunku i okresu</string>
+	<string name="report_by_account_by_period_summary">Raport transakcji według rachunku i okresu</string>
 	<string name="report_by_category_by_period">Według kategorii / okresu</string>
-	<string name="report_by_category_by_period_summary">Report transakcji według kategorii i okresu</string>
+	<string name="report_by_category_by_period_summary">Raport transakcji według kategorii i okresu</string>
 	<string name="report_by_location_by_period">Według lokalizacji / okresu</string>
-	<string name="report_by_location_by_period_summary">Report transakcji według lokalizacji i okresu</string>
+	<string name="report_by_location_by_period_summary">Raport transakcji według lokalizacji i okresu</string>
 	<string name="report_by_project_by_period">Według projektu / okresu</string>
-	<string name="report_by_project_by_period_summary">Report transakcji według projektu i okresu</string>
+	<string name="report_by_project_by_period_summary">Raport transakcji według projektu i okresu</string>
 	<string-array name="report_types">
 		<item>Według okresu</item>
 		<item>Według kategorii</item>
@@ -518,8 +518,8 @@
 	<string name="new_scheduled_transaction_notification" formatted="false">%s został %s %s</string>
 	<string name="new_scheduled_transaction_debit">obciążony</string>
 	<string name="new_scheduled_transaction_credit">obdarowany</string>
-	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) został przelany z %s do %s</string>
-	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s został przelany z %s do %s</string>
+	<string name="new_scheduled_transfer_notification_differ_currency" formatted="false">%s(%s) został przelany z %s na %s</string>
+	<string name="new_scheduled_transfer_notification_same_currency" formatted="false">%s został przelany z %s na %s</string>
 	<string name="notification">Powiadomienie</string>
 	<string name="notification_options_on">Włączone</string>
 	<string name="notification_options_off">Wyłączone</string>
@@ -557,7 +557,7 @@
 	<string name="attach_picture">Załącz zdjęcie</string>
 	<string name="new_picture">Wykonaj zdjęcie</string>
 	<string name="report_by_sub_category">Według kategorii (Góra-dół)</string>
-	<string name="report_by_sub_category_summary">Report transakcji według podkategorii</string>
+	<string name="report_by_sub_category_summary">Raport transakcji według podkategorii</string>
 
 	<string name="credits">Kredyty</string>
 	<string name="sort_by_title">Sortuj po tytule</string>
@@ -613,15 +613,15 @@
 	<string name="scheduled_transactions_restored">Zaplanowane transakcje zostały przywrócone</string>
 	<string name="scheduled_transactions_have_been_restored">%d pominiętych transakcji zostało odtworzonych. Proszę użyć masowych operacji aby je wyczyścić/usunąć.</string>
 	<string name="restore_missed_scheduled_transactions">Przywróć pominięte zaplanowania</string>
-	<string name="restore_missed_scheduled_transactions_summary">Pominięte zaplanowania zostały odtworzone ze statusem \'Odtworzona\'</string>
+	<string name="restore_missed_scheduled_transactions_summary">Pominięte zaplanowania zostały odtworzone ze statusem \'Odtworzone\'</string>
 	<string name="save_and_new">Zapisz&amp;Nowy</string>
 	<string name="show_picture">Pokaż \'Zrób zdjęcie\'</string>
 	<string name="show_picture_summary">Pokaż pole \'Zrób zdjęcie\'</string>
 	<string name="payees">Odbiorcy</string>
 	<string name="report_by_payee">Według odbiorcy</string>
-	<string name="report_by_payee_summary">Report transakcji według odbiorcy</string>
+	<string name="report_by_payee_summary">Raport transakcji według odbiorcy</string>
 	<string name="report_by_payee_by_period">Według odbiorcy / okresu</string>
-	<string name="report_by_payee_by_period_summary">Report transakcji według odbiorcy i okresu</string>
+	<string name="report_by_payee_by_period_summary">Raport transakcji według odbiorcy i okresu</string>
 	<string name="no_payee">Brak odbiorców</string>
 	<string name="report_no_payee">Nie ma dostępnych odbiorców do filtrowania raportu.</string>
 	<string name="donate">Wykonaj datek</string>
