@@ -271,12 +271,15 @@ public class RecurrenceScheduler {
     }
 
 	public Date calculateNextDate(String recurrence, long now) {
-		DateRecurrenceIterator ri = createIterator(recurrence, now);
-		if (ri.hasNext()) {
-			return ri.next();
-		} else {
-			return null;
-		}
+        try {
+            DateRecurrenceIterator ri = createIterator(recurrence, now);
+            if (ri.hasNext()) {
+                return ri.next();
+            }
+        } catch (Exception ex) {
+            Log.e("Financisto", "Unable to calculate next date for "+recurrence+" at "+now);
+        }
+        return null;
 	}
 
 	private DateRecurrenceIterator createIterator(String recurrence, long now) {
