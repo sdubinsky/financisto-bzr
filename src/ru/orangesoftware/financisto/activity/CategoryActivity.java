@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.view.LayoutInflater;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CategoryListAdapter;
@@ -45,9 +46,6 @@ public class CategoryActivity extends AbstractActivity {
 	private ListAdapter attributeAdapter;
 
     private ToggleButton incomeExpenseButton;
-    private View incomeExpenseButtonNode;
-    private TextView incomeExpenseText;
-    private View incomeExpenseTextNode;
 
 	private EditText categoryTitle;
 	private TextView parentCategoryText;
@@ -98,19 +96,16 @@ public class CategoryActivity extends AbstractActivity {
 		startManagingCursor(categoryCursor);
 		//DatabaseUtils.dumpCursor(categoryCursor);
 		
-		LinearLayout layout = (LinearLayout)findViewById(R.id.layout);		
+		LinearLayout layout = (LinearLayout)findViewById(R.id.layout);
 		parentCategoryText = x.addListNode(layout, R.id.category, R.string.parent, R.string.select_category);
 
-        incomeExpenseButton = new ToggleButton(this);
-        incomeExpenseButton.setBackgroundResource(R.drawable.btn_toggle_income_expense_bg);
-        incomeExpenseButton.setTextOff(createIncomeExpenseButtonString(R.string.expense));
-        incomeExpenseButton.setTextOn(createIncomeExpenseButtonString(R.string.income));
-        incomeExpenseButtonNode = x.addEditNode(layout, R.string.type, incomeExpenseButton);
+        LinearLayout titleLayout = new LinearLayout(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        layoutInflater.inflate(R.layout.category_title, titleLayout, true);
+        incomeExpenseButton = (ToggleButton) titleLayout.findViewById(R.id.toggle);
+        categoryTitle = (EditText) titleLayout.findViewById(R.id.primary);
+		x.addEditNode(layout, R.string.title, titleLayout);
 
-        incomeExpenseText = x.addInfoNode(layout, R.id.type, R.string.type, R.string.expense);
-        incomeExpenseTextNode = (View) incomeExpenseText.getTag();
-
-		x.addEditNode(layout, R.string.title, categoryTitle);
 		attributesLayout = (LinearLayout)x.addTitleNodeNoDivider(layout, R.string.attributes).findViewById(R.id.layout);
 		x.addInfoNodePlus(attributesLayout, R.id.new_attribute, R.id.add_attribute, R.string.add_attribute);
 		addAttributes();				
@@ -169,12 +164,6 @@ public class CategoryActivity extends AbstractActivity {
         }
     }
 
-    private SpannableString createIncomeExpenseButtonString(int stringId) {
-        SpannableString str = SpannableString.valueOf(getString(stringId));
-        str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, str.length(), 0);
-        return str;
-    }
-
 	private void editCategory() {
 		selectParentCategory(category.getParentId());
 		categoryTitle.setText(category.title);
@@ -182,23 +171,15 @@ public class CategoryActivity extends AbstractActivity {
 
     private void updateIncomeExpenseType() {
         if (category.getParentId() > 0) {
-            setVisibility(incomeExpenseButtonNode, View.GONE);
             if (category.parent.isIncome()) {
-                incomeExpenseText.setText(R.string.income);
-                incomeExpenseText.setTextColor(incomeColor);
-            } else if (category.parent.isExpense()) {
-                incomeExpenseText.setText(R.string.expense);
-                incomeExpenseText.setTextColor(expenseColor);
+                incomeExpenseButton.setChecked(true);
             } else {
-                incomeExpenseText.setText(R.string.type);
-                incomeExpenseText.setTextColor(Color.WHITE);
+                incomeExpenseButton.setChecked(false);
             }
-            setVisibility(incomeExpenseTextNode, View.VISIBLE);
+            incomeExpenseButton.setEnabled(false);
         } else {
-            setVisibility(incomeExpenseTextNode, View.GONE);
             incomeExpenseButton.setChecked(category.isIncome());
             incomeExpenseButton.setEnabled(true);
-            setVisibility(incomeExpenseButtonNode, View.VISIBLE);
         }
     }
 
