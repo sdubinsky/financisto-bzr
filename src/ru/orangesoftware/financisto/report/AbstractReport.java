@@ -154,4 +154,11 @@ public abstract class AbstractReport implements Report {
 		return intent;
 	}
 
+    protected void cleanupFilter(WhereFilter filter) {
+        // fixing a bug with saving incorrect filter fot this report
+        // have to remove it here
+        filter.remove("left");
+        filter.remove("right");
+    }
+
 }

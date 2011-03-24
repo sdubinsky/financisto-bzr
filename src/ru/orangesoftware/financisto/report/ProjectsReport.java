@@ -26,6 +26,7 @@ public class ProjectsReport extends AbstractReport {
 
 	@Override
 	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
+        cleanupFilter(filter);
 		return queryReport(db, V_REPORT_PROJECTS, filter);
 	}
 

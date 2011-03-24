@@ -39,14 +39,11 @@ public class CategoryReport2 extends AbstractReport {
 
 	@Override
 	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
-        // fixing a bug with saving incorrect filter fot this report
-        // have to remove it here
-        filter.remove("left");
-        filter.remove("right");
+        cleanupFilter(filter);
 		filter.eq("parent_id", String.valueOf(parentCategoryId));
 		return queryReport(db, V_REPORT_CATEGORY, filter);
 	}
-	
+
 	@Override
 	public Intent createActivityIntent(Context context, DatabaseAdapter db, WhereFilter parentFilter, long id) {
 		WhereFilter filter = WhereFilter.empty();
