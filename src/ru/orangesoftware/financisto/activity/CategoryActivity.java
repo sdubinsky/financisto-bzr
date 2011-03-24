@@ -102,7 +102,7 @@ public class CategoryActivity extends AbstractActivity {
 		parentCategoryText = x.addListNode(layout, R.id.category, R.string.parent, R.string.select_category);
 
         incomeExpenseButton = new ToggleButton(this);
-        incomeExpenseButton.setBackgroundResource(R.drawable.btn_toggle_bg);
+        incomeExpenseButton.setBackgroundResource(R.drawable.btn_toggle_income_expense_bg);
         incomeExpenseButton.setTextOff(createIncomeExpenseButtonString(R.string.expense));
         incomeExpenseButton.setTextOn(createIncomeExpenseButtonString(R.string.income));
         incomeExpenseButtonNode = x.addEditNode(layout, R.string.type, incomeExpenseButton);

@@ -230,19 +230,19 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     	intent.putExtra(BlotterActivity.SAVE_FILTER, true);
     	intent.putExtra(BlotterActivity.EXTRA_FILTER_ACCOUNTS, true);    	
         tabHost.addTab(tabHost.newTabSpec("blotter")
-                .setIndicator(getString(R.string.blotter), getResources().getDrawable(R.drawable.btn_menu))
+                .setIndicator(getString(R.string.blotter), getResources().getDrawable(R.drawable.ic_tab_blotter))
                 .setContent(intent));
 	}
 
     private void setupBudgetsTab(TabHost tabHost) {
         tabHost.addTab(tabHost.newTabSpec("budgets")
-                .setIndicator(getString(R.string.budgets), getResources().getDrawable(R.drawable.ic_tab_budget))
+                .setIndicator(getString(R.string.budgets), getResources().getDrawable(R.drawable.ic_tab_budgets))
                 .setContent(new Intent(this, BudgetListActivity.class)));
 	}
 
     private void setupReportsTab(TabHost tabHost) {
         tabHost.addTab(tabHost.newTabSpec("reports")
-                .setIndicator(getString(R.string.reports), getResources().getDrawable(R.drawable.ic_tab_graph))
+                .setIndicator(getString(R.string.reports), getResources().getDrawable(R.drawable.ic_tab_reports))
                 .setContent(new Intent(this, ReportsListActivity.class)));
 	}
 
