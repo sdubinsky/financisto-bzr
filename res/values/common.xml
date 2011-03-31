@@ -78,6 +78,7 @@
 		<item>Español</item>
 		<item>Français</item>
 		<item>Italiano</item>
+        <item>Norwegian</item>
         <item>Polski</item>
 		<item>Português (Brasil)</item>
 		<item>Русский</item>
@@ -91,6 +92,7 @@
 		<item>es</item>
 		<item>fr</item>
 		<item>it</item>
+        <item>no-NB</item>
         <item>pl</item>
 		<item>pt-BR</item>
 		<item>ru</item>
