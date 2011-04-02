@@ -10,6 +10,7 @@
       Denis Solonenko - initial API and implementation
       Abdsandryk Souza - bill filtering, report 2D chart
       Rodrigo Sousa - google docs backup
+
 -->
 <resources>
     <string name="accounts">Účty</string>
@@ -567,7 +568,17 @@
 	<string name="negative_opening_amount_summary">Otevře účet se záporným počátečním zůstatkem</string>
 	<string name="payment_day">Den splatnosti</string>
 	<string name="closing_day">Závěrečný den</string>
+	<string name="payment_day_hint">Den splatnosti kreditní karty..</string>
 	<string name="closing_day_hint">Den kdy se položka uzavře</string>
+
+	<string name="closing_day_title">Konečné datum výpisu účtu.</string>
+	<string name="reference_period">Vztažné období</string>
+	<string name="regular_closing_day">Použít běžný závěrečný den</string>
+	<string name="custom_closing_day">Nastavit vlastní závěrečný den</string>
+	<string name="alert_invalid_closing_day">Neplatná hodnota. Prosím zadejte závěrečný den vztažného měsíce.</string>
+	<string name="alert_null_closing_day">Prosím zadejte nový závěrečný den.</string>
+	<string name="alert_regular_closing_day">Vlastní závěrečný den se musí lišit od bežného.</string>
+
 	<string name="ccard_statement">Výpisy z účtu</string>
 	<string name="monthly_view">Měsíční přehled</string>	
 	<string name="credit_card_statement">Výpis kreditní karty</string>
@@ -603,7 +614,6 @@
 	<string name="scheduled_transactions_have_been_restored">%d neprovedených naplánovaných operací bylo obnoveno. Prosím použijte Hromadné operace k jejich zůčtování/smazání.</string>		
 	<string name="restore_missed_scheduled_transactions">Obnovit neprovedené naplánované operace</string>		
 	<string name="restore_missed_scheduled_transactions_summary">Neprovedené transkace budou obnoveny se statusem \'Obnoveno\'</string>
-
     <string name="save_and_new">Uložit&amp;Nový</string>
     <string name="show_picture">Zobrazit \'Vyfotit\'</string>
     <string name="show_picture_summary">Zobrazí položku \'Vyfotit\'</string>
@@ -617,5 +627,12 @@
     <string name="donate">Podpořte vývoj</string>
     <string name="donate_error">Android Market není na vašem zařízení dostupný</string>
     <string name="type">Typ</string>
+
+	<string name="qif_export">Export do QIF</string>
+	<string name="qif_export_inprogress">Probíhá export do QIF...</string>
+	<string name="all_accounts">Věechny účty</string>
+	<string name="filter_value_not_found">Nenalezeno...</string>
+	<string name="empty_report">Prázdná zpráva</string>
+	<string name="day_of_month">Den měsíce</string>
 
 </resources>
