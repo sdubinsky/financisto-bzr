@@ -89,6 +89,13 @@ public abstract class Export {
 	private void generateBackup(OutputStream outputStream) throws Exception {
 		OutputStreamWriter osw = new OutputStreamWriter(outputStream, "UTF-8");
 		BufferedWriter bw = new BufferedWriter(osw, 65536);
+		//writing utf bom into file
+		byte[] bom = new byte[3];
+		bom[0] = (byte) 0xEF;
+		bom[1] = (byte) 0xBB;
+		bom[2] = (byte) 0xBF;
+		bw.write(new String(bom,"UTF-8"));
+		
 		try {			
 			writeHeader(bw);
 			writeBody(bw);
