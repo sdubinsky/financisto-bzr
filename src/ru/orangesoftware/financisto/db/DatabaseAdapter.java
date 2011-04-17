@@ -14,6 +14,7 @@ package ru.orangesoftware.financisto.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -22,7 +23,6 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.io.IOException;
@@ -164,9 +164,6 @@ public class DatabaseAdapter {
 
 	/**
 	 * [Bill Filtering] Returns all the expenses (negative amount) for a given Account in a given period.
-	 * @param accountId Account id.
-	 * @param start Start date.
-	 * @param end End date.
 	 * @return Transactions (negative amount) of the given Account, from start date to end date.
 	 */
 	public Cursor getAllExpenses(long accountId, long startDate, long endDate) {
@@ -188,9 +185,8 @@ public class DatabaseAdapter {
 					    whereTo, new String[]{String.valueOf(accountId), "0", 
 						String.valueOf(startDate), String.valueOf(endDate), "1"}, 
 						null, null, TransactionColumns.datetime.name());
-			
-			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
-			return c;
+
+            return new MergeCursor(new Cursor[] {c1, c2});
 		} catch(SQLiteException e) {
 			return null;
 		}
@@ -199,9 +195,6 @@ public class DatabaseAdapter {
 	
 	/**
 	 * [Bill Filtering] Returns the credits (positive amount) for a given Account in a given period, excluding payments.
-	 * @param accountId Account id.
-	 * @param start Start date.
-	 * @param end End date.
 	 * @return Transactions (positive amount) of the given Account, from start date to end date.
 	 */
 	public Cursor getCredits(long accountId, long startDate, long endDate) {
@@ -224,9 +217,8 @@ public class DatabaseAdapter {
 					    whereTo, new String[]{String.valueOf(accountId), "0", 
 						String.valueOf(startDate), String.valueOf(endDate), "0", "1"}, 
 						null, null, TransactionColumns.datetime.name());
-			
-			MergeCursor c = new MergeCursor(new Cursor[] {c1, c2});
-			return c;
+
+            return new MergeCursor(new Cursor[] {c1, c2});
 		} catch(SQLiteException e) {
 			return null;
 		}
@@ -234,9 +226,6 @@ public class DatabaseAdapter {
 	
 	/**
 	 * [Bill Filtering] Returns all the payments for a given Credit Card Account in a given period.
-	 * @param accountId Account id.
-	 * @param start Start date.
-	 * @param end End date.
 	 * @return Transactions of the given Account, from start date to end date.
 	 */
 	public Cursor getPayments(long accountId, long startDate, long endDate) {
@@ -259,9 +248,8 @@ public class DatabaseAdapter {
 						whereTo, new String[]{String.valueOf(accountId), "0", 
 						String.valueOf(startDate), String.valueOf(endDate), "1", "1"}, 
 						null, null, TransactionColumns.datetime.name());
-			
-			Cursor c = new MergeCursor(new Cursor[] {c1, c2});
-			return c;
+
+            return new MergeCursor(new Cursor[] {c1, c2});
 		} catch(SQLiteException e) {
 			return null;
 		}
@@ -269,9 +257,6 @@ public class DatabaseAdapter {
 	
     /**
      * [Monthly view] Returns all the transactions for a given Account in a given period (month).
-     * @param accountId Account id.
-     * @param start Start date.
-     * @param end End date.
      * @return Transactions (negative value) of the given Account, from start date to end date.
      */
     public Cursor getAllTransactions(long accountId, long startDate, long endDate) {
@@ -280,11 +265,10 @@ public class DatabaseAdapter {
         			   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
         			   TransactionColumns.is_template+"!=?";       
         try {
-            Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-                       where, new String[]{String.valueOf(accountId), String.valueOf(accountId), 
-            		   String.valueOf(startDate), String.valueOf(endDate), "1"}, null, null, 
+            return db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION,
+                       where, new String[]{String.valueOf(accountId), String.valueOf(accountId),
+            		   String.valueOf(startDate), String.valueOf(endDate), "1"}, null, null,
             		   TransactionColumns.datetime.name());
-            return c;
         } catch(SQLiteException e) {
             return null;
         }
@@ -297,34 +281,6 @@ public class DatabaseAdapter {
 				sortOrder);
 	}
 	
-	public Total[] getTransactionsBalance(WhereFilter filter) {
-		Cursor c = db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.BALANCE_PROJECTION, 
-				filter.getSelection(), filter.getSelectionArgs(), 
-				BlotterColumns.BALANCE_GROUP_BY, null, null);
-		try {			
-			int count = c.getCount();
-			List<Total> totals = new ArrayList<Total>(count);
-			while (c.moveToNext()) {	
-				long currencyId = c.getLong(0);
-				long balance = c.getLong(1);
-				Total total = new Total(CurrencyCache.getCurrency(currencyId));
-				total.balance = balance; 
-				totals.add(total);
-			}
-			return totals.toArray(new Total[totals.size()]);
-		} finally {
-			c.close();
-		}
-	}
-
-	private static final String ACCOUNT_TOTAL_AMOUNT_UPDATE = "UPDATE "+ACCOUNT_TABLE
-	+" SET "+AccountColumns.TOTAL_AMOUNT+"="+AccountColumns.TOTAL_AMOUNT+"+(?) "
-	+" WHERE "+AccountColumns.ID+"=?";
-
-	private void updateAccountTotalAmount(long accountId, long amount) {
-		db.execSQL(ACCOUNT_TOTAL_AMOUNT_UPDATE, new Object[]{amount, accountId});
-	}
-
 	private static final String LOCATION_COUNT_UPDATE = "UPDATE "+LOCATIONS_TABLE
 	+" SET count=count+(?) WHERE _id=?";
 
@@ -439,17 +395,6 @@ public class DatabaseAdapter {
 		}
 	}
 
-	private long insertTransaction(Transaction t) {
-		long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
-		if (t.isNotTemplateLike()) {
-			updateAccountTotalAmount(t.fromAccountId, t.fromAmount);
-			updateAccountTotalAmount(t.toAccountId, t.toAmount);
-			updateLocationCount(t.locationId, 1);
-			updateLastUsed(t);
-		}
-		return id;
-	}
-
     public long insertPayee(String payee) {
         if (Utils.isEmpty(payee)) {
             return 0;
@@ -459,12 +404,26 @@ public class DatabaseAdapter {
         }
     }
 
+    private long insertTransaction(Transaction t) {
+        long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
+        if (t.isNotTemplateLike()) {
+            updateAccountBalance(t.fromAccountId, t.fromAmount);
+            insertRunningBalance(t.fromAccountId, id, t.dateTime, t.fromAmount, t.fromAmount);
+            updateAccountBalance(t.toAccountId, t.toAmount);
+            insertRunningBalance(t.toAccountId, id, t.dateTime, t.toAmount, t.toAmount);
+            updateLocationCount(t.locationId, 1);
+            updateLastUsed(t);
+        }
+        return id;
+    }
+
     private void updateTransaction(Transaction t) {
 		if (t.isNotTemplateLike()) {
 			Transaction oldT = getTransaction(t.id);
-			updateAccountTotalAmount(oldT.fromAccountId, oldT.fromAmount, t.fromAccountId, t.fromAmount);
-			updateAccountTotalAmount(oldT.toAccountId, oldT.toAmount, t.toAccountId, t.toAmount);
-			if (oldT.locationId != t.locationId) {			
+			updateAccountBalance(oldT.fromAccountId, oldT.fromAmount, t.fromAccountId, t.fromAmount);
+			updateAccountBalance(oldT.toAccountId, oldT.toAmount, t.toAccountId, t.toAmount);
+            updateRunningBalance(oldT, t);
+			if (oldT.locationId != t.locationId) {
 				updateLocationCount(oldT.locationId, -1);
 				updateLocationCount(t.locationId, 1);
 			}
@@ -472,23 +431,16 @@ public class DatabaseAdapter {
 		db.update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
 				new String[]{String.valueOf(t.id)});		
 	}
-	
-	private void updateAccountTotalAmount(long oldAccountId, long oldAmount, long newAccountId, long newAmount) {
-		if (oldAccountId == newAccountId) {
-			updateAccountTotalAmount(newAccountId, newAmount-oldAmount);
-		} else {
-			updateAccountTotalAmount(oldAccountId, -oldAmount);
-			updateAccountTotalAmount(newAccountId, newAmount);
-		}
-	}
 
-	public void deleteTransaction(long id) {
+    public void deleteTransaction(long id) {
 		db.beginTransaction();
 		try {
 			Transaction t = getTransaction(id);
 			if (t.isNotTemplateLike()) {
-				updateAccountTotalAmount(t.fromAccountId, -t.fromAmount);
-				updateAccountTotalAmount(t.toAccountId, -t.toAmount);
+				updateAccountBalance(t.fromAccountId, -t.fromAmount);
+                deleteRunningBalance(t.fromAccountId, t.id, t.fromAmount, t.dateTime);
+				updateAccountBalance(t.toAccountId, -t.toAmount);
+                deleteRunningBalance(t.toAccountId, t.id, t.toAmount, t.dateTime);
 				updateLocationCount(t.locationId, -1);
 			}
 			String[] sid = new String[]{String.valueOf(id)};
@@ -503,8 +455,8 @@ public class DatabaseAdapter {
 	public void deleteTransactionNoDbTransaction(long id) {
 		Transaction t = getTransaction(id);
 		if (t.isNotTemplateLike()) {
-			updateAccountTotalAmount(t.fromAccountId, -t.fromAmount);
-			updateAccountTotalAmount(t.toAccountId, -t.toAmount);
+			updateAccountBalance(t.fromAccountId, -t.fromAmount);
+			updateAccountBalance(t.toAccountId, -t.toAmount);
 			updateLocationCount(t.locationId, -1);
 		}
 		String[] sid = new String[]{String.valueOf(id)};
@@ -512,7 +464,75 @@ public class DatabaseAdapter {
 		db.delete(TRANSACTION_TABLE, TransactionColumns._id +"=?", sid);
 	}
 
-	// ===================================================================
+    private void updateAccountBalance(long oldAccountId, long oldAmount, long newAccountId, long newAmount) {
+        if (oldAccountId == newAccountId) {
+            updateAccountBalance(newAccountId, newAmount - oldAmount);
+        } else {
+            updateAccountBalance(oldAccountId, -oldAmount);
+            updateAccountBalance(newAccountId, newAmount);
+        }
+    }
+
+    private static final String ACCOUNT_TOTAL_AMOUNT_UPDATE = "UPDATE "+ACCOUNT_TABLE
+	+" SET "+AccountColumns.TOTAL_AMOUNT+"="+AccountColumns.TOTAL_AMOUNT+"+(?) "
+	+" WHERE "+AccountColumns.ID+"=?";
+
+    private void updateAccountBalance(long accountId, long deltaAmount) {
+        if (accountId <= 0) {
+            return;
+        }
+        db.execSQL(ACCOUNT_TOTAL_AMOUNT_UPDATE, new Object[]{deltaAmount, accountId});
+    }
+
+    private static final String INSERT_RUNNING_BALANCE =
+            "insert or replace into running_balance(account_id,transaction_id,datetime,balance) values (?,?,?,?)";
+
+    private static final String UPDATE_RUNNING_BALANCE =
+            "update running_balance set balance = balance+(?) where account_id = ? and datetime > ?";
+
+    private static final String DELETE_RUNNING_BALANCE =
+            "delete from running_balance where account_id = ? and transaction_id = ?";
+
+    private void insertRunningBalance(long accountId, long transactionId, long datetime, long amount, long deltaAmount) {
+        if (accountId <= 0) {
+            return;
+        }
+        long previousTransactionBalance = fetchAccountBalanceAtTheTime(accountId, datetime);
+        db.execSQL(INSERT_RUNNING_BALANCE, new Object[]{accountId, transactionId, datetime, previousTransactionBalance+amount});
+        db.execSQL(UPDATE_RUNNING_BALANCE, new Object[]{deltaAmount, accountId, datetime});
+    }
+
+    private void updateRunningBalance(Transaction oldTransaction, Transaction newTransaction) {
+        deleteRunningBalance(oldTransaction.fromAccountId, oldTransaction.id, oldTransaction.fromAmount, oldTransaction.dateTime);
+        insertRunningBalance(newTransaction.fromAccountId, newTransaction.id, newTransaction.dateTime,
+                newTransaction.fromAmount, newTransaction.fromAmount);
+        deleteRunningBalance(oldTransaction.toAccountId, oldTransaction.id, oldTransaction.toAmount, oldTransaction.dateTime);
+        insertRunningBalance(newTransaction.toAccountId, newTransaction.id, newTransaction.dateTime,
+                newTransaction.toAmount, newTransaction.toAmount);
+    }
+
+    private void deleteRunningBalance(long accountId, long transactionId, long amount, long dateTime) {
+        if (accountId <= 0) {
+            return;
+        }
+        db.execSQL(DELETE_RUNNING_BALANCE, new Object[]{accountId, transactionId});
+        db.execSQL(UPDATE_RUNNING_BALANCE, new Object[]{-amount, accountId, dateTime});
+    }
+
+    private long fetchAccountBalanceAtTheTime(long accountId, long datetime) {
+        Cursor c = db.rawQuery("select balance from running_balance where account_id = ? and datetime < ? order by datetime desc limit 1",
+                new String[]{String.valueOf(accountId), String.valueOf(datetime)});
+        try {
+            if (c.moveToFirst()) {
+                return c.getLong(0);
+            }
+        } finally {
+            c.close();
+        }
+        return 0;
+    }
+
+    // ===================================================================
 	// CATEGORY
 	// ===================================================================
 
@@ -635,14 +655,13 @@ public class DatabaseAdapter {
 
 	public CategoryTree<Category> getAllCategoriesTree(boolean includeNoCategory) {
 		Cursor c = getAllCategories(includeNoCategory);
-		try { 
-			CategoryTree<Category> tree = CategoryTree.createFromCursor(c, new NodeCreator<Category>(){
-				@Override
-				public Category createNode(Cursor c) {
-					return Category.formCursor(c);
-				}				
-			});
-			return tree;
+		try {
+            return CategoryTree.createFromCursor(c, new NodeCreator<Category>(){
+                @Override
+                public Category createNode(Cursor c) {
+                    return Category.formCursor(c);
+                }
+            });
 		} finally {
 			c.close();
 		}
@@ -1164,17 +1183,29 @@ public class DatabaseAdapter {
 		}
 	}
 
-	public void clearAll(long[] ids) {
+    /**
+     * Sets status=CL (Cleared) for the selected transactions
+     * @param ids selected transactions' ids
+     */
+	public void clearSelectedTransactions(long[] ids) {
 		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.CL+"'";
 		runInTransaction(sql, ids);
 	}
 
-	public void reconcileAll(long[] ids) {
+    /**
+     * Sets status=RC (Reconciled) for the selected transactions
+     * @param ids selected transactions' ids
+     */
+	public void reconcileSelectedTransactions(long[] ids) {
 		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.RC+"'";
 		runInTransaction(sql, ids);
 	}
 
-	public void deleteAll(long[] ids) {
+    /**
+     * Deletes the selected transactions
+     * @param ids selected transactions' ids
+     */
+	public void deleteSelectedTransactions(long[] ids) {
 		db.beginTransaction();
 		try {
 			for (long id : ids) {
@@ -1322,5 +1353,49 @@ public class DatabaseAdapter {
 		// save new value
 		setCustomClosingDay(accountId, period, closingDay);
 	}
+
+    /**
+     * Re-populates running_balance table for all accounts
+     */
+    public void rebuildRunningBalance() {
+        ArrayList<Account> accounts = em.getAllAccountsList();
+        for (Account account : accounts) {
+            rebuildRunningBalanceForAccount(account);
+        }
+    }
+
+    /**
+     * Re-populates running_balance for specific account
+     * @param account selected account
+     */
+    public void rebuildRunningBalanceForAccount(Account account) {
+        db.beginTransaction();
+        try {
+            String accountId = String.valueOf(account.getId());
+            db.execSQL("delete from running_balance where account_id=?", new Object[]{accountId});
+            WhereFilter filter = new WhereFilter("");
+            filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, accountId));
+            filter.asc("datetime");
+            Cursor c = getTransactions(filter);
+            Object[] values = new Object[4];
+            values[0] = accountId;
+            try {
+                long balance = 0;
+                while (c.moveToNext()) {
+                    balance += c.getLong(DatabaseHelper.BlotterColumns.from_amount.ordinal());
+                    values[1] = c.getString(DatabaseHelper.BlotterColumns._id.ordinal());
+                    values[2] = c.getString(DatabaseHelper.BlotterColumns.datetime.ordinal());
+                    values[3] = balance;
+                    db.execSQL("insert into running_balance(account_id,transaction_id,datetime,balance) values (?,?,?,?)", values);
+                }
+            } finally {
+                c.close();
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
 }
 

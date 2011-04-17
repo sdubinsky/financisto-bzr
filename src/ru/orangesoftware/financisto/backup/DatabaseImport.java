@@ -122,6 +122,7 @@ public class DatabaseImport {
 			} finally {
 				db.endTransaction();
 			}
+            dbAdapter.rebuildRunningBalance();
 			scheduleAll();
 		} finally {
 			br.close();

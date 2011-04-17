@@ -123,7 +123,9 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		recurrence,
 		notification_options,
 		status,
-        is_ccard_payment;
+        is_ccard_payment,
+        from_account_balance,
+        to_account_balance;
 
 		public static final String[] NORMAL_PROJECTION = asStringArray(BlotterColumns.values());
 

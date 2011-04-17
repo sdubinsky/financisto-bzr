@@ -90,7 +90,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
 	private String appVersion;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -169,7 +169,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     }
 
 	private void initialLoad() {
-		long t2, t1, t0 = System.currentTimeMillis();
+		long t3, t2, t1, t0 = System.currentTimeMillis();
 		DatabaseAdapter db = new DatabaseAdapter(this);
 		db.open();
 		try {		
@@ -186,12 +186,16 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			}
 			t2 = System.currentTimeMillis();
 			CurrencyCache.initialize(db.em());
+            t3 = System.currentTimeMillis();
+            if (MyPreferences.shouldRebuildRunningBalance(this)) {
+                db.rebuildRunningBalance();
+            }
 		} finally {
 			db.close();
 		}
-		long t3 = System.currentTimeMillis();
-		Log.d("LOADTIME", (t3 - t0)+"ms = "+(t2-t1)+"ms+"+(t3-t2)+"ms");		
-		appVersion = WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);			
+		long t4 = System.currentTimeMillis();
+		Log.d("Financisto", "Load time = "+(t4 - t0)+"ms = "+(t2-t1)+"ms+"+(t3-t2)+"ms+"+(t4-t3)+"ms");
+		appVersion = WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);
 	}
 
 	private void updateZero(SQLiteDatabase db, String table, String field, String value) {

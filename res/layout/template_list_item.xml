@@ -11,11 +11,10 @@
 	android:paddingLeft="0dip" android:paddingRight="12dip" android:id="@+id/layout"
 	android:layout_width="fill_parent" android:layout_height="64dp">
 
-	
-		
 	<ImageView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:paddingBottom="5dp"
-		android:layout_alignParentRight="true" android:id="@+id/right_center"
+		android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+		android:layout_alignParentRight="true" android:id="@+id/right_top"
 		android:src="@drawable/ic_blotter_income"
 		android:layout_alignParentTop="true" />
 
@@ -28,16 +27,15 @@
 		android:layout_width="fill_parent" android:text="center"
 		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:singleLine="true" android:layout_alignLeft="@id/top"
-		android:minHeight="40dp" android:layout_toLeftOf="@+id/right_center"
+		android:minHeight="40dp" android:layout_toLeftOf="@+id/right_top"
 		android:paddingTop="11dp" android:ellipsize="marquee" />
-
 
 	<TextView android:text="bottom" android:id="@+id/bottom"
 		android:layout_below="@id/center" android:layout_width="wrap_content"
 		android:textAppearance="?android:attr/textAppearanceSmall"
 		android:singleLine="true" android:layout_height="wrap_content"
 		android:layout_alignLeft="@id/center" android:paddingBottom="2dp"
-		android:layout_marginTop="-2dp" android:layout_toRightOf="@+id/right_center2" />
+		android:layout_marginTop="-2dp" />
 
 	<TextView android:text="right" android:id="@+id/right"
 		android:layout_below="@id/center" android:layout_width="wrap_content"

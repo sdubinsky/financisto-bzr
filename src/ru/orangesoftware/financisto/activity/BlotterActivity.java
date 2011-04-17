@@ -96,7 +96,7 @@ public class BlotterActivity extends AbstractListActivity {
 		inflater = new NodeInflater(layoutInflater);
 	}
 
-	@Override
+    @Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
 
@@ -148,7 +148,6 @@ public class BlotterActivity extends AbstractListActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		
 		blotterFilter.toBundle(outState);
 	}
 
@@ -243,7 +242,7 @@ public class BlotterActivity extends AbstractListActivity {
 	protected ListAdapter createAdapter(Cursor cursor) {
 		long accountId = blotterFilter.getAccountId();
 		if (accountId != -1) {
-			return new TransactionsListAdapter(db, this, cursor);
+			return new TransactionsListAdapter(this, cursor);
 		} else {
 			return new BlotterListAdapter(this, cursor);			
 		}		

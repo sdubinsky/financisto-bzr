@@ -10,7 +10,9 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.BlotterListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import android.database.Cursor;
@@ -37,7 +39,17 @@ public class TemplatesListActivity extends BlotterActivity {
 		return db.getAllTemplates(blotterFilter);
 	}
 
-	@Override
+    @Override
+    protected ListAdapter createAdapter(Cursor cursor) {
+        return new BlotterListAdapter(this, cursor) {
+            @Override
+            protected boolean isShowRunningBalance() {
+                return false;
+            }
+        };
+    }
+
+    @Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
 		// remove filter button and totals

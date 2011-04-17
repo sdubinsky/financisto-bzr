@@ -110,7 +110,7 @@ public class AccountWidget extends AppWidgetProvider {
         long amount = a.totalAmount;
         updateViews.setTextViewText(R.id.note, Utils.amountToString(a.currency, amount));
         Utils u = new Utils(context);
-        int amountColor = u.getAmountColor(context, amount);
+        int amountColor = u.getAmountColor(amount);
         updateViews.setTextColor(R.id.note, amountColor);
         addScrollOnClick(context, updateViews, widgetId);
         addTapOnClick(context, updateViews);

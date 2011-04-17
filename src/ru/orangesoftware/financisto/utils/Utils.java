@@ -24,7 +24,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 
@@ -85,14 +84,6 @@ public class Utils {
 		return sb;		
 	}
 	
-	public static String amountToStringNoCurrency(Currency c, long amount) {
-		String s = c.getFormat().format(new BigDecimal(amount).divide(HUNDRED));
-		if (s.endsWith(".")) {
-			s = s.substring(0, s.length()-1);
-		}		
-		return s;
-	}
-
 	public static boolean checkEditText(EditText editText, String name, boolean required, int length) {
 		String text = text(editText);
 		if (isEmpty(text) && required) {
@@ -100,7 +91,7 @@ public class Utils {
 			return false;
 		}
 		if (text != null && text.length() > length) {
-			editText.setError("Lenght of the "+name+" must not be more than "+length+" chars..");
+			editText.setError("Length of the "+name+" must not be more than "+length+" chars..");
 			return false;
 		}
 		return true;
@@ -120,7 +111,7 @@ public class Utils {
 		view.setTextColor(amount == 0 ? zeroColor : (amount > 0 ? positiveColor : negativeColor));
 	}
 	
-	public int getAmountColor(Context context, long amount) {
+	public int getAmountColor(long amount) {
 		return amount == 0 ? zeroColor : (amount > 0 ? positiveColor : negativeColor);
 	}
 
@@ -207,7 +198,4 @@ public class Utils {
 		return manager.getPackageInfo(context.getPackageName(), 0);                         			
 	}
 
-    public static String emptyString(String s) {
-        return s != null ? s : "";
-    }
 }

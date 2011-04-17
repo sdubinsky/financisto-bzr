@@ -20,8 +20,13 @@ public class TemplateListAdapter extends BlotterListAdapter {
 	public TemplateListAdapter(Context context, Cursor c) {
 		super(context, R.layout.template_list_item, c);
 	}
-	
-	@Override
+
+    @Override
+    protected boolean isShowRunningBalance() {
+        return false;
+    }
+
+    @Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		super.bindView(view, context, cursor);
 	}

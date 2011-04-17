@@ -10,15 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
-import static ru.orangesoftware.financisto.adapter.BlotterListAdapter.generateTransactionText;
-
-import java.util.ArrayList;
-import java.util.Date;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
-import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -30,6 +21,15 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.Date;
+
+import static ru.orangesoftware.financisto.adapter.BlotterListAdapter.generateTransactionText;
 
 public class ScheduledListAdapter extends BaseAdapter {
 	
@@ -200,11 +200,18 @@ public class ScheduledListAdapter extends BaseAdapter {
 			v.centerView = (TextView)view.findViewById(R.id.center);		
 			v.bottomView = (TextView)view.findViewById(R.id.bottom);
 			v.rightView = (TextView)view.findViewById(R.id.right);
-			v.iconView = (ImageView)view.findViewById(R.id.right_center);
+			v.iconView = (ImageView)view.findViewById(R.id.right_top);
+            removeRightCenterView(view, v);
 			view.setTag(v);
 			return v;
 		}
-		
-	}
+
+        private static void removeRightCenterView(View view, Holder v) {
+            view.findViewById(R.id.right_center).setVisibility(View.GONE);
+            int topPadding = v.iconView.getResources().getDimensionPixelSize(R.dimen.transaction_icon_padding);
+            v.iconView.setPadding(0, topPadding, 0, 0);
+        }
+
+    }
 
 }

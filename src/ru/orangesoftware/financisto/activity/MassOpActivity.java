@@ -1,13 +1,5 @@
 package ru.orangesoftware.financisto.activity;
 
-import java.util.Arrays;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.BlotterListAdapter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.utils.EnumUtils;
-import ru.orangesoftware.financisto.utils.LocalizableEnum;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,11 +8,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.BlotterListAdapter;
+import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.utils.EnumUtils;
+import ru.orangesoftware.financisto.utils.LocalizableEnum;
+
+import java.util.Arrays;
 
 public class MassOpActivity extends BlotterActivity {
 
@@ -115,19 +111,19 @@ public class MassOpActivity extends BlotterActivity {
 		CLEAR(R.string.mass_operations_clear_all){
 			@Override
 			public void apply(DatabaseAdapter db, long[] ids) {
-				db.clearAll(ids);
+				db.clearSelectedTransactions(ids);
 			}			
 		}, 
 		RECONCILE(R.string.mass_operations_reconcile){
 			@Override
 			public void apply(DatabaseAdapter db, long[] ids) {
-				db.reconcileAll(ids);
+				db.reconcileSelectedTransactions(ids);
 			}			
 		}, 
 		DELETE(R.string.mass_operations_delete){
 			@Override
 			public void apply(DatabaseAdapter db, long[] ids) {
-				db.deleteAll(ids);
+				db.deleteSelectedTransactions(ids);
 			}
 		};
 		

@@ -226,9 +226,10 @@ public class BudgetListActivity extends AbstractListActivity {
 
 	@Override
 	protected void viewItem(int position, long id) {
+        Budget b = em.load(Budget.class, id);
 		Intent intent = new Intent(this, BudgetBlotterActivity.class);
 		WhereFilter.Criteria.eq(BlotterFilter.BUDGET_ID, String.valueOf(id))
-			.toIntent("budget", intent);		
+			.toIntent(b.title, intent);
 		startActivityForResult(intent, VIEW_BUDGET_REQUEST);
 	}	
 	

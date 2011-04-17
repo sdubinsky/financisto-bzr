@@ -19,10 +19,8 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import org.omg.IOP.TAG_ORB_TYPE;
 import ru.orangesoftware.financisto.model.Currency;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
@@ -324,7 +322,12 @@ public class MyPreferences {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getBoolean("restore_missed_scheduled_transactions", true);
 	}		
-	
+
+    public static boolean isShowRunningBalance(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("show_running_balance", true);
+    }
+
 	private static final String DEFAULT = "default";
 	
 	public static void switchLocale(Context context, String locale) {
@@ -378,12 +381,15 @@ public class MyPreferences {
         return true;
     }
 
+    public static boolean shouldRebuildRunningBalance(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean result = sharedPreferences.getBoolean("should_rebuild_running_balance", true);
+        if (result) {
+            sharedPreferences.edit().putBoolean("should_rebuild_running_balance", false).commit();
+        }
+        return result;
+    }
 
-    /**
-	 * 
-	 * @param context
-	 * @return
-	 */
 	public static String[] getReportPreferences(Context context) {
 		String[] preferences = new String[7];
 		preferences[0] = getReferenceCurrencyTitle(context);

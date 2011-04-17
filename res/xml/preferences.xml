@@ -100,9 +100,9 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/home_screen">
         <Preference android:title="@string/shortcut_new_transaction"
-                    android:key="shortcut_new_transaction" android:summary="@string/shortcut_summary"></Preference>
+                    android:key="shortcut_new_transaction" android:summary="@string/shortcut_summary"/>
         <Preference android:title="@string/shortcut_new_transfer"
-                    android:key="shortcut_new_transfer" android:summary="@string/shortcut_summary"></Preference>
+                    android:key="shortcut_new_transfer" android:summary="@string/shortcut_summary"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/location">
         <CheckBoxPreference android:key="use_gps"
@@ -131,6 +131,10 @@
         <CheckBoxPreference android:key="restore_missed_scheduled_transactions"
                             android:title="@string/restore_missed_scheduled_transactions"
                             android:summary="@string/restore_missed_scheduled_transactions_summary"
+                            android:defaultValue="true"/>
+        <CheckBoxPreference android:key="show_running_balance"
+                            android:title="@string/show_running_balance"
+                            android:summary="@string/show_running_balance_summary"
                             android:defaultValue="true"/>
         <CheckBoxPreference android:key="send_error_reports"
                             android:title="@string/send_error_reports"

@@ -14,7 +14,7 @@ public class DateTime {
 
     private DateTime() {}
 
-    public static DateTime on() {
+    public static DateTime today() {
         return new DateTime();
     }
 

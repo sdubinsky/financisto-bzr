@@ -68,7 +68,7 @@ public class BudgetBlotterActivity extends BlotterActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		return new TransactionsListAdapter(db, this, cursor);
+		return new TransactionsListAdapter(this, cursor);
 	}
 	
 	private Cursor getBlotterForBudget(long budgetId) {

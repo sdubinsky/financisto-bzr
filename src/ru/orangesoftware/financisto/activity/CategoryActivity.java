@@ -10,15 +10,12 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import static ru.orangesoftware.financisto.utils.Utils.checkEditText;
-import static ru.orangesoftware.financisto.utils.Utils.text;
-
-import java.util.ArrayList;
-
-import android.graphics.Color;
-import android.text.SpannableString;
-import android.text.style.StyleSpan;
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CategoryListAdapter;
@@ -28,11 +25,11 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.utils.Utils;
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
+
+import java.util.ArrayList;
+
+import static ru.orangesoftware.financisto.utils.Utils.checkEditText;
+import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public class CategoryActivity extends AbstractActivity {
 	
@@ -56,10 +53,7 @@ public class CategoryActivity extends AbstractActivity {
 	private LinearLayout attributesLayout;
 	private LinearLayout parentAttributesLayout;
 
-    private int incomeColor;
-    private int expenseColor;
-
-	private Category category = new Category(-1);
+    private Category category = new Category(-1);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +61,6 @@ public class CategoryActivity extends AbstractActivity {
 		setContentView(R.layout.category);
 
 		types = getResources().getStringArray(R.array.attribute_types);
-        incomeColor = getResources().getColor(R.color.category_type_income);
-        expenseColor = getResources().getColor(R.color.category_type_expense);
 
 		scrollView = (ScrollView)findViewById(R.id.scroll);
 		
