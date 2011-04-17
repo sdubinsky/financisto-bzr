@@ -10,11 +10,11 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import ru.orangesoftware.financisto.service.FinancistoService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import ru.orangesoftware.financisto.service.FinancistoService;
 
 public class PackageReplaceReceiver extends BroadcastReceiver {
 
@@ -22,10 +22,14 @@ public class PackageReplaceReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i("PackageReplaceReceiver", "Received "+intent);
 		String action = intent.getAction();
+        String dataString = intent.getDataString();
 		if (PACKAGE_REPLACED.equals(action)) {
-            scheduleAll(context);
+            Log.d("PackageReplaceReceiver", "Received " + dataString);
+            if ("package:ru.orangesoftware.financisto".equals(dataString)) {
+                Log.d("PackageReplaceReceiver", "Re-scheduling all transactions");
+                scheduleAll(context);
+            }
 		}
 	}
 

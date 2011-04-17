@@ -116,7 +116,8 @@ public class RecurrenceScheduler {
 				if (t.recurrence != null) {
 					long lastRecurrence = t.lastRecurrence;
 					if (lastRecurrence > 0) {
-						DateRecurrenceIterator ri = createIterator(t.recurrence, lastRecurrence);
+                        // move lastRecurrence time by 1 sec into future to not trigger the same time again
+						DateRecurrenceIterator ri = createIterator(t.recurrence, lastRecurrence+1000);
 						while (ri.hasNext()) {
 							Date nextDate = ri.next();
 							if (nextDate.after(endDate)) {
