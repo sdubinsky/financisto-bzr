@@ -6,6 +6,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.RestoredTransaction;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.test.DateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,12 @@ public class RecurrenceSchedulerTest extends AndroidTestCase {
 		assertRestored(Arrays.asList(everyDay()), fifthOfOctober(2010), 2,2,2,2,2);
 	}
 	
+    public void test_should_not_restore_missed_schedule_the_same_day() throws Exception {
+        TransactionInfo t = everyDayAtNoon();
+        t.lastRecurrence = DateTime.date(2010, 10, 2).atNoon().asLong();
+        assertRestored(Arrays.asList(t), DateTime.date(2010, 10, 2).at(13, 0, 0, 0).asLong());
+    }
+
 	public void testShouldRestoreMissedSchedules() throws Exception {
 		assertRestored(Arrays.asList(on4thOfOctober(2010), everyDay(), every2Days()), fifthOfOctober(2010), 1,2,2,2,2,2,3,3);
 	}
@@ -40,6 +47,7 @@ public class RecurrenceSchedulerTest extends AndroidTestCase {
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.set(Calendar.MINUTE, 0);
 		c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
 		return c.getTimeInMillis();
 	}
 
@@ -85,6 +93,14 @@ public class RecurrenceSchedulerTest extends AndroidTestCase {
 		t.lastRecurrence = 1;
 		return t;
 	}
+
+    private TransactionInfo everyDayAtNoon() {
+        TransactionInfo t = new TransactionInfo();
+        t.id = 2;
+        t.recurrence = "2010-10-01T12:00:00~DAILY:interval@1#~INDEFINETELY:null";
+        t.lastRecurrence = 1;
+        return t;
+    }
 
 	private TransactionInfo every2Days() {
 		TransactionInfo t = new TransactionInfo();
