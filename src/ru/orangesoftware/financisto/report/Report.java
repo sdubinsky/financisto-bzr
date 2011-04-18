@@ -23,5 +23,7 @@ public interface Report {
 	Criteria getCriteriaForId(DatabaseAdapter db, long id);
 
 	Intent createActivityIntent(Context context, DatabaseAdapter db, WhereFilter filter, long id);
-	
+
+    boolean shouldDisplayTotal();
+
 }

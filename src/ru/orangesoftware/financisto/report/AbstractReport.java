@@ -10,8 +10,9 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.report;
 
-import java.util.*;
-
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import ru.orangesoftware.financisto.activity.BlotterActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
@@ -26,9 +27,10 @@ import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.MyPreferences;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public abstract class AbstractReport implements Report {
 	
@@ -161,4 +163,8 @@ public abstract class AbstractReport implements Report {
         filter.remove("right");
     }
 
+    @Override
+    public boolean shouldDisplayTotal() {
+        return true;
+    }
 }

@@ -80,7 +80,14 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
 		}
 
         applyFilter();
+        showOrRemoveTotals();
 	}
+
+    private void showOrRemoveTotals() {
+        if (!currentReport.shouldDisplayTotal()) {
+            findViewById(R.id.labelTotal).setVisibility(View.GONE);
+        }
+    }
 
     private void applyAnimationToListView() {
         AnimationSet set = new AnimationSet(true);
@@ -210,9 +217,11 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
     }
 
     private void displayTotal(Total[] totals) {
-        ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
-        TextView totalText = (TextView)findViewById(R.id.total);
-        BlotterTotalsCalculationTask.setTotals(this, totalTextFlipper, totalText, totals);
+        if (currentReport.shouldDisplayTotal()) {
+            ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
+            TextView totalText = (TextView)findViewById(R.id.total);
+            BlotterTotalsCalculationTask.setTotals(this, totalTextFlipper, totalText, totals);
+        }
     }
 
 }

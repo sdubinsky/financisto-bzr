@@ -10,17 +10,14 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.report;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_CATEGORY;
-
-import java.util.ArrayList;
-
+import android.content.Context;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Category;
-import android.content.Context;
+
+import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_CATEGORY;
 
 public class CategoryReport extends AbstractReport {
 
@@ -39,4 +36,10 @@ public class CategoryReport extends AbstractReport {
 		Category c = db.getCategory(id);
 		return Criteria.btw(BlotterFilter.CATEGORY_LEFT, String.valueOf(c.left), String.valueOf(c.right));
 	}
+
+    @Override
+    public boolean shouldDisplayTotal() {
+        return false;
+    }
+
 }

@@ -10,16 +10,8 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.report;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_PERIOD;
-import static ru.orangesoftware.financisto.utils.DateUtils.lastMonth;
-import static ru.orangesoftware.financisto.utils.DateUtils.lastWeek;
-import static ru.orangesoftware.financisto.utils.DateUtils.thisMonth;
-import static ru.orangesoftware.financisto.utils.DateUtils.thisWeek;
-import static ru.orangesoftware.financisto.utils.DateUtils.today;
-import static ru.orangesoftware.financisto.utils.DateUtils.yesterday;
-
-import java.util.ArrayList;
-
+import android.content.Context;
+import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
@@ -28,9 +20,12 @@ import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.utils.DateUtils.Period;
-import android.content.Context;
-import android.database.Cursor;
+import ru.orangesoftware.financisto.utils.DateUtils.*;
+
+import java.util.ArrayList;
+
+import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_PERIOD;
+import static ru.orangesoftware.financisto.utils.DateUtils.*;
 
 public class PeriodReport extends AbstractReport {
 	
@@ -76,5 +71,11 @@ public class PeriodReport extends AbstractReport {
 		Period p = periods[(int)id];
 		return new DateTimeCriteria(p);
 	}
-		
+
+
+    @Override
+    public boolean shouldDisplayTotal() {
+        return false;
+    }
+
 }
