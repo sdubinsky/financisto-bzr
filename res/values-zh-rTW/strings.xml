@@ -10,25 +10,25 @@
       Denis Solonenko - initial API and implementation
 -->
 <resources>
-    <string name="accounts">帳戶</string>
-    <string name="blotter">明細</string>
-    <string name="currencies">貨幣</string>
-    <string name="categories">分類</string>
-    <string name="budgets">預算</string>
-    <string name="projects">專案</string>
-    <string name="ok">確定</string>
-    <string name="clear">清除</string>
-    <string name="save">儲存</string>
-    <string name="cancel">取消</string>
-    <string name="close">關閉</string>
-    <string name="edit_account">編輯帳戶</string>
-    <string name="add_account">新增帳戶</string>
-    <string name="title">名稱</string>
-    <string name="payee">受款人</string>
-    <string name="currency">貨幣</string>    
-    <string name="add_currency">新增貨幣</string>
-    <string name="opening_amount">起始金額</string>
-    <string name="limit_amount">額度</string>
+	<string name="accounts">帳戶</string>
+	<string name="blotter">明細</string>
+	<string name="currencies">貨幣</string>
+	<string name="categories">分類</string>
+	<string name="budgets">預算</string>
+	<string name="projects">專案</string>
+	<string name="ok">確定</string>
+	<string name="clear">清除</string>
+	<string name="save">儲存</string>
+	<string name="cancel">取消</string>
+	<string name="close">關閉</string>
+	<string name="edit_account">編輯帳戶</string>
+	<string name="add_account">新增帳戶</string>
+	<string name="title">名稱</string>
+	<string name="payee">受款人</string>
+	<string name="currency">貨幣</string>    
+	<string name="add_currency">新增貨幣</string>
+	<string name="opening_amount">起始金額</string>
+	<string name="limit_amount">額度</string>
 	<string name="amount_in" formatted="false">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">檢視</string>
 	<string name="edit">編輯</string>
@@ -207,6 +207,8 @@
 	<string name="decimals">\n小數位數</string>
 	<string name="decimal_separator">\n小數點</string>
 	<string name="group_separator">\n分位點</string>
+	<string name="field_separator">\n欄位分隔</string>
+	<string name="include_header">\n包含標題</string>
 	<string name="delete_account_confirm">確定砍掉帳戶?</string>
 	<string name="delete_transaction_confirm">確定刪掉交易?</string>
 	<string name="delete_budget_confirm">確定刪除預算?</string>
@@ -397,10 +399,10 @@
 	<string name="backup_folder">備份目錄</string>
 	<string name="backup_folder_summary">Google Docs 上面用來存放備份檔的目錄。</string>
 
-    <string name="report_preferences">報告選項</string>
-    <string name="all_reports_preferences">一般報告選項</string>
-    <string name="category_by_period_preferences">根據分類與期間統計的選項</string>
-    <string name="report_include_sub_categories">清單內包含子分類</string>
+	<string name="report_preferences">報告選項</string>
+	<string name="all_reports_preferences">一般報告選項</string>
+	<string name="category_by_period_preferences">根據分類與期間統計的選項</string>
+	<string name="report_include_sub_categories">清單內包含子分類</string>
 	<string name="report_include_sub_categories_summary">在分類清單內顯示子分類。</string>
 	<string name="report_add_sub_categories_result">累加子分類結果</string>
 	<string name="report_add_sub_categories_result_summary">將子分類的結果加到上層分類的結果。</string>
@@ -415,22 +417,22 @@
 	<string name="report_last_9_months">前 9 個月</string>
 	<string name="report_last_year">前一年</string>
 	<string-array name="report_reference_month_entities">
-        <item>6 個月前</item>
-	<item>3 個月前</item>
-        <item>上個月</item>
-        <item>這個月</item>
-        <item>下個月</item>
-        <item>3 個月後</item>
-        <item>6 個月後</item>
-    </string-array>
+		<item>6 個月前</item>
+		<item>3 個月前</item>
+		<item>上個月</item>
+		<item>這個月</item>
+		<item>下個月</item>
+		<item>3 個月後</item>
+		<item>6 個月後</item>
+	</string-array>
 	<string name="report_reference_period">參考期間</string>
 	<string name="report_reference_period_summary">定義繪製報告圖的時候使用的參考期間 (月份數目)</string>
 	<string-array name="report_reference_period_entities">
-        <item>3 個月</item>
-        <item>6 個月</item>
-        <item>9 個月</item>
-        <item>1 年</item>
-    </string-array>
+		<item>3 個月</item>
+		<item>6 個月</item>
+		<item>9 個月</item>
+		<item>1 年</item>
+	</string-array>
 	<string name="report_reference_currency">基準幣值</string>
 	<string name="report_reference_currency_summary">定義取得報告資料時使用的幣值。</string>
 	<string name="report_last_n_months">前 $n 個月</string>
@@ -563,9 +565,19 @@
 	<string name="negative_opening_amount_summary">新建一個起始金額是負數的帳戶</string>
 	<string name="payment_day">付款日</string>
 	<string name="closing_day">關帳日</string>
-	<string name="closing_day_hint">當月帳單的日期</string>
+	<string name="payment_day_hint">您繳信用卡帳單的日期</string>
+	<string name="closing_day_hint">當月帳單結帳的日期</string>
+
+	<string name="closing_day_title">帳單結帳日</string>
+	<string name="reference_period">參考期間</string>
+	<string name="regular_closing_day">使用一般關帳日</string>
+	<string name="custom_closing_day">使用自訂關帳日</string>
+	<string name="alert_invalid_closing_day">設定無效。請為參考月份插入關帳日。</string>
+	<string name="alert_null_closing_day">請插入新的關帳日。</string>
+	<string name="alert_regular_closing_day">自訂關帳日必須與一般關帳日不同。</string>
+
 	<string name="ccard_statement">帳單</string>
-	<string name="monthly_view">當月預覽</string>	
+	<string name="monthly_view">月份預覽</string>	
 	<string name="credit_card_statement">信用卡帳單</string>
 	<string name="ccard_statement_title">&lt;ccard&gt; 帳單</string>
 	<string name="ccard_par">&lt;ccard&gt;</string>
@@ -579,11 +591,45 @@
 	<string name="header_payments">付款</string>
 	<string name="header_credits">各信用額</string>
 	<string name="header_expenses">支出</string>
-	
 	<string name="ui_language">Locales / 語言</string>
 	<string name="ui_language_summary">Set language of user interface (requires restart!) / 設定使用者介面的語言 (需要重新啟動!)</string>
+
 	<string name="enter_pin">輸入 PIN</string>
 	<string name="mass_operations">大量編輯</string>
-	
+	<string name="card_issuer_unionpay">UnionPay</string>
+	<string name="account_type_paypal">PayPal</string>	
+	<string name="mass_operations_use_filter">以過濾條件搜尋交易</string>
+	<string name="mass_operations_clear_all">全部清除</string>			
+	<string name="mass_operations_reconcile">全部結清</string>		
+	<string name="mass_operations_delete">全部刪除</string>		
+	<string name="proceed">繼續</string>	
+	<string name="apply_mass_op" formatted="false">以 \'%s\' 處理 %d 筆交易?</string>
+	<string name="apply_mass_op_zero_count">未選擇任何交易...</string>		
+	<string name="entities">實體</string>
+	<string name="transaction_status_restored">復原</string>	
+	<string name="scheduled_transactions_restored">已復原定期交易</string>		
+	<string name="scheduled_transactions_have_been_restored">已復原 %d 筆錯過執行的定期交易。請用大量操作結帳或刪除這些交易。</string>		
+	<string name="restore_missed_scheduled_transactions">復原錯過的定期交易</string>		
+	<string name="restore_missed_scheduled_transactions_summary">錯過的定期交易將會設為 \'復原\' 狀態</string>
+	<string name="save_and_new">儲存 &amp; 繼續新增</string>
+	<string name="show_picture">顯示 \'拍照\'</string>
+	<string name="show_picture_summary">顯示 \'拍照\' 勾選框</string>
+	<string name="payees">受款人</string>
+	<string name="report_by_payee">以受款人統計</string>
+	<string name="report_by_payee_summary">以受款人分別統計的交易報告</string>
+	<string name="report_by_payee_by_period">以受款人 / 期間統計</string>
+	<string name="report_by_payee_by_period_summary">以受款人與期間分別統計的交易報告</string>
+	<string name="no_payee">無受款人</string>
+	<string name="report_no_payee">沒有受款人可供過濾報告。</string>
+	<string name="donate">贊助</string>
+	<string name="donate_error">您的裝置無法使用 Android Market</string>
+	<string name="type">類型</string>
+
+	<string name="qif_export">匯出 QIF</string>
+	<string name="qif_export_inprogress">將資料存成 QIF...</string>
+	<string name="all_accounts">所有帳戶</string>
+	<string name="filter_value_not_found">找不到...</string>
+	<string name="empty_report">空報告</string>
+	<string name="day_of_month">日期</string>
 
 </resources>
