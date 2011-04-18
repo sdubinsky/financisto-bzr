@@ -124,6 +124,7 @@ public class MassOpActivity extends BlotterActivity {
 			@Override
 			public void apply(DatabaseAdapter db, long[] ids) {
 				db.deleteSelectedTransactions(ids);
+                db.rebuildRunningBalance();
 			}
 		};
 		
