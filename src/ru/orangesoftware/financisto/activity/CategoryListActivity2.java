@@ -10,30 +10,22 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.CategoryListAdapter2;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.CategoryTree;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.TextView;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.CategoryListAdapter2;
+import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.CategoryTree;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CategoryListActivity2 extends AbstractListActivity {
 	
@@ -52,7 +44,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	@Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
-		categories = db.getAllCategoriesTree(false);
+		categories = db.getCategoriesTree(false);
 		attributes = db.getAllAttributesMap();
 		ImageButton b = (ImageButton)findViewById(R.id.bAttributes);
 		b.setOnClickListener(new OnClickListener(){
@@ -99,7 +91,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	@Override
 	public void requeryCursor() {
 		long t0 = System.currentTimeMillis();
-		categories = db.getAllCategoriesTree(false);
+		categories = db.getCategoriesTree(false);
 		attributes = db.getAllAttributesMap();
 		updateAdapter();
 		long t1 = System.currentTimeMillis();

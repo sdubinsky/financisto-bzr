@@ -14,7 +14,6 @@ package ru.orangesoftware.financisto.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -25,7 +24,6 @@ import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.utils.Utils;
 
-import java.io.IOException;
 import java.util.*;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
@@ -41,10 +39,6 @@ public class DatabaseAdapter {
 	public DatabaseAdapter(Context context) {
 		this.context = context;
 		this.dbHelper = new DatabaseHelper(context);
-	}
-	
-	public void forceRunAlterScript(String name) throws IOException {
-		dbHelper.forceRunAlterScript(db, name);
 	}
 	
 	public void open() throws SQLiteException {
@@ -376,10 +370,13 @@ public class DatabaseAdapter {
 				transactionId = transaction.id;
 				db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", 
 						new String[]{String.valueOf(transactionId)});
+                db.delete(SPLIT_TABLE, SplitColumns.transaction_id+"=?",
+                        new String[]{String.valueOf(transactionId)});
 			}
 			if (attributes != null) {
 				insertAttributes(transactionId, attributes);
 			}
+            insertSplits(transactionId, transaction.splits);
 			db.setTransactionSuccessful();
 			return transactionId;
 		} finally {
@@ -387,13 +384,23 @@ public class DatabaseAdapter {
 		}
 	}
 
-	private void insertAttributes(long transactionId, LinkedList<TransactionAttribute> attributes) {		
+    private void insertAttributes(long transactionId, LinkedList<TransactionAttribute> attributes) {
 		for (TransactionAttribute a : attributes) {
 			a.transactionId = transactionId;
 			ContentValues values = a.toValues();
 			db.insert(TRANSACTION_ATTRIBUTE_TABLE, null, values);
 		}
 	}
+
+    private void insertSplits(long transactionId, List<Split> splits) {
+        if (splits != null) {
+            for (Split split : splits) {
+                split.id = -1;
+                split.transactionId = transactionId;
+                em().insertSplit(split);
+            }
+        }
+    }
 
     public long insertPayee(String payee) {
         if (Utils.isEmpty(payee)) {
@@ -653,8 +660,8 @@ public class DatabaseAdapter {
 		}
 	}
 
-	public CategoryTree<Category> getAllCategoriesTree(boolean includeNoCategory) {
-		Cursor c = getAllCategories(includeNoCategory);
+	public CategoryTree<Category> getCategoriesTree(boolean includeNoCategory) {
+		Cursor c = getCategories(includeNoCategory);
 		try {
             return CategoryTree.createFromCursor(c, new NodeCreator<Category>(){
                 @Override
@@ -667,13 +674,13 @@ public class DatabaseAdapter {
 		}
 	}
 	
-	public HashMap<Long, Category> getAllCategoriesMap(boolean includeNoCategory) {
-		return getAllCategoriesTree(includeNoCategory).asMap();
+	public HashMap<Long, Category> getCategoriesMap(boolean includeNoCategory) {
+		return getCategoriesTree(includeNoCategory).asMap();
 	}
 
 	public ArrayList<Category> getAllCategoriesList(boolean includeNoCategory) {
 		ArrayList<Category> list = new ArrayList<Category>();
-		Cursor c = getAllCategories(includeNoCategory);
+		Cursor c = getCategories(includeNoCategory);
 		try { 
 			while (c.moveToNext()) {
 				Category category = Category.formCursor(c);
@@ -685,12 +692,17 @@ public class DatabaseAdapter {
 		return list;
 	}
 
-	public Cursor getAllCategories(boolean includeNoCategory) {
-		return db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION, 
-				includeNoCategory ? null : CategoryViewColumns._id+"!=0", null, null, null, null);
+    public Cursor getAllCategories() {
+        return db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
+                null, null, null, null, null);
+    }
+
+	public Cursor getCategories(boolean includeNoCategory) {
+		return db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
+				includeNoCategory ? CategoryViewColumns._id+">=0" : CategoryViewColumns._id+">0", null, null, null, null);
 	}
-	
-	public Cursor getAllCategoriesWithoutSubtree(long id) {
+
+	public Cursor getCategoriesWithoutSubtree(long id) {
 		long left = 0, right = 0;
 		Cursor c = db.query(CATEGORY_TABLE, new String[]{CategoryColumns.left.name(), CategoryColumns.right.name()},
 				CategoryColumns._id+"=?", new String[]{String.valueOf(id)}, null, null, null);

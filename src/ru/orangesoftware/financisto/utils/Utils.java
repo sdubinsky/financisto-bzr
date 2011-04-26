@@ -123,16 +123,14 @@ public class Utils {
 	}
 	
 	public static int moveCursor(Cursor cursor, String idColumnName, long id) {
-		if (id != -1) {			
-			int pos = cursor.getColumnIndexOrThrow(idColumnName);
-			if (cursor.moveToFirst()) {
-				do {
-					if (cursor.getLong(pos) == id) {
-						return cursor.getPosition();
-					}
-				} while(cursor.moveToNext());				
-			}
-		}
+        int pos = cursor.getColumnIndexOrThrow(idColumnName);
+        if (cursor.moveToFirst()) {
+            do {
+                if (cursor.getLong(pos) == id) {
+                    return cursor.getPosition();
+                }
+            } while(cursor.moveToNext());
+        }
 		return -1;
 	}
 

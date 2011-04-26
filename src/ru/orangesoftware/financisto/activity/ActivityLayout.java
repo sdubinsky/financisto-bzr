@@ -10,27 +10,19 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.MultiChoiceItem;
-import ru.orangesoftware.financisto.utils.Utils;
-import ru.orangesoftware.financisto.view.NodeInflater;
-import ru.orangesoftware.financisto.view.NodeInflater.Builder;
-import ru.orangesoftware.financisto.view.NodeInflater.CheckBoxBuilder;
-import ru.orangesoftware.financisto.view.NodeInflater.EditBuilder;
-import ru.orangesoftware.financisto.view.NodeInflater.ListBuilder;
-import ru.orangesoftware.financisto.view.NodeInflater.PictureBuilder;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TextView;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.MultiChoiceItem;
+import ru.orangesoftware.financisto.utils.Utils;
+import ru.orangesoftware.financisto.view.NodeInflater;
+import ru.orangesoftware.financisto.view.NodeInflater.*;
+
+import java.util.ArrayList;
 
 public class ActivityLayout {
 
@@ -144,6 +136,16 @@ public class ActivityLayout {
 		View v = b.withButtonId(plusId, listener).withId(id, listener).withLabel(labelId).withData(defaultValueResId).create();
 		return (TextView)v.findViewById(R.id.data);
 	}
+
+    public View addNodePlus(LinearLayout layout, int id, int plusId, int labelId, String defaultValue) {
+        ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_plus);
+        return b.withButtonId(plusId, listener).withoutMoreButton().withId(id, listener).withLabel(labelId).withData(defaultValue).create();
+    }
+
+    public View addNodeMinus(LinearLayout layout, int id, int minusId, int labelId, String defaultValue) {
+        ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);
+        return b.withButtonId(minusId, listener).withoutMoreButton().withId(id, listener).withLabel(labelId).withData(defaultValue).create();
+    }
 
 	public TextView addListNodeMinus(LinearLayout layout, int id, int minusId, int labelId, int defaultValueResId) {
 		ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);

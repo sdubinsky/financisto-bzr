@@ -638,4 +638,8 @@
     <string name="show_running_balance">Show running balance</string>
     <string name="show_running_balance_summary">Show account running balance in the blotter (requires restart)</string>
 
+    <string name="split">[Split]</string>
+    <string name="unsplit_amount">Unsplit amount</string>
+    <string name="unsplit_amount_greater_than_zero">There is still some amount left un-split...</string>
+
 </resources>

@@ -55,7 +55,7 @@ public class TransactionsListAdapter extends BlotterListAdapter {
 
         long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
         String category = "";
-        if (categoryId > 0) {
+        if (categoryId != 0) {
             category = cursor.getString(BlotterColumns.category_title.ordinal());
         }
         String text = generateTransactionText(sb, payee, note, location, category);

@@ -37,7 +37,7 @@ public class QifExport extends Export {
     public QifExport(DatabaseAdapter db, WhereFilter filter) {
         this.db = db;
         this.filter = filter;
-        this.categories = db.getAllCategoriesTree(false);
+        this.categories = db.getCategoriesTree(false);
         this.categoriesMap = categories.asMap();
     }
 

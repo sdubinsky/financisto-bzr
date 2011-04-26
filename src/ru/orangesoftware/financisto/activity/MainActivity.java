@@ -13,7 +13,6 @@ package ru.orangesoftware.financisto.activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -177,9 +176,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			x.beginTransaction();
 			t1 = System.currentTimeMillis();
 			try {
-				updateZero(x, DatabaseHelper.CATEGORY_TABLE, "title", getString(R.string.no_category));
-				updateZero(x, DatabaseHelper.PROJECT_TABLE, "title", getString(R.string.no_project));
-				updateZero(x, DatabaseHelper.LOCATIONS_TABLE, "name", getString(R.string.current_location));
+				updateFieldInTable(x, DatabaseHelper.CATEGORY_TABLE, 0, "title", getString(R.string.no_category));
+                updateFieldInTable(x, DatabaseHelper.CATEGORY_TABLE, -1, "title", getString(R.string.split));
+				updateFieldInTable(x, DatabaseHelper.PROJECT_TABLE, 0, "title", getString(R.string.no_project));
+				updateFieldInTable(x, DatabaseHelper.LOCATIONS_TABLE, 0, "name", getString(R.string.current_location));
 				x.setTransactionSuccessful();
 			} finally {
 				x.endTransaction();
@@ -198,10 +198,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		appVersion = WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);
 	}
 
-	private void updateZero(SQLiteDatabase db, String table, String field, String value) {
-		ContentValues values = new ContentValues();
-		values.put(field, value);
-		db.update(table, values, "_id=0", null);
+	private void updateFieldInTable(SQLiteDatabase db, String table, long id, String field, String value) {
+        db.execSQL("update " + table + " set " + field + "=? where _id=?", new Object[]{value, id});
 	}
 
 	@Override

@@ -76,7 +76,7 @@ public class CSVExport extends Export {
 	protected void writeBody(BufferedWriter bw) throws IOException {
 		Csv.Writer w = new Csv.Writer(bw).delimiter(fieldSeparator);
 		try {
-			HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
+			HashMap<Long, Category> categoriesMap = db.getCategoriesMap(false);
 			Cursor c = db.getBlotter(filter);
 			try {			
 				while (c.moveToNext()) {

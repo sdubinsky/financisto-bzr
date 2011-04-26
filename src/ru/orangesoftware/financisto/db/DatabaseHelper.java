@@ -51,6 +51,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	public static final String LOCATIONS_TABLE = "locations";
     public static final String PAYEE_TABLE = "payee";
     public static final String CCARD_CLOSING_DATE_TABLE = "ccard_closing_date";
+    public static final String SPLIT_TABLE = "split";
 
 	public static final String V_ALL_TRANSACTIONS = "v_all_transactions";
 	public static final String V_BLOTTER = "v_blotter";
@@ -265,6 +266,16 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		}
 		
 	}
+
+    public static enum SplitColumns {
+        _id,
+        transaction_id,
+        category_id,
+        amount,
+        note;
+
+        public static String[] NORMAL_PROJECTION = asStringArray(SplitColumns.values());
+    }
 
 	public static class ReportColumns {
 		

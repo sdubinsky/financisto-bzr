@@ -10,16 +10,20 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.text.DecimalFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.AsyncTask;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.model.Account;
@@ -29,21 +33,13 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
-import ru.orangesoftware.financisto.widget.CalculatorInput;
 import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
+import ru.orangesoftware.financisto.widget.CalculatorInput;
 import ru.orangesoftware.orb.EntityManager;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TransferActivity extends AbstractTransactionActivity {
 
@@ -79,6 +75,10 @@ public class TransferActivity extends AbstractTransactionActivity {
 			}			
 		}
 	}
+
+    protected Cursor fetchCategories() {
+        return db.getCategories(true);
+    }
 
 	protected int getLayoutId() {
 		return MyPreferences.isUseFixedLayout(this) ? R.layout.transfer_fixed : R.layout.transfer_free;

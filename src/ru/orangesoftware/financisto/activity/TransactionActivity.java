@@ -11,21 +11,27 @@
 package ru.orangesoftware.financisto.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Payee;
-import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
 
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public class TransactionActivity extends AbstractTransactionActivity {
@@ -33,6 +39,10 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	public static final String CURRENT_BALANCE_EXTRA = "accountCurrentBalance";
 
 	private static final int MENU_TURN_GPS_ON = Menu.FIRST;
+    private static final int SPLIT_REQUEST = 5001;
+
+    private final AtomicLong idSequence = new AtomicLong();
+    private final IdentityHashMap<View, Split> viewToSplitMap = new IdentityHashMap<View, Split>();
 
     private AutoCompleteTextView payeeText;
     private SimpleCursorAdapter payeeAdapter;
@@ -41,6 +51,9 @@ public class TransactionActivity extends AbstractTransactionActivity {
     private boolean isShowPayee = true;
 	private long currentBalance;
 	private Utils u;
+
+    private LinearLayout splitsLayout;
+    private TextView unsplitAmountText;
 
 	public TransactionActivity() {
 	}
@@ -68,7 +81,16 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		}
 	}
 
-	@Override
+    @Override
+    protected Cursor fetchCategories() {
+        if (isUpdateBalanceMode) {
+            return db.getCategories(true);
+        } else {
+            return db.getAllCategories();
+        }
+    }
+
+    @Override
 	protected void createListNodes(LinearLayout layout) {
 		//account
 		accountText = x.addListNode(layout, R.id.account, R.string.account, R.string.select_account);
@@ -111,8 +133,56 @@ public class TransactionActivity extends AbstractTransactionActivity {
             } else {
                 amountInput.setExpense();
             }
-		}
+		} else {
+            createSplitsLayout(layout);
+            amountInput.setOnAmountChangedListener(new OnAmountChangedListener() {
+                @Override
+                public void onAmountChanged(long oldAmount, long newAmount) {
+                    updateUnsplitAmount();
+                }
+            });
+        }
 	}
+
+    private void createSplitsLayout(LinearLayout layout) {
+        splitsLayout = new LinearLayout(this);
+        splitsLayout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(splitsLayout, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    }
+
+    @Override
+    protected void addOrRemoveSplits() {
+        if (splitsLayout == null) {
+            return;
+        }
+        if (selectedCategoryId == Category.SPLIT_CATEGORY_ID) {
+            View v = x.addNodePlus(splitsLayout, R.id.add_split, R.id.add_split, R.string.unsplit_amount, "0");
+            unsplitAmountText = (TextView)v.findViewById(R.id.data);
+            updateUnsplitAmount();
+        } else {
+            splitsLayout.removeAllViews();
+        }
+    }
+
+    private void updateUnsplitAmount() {
+        if (unsplitAmountText != null) {
+            long amountDifference = calculateUnsplitAmount();
+            u.setAmountText(unsplitAmountText, amountInput.getCurrency(), amountDifference, false);
+        }
+    }
+
+    private long calculateUnsplitAmount() {
+        long splitAmount = calculateSplitAmount();
+        return amountInput.getAmount()-splitAmount;
+    }
+
+    private long calculateSplitAmount() {
+        long amount = 0;
+        for (Split split : viewToSplitMap.values()) {
+            amount += split.amount;
+        }
+        return amount;
+    }
 
     protected void switchIncomeExpenseButton(Category category) {
         if (!isUpdateBalanceMode) {
@@ -133,22 +203,42 @@ public class TransactionActivity extends AbstractTransactionActivity {
 
 	@Override
 	protected boolean onOKClicked() {
-		if (checkSelectedId(selectedAccountId, R.string.select_account)) {
+		if (checkSelectedId(selectedAccountId, R.string.select_account) &&
+            checkUnsplitAmount()) {
 			updateTransactionFromUI();
 			return true;
 		}
 		return false;
 	}
 
-	@Override
+    private boolean checkUnsplitAmount() {
+        if (selectedCategoryId == Category.SPLIT_CATEGORY_ID) {
+            long unsplitAmount = calculateUnsplitAmount();
+            if (unsplitAmount != 0) {
+                Toast.makeText(this, R.string.unsplit_amount_greater_than_zero, Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
 	protected void editTransaction(Transaction transaction) {
 		super.editTransaction(transaction);
+        fetchSplits();
 		selectAccount(transaction.fromAccountId, false);
         selectPayee(transaction.payeeId);
 		amountInput.setAmount(transaction.fromAmount);
 	}
 
-	private void updateTransactionFromUI() {
+    private void fetchSplits() {
+        List<Split> splits = em.getSplitsForTransaction(transaction.id);
+        for (Split split : splits) {
+            addOrEditSplit(split);
+        }
+    }
+
+    private void updateTransactionFromUI() {
 		updateTransactionFromUI(transaction);
         if (isShowPayee) {
             transaction.payeeId = db.insertPayee(text(payeeText));
@@ -159,6 +249,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 			amount -= currentBalance;
 		}
 		transaction.fromAmount = amount;
+        transaction.splits = new LinkedList<Split>(viewToSplitMap.values());
 	}
 
     private void selectPayee(long payeeId) {
@@ -193,6 +284,100 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		}
 		return false;
 	}
+
+    @Override
+    protected void onClick(View v, int id) {
+        super.onClick(v, id);
+        switch (id) {
+            case R.id.add_split:
+                createSplit();
+                break;
+            case R.id.delete_split:
+                View parentView = (View)v.getParent();
+                deleteSplit(parentView);
+                break;
+        }
+        Split split = viewToSplitMap.get(v);
+        if (split != null) {
+            split.unsplitAmount = split.amount + calculateUnsplitAmount();
+            editSplit(split);
+        }
+    }
+
+    private void createSplit() {
+        Split split = new Split();
+        split.id = idSequence.decrementAndGet();
+        split.accountId = selectedAccountId;
+        split.amount = split.unsplitAmount = calculateUnsplitAmount();
+        editSplit(split);
+    }
+
+    private void editSplit(Split split) {
+        Intent intent = new Intent(this, SplitActivity.class);
+        split.toIntent(intent);
+        startActivityForResult(intent, SPLIT_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SPLIT_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Split split = Split.fromIntent(data);
+                addOrEditSplit(split);
+            }
+        }
+    }
+
+    private void addOrEditSplit(Split split) {
+        View v = findView(split);
+        if (v  == null) {
+            v = x.addNodeMinus(splitsLayout, R.id.edit_aplit, R.id.delete_split, R.string.split, "");
+        }
+        TextView label = (TextView)v.findViewById(R.id.label);
+        TextView data = (TextView)v.findViewById(R.id.data);
+        label.setText(createSplitText(split));
+        Currency currency = amountInput.getCurrency();
+        u.setAmountText(data, currency, split.amount, false);
+        viewToSplitMap.put(v, split);
+        updateUnsplitAmount();
+    }
+
+    private String createSplitText(Split split) {
+        StringBuilder sb = new StringBuilder();
+        Category category = db.getCategory(split.categoryId);
+        sb.append(category.title);
+        if (isNotEmpty(split.note)) {
+            sb.append(" (").append(split.note).append(")");
+        }
+        return sb.toString();
+    }
+
+    private View findView(Split split) {
+        for (Map.Entry<View, Split> entry : viewToSplitMap.entrySet()) {
+            Split s = entry.getValue();
+            if (s.id == split.id) {
+                return  entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private void deleteSplit(View v) {
+        Split split = viewToSplitMap.remove(v);
+        if (split != null) {
+            removeSplitView(v);
+            updateUnsplitAmount();
+        }
+    }
+
+    private void removeSplitView(View v) {
+        splitsLayout.removeView(v);
+        View dividerView = (View)v.getTag();
+        if (dividerView != null) {
+            splitsLayout.removeView(dividerView);
+        }
+    }
 
     @Override
     protected void onDestroy() {

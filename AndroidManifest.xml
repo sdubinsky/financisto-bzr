@@ -10,7 +10,7 @@
       Denis Solonenko - initial API and implementation
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="ru.orangesoftware.financisto" android:versionName="1.4.7" android:versionCode="45"
+	package="ru.orangesoftware.financisto" android:versionName="1.4.8" android:versionCode="46"
     android:installLocation="auto">
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:description="@string/app_description" android:debuggable="false">
@@ -175,6 +175,9 @@
 		<activity android:name=".activity.ReportPreferencesActivity" android:label="@string/report_preferences"/>
         <activity android:name=".activity.AboutActivity" android:label="@string/about"/>
         <activity android:name=".activity.WebViewActivity" android:label="@string/about"/>
+
+        <activity android:name=".activity.SplitActivity" android:label="@string/split"
+            android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
 
 	</application>
 	

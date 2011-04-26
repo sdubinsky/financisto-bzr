@@ -17,6 +17,7 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 
 import javax.persistence.*;
 import java.util.EnumMap;
+import java.util.List;
 
 @Entity
 @Table(name = "transactions")
@@ -94,6 +95,9 @@ public class Transaction {
 
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
+
+    @Transient
+    public List<Split> splits;
 
     public ContentValues toValues() {
 		ContentValues values = new ContentValues();

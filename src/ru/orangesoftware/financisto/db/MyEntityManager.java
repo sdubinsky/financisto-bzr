@@ -450,4 +450,15 @@ public class MyEntityManager extends EntityManager {
         q.where(Expressions.like("title", "%"+constraint+"%"));
         return q.asc("title").execute();
     }
+
+    public void insertSplit(Split split) {
+        saveOrUpdate(split);
+    }
+
+    public List<Split> getSplitsForTransaction(long transactionId) {
+        Query<Split> q = createQuery(Split.class);
+        q.where(Expressions.eq("transactionId", transactionId));
+        return q.list();
+    }
+
 }
