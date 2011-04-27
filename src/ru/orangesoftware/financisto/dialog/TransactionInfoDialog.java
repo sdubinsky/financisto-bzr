@@ -62,7 +62,6 @@ public class TransactionInfoDialog {
 			t.show();
 			return;
 		}
-
         TransactionStatus status = TransactionStatus.valueOf(ti.status);
         View titleView = layoutInflater.inflate(R.layout.transaction_info_title, null);
         TextView titleLabel = (TextView)titleView.findViewById(R.id.label);
@@ -92,6 +91,20 @@ public class TransactionInfoDialog {
             }
             add(layout, R.string.category, ti.category.title);
 			add(layout, R.string.amount, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
+            if (ti.category.isSplit()) {
+                List<Split> splits = em.getSplitsForTransaction(transactionId);
+                for (Split split : splits) {
+                    Category c = em.getCategory(split.categoryId);
+                    StringBuilder sb = new StringBuilder();
+                    if (c != null && c.id > 0) {
+                        sb.append(c.title);
+                    }
+                    if (isNotEmpty(split.note)) {
+                        sb.append(" (").append(split.note).append(")");
+                    }
+                    add(layout, sb.toString(), Utils.amountToString(ti.fromAccount.currency, split.amount));
+                }
+            }
 		} else {
 			AccountType fromAccountType = AccountType.valueOf(ti.fromAccount.type);
 			add(layout, R.string.account_from, ti.fromAccount.title, fromAccountType);

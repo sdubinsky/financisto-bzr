@@ -120,4 +120,8 @@ public class Category extends CategoryEntity<Category> {
             this.type = parent.type;
         }
     }
+
+    public boolean isSplit() {
+        return id == SPLIT_CATEGORY_ID;
+    }
 }
