@@ -572,8 +572,18 @@
     <string name="negative_opening_amount_summary">Konto mit negativen Kontostand eröffnen</string>
 
     <string name="payment_day">Zahlungstag</string>
-    <string name="closing_day">Letzter Zahltag</string>
-    <string name="closing_day_hint">Tag an welchem die Rechnung bezahlt werden muss</string>
+    <string name="closing_day">Abrechnunsstichtag</string>
+    <string name="payment_day_hint">Tag an dem die Rechnung gezahlt wird</string>
+    <string name="closing_day_hint">Tag der Abrechnung</string>
+
+    <string name="closing_day_title">Abrechnungsstichtag</string>
+    <string name="reference_period">Abrechnungszeitraum</string>
+    <string name="regular_closing_day">Regulären Abrechnungsstichtag verwenden</string>
+    <string name="custom_closing_day">Abweichenden Abrechnungsstichtag verwendeny</string>
+    <string name="alert_invalid_closing_day">Ungültiger Wert. Bitte geben Sie einen Abrechnungsstichtag für den Abrechnungsmonat an.</string>
+    <string name="alert_null_closing_day">Bitte geben Sie einen Abrechnungsstichtag an.</string>
+    <string name="alert_regular_closing_day">Abweichender Abrechnungsstichtag muss vom regulären Stichtag abweichen.</string>
+
     <string name="ccard_statement">Abrechnungen</string>
     <string name="monthly_view">Monatliche Vorschau</string>	
     <string name="credit_card_statement">Kreditkartenabrechnung</string>
@@ -608,7 +618,7 @@
     <string name="restore_missed_scheduled_transactions">Erstellen ausgelassener terminierter Transaktionen</string>
     <string name="restore_missed_scheduled_transactions_summary">Ausgelassene terminierte Transaktionen werden erstellt mit dem Status \'erstellt\'</string>
 
-    <string name="save_and_new">Speichern&amp;Neu</string>
+    <string name="save_and_new">Speichern &amp; Neu</string>
     <string name="show_picture">Zeige \'Bild anhängen\'</string>
     <string name="show_picture_summary">Zeige \'Bild anhängen\' Box</string>
     <string name="payees">Empfänger</string>
@@ -622,4 +632,13 @@
     <string name="donate_error">Android Market ist auf dem Gerät nicht verfügbar</string>
     <string name="type">Typ</string>
     
+    <string name="qif_export">QIF Export</string>
+    <string name="qif_export_inprogress">Exportiere Daten nach QIF...</string>
+    <string name="all_accounts">Alle Konten</string>
+    <string name="filter_value_not_found">Nicht gefunden...</string>
+    <string name="empty_report">Leerer Bericht</string>
+    <string name="day_of_month">Monatstag</string>
+
+    <string name="show_running_balance">Laufenden Saldo anzeigen</string>
+    <string name="show_running_balance_summary">Laufenden Saldo des Kontos im Protokoll anzeigen (Neustart erforderlich)</string>
 </resources>
