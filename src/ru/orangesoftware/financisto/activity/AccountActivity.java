@@ -331,8 +331,9 @@ public class AccountActivity extends AbstractActivity {
 	}
 	
 	private void selectCurrency(Currency c) {
-		currencyText.setText(c.name);						
+		currencyText.setText(c.name);
 		amountInput.setCurrency(c);
+		limitInput.setCurrency(c);
 		account.currency = c;		
 	}
 
