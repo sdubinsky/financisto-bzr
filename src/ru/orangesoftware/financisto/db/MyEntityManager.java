@@ -339,7 +339,7 @@ public class MyEntityManager extends EntityManager {
 //		return q.list();
 //	}
 
-	public long saveOrUpdate(Budget budget) {
+	public long insertBudget(Budget budget) {
 		db.beginTransaction();
 		try {
 			if (budget.id > 0) {
@@ -449,10 +449,6 @@ public class MyEntityManager extends EntityManager {
         Query<Payee> q = createQuery(Payee.class);
         q.where(Expressions.like("title", "%"+constraint+"%"));
         return q.asc("title").execute();
-    }
-
-    public void insertSplit(Split split) {
-        saveOrUpdate(split);
     }
 
     public List<Split> getSplitsForTransaction(long transactionId) {

@@ -10,10 +10,10 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-
-import ru.orangesoftware.financisto.model.MultiChoiceItem;
 import android.view.View.OnClickListener;
+import ru.orangesoftware.financisto.model.MultiChoiceItem;
+
+import java.util.List;
 
 public interface ActivityLayoutListener extends OnClickListener {
 
@@ -21,6 +21,6 @@ public interface ActivityLayoutListener extends OnClickListener {
 	
 	void onSelectedId(int id, long selectedId);
 
-	void onSelected(int id, ArrayList<? extends MultiChoiceItem> items);
+	void onSelected(int id, List<? extends MultiChoiceItem> items);
 	
 }

@@ -14,7 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Account;
@@ -22,6 +22,7 @@ import ru.orangesoftware.financisto.model.MultiChoiceItem;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class QifExportActivity extends AbstractExportActivity implements ActivityLayoutListener {
 
@@ -66,7 +67,7 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
     }
 
     @Override
-    public void onSelected(int id, ArrayList<? extends MultiChoiceItem> items) {
+    public void onSelected(int id, List<? extends MultiChoiceItem> items) {
         selectedAccounts = getSelectedAccounts(items);
         if (selectedAccounts.size() == items.size()) {
             bAccounts.setText(R.string.all_accounts);
@@ -79,7 +80,7 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
         }
     }
 
-    private ArrayList<Account> getSelectedAccounts(ArrayList<? extends MultiChoiceItem> items) {
+    private ArrayList<Account> getSelectedAccounts(List<? extends MultiChoiceItem> items) {
         ArrayList<Account> selected = new ArrayList<Account>();
         for (MultiChoiceItem i : items) {
             if (i.isChecked()) {

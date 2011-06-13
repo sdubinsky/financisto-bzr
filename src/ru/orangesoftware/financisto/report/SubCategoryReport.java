@@ -10,11 +10,11 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.report;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_SUB_CATEGORY;
-
-import java.util.ArrayList;
-import java.util.Collections;
-
+import android.content.Context;
+import android.database.Cursor;
+import android.os.Bundle;
+import ru.orangesoftware.financisto.activity.BlotterActivity;
+import ru.orangesoftware.financisto.activity.SplitsBlotterActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
@@ -25,9 +25,11 @@ import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
-import android.content.Context;
-import android.database.Cursor;
-import android.os.Bundle;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_SUB_CATEGORY;
 
 public class SubCategoryReport extends AbstractReport {
 	
@@ -107,7 +109,12 @@ public class SubCategoryReport extends AbstractReport {
 		Category c = db.getCategory(id);
 		return Criteria.btw(BlotterFilter.CATEGORY_LEFT, String.valueOf(c.left), String.valueOf(c.right));
 	}
-	
+
+    @Override
+    protected Class<? extends BlotterActivity> getBlotterActivityClass() {
+        return SplitsBlotterActivity.class;
+    }
+
 	private static class CategoryAmount extends CategoryEntity<CategoryAmount> {
 		
 		private final long currencyId;

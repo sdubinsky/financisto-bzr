@@ -7,7 +7,7 @@ select
        t.datetime as datetime,
        t.is_transfer as is_transfer
 from project p
-inner join v_blotter_for_currency t on t.project_id=p._id
+inner join v_blotter_for_account t on t.project_id=p._id
 where t.from_amount > 0 and p._id != 0
 union all
 select 
@@ -18,5 +18,5 @@ select
        t.datetime as datetime,
        t.is_transfer as is_transfer
 from project p
-inner join v_blotter_for_currency t on t.project_id=p._id
+inner join v_blotter_for_account t on t.project_id=p._id
 where t.from_amount < 0 and p._id != 0;	

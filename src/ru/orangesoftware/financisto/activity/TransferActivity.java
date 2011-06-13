@@ -86,9 +86,9 @@ public class TransferActivity extends AbstractTransactionActivity {
 	
 	@Override
 	protected void editTransaction(Transaction transaction) {
-		super.editTransaction(transaction);
+        selectAccount(accountFromText, amountInputFrom, transaction.fromAccountId, false);
+		commonEditTransaction(transaction);
 		amountInputFrom.setAmount(transaction.fromAmount);
-		selectAccount(accountFromText, amountInputFrom, transaction.fromAccountId, false);
 		selectedAccountFromId = transaction.fromAccountId;
 		amountInputTo.setAmount(transaction.toAmount);
 		selectAccount(accountToText, amountInputTo, transaction.toAccountId, false);

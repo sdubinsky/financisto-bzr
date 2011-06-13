@@ -27,6 +27,9 @@ public class Transaction {
 	@Column(name = "_id")
 	public long id = -1;
 
+    @Column(name = "parent_id")
+    public long parentId;
+
 	@Column(name = "category_id")
 	public long categoryId;
 	
@@ -101,6 +104,7 @@ public class Transaction {
 
     public ContentValues toValues() {
 		ContentValues values = new ContentValues();
+        values.put(TransactionColumns.parent_id.name(), parentId);
 		values.put(TransactionColumns.category_id.name(), categoryId);
 		values.put(TransactionColumns.project_id.name(), projectId);
 		values.put(TransactionColumns.datetime.name(), dateTime);
@@ -130,6 +134,7 @@ public class Transaction {
 		long id = c.getLong(TransactionColumns._id.ordinal());
 		Transaction t = new Transaction();
 		t.id = id;
+        t.parentId = c.getLong(TransactionColumns.parent_id.ordinal());
 		t.fromAccountId = c.getLong(TransactionColumns.from_account_id.ordinal());
 		t.toAccountId = c.getLong(TransactionColumns.to_account_id.ordinal());
 		t.categoryId = c.getLong(TransactionColumns.category_id.ordinal());
@@ -178,6 +183,10 @@ public class Transaction {
 	public boolean isCreditCardPayment() {
 		return isCCardPayment == 1;
 	}
+
+    public boolean isSplit() {
+        return parentId > 0;
+    }
 	
 	public String getSystemAttribute(SystemAttribute sa) {
 		return systemAttributes != null ? systemAttributes.get(sa) : null;

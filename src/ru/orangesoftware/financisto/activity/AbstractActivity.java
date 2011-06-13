@@ -10,18 +10,18 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.model.MultiChoiceItem;
-import ru.orangesoftware.financisto.view.NodeInflater;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.MyEntityManager;
+import ru.orangesoftware.financisto.model.MultiChoiceItem;
+import ru.orangesoftware.financisto.view.NodeInflater;
+
+import java.util.List;
 
 public abstract class AbstractActivity extends Activity implements ActivityLayoutListener {
 
@@ -52,7 +52,7 @@ public abstract class AbstractActivity extends Activity implements ActivityLayou
 
 
 	@Override
-	public void onSelected(int id, ArrayList<? extends MultiChoiceItem> items) {
+	public void onSelected(int id, List<? extends MultiChoiceItem> items) {
 	}
 
 	@Override

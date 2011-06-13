@@ -224,9 +224,9 @@ public class TransactionActivity extends AbstractTransactionActivity {
 
     @Override
 	protected void editTransaction(Transaction transaction) {
-		super.editTransaction(transaction);
+        selectAccount(transaction.fromAccountId, false);
+        commonEditTransaction(transaction);
         fetchSplits();
-		selectAccount(transaction.fromAccountId, false);
         selectPayee(transaction.payeeId);
 		amountInput.setAmount(transaction.fromAmount);
 	}

@@ -78,12 +78,25 @@ public class BlotterActivity extends AbstractListActivity {
 			calculationTask.stop();
 			calculationTask.cancel(true);
 		}
-		calculationTask = new BlotterTotalsCalculationTask(
-				this, db, blotterFilter, totalTextFlipper, totalText, filterAccounts); 
+        calculationTask = createTotalCalculationTask();
 		calculationTask.execute();
 	}
-	
-	@Override
+
+    protected BlotterTotalsCalculationTask createTotalCalculationTask() {
+        WhereFilter filter = getFilterForTotals();
+        return new BlotterTotalsCalculationTask(this, db, filter, totalTextFlipper, totalText);
+    }
+
+    private WhereFilter getFilterForTotals() {
+        WhereFilter filter = blotterFilter;
+        if (filterAccounts) {
+            filter = WhereFilter.copyOf(filter);
+            filter.put(WhereFilter.Criteria.eq("from_account_is_include_into_totals", "1"));
+        }
+        return filter;
+    }
+
+    @Override
 	public void requeryCursor() {
 		super.requeryCursor();
 		calculateTotals();
@@ -250,14 +263,18 @@ public class BlotterActivity extends AbstractListActivity {
 	
 	@Override
 	protected void deleteItem(int position, final long id) {
+        final Transaction t = db.getTransaction(id);
+        int titleId = t.isTemplate() ? R.string.delete_template_confirm
+                : (t.isSplit() ? R.string.delete_transaction_parent_confirm : R.string.delete_transaction_confirm);
 		new AlertDialog.Builder(this)
-		.setMessage(blotterFilter.isTemplate() ? R.string.delete_template_confirm : R.string.delete_transaction_confirm)
+		.setMessage(titleId)
 		.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener(){
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
-				db.deleteTransaction(id);
-				requeryCursor();
-                afterDeletingTransaction(id);
+                long transactionIdToDelete = t.isSplit() ? t.parentId : t.id;
+				db.deleteTransaction(transactionIdToDelete);
+                afterDeletingTransaction(transactionIdToDelete);
+                requeryCursor();
 			}
 		})
 		.setNegativeButton(R.string.no, null)
@@ -282,7 +299,7 @@ public class BlotterActivity extends AbstractListActivity {
 			startActivityForResult(intent, EDIT_TRANSFER_REQUEST);			
 		} else {
 			Intent intent = new Intent(BlotterActivity.this, TransactionActivity.class);
-			intent.putExtra(TransactionActivity.TRAN_ID_EXTRA, id);
+			intent.putExtra(TransactionActivity.TRAN_ID_EXTRA, t.isSplit() ? t.parentId : id);
 			intent.putExtra(TransactionActivity.DUPLICATE_EXTRA, duplicate);
 			startActivityForResult(intent, EDIT_TRANSACTION_REQUEST);
 		}		
@@ -348,7 +365,7 @@ public class BlotterActivity extends AbstractListActivity {
 	@Override
 	protected void viewItem(int position, long id) {
 		TransactionInfoDialog transactionInfoView = new TransactionInfoDialog(this, position, id, em, inflater);
-		transactionInfoView.show(id);
+		transactionInfoView.show();
 	}
 
 	/* (non-Javadoc)

@@ -10,18 +10,13 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
-import java.util.HashMap;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.utils.RecurUtils;
-import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import javax.persistence.*;
+import java.util.Map;
 
 @Entity
 @Table(name = "budget")
@@ -89,7 +84,7 @@ public class Budget {
 		return RecurUtils.createFromExtraString(recur);
 	}
 	
-	public static String createWhere(Budget b, HashMap<Long, Category> categories, HashMap<Long, Project> projects) {
+	public static String createWhere(Budget b, Map<Long, Category> categories, Map<Long, Project> projects) {
 		StringBuilder sb = new StringBuilder();
 		// currency
 		sb.append(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID).append("=").append(b.currencyId);
@@ -121,7 +116,7 @@ public class Budget {
 		return sb.toString();
 	}
 
-	private static String createCategoriesWhere(Budget b, HashMap<Long, Category> categories) {
+	private static String createCategoriesWhere(Budget b, Map<Long, Category> categories) {
 		long[] ids = MyEntity.splitIds(b.categories);
 		if (ids != null) {
 			StringBuilder sb = new StringBuilder();
@@ -147,7 +142,7 @@ public class Budget {
 		return null;
 	}
 
-	private static String createProjectsWhere(Budget b, HashMap<Long, Project> projects) {
+	private static String createProjectsWhere(Budget b, Map<Long, Project> projects) {
 		long[] ids = MyEntity.splitIds(b.projects);
 		if (ids != null) {
 			StringBuilder sb = new StringBuilder();

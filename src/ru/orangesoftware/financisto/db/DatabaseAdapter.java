@@ -103,9 +103,9 @@ public class DatabaseAdapter {
 	// ===================================================================
 	
 	public Transaction getTransaction(long id) {
-		Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-				TransactionColumns._id +"=?", new String[]{String.valueOf(id)},
-				null, null, null);
+		Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION,
+                TransactionColumns._id + "=?", new String[]{String.valueOf(id)},
+                null, null, null);
 		try {
 			if (c.moveToFirst()) {
 				Transaction t = Transaction.fromCursor(c);
@@ -118,17 +118,25 @@ public class DatabaseAdapter {
 		return new Transaction();
 	}
 
-	public Cursor getBlotter(WhereFilter filter) {
-		long t0 = System.currentTimeMillis();
-		try {
-			String sortOrder = getBlotterSortOrder(filter);
-			return db.query(V_BLOTTER, BlotterColumns.NORMAL_PROJECTION, 
-				filter.getSelection(), filter.getSelectionArgs(), null, null, 
-				sortOrder);
-		} finally {
-			long t1 = System.currentTimeMillis();
-			Log.i("DB", "getBlotter "+(t1-t0)+"ms");
-		}
+    public Cursor getBlotter(WhereFilter filter) {
+        return getBlotter(V_BLOTTER, filter);
+    }
+
+    public Cursor getBlotterWithSplits(WhereFilter filter) {
+        return getBlotter(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, filter);
+    }
+
+	private Cursor getBlotter(String view, WhereFilter filter) {
+        long t0 = System.currentTimeMillis();
+        try {
+            String sortOrder = getBlotterSortOrder(filter);
+            return db.query(view, BlotterColumns.NORMAL_PROJECTION,
+                filter.getSelection(), filter.getSelectionArgs(), null, null,
+                sortOrder);
+        } finally {
+            long t1 = System.currentTimeMillis();
+            Log.i("DB", "getBlotter "+(t1-t0)+"ms");
+        }
 	}
 
 	private String getBlotterSortOrder(WhereFilter filter) {
@@ -151,10 +159,10 @@ public class DatabaseAdapter {
 		}
 	}
 
-	public Cursor getBlotter(String where) {
-		return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION, where, null, null, null, 
-				BlotterColumns.datetime+" DESC");
-	}
+    public Cursor getBlotterWithSplits(String where) {
+        return db.query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, BlotterColumns.NORMAL_PROJECTION, where, null, null, null,
+                BlotterColumns.datetime+" DESC");
+    }
 
 	/**
 	 * [Bill Filtering] Returns all the expenses (negative amount) for a given Account in a given period.
@@ -322,6 +330,10 @@ public class DatabaseAdapter {
 		try {
 			long now = System.currentTimeMillis();
 			Transaction transaction = getTransaction(id);
+            if (transaction.isSplit()) {
+                id = transaction.parentId;
+                transaction = getTransaction(id);
+            }
 			transaction.lastRecurrence = now;
 			updateTransaction(transaction);
 			transaction.id = -1;
@@ -335,18 +347,27 @@ public class DatabaseAdapter {
 				transaction.fromAmount *= multiplier;
 				transaction.toAmount *= multiplier;
 			}
-			HashMap<Long, String> attributesMap = getAllAttributesForTransaction(id);
-			LinkedList<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();
-			for (long attributeId : attributesMap.keySet()) {
-				TransactionAttribute ta = new TransactionAttribute();
-				ta.attributeId = attributeId;
-				ta.value = attributesMap.get(attributeId);
-				attributes.add(ta);
-			}
 			long transactionId = insertTransaction(transaction);
+            HashMap<Long, String> attributesMap = getAllAttributesForTransaction(id);
+            LinkedList<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();
+            for (long attributeId : attributesMap.keySet()) {
+                TransactionAttribute ta = new TransactionAttribute();
+                ta.attributeId = attributeId;
+                ta.value = attributesMap.get(attributeId);
+                attributes.add(ta);
+            }
 			if (attributes.size() > 0) {
 				insertAttributes(transactionId, attributes);
 			}
+            List<Split> splits = em().getSplitsForTransaction(id);
+            if (multiplier > 1) {
+                for (Split split : splits) {
+                    split.amount *= multiplier;
+                }
+            }
+            transaction.id = transactionId;
+            transaction.splits = splits;
+            insertSplits(transaction);
 			db.setTransactionSuccessful();
 			return transactionId;
 		} finally {
@@ -358,7 +379,7 @@ public class DatabaseAdapter {
         return insertOrUpdate(transaction, null);
     }
 
-	public long insertOrUpdate(Transaction transaction, LinkedList<TransactionAttribute> attributes) {
+	public long insertOrUpdate(Transaction transaction, List<TransactionAttribute> attributes) {
 		db.beginTransaction();
 		try {
 			long transactionId;
@@ -370,13 +391,14 @@ public class DatabaseAdapter {
 				transactionId = transaction.id;
 				db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", 
 						new String[]{String.valueOf(transactionId)});
-                db.delete(SPLIT_TABLE, SplitColumns.transaction_id+"=?",
+                db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?",
                         new String[]{String.valueOf(transactionId)});
 			}
 			if (attributes != null) {
 				insertAttributes(transactionId, attributes);
 			}
-            insertSplits(transactionId, transaction.splits);
+            transaction.id = transactionId;
+            insertSplits(transaction);
 			db.setTransactionSuccessful();
 			return transactionId;
 		} finally {
@@ -384,7 +406,7 @@ public class DatabaseAdapter {
 		}
 	}
 
-    private void insertAttributes(long transactionId, LinkedList<TransactionAttribute> attributes) {
+    private void insertAttributes(long transactionId, List<TransactionAttribute> attributes) {
 		for (TransactionAttribute a : attributes) {
 			a.transactionId = transactionId;
 			ContentValues values = a.toValues();
@@ -392,12 +414,12 @@ public class DatabaseAdapter {
 		}
 	}
 
-    private void insertSplits(long transactionId, List<Split> splits) {
+    private void insertSplits(Transaction parent) {
+        List<Split> splits = parent.splits;
         if (splits != null) {
             for (Split split : splits) {
-                split.id = -1;
-                split.transactionId = transactionId;
-                em().insertSplit(split);
+                Transaction t = split.asTransaction(parent);
+                insertTransaction(t);
             }
         }
     }
@@ -413,7 +435,7 @@ public class DatabaseAdapter {
 
     private long insertTransaction(Transaction t) {
         long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
-        if (t.isNotTemplateLike()) {
+        if (!t.isTemplateLike() && !t.isSplit()) {
             updateAccountBalance(t.fromAccountId, t.fromAmount);
             insertRunningBalance(t.fromAccountId, id, t.dateTime, t.fromAmount, t.fromAmount);
             updateAccountBalance(t.toAccountId, t.toAmount);
@@ -442,17 +464,7 @@ public class DatabaseAdapter {
     public void deleteTransaction(long id) {
 		db.beginTransaction();
 		try {
-			Transaction t = getTransaction(id);
-			if (t.isNotTemplateLike()) {
-				updateAccountBalance(t.fromAccountId, -t.fromAmount);
-                deleteRunningBalance(t.fromAccountId, t.id, t.fromAmount, t.dateTime);
-				updateAccountBalance(t.toAccountId, -t.toAmount);
-                deleteRunningBalance(t.toAccountId, t.id, t.toAmount, t.dateTime);
-				updateLocationCount(t.locationId, -1);
-			}
-			String[] sid = new String[]{String.valueOf(id)};
-			db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
-			db.delete(TRANSACTION_TABLE, TransactionColumns._id +"=?", sid);
+            deleteTransactionNoDbTransaction(id);
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();			
@@ -460,15 +472,18 @@ public class DatabaseAdapter {
 	}
 	
 	public void deleteTransactionNoDbTransaction(long id) {
-		Transaction t = getTransaction(id);
-		if (t.isNotTemplateLike()) {
-			updateAccountBalance(t.fromAccountId, -t.fromAmount);
-			updateAccountBalance(t.toAccountId, -t.toAmount);
-			updateLocationCount(t.locationId, -1);
-		}
-		String[] sid = new String[]{String.valueOf(id)};
-		db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
-		db.delete(TRANSACTION_TABLE, TransactionColumns._id +"=?", sid);
+        Transaction t = getTransaction(id);
+        if (t.isNotTemplateLike()) {
+            updateAccountBalance(t.fromAccountId, -t.fromAmount);
+            deleteRunningBalance(t.fromAccountId, t.id, t.fromAmount, t.dateTime);
+            updateAccountBalance(t.toAccountId, -t.toAmount);
+            deleteRunningBalance(t.toAccountId, t.id, t.toAmount, t.dateTime);
+            updateLocationCount(t.locationId, -1);
+        }
+        String[] sid = new String[]{String.valueOf(id)};
+        db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
+        db.delete(TRANSACTION_TABLE, TransactionColumns._id+"=?", sid);
+        db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?", sid);
 	}
 
     private void updateAccountBalance(long oldAccountId, long oldAmount, long newAccountId, long newAmount) {
@@ -543,7 +558,7 @@ public class DatabaseAdapter {
 	// CATEGORY
 	// ===================================================================
 
-	public long insertOrUpdate(Category category, ArrayList<Attribute> attributes) {
+	public long insertOrUpdate(Category category, List<Attribute> attributes) {
 		db.beginTransaction();
 		try {
 			long id;
@@ -561,7 +576,7 @@ public class DatabaseAdapter {
 		}
 	}
 	
-	private void addAttributes(long categoryId, ArrayList<Attribute> attributes) {
+	private void addAttributes(long categoryId, List<Attribute> attributes) {
 		db.delete(CATEGORY_ATTRIBUTE_TABLE, CategoryAttributeColumns.CATEGORY_ID+"=?", new String[]{String.valueOf(categoryId)});
 		ContentValues values = new ContentValues();
 		values.put(CategoryAttributeColumns.CATEGORY_ID, categoryId);
@@ -674,27 +689,36 @@ public class DatabaseAdapter {
 		}
 	}
 	
-	public HashMap<Long, Category> getCategoriesMap(boolean includeNoCategory) {
+	public Map<Long, Category> getCategoriesMap(boolean includeNoCategory) {
 		return getCategoriesTree(includeNoCategory).asMap();
 	}
 
-	public ArrayList<Category> getAllCategoriesList(boolean includeNoCategory) {
-		ArrayList<Category> list = new ArrayList<Category>();
+	public List<Category> getCategoriesList(boolean includeNoCategory) {
 		Cursor c = getCategories(includeNoCategory);
-		try { 
-			while (c.moveToNext()) {
-				Category category = Category.formCursor(c);
-				list.add(category);
-			}
-		} finally {
-			c.close();
-		}
-		return list;
+        return categoriesAsList(c);
 	}
 
     public Cursor getAllCategories() {
         return db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
                 null, null, null, null, null);
+    }
+
+    public List<Category> getAllCategoriesList() {
+        Cursor c = getAllCategories();
+        return categoriesAsList(c);
+    }
+
+    private List<Category> categoriesAsList(Cursor c) {
+        ArrayList<Category> list = new ArrayList<Category>();
+        try {
+            while (c.moveToNext()) {
+                Category category = Category.formCursor(c);
+                list.add(category);
+            }
+        } finally {
+            c.close();
+        }
+        return list;
     }
 
 	public Cursor getCategories(boolean includeNoCategory) {
@@ -1407,6 +1431,21 @@ public class DatabaseAdapter {
         } finally {
             db.endTransaction();
         }
+    }
+
+    private static final String[] SUM_FROM_AMOUNT = new String[]{"sum(from_amount)"};
+
+    public long fetchBudgetBalance(Map<Long, Category> categories, Map<Long, Project> projects, Budget b) {
+        String where = Budget.createWhere(b, categories, projects);
+        Cursor c = db().query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, SUM_FROM_AMOUNT, where, null, null, null, null);
+        try {
+            if (c.moveToNext()) {
+                return c.getLong(0);
+            }
+        } finally {
+            c.close();
+        }
+        return 0;
     }
 
 }

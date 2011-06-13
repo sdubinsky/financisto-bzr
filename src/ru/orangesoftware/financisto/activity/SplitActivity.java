@@ -147,8 +147,10 @@ public class SplitActivity extends AbstractActivity {
 
     @Override
     protected void onClick(View v, int id) {
-        x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter,
-                DatabaseHelper.CategoryViewColumns._id.name(), split.categoryId);
+        if (id == R.id.category) {
+            x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter,
+                    DatabaseHelper.CategoryViewColumns._id.name(), split.categoryId);
+        }
     }
 
     @Override

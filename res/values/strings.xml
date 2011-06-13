@@ -641,5 +641,6 @@
     <string name="split">[Split]</string>
     <string name="unsplit_amount">Unsplit amount</string>
     <string name="unsplit_amount_greater_than_zero">There is still some amount left un-split...</string>
+    <string name="delete_transaction_parent_confirm">This transaction is a part of split. Do you want to delete the parent transaction?</string>
 
 </resources>

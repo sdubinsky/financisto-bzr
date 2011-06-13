@@ -12,7 +12,7 @@ import android.content.Intent;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "split")
+@Table(name = "transactions")
 public class Split {
 
     private static final String SPLIT_ID = "SPLIT_ID";
@@ -26,17 +26,20 @@ public class Split {
     @Column(name = "_id")
     public long id = -1;
 
-	@Column(name = "transaction_id")
+	@Column(name = "parent_id")
 	public long transactionId;
 
     @Column(name = "category_id")
     public long categoryId;
 
-	@Column(name = "amount")
+	@Column(name = "from_amount")
 	public long amount;
 
     @Column(name = "note")
     public String note;
+
+    @Column(name = "payee_id")
+    public long payeeId;
 
     @Transient
     public long accountId;
@@ -64,6 +67,19 @@ public class Split {
         intent.putExtra(SPLIT_AMOUNT, amount);
         intent.putExtra(SPLIT_UNSPLIT_AMOUNT, unsplitAmount);
         intent.putExtra(SPLIT_NOTE, note);
+    }
+
+    public Transaction asTransaction(Transaction parent) {
+        Transaction t = new Transaction();
+        t.id = -1;
+        t.parentId = parent.id;
+        t.dateTime = parent.dateTime;
+        t.fromAccountId = parent.fromAccountId;
+        t.payeeId = parent.payeeId;
+        t.categoryId = categoryId;
+        t.fromAmount = amount;
+        t.note = note;
+        return t;
     }
 
 }

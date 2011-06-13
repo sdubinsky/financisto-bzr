@@ -22,7 +22,7 @@ import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.view.NodeInflater;
 import ru.orangesoftware.financisto.view.NodeInflater.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ActivityLayout {
 
@@ -179,7 +179,7 @@ public class ActivityLayout {
 		.show();
 	}
 	
-	public void selectMultiChoice(Context context, final int id, int titleId, final ArrayList<? extends MultiChoiceItem> items) {
+	public void selectMultiChoice(Context context, final int id, int titleId, final List<? extends MultiChoiceItem> items) {
 		int count = items.size();
 		String[] titles = new String[count];
 		boolean[] checked = new boolean[count];

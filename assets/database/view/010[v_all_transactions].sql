@@ -1,6 +1,7 @@
 CREATE VIEW v_all_transactions AS 
 SELECT
 	t._id as _id,
+	t.parent_id as parent_id,
 	a1._id as from_account_id,		
 	a1.title as from_account_title,
 	c1._id as from_account_currency_id,

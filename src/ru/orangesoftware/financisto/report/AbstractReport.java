@@ -151,10 +151,14 @@ public abstract class AbstractReport implements Report {
 		if (c != null) {
 			filter.put(c);
 		}
-		Intent intent = new Intent(context, BlotterActivity.class);
+		Intent intent = new Intent(context, getBlotterActivityClass());
 		filter.toIntent(intent);
 		return intent;
 	}
+
+    protected Class<? extends BlotterActivity> getBlotterActivityClass() {
+        return BlotterActivity.class;
+    }
 
     protected void cleanupFilter(WhereFilter filter) {
         // fixing a bug with saving incorrect filter fot this report

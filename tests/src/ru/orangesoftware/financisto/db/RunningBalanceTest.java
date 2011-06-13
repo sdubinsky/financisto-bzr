@@ -10,11 +10,11 @@ package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
 import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.test.AccountBuilder;
-import ru.orangesoftware.financisto.test.DateTime;
-import ru.orangesoftware.financisto.test.TransactionBuilder;
-import ru.orangesoftware.financisto.test.TransferBuilder;
+import ru.orangesoftware.financisto.test.*;
+
+import java.util.Map;
 
 public class RunningBalanceTest extends AbstractDbTest {
 
@@ -26,6 +26,19 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t1, a, 1000);
         assertAccountBalanceForTransaction(t2, a, 2234);
         assertFinalBalanceForAccount(a, 2234);
+    }
+
+    public void test_should_not_duplicate_running_balance_with_splits() {
+        Account a = AccountBuilder.createDefault(db);
+        Map<String, Category> categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
+        Transaction t1 = TransactionBuilder.withDb(db).account(a).amount(2000).create();
+        db.rebuildRunningBalanceForAccount(a);
+        Transaction t2 = TransactionBuilder.withDb(db).account(a).amount(1000)
+                .withSplit(categoriesMap.get("A"), 600)
+                .withSplit(categoriesMap.get("B"), 400).create();
+        assertAccountBalanceForTransaction(t1, a, 2000);
+        assertAccountBalanceForTransaction(t2, a, 3000);
+        assertFinalBalanceForAccount(a, 3000);
     }
 
     public void test_should_update_running_balance_for_two_accounts() {

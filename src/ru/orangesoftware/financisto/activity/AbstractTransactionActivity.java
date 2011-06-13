@@ -837,8 +837,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		dateText.setText(df.format(d));
 		timeText.setText(tf.format(d));		
 	}
-	
-	protected void editTransaction(Transaction transaction) {
+
+    protected abstract void editTransaction(Transaction transaction);
+
+	protected void commonEditTransaction(Transaction transaction) {
 		selectStatus(transaction.status);
 		selectCategory(transaction.categoryId, false);
 		selectProject(transaction.projectId);

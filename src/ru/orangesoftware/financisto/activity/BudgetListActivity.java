@@ -10,48 +10,37 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.BudgetListAdapter;
-import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
-import ru.orangesoftware.financisto.model.Budget;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.MyEntity;
-import ru.orangesoftware.financisto.model.Project;
-import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
-import ru.orangesoftware.financisto.utils.RecurUtils;
-import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
-import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
-import ru.orangesoftware.financisto.utils.RecurUtils.RecurInterval;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewFlipper;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.BudgetListAdapter;
+import ru.orangesoftware.financisto.blotter.BlotterFilter;
+import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
+import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
+import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
+import ru.orangesoftware.financisto.utils.RecurUtils;
+import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
+import ru.orangesoftware.financisto.utils.RecurUtils.RecurInterval;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BudgetListActivity extends AbstractListActivity {
 	
-	private static final String[] SUM_FROM_AMOUNT = new String[]{"sum(from_amount)"};
-
 	private static final int NEW_BUDGET_REQUEST = 1;
 	private static final int EDIT_BUDGET_REQUEST = 2;
 	private static final int VIEW_BUDGET_REQUEST = 3;
@@ -247,43 +236,8 @@ public class BudgetListActivity extends AbstractListActivity {
 
 		@Override
 		protected Total[] doInBackground(Void... params) {
-			long t0 = System.currentTimeMillis();
 			try {
-				try {
-					StringBuilder sb = new StringBuilder();
-					Map<String, Total> map = new HashMap<String, Total>();
-					ArrayList<Budget> budgets = BudgetListActivity.this.budgets;
-					final HashMap<Long, Category> categories = MyEntity.asMap(db.getAllCategoriesList(true));
-					final HashMap<Long, Project> projects = MyEntity.asMap(em.getAllProjectsList(true));
-					for (final Budget b : budgets) {
-						Currency currency = CurrencyCache.getCurrency(b.currencyId);
-						String s = currency.symbol;
-						Total t = map.get(s);
-						if (t == null) {
-							t = new Total(currency, true);
-							map.put(s, t);
-						}
-						sb.setLength(0);
-						final long spent = queryBalanceSpend(categories, projects, b);
-						t.amount += spent;
-						t.balance += b.amount+spent;
-						final String categoriesText = getChecked(categories, b.categories);
-						final String projectsText = getChecked(projects, b.projects);
-						handler.post(new Runnable() {
-							@Override
-							public void run() {
-								b.updated = true;
-								b.spent = spent;
-								b.categoriesText = categoriesText;
-								b.projectsText = projectsText;
-							}
-						});
-					}
-					return map.values().toArray(new Total[map.size()]);
-				} finally {
-					long t1 = System.currentTimeMillis();
-					Log.d("BUDGET TOTALS", (t1-t0)+"ms");
-				}
+                return calculateBudgetTotals();
 			} catch (Exception ex) {
 				Log.e("BudgetTotals", "Unexpected error", ex);
 				return new Total[0];
@@ -291,7 +245,46 @@ public class BudgetListActivity extends AbstractListActivity {
 
 		}
 
-		private <T extends MyEntity> String getChecked(HashMap<Long, T> entities, String s) {
+        public Total[] calculateBudgetTotals() {
+            long t0 = System.currentTimeMillis();
+            try {
+                StringBuilder sb = new StringBuilder();
+                Map<String, Total> map = new HashMap<String, Total>();
+                ArrayList<Budget> budgets = BudgetListActivity.this.budgets;
+                final Map<Long, Category> categories = MyEntity.asMap(db.getCategoriesList(true));
+                final Map<Long, Project> projects = MyEntity.asMap(em.getAllProjectsList(true));
+                for (final Budget b : budgets) {
+                    Currency currency = CurrencyCache.getCurrency(b.currencyId);
+                    String s = currency.symbol;
+                    Total t = map.get(s);
+                    if (t == null) {
+                        t = new Total(currency, true);
+                        map.put(s, t);
+                    }
+                    sb.setLength(0);
+                    final long spent = db.fetchBudgetBalance(categories, projects, b);
+                    t.amount += spent;
+                    t.balance += b.amount+spent;
+                    final String categoriesText = getChecked(categories, b.categories);
+                    final String projectsText = getChecked(projects, b.projects);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            b.updated = true;
+                            b.spent = spent;
+                            b.categoriesText = categoriesText;
+                            b.projectsText = projectsText;
+                        }
+                    });
+                }
+                return map.values().toArray(new Total[map.size()]);
+            } finally {
+                long t1 = System.currentTimeMillis();
+                Log.d("BUDGET TOTALS", (t1 - t0) + "ms");
+            }
+        }
+
+        private <T extends MyEntity> String getChecked(Map<Long, T> entities, String s) {
 			long[] ids = MyEntity.splitIds(s);
 			if (ids == null) {
 				return null;
@@ -334,20 +327,6 @@ public class BudgetListActivity extends AbstractListActivity {
 			isRunning = false;
 		}
 		
-	}
-	
-	public long queryBalanceSpend(HashMap<Long, Category> categories, HashMap<Long, Project> projects, Budget b) {
-		String where = Budget.createWhere(b, categories, projects);
-		Log.d("BUDGETS", where);
-		Cursor c = db.db().query("v_blotter_for_account", SUM_FROM_AMOUNT, where, null, null, null, null);
-		try {
-			if (c.moveToNext()) {
-				return c.getLong(0);
-			}
-		} finally {
-			c.close();
-		}
-		return 0;
 	}
 
 }
