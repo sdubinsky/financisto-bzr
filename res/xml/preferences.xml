@@ -114,7 +114,9 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/gdocs_backup">
         <EditTextPreference android:key="user_login"
-                            android:title="@string/user_login" android:summary="@string/user_login_summary"/>
+                            android:title="@string/user_login"
+                            android:summary="@string/user_login_summary"
+                            android:hint="user@gmail.com"/>
         <EditTextPreference
                 android:key="user_password"
                 android:title="@string/user_password"
