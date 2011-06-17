@@ -88,6 +88,7 @@ public abstract class Export {
 			writeBody(bw);
 			writeFooter(bw);
 		} finally {
+            bw.flush();
 			bw.close();
 		}	
 	}

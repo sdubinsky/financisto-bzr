@@ -64,6 +64,7 @@ import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -499,13 +500,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		/*
 		 * Convert from ListList<DocumentEntry> to String[] to use in method setSingleChoiceItems()
 		 * */
-		List<DocumentEntry> entries = backupFiles = feed.getEntries();
-		final String[] backupFilesNames = new String[entries.size()];
-		for (int i=0; i<entries.size(); i++) {
-			String name = entries.get(i).getTitle();
-			backupFilesNames[i] = name;
-		}
-		
+        List<DocumentEntry> entries = feed.getEntries();
+        backupFiles = filterBackupFiles(entries);
+		String[] backupFilesNames = getTitles(backupFiles);
+
 		new AlertDialog.Builder(this)
 			.setTitle(R.string.restore_database)
 			.setPositiveButton(R.string.restore, new DialogInterface.OnClickListener(){
@@ -528,7 +526,28 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			.show();
 	}
 
-	/**
+    private List<DocumentEntry> filterBackupFiles(List<DocumentEntry> entries) {
+        List<DocumentEntry> backups = new ArrayList<DocumentEntry>();
+        for (DocumentEntry entry : entries) {
+            String title = entry.getTitle();
+            String contentType = entry.getContentType();
+            if (title.endsWith(".backup") && contentType.equals("application/zip")) {
+                backups.add(entry);
+            }
+        }
+        return backups;
+    }
+
+    private String[] getTitles(List<DocumentEntry> backupFiles) {
+        int count = backupFiles.size();
+        String[] titles = new String[count];
+        for (int i=0; i<count; i++) {
+            titles[i] = backupFiles.get(i).getTitle();
+        }
+        return titles;
+    }
+
+    /**
 	 * Task that calls backup to google docs functions
 	 * */
 	private class OnlineBackupExportTask extends ImportExportAsyncTask {
