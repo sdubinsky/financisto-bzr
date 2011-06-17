@@ -81,12 +81,12 @@ public class AccountListAdapter2 extends ResourceCursorAdapter {
 		v.bottomView.setText(df.format(new Date(date)));
 		
 		long amount = a.totalAmount;			
-		if (type == AccountType.CREDIT_CARD && a.limitAmount > 0) {
-			long balance = a.limitAmount + amount;
+		if (type == AccountType.CREDIT_CARD && a.limitAmount != 0) {
+			long balance = Math.abs(a.limitAmount) + amount;
 			u.setAmountText(v.rightCenterView, a.currency, amount, false);
 			u.setAmountText(v.rightView, a.currency, balance, false);
 			v.rightCenterView.setVisibility(View.VISIBLE);
-			v.progressBar.setMax((int)a.limitAmount);
+			v.progressBar.setMax((int) Math.abs(a.limitAmount));
 			v.progressBar.setProgress((int)(balance > 0 ? balance : 0));
 			v.progressBar.setVisibility(View.VISIBLE);
 		} else {
