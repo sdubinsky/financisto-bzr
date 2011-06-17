@@ -10,9 +10,11 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
-import java.text.DateFormat;
-import java.util.Date;
-
+import android.content.Context;
+import android.database.Cursor;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ResourceCursorAdapter;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
@@ -20,11 +22,9 @@ import ru.orangesoftware.financisto.model.CardIssuer;
 import ru.orangesoftware.financisto.utils.DateUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.orb.EntityManager;
-import android.content.Context;
-import android.database.Cursor;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ResourceCursorAdapter;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 public class AccountListAdapter2 extends ResourceCursorAdapter {
 	
@@ -82,12 +82,14 @@ public class AccountListAdapter2 extends ResourceCursorAdapter {
 		
 		long amount = a.totalAmount;			
 		if (type == AccountType.CREDIT_CARD && a.limitAmount != 0) {
-			long balance = Math.abs(a.limitAmount) + amount;
+            long limitAmount = Math.abs(a.limitAmount);
+			long balance = limitAmount + amount;
+            long balancePercentage = 10000*balance/limitAmount;
 			u.setAmountText(v.rightCenterView, a.currency, amount, false);
 			u.setAmountText(v.rightView, a.currency, balance, false);
 			v.rightCenterView.setVisibility(View.VISIBLE);
-			v.progressBar.setMax((int) Math.abs(a.limitAmount));
-			v.progressBar.setProgress((int)(balance > 0 ? balance : 0));
+			v.progressBar.setMax(10000);
+			v.progressBar.setProgress((int)balancePercentage);
 			v.progressBar.setVisibility(View.VISIBLE);
 		} else {
 			u.setAmountText(v.rightView, a.currency, amount, false);
