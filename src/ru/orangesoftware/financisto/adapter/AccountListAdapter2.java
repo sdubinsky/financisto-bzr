@@ -70,7 +70,7 @@ public class AccountListAdapter2 extends ResourceCursorAdapter {
 			sb.append(a.issuer);
 		}
 		if (!Utils.isEmpty(a.number)) {
-			sb.append(" #"+a.number);
+			sb.append(" #").append(a.number);
 		}
 		if (sb.length() == 0) {
 			sb.append(context.getString(type.titleId));
