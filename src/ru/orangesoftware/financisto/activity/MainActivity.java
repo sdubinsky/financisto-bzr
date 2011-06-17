@@ -66,7 +66,6 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 public class MainActivity extends TabActivity implements TabHost.OnTabChangeListener {
 	
@@ -393,7 +392,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		String password = MyPreferences.getUserPassword(context);
 		if(password==null||password.equals("")) 
 			throw new SettingsNotConfiguredException("password");
-		
+
 		googleDocsClient.setUserCredentials(login, password);
 		
 		return googleDocsClient;
@@ -423,7 +422,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     }
 
 	private String selectedBackupFile;
-	private Properties backupFiles;
+    private DocumentEntry selectedOnlineBackupFile;
+	private List<DocumentEntry> backupFiles;
 	
 	private void doImport() {
 		final String[] backupFiles = Backup.listBackups();
@@ -473,10 +473,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 				return;
 			}
 			feed = docsClient.getFolderDocsListFeed(fd.getKey());
-		}  catch (AuthenticationException e) { //falha de login
+		}  catch (AuthenticationException e) {
 			showErrorPopup(this,R.string.gdocs_login_failed);
 			return;
-		}  catch (SettingsNotConfiguredException e) { //parametros de login nao configurados
+		}  catch (SettingsNotConfiguredException e) {
 			if(e.getMessage().equals("login"))
 				handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
 			else if(e.getMessage().equals("password"))
@@ -491,7 +491,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		} catch (IOException e) {
 			showErrorPopup(this,R.string.gdocs_io_error);
             return;
-		}  catch(Exception e) { //outros erros de conexao
+		}  catch(Exception e) {
 			showErrorPopup(this,R.string.gdocs_connection_failed);
 			return;
 		}
@@ -499,32 +499,29 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		/*
 		 * Convert from ListList<DocumentEntry> to String[] to use in method setSingleChoiceItems()
 		 * */
-		List<DocumentEntry> entries = feed.getEntries();
+		List<DocumentEntry> entries = backupFiles = feed.getEntries();
 		final String[] backupFilesNames = new String[entries.size()];
-		backupFiles = new Properties();
-		String name;
-		for (int i=0;i<entries.size();i++) {
-			name = entries.get(i).getTitle();
-			backupFilesNames[i]=name;
-			backupFiles.put(name, entries.get(i).getKey());
-		}		
+		for (int i=0; i<entries.size(); i++) {
+			String name = entries.get(i).getTitle();
+			backupFilesNames[i] = name;
+		}
 		
 		new AlertDialog.Builder(this)
 			.setTitle(R.string.restore_database)
 			.setPositiveButton(R.string.restore, new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					if (selectedBackupFile != null) {
+					if (selectedOnlineBackupFile != null) {
 						ProgressDialog d = ProgressDialog.show(MainActivity.this, null, getString(R.string.restore_database_inprogress_gdocs), true);
-						new OnlineBackupImportTask(d).execute(selectedBackupFile, backupFiles.get(selectedBackupFile).toString());
+						new OnlineBackupImportTask(d, selectedOnlineBackupFile).execute();
 					}
 				}
 			})
 			.setSingleChoiceItems(backupFilesNames, -1, new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					if (which >= 0 && which < backupFilesNames.length) {
-						selectedBackupFile = backupFilesNames[which];
+					if (which >= 0 && which < backupFiles.size()) {
+						selectedOnlineBackupFile = backupFiles.get(which);
 					}
 				}
 			})
@@ -613,21 +610,24 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	 * Task that calls backup from google docs functions
 	 * */
 	private class OnlineBackupImportTask extends ImportExportAsyncTask {
-		
-		public OnlineBackupImportTask(ProgressDialog dialog) {
+
+        private final DocumentEntry entry;
+
+		public OnlineBackupImportTask(ProgressDialog dialog, DocumentEntry entry) {
 			super(MainActivity.this, dialog, new ImportExportAsyncTaskListener(){
 				@Override
 				public void onCompleted() {
 					onTabChanged(getTabHost().getCurrentTabTag());
 				}
 			});
+            this.entry = entry;
 		}
 
 		@Override
-		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception, AuthenticationException, SettingsNotConfiguredException {
+		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception, SettingsNotConfiguredException {
 			try {
-				new DatabaseImport(MainActivity.this, db, params[0]).
-					importOnlineDatabase(createDocsClient(context), params[1]);
+				new DatabaseImport(MainActivity.this, db, null).
+					importOnlineDatabase(createDocsClient(context), entry);
 			}  catch (SettingsNotConfiguredException e) { // error configuring connection parameters
 				if(e.getMessage().equals("login"))
 					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);

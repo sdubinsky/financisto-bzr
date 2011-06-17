@@ -16,7 +16,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import api.wireless.gdata.docs.client.DocsClient;
+import api.wireless.gdata.docs.data.DocumentEntry;
 import api.wireless.gdata.parser.ParseException;
+import api.wireless.gdata.util.ContentType;
 import api.wireless.gdata.util.ServiceException;
 import ru.orangesoftware.financisto.db.Database;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -27,6 +29,7 @@ import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.service.RecurrenceScheduler;
 
 import java.io.*;
+import java.util.zip.GZIPInputStream;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.ACCOUNT_TABLE;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT;
@@ -62,11 +65,14 @@ public class DatabaseImport {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 **/
-	public void importOnlineDatabase(DocsClient docsClient, String resourceId) throws ParseException, IOException, ServiceException {
-		InputStream inputStream=null;
-		inputStream = docsClient.getDocumentMediaAsTXT(resourceId);
-		recoverDatabase(inputStream);
-		inputStream.close();
+	public void importOnlineDatabase(DocsClient docsClient, DocumentEntry entry) throws ParseException, IOException, ServiceException {
+		InputStream inputStream = docsClient.getFileContent(entry, ContentType.ZIP);
+        InputStream in = new BufferedInputStream(new GZIPInputStream(inputStream));
+        try {
+		    recoverDatabase(in);
+        } finally {
+		    inputStream.close();
+        }
 	}
 	
 	/**

@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Android 2.2 Google APIs (1)"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="lib/trace-0.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rfc2445-no-joda.jar" sourcepath="H:/Work/Java/Android/google-rfc-2445-read-only/src"/>
