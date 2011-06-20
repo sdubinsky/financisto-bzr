@@ -258,13 +258,27 @@ public class AccountActivity extends AbstractActivity {
 						"_id", account.currency != null ? account.currency.id : -1);
 				break;
 			case R.id.currency_add:
-				Intent intent = new Intent(AccountActivity.this, CurrencyActivity.class);
-				startActivityForResult(intent, NEW_CURRENCY_REQUEST);
+                addNewCurrency();
 				break;
 		}
-	}	
+	}
 
-	@Override
+    private void addNewCurrency() {
+        new CurrencySelector(this, em, new CurrencySelector.OnCurrencyCreatedListener() {
+            @Override
+            public void onCreated(long currencyId) {
+                if (currencyId == 0) {
+                    Intent intent = new Intent(AccountActivity.this, CurrencyActivity.class);
+                    startActivityForResult(intent, NEW_CURRENCY_REQUEST);
+                } else {
+                    currencyCursor.requery();
+                    selectCurrency(currencyId);
+                }
+            }
+        }).show();
+    }
+
+    @Override
 	public void onSelectedId(int id, long selectedId) {
 		switch(id) {
 			case R.id.currency:

@@ -10,26 +10,26 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import static ru.orangesoftware.financisto.utils.Utils.checkEditText;
-import static ru.orangesoftware.financisto.utils.Utils.text;
-
-import java.text.DecimalFormatSymbols;
-
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Spinner;
+
+import java.text.DecimalFormatSymbols;
+
+import static ru.orangesoftware.financisto.utils.Utils.checkEditText;
+import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public class CurrencyActivity extends Activity {
 	
@@ -138,7 +138,7 @@ public class CurrencyActivity extends Activity {
 		int d = -1;
 		for (int i=0; i<count; i++) {
 			String s = a[i];
-			if (s.equals(v)) {
+			if (v != null && s.charAt(1) == v.charAt(1)) {
 				return i;
 			} 
 			if (s.charAt(1) == c) {

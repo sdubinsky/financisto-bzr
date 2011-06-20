@@ -51,12 +51,12 @@
 	<string-array name="decimal_separators">
 		<item>\'.\'</item>
 		<item>\',\'</item>
-		<item>\' \'</item>		
+		<item>\' \'</item>
 	</string-array>
 	<string-array name="group_separators">
 		<item>\'.\'</item>
 		<item>\',\'</item>
-		<item>\' \'</item>		
+		<item>\' \'</item>
 		<item>\'\'</item>
 	</string-array>
 	<string-array name="field_separators">
