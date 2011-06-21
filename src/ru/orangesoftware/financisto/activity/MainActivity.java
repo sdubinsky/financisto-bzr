@@ -67,6 +67,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends TabActivity implements TabHost.OnTabChangeListener {
 	
@@ -89,7 +90,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
-	private String appVersion;
+	private boolean shouldAskForPinOnResume = false;
+    private long activityPausedAtTime = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,11 +103,11 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			isPinProtected = true;
 		}
 		
-		if (isPinProtected && MyPreferences.isPinProtected(this)) {
-			Intent intent = new Intent(this, PinActivity.class);
-			startActivityForResult(intent, ACTIVITY_PIN);
+		if (isPinProtected && MyPreferences.shouldAskForPin(this)) {
+            shouldAskForPinOnResume = false;
+            askForPin();
 		} else {
-			initialLoad();			
+			initialLoad();
 		}
 		
 		if (MyPreferences.isSendErrorReport(this)) {
@@ -122,10 +124,34 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		started.put("accounts", Boolean.TRUE);
 		tabHost.setOnTabChangedListener(this);		
     }
-			
-	@Override  
-    public Object onRetainNonConfigurationInstance() {   
-        return MyPreferences.isPinProtected(this);   
+
+    private void askForPin() {
+        Intent intent = new Intent(this, PinActivity.class);
+        startActivityForResult(intent, ACTIVITY_PIN);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (shouldAskForPinOnResume && MyPreferences.isPinLockEnabled(this)) {
+            long deltaTimeMs = TimeUnit.MILLISECONDS.convert(MyPreferences.getLockTimeSeconds(this), TimeUnit.SECONDS);
+            if (deltaTimeMs > 0 && System.currentTimeMillis() - activityPausedAtTime > deltaTimeMs) {
+                askForPin();
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        shouldAskForPinOnResume = true;
+        activityPausedAtTime = System.currentTimeMillis();
+        MyPreferences.setPinRequired(true);
+    }
+
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        return MyPreferences.shouldAskForPin(this);
     }
 
 	@Override
@@ -195,7 +221,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		}
 		long t4 = System.currentTimeMillis();
 		Log.d("Financisto", "Load time = "+(t4 - t0)+"ms = "+(t2-t1)+"ms+"+(t3-t2)+"ms+"+(t4-t3)+"ms");
-		appVersion = WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);
+		WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);
 	}
 
 	private void updateZero(SQLiteDatabase db, String table, String field, String value) {

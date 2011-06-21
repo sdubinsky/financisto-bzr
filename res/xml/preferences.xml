@@ -97,6 +97,12 @@
         <ru.orangesoftware.financisto.dialog.PinDialogPreference
                 android:key="pin" android:title="@string/change_pin" android:summary="@string/change_pin_summary"
                 android:dependency="pin_protection" android:dialogLayout="@layout/lock"/>
+        <ListPreference android:key="pin_protection_lock_time"
+                        android:title="@string/lock_time"
+                        android:summary="@string/lock_time_summary"
+                        android:entries="@array/lock_time_entities"
+                        android:entryValues="@array/lock_time_values"
+                        android:dependency="pin_protection" android:defaultValue="5"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/home_screen">
         <Preference android:title="@string/shortcut_new_transaction"

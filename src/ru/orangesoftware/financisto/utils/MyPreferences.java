@@ -73,15 +73,29 @@ public class MyPreferences {
 		return sharedPreferences.getBoolean("use_gps", true);
 	}
 	
-	public static boolean isUseMylocation(Context context) {
+	public static boolean isUseMyLocation(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getBoolean("use_my_location", true);
 	}
 
-	public static boolean isPinProtected(Context context) {
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		return sharedPreferences.getBoolean("pin_protection", false) && isPinRequired;
+	public static boolean shouldAskForPin(Context context) {
+		return isPinProtected(context) && isPinRequired;
 	}
+
+    public static boolean isPinProtected(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("pin_protection", false);
+    }
+
+    public static boolean isPinLockEnabled(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return isPinProtected(context) && sharedPreferences.getBoolean("pin_protection_lock", true);
+    }
+
+    public static int getLockTimeSeconds(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return isPinLockEnabled(context) ? 60*Integer.parseInt(sharedPreferences.getString("pin_protection_lock_time", "5")) : 0;
+    }
 
 	public static String getPin(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);

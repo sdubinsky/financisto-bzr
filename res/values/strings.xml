@@ -627,17 +627,25 @@
 	<string name="donate">Make a donation</string>
 	<string name="donate_error">Android Market is not available on your device</string>
 	<string name="type">Type</string>
-
 	<string name="qif_export">QIF Export</string>
 	<string name="qif_export_inprogress">Exporting data to QIF...</string>
 	<string name="all_accounts">All accounts</string>
 	<string name="filter_value_not_found">Not found...</string>
 	<string name="empty_report">Empty report</string>
 	<string name="day_of_month">Day of month</string>
-
     <string name="show_running_balance">Show running balance</string>
     <string name="show_running_balance_summary">Show account running balance in the blotter (requires restart)</string>
 
     <string name="new_currency">New currency...</string>
+    <string name="lock_time">Lock time</string>
+    <string name="lock_time_summary">Time to keep main screen active before locking it off</string>
+    <string-array name="lock_time_entities">
+        <item>Off</item>
+        <item>1 minute</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+    </string-array>
 
 </resources>
