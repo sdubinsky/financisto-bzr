@@ -394,7 +394,7 @@
 	<string name="budget_mode_summary">Unschärfere Bedingung (Kategorie oder Projekt) zum Filtern der Transaktionen</string>
 	<string name="gdocs_backup">Google Docs Sicherung</string>
 	<string name="user_login">Login</string>
-	<string name="user_login_summary">Google-Login (Benutzername)</string>
+	<string name="user_login_summary">Google-Login (user@gmail.com)</string>
 	<string name="user_password">Passwort</string>
 	<string name="user_password_summary">Google Passwort</string>
 	<string name="backup_folder">Ordner für Sicherung</string>
@@ -647,4 +647,16 @@
 
 	<string name="show_running_balance">Laufenden Saldo anzeigen</string>
 	<string name="show_running_balance_summary">Laufenden Saldo des Kontos im Protokoll anzeigen (Neustart erforderlich)</string>
+
+	<string name="new_currency">Neue Währung...</string>
+	<string name="lock_time">Zeit bis Sperre</string>
+	<string name="lock_time_summary">Zeitdauer bis zur Sperrung des Hauptbildschirms</string>
+	<string-array name="lock_time_entities">
+		<item>Aus</item>
+		<item>1 Minute</item>
+		<item>3 Minuten</item>
+		<item>5 Minuten</item>
+		<item>10 Minuten</item>
+		<item>15 Minuten</item>
+	</string-array>
 </resources>
