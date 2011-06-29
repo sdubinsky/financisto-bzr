@@ -130,6 +130,8 @@ public class AccountActivity extends AbstractActivity {
 		x.addEditNode(layout, R.string.title, accountTitle);		
 		currencyText = x.addListNodePlus(layout, R.id.currency, R.id.currency_add, R.string.currency, R.string.select_currency);
 		
+		limitInput.setExpense();
+		limitInput.disableIncomeExpenseButton();
 		limitAmountView = x.addEditNode(layout, R.string.limit_amount, limitInput);
 		setVisibility(limitAmountView, View.GONE);
 
@@ -207,7 +209,7 @@ public class AccountActivity extends AbstractActivity {
 				String sortOrder = Utils.text(sortOrderText);
 				account.sortOrder = sortOrder == null ? 0 : Integer.parseInt(sortOrder);
 				account.isIncludeIntoTotals  = isIncludedIntoTotals.isChecked();
-				account.limitAmount = limitInput.getAmount();
+				account.limitAmount = -Math.abs(limitInput.getAmount());
 				
 				long accountId = em.saveAccount(account);
 				long amount = amountInput.getAmount();
@@ -256,13 +258,27 @@ public class AccountActivity extends AbstractActivity {
 						"_id", account.currency != null ? account.currency.id : -1);
 				break;
 			case R.id.currency_add:
-				Intent intent = new Intent(AccountActivity.this, CurrencyActivity.class);
-				startActivityForResult(intent, NEW_CURRENCY_REQUEST);
+                addNewCurrency();
 				break;
 		}
-	}	
+	}
 
-	@Override
+    private void addNewCurrency() {
+        new CurrencySelector(this, em, new CurrencySelector.OnCurrencyCreatedListener() {
+            @Override
+            public void onCreated(long currencyId) {
+                if (currencyId == 0) {
+                    Intent intent = new Intent(AccountActivity.this, CurrencyActivity.class);
+                    startActivityForResult(intent, NEW_CURRENCY_REQUEST);
+                } else {
+                    currencyCursor.requery();
+                    selectCurrency(currencyId);
+                }
+            }
+        }).show();
+    }
+
+    @Override
 	public void onSelectedId(int id, long selectedId) {
 		switch(id) {
 			case R.id.currency:
@@ -329,8 +345,9 @@ public class AccountActivity extends AbstractActivity {
 	}
 	
 	private void selectCurrency(Currency c) {
-		currencyText.setText(c.name);						
+		currencyText.setText(c.name);
 		amountInput.setCurrency(c);
+		limitInput.setCurrency(c);
 		account.currency = c;		
 	}
 
@@ -355,8 +372,8 @@ public class AccountActivity extends AbstractActivity {
 		/********************************/		
 		
 		isIncludedIntoTotals.setChecked(account.isIncludeIntoTotals);
-		if (account.limitAmount > 0) {
-			limitInput.setAmount(account.limitAmount);
+		if (account.limitAmount != 0) {
+			limitInput.setAmount(-Math.abs(account.limitAmount));
 		}
 	}
 

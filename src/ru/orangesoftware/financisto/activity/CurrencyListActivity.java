@@ -10,27 +10,26 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.List;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.CurrencyListAdapter;
-import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.widget.ListAdapter;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.CurrencyListAdapter;
+import ru.orangesoftware.financisto.utils.MenuItemInfo;
+
+import java.util.List;
 
 public class CurrencyListActivity extends AbstractListActivity {
 	
 	private static final int NEW_CURRENCY_REQUEST = 1;
 	private static final int EDIT_CURRENCY_REQUEST = 2;
 
-	public CurrencyListActivity() {
+    public CurrencyListActivity() {
 		super(R.layout.currency_list);
 	}
-	
-	@Override
+
+    @Override
 	protected List<MenuItemInfo> createContextMenus(long id) {
 		List<MenuItemInfo> menus = super.createContextMenus(id);
 		for (MenuItemInfo m : menus) {
@@ -44,8 +43,17 @@ public class CurrencyListActivity extends AbstractListActivity {
 
 	@Override
 	protected void addItem() {
-		Intent intent = new Intent(this, CurrencyActivity.class);
-		startActivityForResult(intent, NEW_CURRENCY_REQUEST);
+        new CurrencySelector(this, em, new CurrencySelector.OnCurrencyCreatedListener() {
+            @Override
+            public void onCreated(long currencyId) {
+                if (currencyId == 0) {
+                    Intent intent = new Intent(CurrencyListActivity.this, CurrencyActivity.class);
+                    startActivityForResult(intent, NEW_CURRENCY_REQUEST);
+                } else {
+                    requeryCursor();
+                }
+            }
+        }).show();
 	}
 
 	@Override
@@ -55,9 +63,7 @@ public class CurrencyListActivity extends AbstractListActivity {
 
 	@Override
 	protected Cursor createCursor() {
-		Cursor c = em.getAllCurrencies("title");
-		//DatabaseUtils.dumpCursor(c);
-		return c;
+		return em.getAllCurrencies("name");
 	}
 	
 	@Override
@@ -77,11 +83,7 @@ public class CurrencyListActivity extends AbstractListActivity {
 				.setTitle(R.string.delete)
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setMessage(R.string.currency_delete_alert)
-				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener(){
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-					}				
-				}).show();		
+				.setNeutralButton(R.string.ok, null).show();
 		}
 	}
 

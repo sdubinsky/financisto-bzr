@@ -638,11 +638,23 @@
     <string name="show_running_balance">Show running balance</string>
     <string name="show_running_balance_summary">Show account running balance in the blotter (requires restart)</string>
 
+    <string name="new_currency">New currency...</string>
+    <string name="lock_time">Lock time</string>
+    <string name="lock_time_summary">Time to keep main screen active before locking it off</string>
+    <string-array name="lock_time_entities">
+        <item>Off</item>
+        <item>1 minute</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+    </string-array>
+
     <string name="split">[Split]</string>
     <string name="split_transfer">[Split-Transfer]</string>
     <string name="unsplit_amount">Unsplit amount</string>
     <string name="unsplit_amount_greater_than_zero">There is still some amount left un-split...</string>
     <string name="delete_transaction_parent_confirm">This transaction is a part of split. Do you want to delete the parent transaction?</string>
     <string name="downloading_rate" formatted="false">Fetching %s/%s conversion rate...</string>
-
+    
 </resources>

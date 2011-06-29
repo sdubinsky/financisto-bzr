@@ -18,7 +18,7 @@
 		android:layout_width="fill_parent" android:layout_marginLeft="3dp" android:text="@string/currency_name"/>
 	<EditText android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:id="@+id/title"
-		android:maxLength="20"/>
+		android:maxLength="100"/>
 	<TableLayout android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
 		<TableRow android:layout_width="wrap_content"

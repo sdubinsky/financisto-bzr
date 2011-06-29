@@ -92,7 +92,7 @@ public class LocationActivity extends MapActivity {
         mapView.setBuiltInZoomControls(true);
         mapView.setReticleDrawMode(ReticleDrawMode.DRAW_RETICLE_OVER);
         if (myLocation.id == -1) {
-        	if (MyPreferences.isUseMylocation(this)) {
+        	if (MyPreferences.isUseMyLocation(this)) {
 	        	new Handler().postDelayed(new Runnable(){
 					@Override
 					public void run() {

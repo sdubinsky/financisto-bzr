@@ -10,24 +10,17 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.export;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import api.wireless.gdata.docs.client.DocsClient;
 import api.wireless.gdata.docs.data.DocumentEntry;
 import api.wireless.gdata.docs.data.FolderEntry;
+import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.zip.GZIPOutputStream;
 
 public abstract class Export {
 	
@@ -68,16 +61,17 @@ public abstract class Export {
 		// generation backup file
 		String fileName = generateFilename();
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		generateBackup(outputStream);
-		
+        OutputStream out = new BufferedOutputStream(new GZIPOutputStream(outputStream));
+		generateBackup(out);
+
 		// transforming streams
-		InputStream backup = new ByteArrayInputStream(outputStream.toByteArray()); 
+		InputStream backup = new ByteArrayInputStream(outputStream.toByteArray());
 		
 		// creating document on Google Docs
 		DocumentEntry entry = new DocumentEntry();
 		entry.setTitle(fileName);
-		docsClient.createDocumentInFolder(entry, backup, "text/plain",fd.getKey());
-		
+        docsClient.createFileDocument(fileName, backup, "application/zip", outputStream.size(), fd.getKey());
+
 		return fileName;
 	}
 	
@@ -94,6 +88,7 @@ public abstract class Export {
 			writeBody(bw);
 			writeFooter(bw);
 		} finally {
+            bw.flush();
 			bw.close();
 		}	
 	}
