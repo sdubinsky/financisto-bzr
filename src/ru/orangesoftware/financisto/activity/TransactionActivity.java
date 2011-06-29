@@ -42,7 +42,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
     private static final int SPLIT_REQUEST = 5001;
 
     private final AtomicLong idSequence = new AtomicLong();
-    private final IdentityHashMap<View, Split> viewToSplitMap = new IdentityHashMap<View, Split>();
+    private final IdentityHashMap<View, Transaction> viewToSplitMap = new IdentityHashMap<View, Transaction>();
 
     private AutoCompleteTextView payeeText;
     private SimpleCursorAdapter payeeAdapter;
@@ -156,7 +156,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
             return;
         }
         if (selectedCategoryId == Category.SPLIT_CATEGORY_ID) {
-            View v = x.addNodePlus(splitsLayout, R.id.add_split, R.id.add_split, R.string.unsplit_amount, "0");
+            View v = x.addNodeUnsplit(splitsLayout);
             unsplitAmountText = (TextView)v.findViewById(R.id.data);
             updateUnsplitAmount();
         } else {
@@ -178,8 +178,8 @@ public class TransactionActivity extends AbstractTransactionActivity {
 
     private long calculateSplitAmount() {
         long amount = 0;
-        for (Split split : viewToSplitMap.values()) {
-            amount += split.amount;
+        for (Transaction split : viewToSplitMap.values()) {
+            amount += split.fromAmount;
         }
         return amount;
     }
@@ -232,8 +232,8 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	}
 
     private void fetchSplits() {
-        List<Split> splits = em.getSplitsForTransaction(transaction.id);
-        for (Split split : splits) {
+        List<Transaction> splits = em.getSplitsForTransaction(transaction.id);
+        for (Transaction split : splits) {
             addOrEditSplit(split);
         }
     }
@@ -249,7 +249,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 			amount -= currentBalance;
 		}
 		transaction.fromAmount = amount;
-        transaction.splits = new LinkedList<Split>(viewToSplitMap.values());
+        transaction.splits = new LinkedList<Transaction>(viewToSplitMap.values());
 	}
 
     private void selectPayee(long payeeId) {
@@ -290,31 +290,34 @@ public class TransactionActivity extends AbstractTransactionActivity {
         super.onClick(v, id);
         switch (id) {
             case R.id.add_split:
-                createSplit();
+                createSplit(false);
+                break;
+            case R.id.add_split_transfer:
+                createSplit(true);
                 break;
             case R.id.delete_split:
                 View parentView = (View)v.getParent();
                 deleteSplit(parentView);
                 break;
         }
-        Split split = viewToSplitMap.get(v);
+        Transaction split = viewToSplitMap.get(v);
         if (split != null) {
-            split.unsplitAmount = split.amount + calculateUnsplitAmount();
-            editSplit(split);
+            split.unsplitAmount = split.fromAmount + calculateUnsplitAmount();
+            editSplit(split, split.toAccountId > 0 ? SplitTransferActivity.class : SplitActivity.class);
         }
     }
 
-    private void createSplit() {
-        Split split = new Split();
+    private void createSplit(boolean asTransfer) {
+        Transaction split = new Transaction();
         split.id = idSequence.decrementAndGet();
-        split.accountId = selectedAccountId;
-        split.amount = split.unsplitAmount = calculateUnsplitAmount();
-        editSplit(split);
+        split.fromAccountId = selectedAccountId;
+        split.fromAmount = split.unsplitAmount = calculateUnsplitAmount();
+        editSplit(split, asTransfer ? SplitTransferActivity.class : SplitActivity.class);
     }
 
-    private void editSplit(Split split) {
-        Intent intent = new Intent(this, SplitActivity.class);
-        split.toIntent(intent);
+    private void editSplit(Transaction split, Class splitActivityClass) {
+        Intent intent = new Intent(this, splitActivityClass);
+        split.toIntentAsSplit(intent);
         startActivityForResult(intent, SPLIT_REQUEST);
     }
 
@@ -323,27 +326,49 @@ public class TransactionActivity extends AbstractTransactionActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SPLIT_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Split split = Split.fromIntent(data);
+                Transaction split = Transaction.fromIntentAsSplit(data);
                 addOrEditSplit(split);
             }
         }
     }
 
-    private void addOrEditSplit(Split split) {
+    private void addOrEditSplit(Transaction split) {
         View v = findView(split);
         if (v  == null) {
             v = x.addNodeMinus(splitsLayout, R.id.edit_aplit, R.id.delete_split, R.string.split, "");
         }
         TextView label = (TextView)v.findViewById(R.id.label);
         TextView data = (TextView)v.findViewById(R.id.data);
-        label.setText(createSplitText(split));
-        Currency currency = amountInput.getCurrency();
-        u.setAmountText(data, currency, split.amount, false);
+        setSplitData(split, label, data);
         viewToSplitMap.put(v, split);
         updateUnsplitAmount();
     }
 
-    private String createSplitText(Split split) {
+    private View findView(Transaction split) {
+        for (Map.Entry<View, Transaction> entry : viewToSplitMap.entrySet()) {
+            Transaction s = entry.getValue();
+            if (s.id == split.id) {
+                return  entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private void setSplitData(Transaction split, TextView label, TextView data) {
+        if (split.isTransfer()) {
+            setSplitDataTransfer(split, label, data);
+        } else {
+            setSplitDataTransaction(split, label, data);
+        }
+    }
+
+    private void setSplitDataTransaction(Transaction split, TextView label, TextView data) {
+        label.setText(createSplitTransactionTitle(split));
+        Currency currency = amountInput.getCurrency();
+        u.setAmountText(data, currency, split.fromAmount, false);
+    }
+
+    private String createSplitTransactionTitle(Transaction split) {
         StringBuilder sb = new StringBuilder();
         Category category = db.getCategory(split.categoryId);
         sb.append(category.title);
@@ -353,18 +378,15 @@ public class TransactionActivity extends AbstractTransactionActivity {
         return sb.toString();
     }
 
-    private View findView(Split split) {
-        for (Map.Entry<View, Split> entry : viewToSplitMap.entrySet()) {
-            Split s = entry.getValue();
-            if (s.id == split.id) {
-                return  entry.getKey();
-            }
-        }
-        return null;
+    private void setSplitDataTransfer(Transaction split, TextView label, TextView data) {
+        Account fromAccount = em.getAccount(split.fromAccountId);
+        Account toAccount = em.getAccount(split.toAccountId);
+        u.setTransferTitleText(label, fromAccount, toAccount);
+        u.setTransferAmountText(data, fromAccount.currency, split.fromAmount, toAccount.currency, split.toAmount);
     }
 
     private void deleteSplit(View v) {
-        Split split = viewToSplitMap.remove(v);
+        Transaction split = viewToSplitMap.remove(v);
         if (split != null) {
             removeSplitView(v);
             updateUnsplitAmount();

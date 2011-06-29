@@ -359,10 +359,10 @@ public class DatabaseAdapter {
 			if (attributes.size() > 0) {
 				insertAttributes(transactionId, attributes);
 			}
-            List<Split> splits = em().getSplitsForTransaction(id);
+            List<Transaction> splits = em().getSplitsForTransaction(id);
             if (multiplier > 1) {
-                for (Split split : splits) {
-                    split.amount *= multiplier;
+                for (Transaction split : splits) {
+                    split.fromAmount *= multiplier;
                 }
             }
             transaction.id = transactionId;
@@ -415,11 +415,15 @@ public class DatabaseAdapter {
 	}
 
     private void insertSplits(Transaction parent) {
-        List<Split> splits = parent.splits;
+        List<Transaction> splits = parent.splits;
         if (splits != null) {
-            for (Split split : splits) {
-                Transaction t = split.asTransaction(parent);
-                insertTransaction(t);
+            for (Transaction split : splits) {
+                split.id = -1;
+                split.parentId = parent.id;
+                split.dateTime = parent.dateTime;
+                split.fromAccountId = parent.fromAccountId;
+                split.payeeId = parent.payeeId;
+                insertTransaction(split);
             }
         }
     }
@@ -435,15 +439,29 @@ public class DatabaseAdapter {
 
     private long insertTransaction(Transaction t) {
         long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
-        if (!t.isTemplateLike() && !t.isSplit()) {
-            updateAccountBalance(t.fromAccountId, t.fromAmount);
-            insertRunningBalance(t.fromAccountId, id, t.dateTime, t.fromAmount, t.fromAmount);
-            updateAccountBalance(t.toAccountId, t.toAmount);
-            insertRunningBalance(t.toAccountId, id, t.dateTime, t.toAmount, t.toAmount);
-            updateLocationCount(t.locationId, 1);
-            updateLastUsed(t);
+        if (!t.isTemplateLike()) {
+            if (t.isSplit()) {
+                if (t.isTransfer()) {
+                    updateToAccountBalance(t, id);
+                }
+            } else {
+                updateFromAccountBalance(t, id);
+                updateToAccountBalance(t, id);
+                updateLocationCount(t.locationId, 1);
+                updateLastUsed(t);
+            }
         }
         return id;
+    }
+
+    private void updateFromAccountBalance(Transaction t, long id) {
+        updateAccountBalance(t.fromAccountId, t.fromAmount);
+        insertRunningBalance(t.fromAccountId, id, t.dateTime, t.fromAmount, t.fromAmount);
+    }
+
+    private void updateToAccountBalance(Transaction t, long id) {
+        updateAccountBalance(t.toAccountId, t.toAmount);
+        insertRunningBalance(t.toAccountId, id, t.dateTime, t.toAmount, t.toAmount);
     }
 
     private void updateTransaction(Transaction t) {
@@ -474,17 +492,31 @@ public class DatabaseAdapter {
 	public void deleteTransactionNoDbTransaction(long id) {
         Transaction t = getTransaction(id);
         if (t.isNotTemplateLike()) {
-            updateAccountBalance(t.fromAccountId, -t.fromAmount);
-            deleteRunningBalance(t.fromAccountId, t.id, t.fromAmount, t.dateTime);
-            updateAccountBalance(t.toAccountId, -t.toAmount);
-            deleteRunningBalance(t.toAccountId, t.id, t.toAmount, t.dateTime);
+            revertFromAccountBalance(t);
+            revertToAccountBalance(t);
             updateLocationCount(t.locationId, -1);
         }
         String[] sid = new String[]{String.valueOf(id)};
         db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
         db.delete(TRANSACTION_TABLE, TransactionColumns._id+"=?", sid);
+        List<Transaction> splits = em().getSplitsForTransaction(id);
+        for (Transaction split : splits) {
+            if (split.isTransfer()) {
+                revertToAccountBalance(split);
+            }
+        }
         db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?", sid);
 	}
+
+    private void revertFromAccountBalance(Transaction t) {
+        updateAccountBalance(t.fromAccountId, -t.fromAmount);
+        deleteRunningBalance(t.fromAccountId, t.id, t.fromAmount, t.dateTime);
+    }
+
+    private void revertToAccountBalance(Transaction t) {
+        updateAccountBalance(t.toAccountId, -t.toAmount);
+        deleteRunningBalance(t.toAccountId, t.id, t.toAmount, t.dateTime);
+    }
 
     private void updateAccountBalance(long oldAccountId, long oldAmount, long newAccountId, long newAmount) {
         if (oldAccountId == newAccountId) {
@@ -1412,7 +1444,7 @@ public class DatabaseAdapter {
             WhereFilter filter = new WhereFilter("");
             filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, accountId));
             filter.asc("datetime");
-            Cursor c = getTransactions(filter);
+            Cursor c = getBlotterWithSplits(filter);
             Object[] values = new Object[4];
             values[0] = accountId;
             try {

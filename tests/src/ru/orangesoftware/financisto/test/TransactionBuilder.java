@@ -3,7 +3,6 @@ package ru.orangesoftware.financisto.test;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Split;
 import ru.orangesoftware.financisto.model.Transaction;
 
 import java.util.LinkedList;
@@ -24,7 +23,7 @@ public class TransactionBuilder {
 
     private TransactionBuilder(DatabaseAdapter db) {
         this.db = db;
-        this.t.splits = new LinkedList<Split>();
+        this.t.splits = new LinkedList<Transaction>();
     }
 
     public TransactionBuilder account(Account a) {
@@ -58,9 +57,18 @@ public class TransactionBuilder {
     }
 
     public TransactionBuilder withSplit(Category category, long amount) {
-        Split split = new Split();
+        Transaction split = new Transaction();
         split.categoryId = category.id;
-        split.amount = amount;
+        split.fromAmount = amount;
+        t.splits.add(split);
+        return this;
+    }
+
+    public TransactionBuilder withTransferSplit(Account toAccount, long fromAmount, long toAmount) {
+        Transaction split = new Transaction();
+        split.toAccountId = toAccount.id;
+        split.fromAmount = fromAmount;
+        split.toAmount = toAmount;
         t.splits.add(split);
         return this;
     }

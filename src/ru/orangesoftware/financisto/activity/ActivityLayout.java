@@ -137,10 +137,15 @@ public class ActivityLayout {
 		return (TextView)v.findViewById(R.id.data);
 	}
 
-    public View addNodePlus(LinearLayout layout, int id, int plusId, int labelId, String defaultValue) {
-        ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_plus);
-        return b.withButtonId(plusId, listener).withoutMoreButton().withId(id, listener).withLabel(labelId).withData(defaultValue).create();
+    public View addNodeUnsplit(LinearLayout layout) {
+        ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_unsplit);
+        View v = b.withButtonId(R.id.add_split, listener).withId(R.id.add_split, listener).withLabel(R.string.unsplit_amount).withData("0").create();
+        ImageView transferImageView = (ImageView)v.findViewById(R.id.transfer);
+        transferImageView.setId(R.id.add_split_transfer);
+        transferImageView.setOnClickListener(listener);
+        return v;
     }
+
 
     public View addNodeMinus(LinearLayout layout, int id, int minusId, int labelId, String defaultValue) {
         ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);

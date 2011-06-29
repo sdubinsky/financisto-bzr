@@ -12,6 +12,7 @@
 package ru.orangesoftware.financisto.model;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 
@@ -100,7 +101,10 @@ public class Transaction {
 	public EnumMap<SystemAttribute, String> systemAttributes;
 
     @Transient
-    public List<Split> splits;
+    public List<Transaction> splits;
+
+    @Transient
+    public long unsplitAmount;
 
     public ContentValues toValues() {
 		ContentValues values = new ContentValues();
@@ -128,6 +132,32 @@ public class Transaction {
 		values.put(TransactionColumns.is_ccard_payment.name(), isCCardPayment);
 		values.put(TransactionColumns.last_recurrence.name(), lastRecurrence);
 		return values;
+	}
+
+    public void toIntentAsSplit(Intent intent) {
+        intent.putExtra(TransactionColumns._id.name(), id);
+        intent.putExtra(TransactionColumns.from_account_id.name(), fromAccountId);
+        intent.putExtra(TransactionColumns.to_account_id.name(), toAccountId);
+        intent.putExtra(TransactionColumns.from_amount.name(), fromAmount);
+        intent.putExtra(TransactionColumns.to_amount.name(), toAmount);
+        intent.putExtra(TransactionColumns.category_id.name(), categoryId);
+        intent.putExtra(TransactionColumns.payee_id.name(), payeeId);
+        intent.putExtra(TransactionColumns.note.name(), note);
+        intent.putExtra(TransactionColumns.last_recurrence.name(), unsplitAmount);
+    }
+
+    public static Transaction fromIntentAsSplit(Intent intent) {
+        Transaction t = new Transaction();
+        t.id = intent.getLongExtra(TransactionColumns._id.name(), -1);
+        t.fromAccountId = intent.getLongExtra(TransactionColumns.from_account_id.name(), -1);
+        t.toAccountId = intent.getLongExtra(TransactionColumns.to_account_id.name(), -1);
+        t.fromAmount = intent.getLongExtra(TransactionColumns.from_amount.name(), 0);
+        t.toAmount = intent.getLongExtra(TransactionColumns.to_amount.name(), 0);
+        t.categoryId = intent.getLongExtra(TransactionColumns.category_id.name(), 0);
+        t.payeeId = intent.getLongExtra(TransactionColumns.payee_id.name(), 0);
+        t.note = intent.getStringExtra(TransactionColumns.note.name());
+        t.unsplitAmount = intent.getLongExtra(TransactionColumns.last_recurrence.name(), 0);
+		return t;
 	}
 
 	public static Transaction fromCursor(Cursor c) {

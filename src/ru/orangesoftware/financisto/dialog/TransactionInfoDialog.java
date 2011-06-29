@@ -42,6 +42,7 @@ public class TransactionInfoDialog {
     private final NodeInflater inflater;
     private final LayoutInflater layoutInflater;
     private final int splitPadding;
+    private final Utils u;
 
     public TransactionInfoDialog(AbstractListActivity parentActivity, int position, long transactionId,
                                  MyEntityManager em, NodeInflater inflater) {
@@ -52,6 +53,7 @@ public class TransactionInfoDialog {
         this.inflater = inflater;
         this.layoutInflater = (LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.splitPadding = parentActivity.getResources().getDimensionPixelSize(R.dimen.transaction_icon_padding);
+        this.u = new Utils(parentActivity);
     }
 
     public void show() {
@@ -73,37 +75,58 @@ public class TransactionInfoDialog {
 
     private void createMainInfoNodes(TransactionInfo ti, LinearLayout layout) {
         if (ti.toAccount == null) {
-            AccountType formAccountType = AccountType.valueOf(ti.fromAccount.type);
-            add(layout, R.string.account, ti.fromAccount.title, formAccountType);
-            if (ti.payee != null) {
-                add(layout, R.string.payee, ti.payee.title);
-            }
-            add(layout, R.string.category, ti.category.title);
-            add(layout, R.string.amount, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
-            if (ti.category.isSplit()) {
-                List<Split> splits = em.getSplitsForTransaction(ti.id);
-                for (Split split : splits) {
-                    Category c = em.getCategory(split.categoryId);
-                    StringBuilder sb = new StringBuilder();
-                    if (c != null && c.id > 0) {
-                        sb.append(c.title);
-                    }
-                    if (isNotEmpty(split.note)) {
-                        sb.append(" (").append(split.note).append(")");
-                    }
-                    LinearLayout topLayout = add(layout, sb.toString(), Utils.amountToString(ti.fromAccount.currency, split.amount));
-                    topLayout.setPadding(splitPadding, 0, 0, 0);
-                }
-            }
+            createLayoutForTransaction(ti, layout);
         } else {
-            AccountType fromAccountType = AccountType.valueOf(ti.fromAccount.type);
-            add(layout, R.string.account_from, ti.fromAccount.title, fromAccountType);
-            add(layout, R.string.amount_from, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
-            AccountType toAccountType = AccountType.valueOf(ti.toAccount.type);
-            add(layout, R.string.account_to, ti.toAccount.title, toAccountType);
-            add(layout, R.string.amount_to, Utils.amountToString(ti.toAccount.currency, ti.toAmount));
-            add(layout, R.string.category, ti.category.title);
+            createLayoutForTransfer(ti, layout);
         }
+    }
+
+    private void createLayoutForTransaction(TransactionInfo ti, LinearLayout layout) {
+        Account fromAccount = ti.fromAccount;
+        AccountType formAccountType = AccountType.valueOf(ti.fromAccount.type);
+        add(layout, R.string.account, ti.fromAccount.title, formAccountType);
+        if (ti.payee != null) {
+            add(layout, R.string.payee, ti.payee.title);
+        }
+        add(layout, R.string.category, ti.category.title);
+        add(layout, R.string.amount, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
+        if (ti.category.isSplit()) {
+            List<Transaction> splits = em.getSplitsForTransaction(ti.id);
+            for (Transaction split : splits) {
+                addSplitInfo(layout, fromAccount, split);
+            }
+        }
+    }
+
+    private void addSplitInfo(LinearLayout layout, Account fromAccount, Transaction split) {
+        if (split.isTransfer()) {
+            Account toAccount = em.getAccount(split.toAccountId);
+            String title = u.getTransferTitleText(fromAccount, toAccount);
+            String amount = u.getTransferAmountText(fromAccount.currency, split.fromAmount, toAccount.currency, split.toAmount);
+            LinearLayout topLayout = add(layout, title, amount);
+            topLayout.setPadding(splitPadding, 0, 0, 0);
+        } else {
+            Category c = em.getCategory(split.categoryId);
+            StringBuilder sb = new StringBuilder();
+            if (c != null && c.id > 0) {
+                sb.append(c.title);
+            }
+            if (isNotEmpty(split.note)) {
+                sb.append(" (").append(split.note).append(")");
+            }
+            LinearLayout topLayout = add(layout, sb.toString(), Utils.amountToString(fromAccount.currency, split.fromAmount));
+            topLayout.setPadding(splitPadding, 0, 0, 0);
+        }
+    }
+
+    private void createLayoutForTransfer(TransactionInfo ti, LinearLayout layout) {
+        AccountType fromAccountType = AccountType.valueOf(ti.fromAccount.type);
+        add(layout, R.string.account_from, ti.fromAccount.title, fromAccountType);
+        add(layout, R.string.amount_from, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
+        AccountType toAccountType = AccountType.valueOf(ti.toAccount.type);
+        add(layout, R.string.account_to, ti.toAccount.title, toAccountType);
+        add(layout, R.string.amount_to, Utils.amountToString(ti.toAccount.currency, ti.toAmount));
+        add(layout, R.string.category, ti.category.title);
     }
 
     private void createAdditionalInfoNodes(TransactionInfo ti, LinearLayout layout) {

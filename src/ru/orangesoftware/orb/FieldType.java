@@ -10,11 +10,11 @@
  ******************************************************************************/
 package ru.orangesoftware.orb;
 
-import java.lang.reflect.Field;
-import java.util.Date;
-
 import android.content.ContentValues;
 import android.database.Cursor;
+
+import java.lang.reflect.Field;
+import java.util.Date;
 
 public abstract class FieldType {
 
@@ -99,6 +99,28 @@ public abstract class FieldType {
 			values.put(key, ((Date)value).getTime());
 		}
 	};
+
+    public static class ENUM extends FieldType{
+
+        public final Class<Enum> enumType;
+
+        public ENUM(Class<Enum> enumType) {
+            this.enumType = enumType;
+        }
+
+        @Override
+        public Object valueFromCursor(Cursor c, int columnIndex) {
+            String name = c.getString(columnIndex);
+            return name == null ? null : Enum.valueOf(enumType, name);
+        }
+
+        @Override
+        protected void putValue(ContentValues values, String key, Object value) {
+            values.put(key, ((Enum)value).name());
+        }
+
+    }
+
 	public static class ENTITY extends FieldType {
 		
 		public final Class<?> clazz;
@@ -119,7 +141,7 @@ public abstract class FieldType {
 		public boolean isPrimitive() {
 			return false;
 		}
-	};
+	}
 	
 	public boolean isPrimitive() {
 		return true;
@@ -147,7 +169,9 @@ public abstract class FieldType {
 			return FieldType.STRING;
 		} else if (Date.class == clazz) {
 			return FieldType.DATE;
-		}
+		} else if (clazz.isEnum()) {
+            return new ENUM((Class<Enum>) clazz);
+        }
 		throw new IllegalArgumentException("Field ["+field+"] has unsupported type.");
 	}
 	

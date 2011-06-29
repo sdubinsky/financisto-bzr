@@ -40,8 +40,6 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
     private final Date dt = new Date();
 
     protected final StringBuilder sb = new StringBuilder();
-    protected final int transferColor;
-    protected final int futureColor;
     protected final Drawable icBlotterIncome;
     protected final Drawable icBlotterExpense;
     protected final Drawable icBlotterTransfer;
@@ -65,8 +63,6 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 
     public BlotterListAdapter(Context context, int layoutId, Cursor c, boolean autoRequery) {
         super(context, layoutId, c, autoRequery);
-        this.transferColor = context.getResources().getColor(R.color.transfer_color);
-        this.futureColor = context.getResources().getColor(R.color.future_color);
         this.icBlotterIncome = context.getResources().getDrawable(R.drawable.ic_blotter_income);
         this.icBlotterExpense = context.getResources().getDrawable(R.drawable.ic_blotter_expense);
         this.icBlotterTransfer = context.getResources().getDrawable(R.drawable.ic_blotter_transfer);
@@ -118,10 +114,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 
             String fromAccountTitle = cursor.getString(BlotterColumns.from_account_title.ordinal());
             String toAccountTitle = cursor.getString(BlotterColumns.to_account_title.ordinal());
-            sb.setLength(0);
-            sb.append(fromAccountTitle).append(" \u00BB ").append(toAccountTitle);
-            noteView.setText(sb.toString());
-            noteView.setTextColor(transferColor);
+            u.setTransferTitleText(noteView, fromAccountTitle, toAccountTitle);
 
             long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
             Currency fromCurrency = CurrencyCache.getCurrency(fromCurrencyId);
@@ -130,29 +123,14 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
 
             int dateViewColor = v.bottomView.getCurrentTextColor();
 
+            long fromAmount = cursor.getLong(BlotterColumns.from_amount.ordinal());
+            long toAmount = cursor.getLong(BlotterColumns.to_amount.ordinal());
             long fromBalance = cursor.getLong(BlotterColumns.from_account_balance.ordinal());
             long toBalance = cursor.getLong(BlotterColumns.to_account_balance.ordinal());
-            if (fromCurrencyId == toCurrencyId) {
-                long amount = Math.abs(cursor.getLong(BlotterColumns.from_amount.ordinal()));
-                u.setAmountText(v.rightView, fromCurrency, amount, false);
-                v.rightView.setTextColor(dateViewColor);
-                if (v.rightCenterView != null) {
-                    v.rightCenterView.setText(Utils.amountToString(fromCurrency, fromBalance, false));
-                }
-            } else {
-                long fromAmount = Math.abs(cursor.getLong(BlotterColumns.from_amount.ordinal()));
-                long toAmount = cursor.getLong(BlotterColumns.to_amount.ordinal());
-                sb.setLength(0);
-                Utils.amountToString(sb, fromCurrency, fromAmount).append(" \u00BB ");
-                Utils.amountToString(sb, toCurrency, toAmount);
-                v.rightView.setText(sb.toString());
-                v.rightView.setTextColor(dateViewColor);
-                if (v.rightCenterView != null) {
-                    sb.setLength(0);
-                    Utils.amountToString(sb, fromCurrency, fromBalance, false).append(" \u00BB ");
-                    Utils.amountToString(sb, toCurrency, toBalance, false);
-                    v.rightCenterView.setText(sb.toString());
-                }
+            u.setTransferAmountText(v.rightView, fromCurrency, fromAmount, toCurrency, toAmount);
+            v.rightView.setTextColor(dateViewColor);
+            if (v.rightCenterView != null) {
+                u.setTransferBalanceText(v.rightCenterView, fromCurrency, fromBalance, toCurrency, toBalance);
             }
             v.iconView.setImageDrawable(icBlotterTransfer);
         } else {
@@ -217,7 +195,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
                         DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH));
 
                 if (isTemplate == 0 && date > System.currentTimeMillis()) {
-                    v.bottomView.setTextColor(futureColor);
+                    u.setFutureTextColor(v.bottomView);
                 } else {
                     v.bottomView.setTextColor(v.topView.getTextColors().getDefaultColor());
                 }

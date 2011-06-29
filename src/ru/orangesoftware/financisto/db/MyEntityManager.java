@@ -451,9 +451,9 @@ public class MyEntityManager extends EntityManager {
         return q.asc("title").execute();
     }
 
-    public List<Split> getSplitsForTransaction(long transactionId) {
-        Query<Split> q = createQuery(Split.class);
-        q.where(Expressions.eq("transactionId", transactionId));
+    public List<Transaction> getSplitsForTransaction(long transactionId) {
+        Query<Transaction> q = createQuery(Transaction.class);
+        q.where(Expressions.eq("parentId", transactionId));
         return q.list();
     }
 

@@ -68,4 +68,5 @@
     <item type="id" name="add_split"/>
     <item type="id" name="edit_aplit"/>
     <item type="id" name="delete_split"/>
+    <item type="id" name="add_split_transfer"/>
 </resources>

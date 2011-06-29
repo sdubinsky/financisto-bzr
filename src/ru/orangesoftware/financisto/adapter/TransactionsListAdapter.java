@@ -42,11 +42,10 @@ public class TransactionsListAdapter extends BlotterListAdapter {
             v.topView.setText(R.string.transfer);
             if (fromAmount > 0) {
                 note = toAccount+" \u00BB";
-                v.centerView.setTextColor(transferColor);
             } else {
                 note = "\u00AB "+toAccount;
-                v.centerView.setTextColor(transferColor);
             }
+            u.setTransferTextColor(v.centerView);
         } else {
             String title = cursor.getString(BlotterColumns.from_account_title.ordinal());
             v.topView.setText(title);
@@ -74,7 +73,7 @@ public class TransactionsListAdapter extends BlotterListAdapter {
         v.bottomView.setText(DateUtils.formatDateTime(context, date,
                 DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_ABBREV_MONTH));
         if (date > System.currentTimeMillis()) {
-            v.bottomView.setTextColor(futureColor);
+            u.setFutureTextColor(v.bottomView);
         } else {
             v.bottomView.setTextColor(v.topView.getTextColors().getDefaultColor());
         }

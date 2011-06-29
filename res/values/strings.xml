@@ -639,8 +639,10 @@
     <string name="show_running_balance_summary">Show account running balance in the blotter (requires restart)</string>
 
     <string name="split">[Split]</string>
+    <string name="split_transfer">[Split-Transfer]</string>
     <string name="unsplit_amount">Unsplit amount</string>
     <string name="unsplit_amount_greater_than_zero">There is still some amount left un-split...</string>
     <string name="delete_transaction_parent_confirm">This transaction is a part of split. Do you want to delete the parent transaction?</string>
+    <string name="downloading_rate" formatted="false">Fetching %s/%s conversion rate...</string>
 
 </resources>
