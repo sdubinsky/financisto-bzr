@@ -10,33 +10,23 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.Budget;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.MultiChoiceItem;
-import ru.orangesoftware.financisto.model.MyEntity;
-import ru.orangesoftware.financisto.model.Project;
-import ru.orangesoftware.financisto.utils.RecurUtils;
-import ru.orangesoftware.financisto.utils.TransactionUtils;
-import ru.orangesoftware.financisto.utils.Utils;
-import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
-import ru.orangesoftware.financisto.widget.AmountInput;
-import ru.orangesoftware.orb.EntityManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TextView;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.utils.RecurUtils;
+import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
+import ru.orangesoftware.financisto.utils.TransactionUtils;
+import ru.orangesoftware.financisto.utils.Utils;
+import ru.orangesoftware.financisto.widget.AmountInput;
+import ru.orangesoftware.orb.EntityManager;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class BudgetActivity extends AbstractActivity {
 	
@@ -329,22 +319,16 @@ public class BudgetActivity extends AbstractActivity {
 				}
 				break;
 			case NEW_CATEGORY_REQUEST:
-				if (resultCode == RESULT_OK) {
-					categories = merge(categories, db.getAllCategoriesList(true));
-				}
+                categories = merge(categories, db.getAllCategoriesList(true));
 				break;
 			case NEW_PROJECT_REQUEST:
-				if (resultCode == RESULT_OK) {
-					projects = merge(projects, em.getAllProjectsList(true));
-				}
+                projects = merge(projects, em.getAllProjectsList(true));
 				break;
 			case RECUR_REQUEST:
-				if (resultCode == RESULT_OK) {
-					String recur = data.getStringExtra(RecurActivity.EXTRA_RECUR);
-					if (recur != null) {
-						selectRecur(recur);
-					}
-				}
+                String recur = data.getStringExtra(RecurActivity.EXTRA_RECUR);
+                if (recur != null) {
+                    selectRecur(recur);
+                }
 				break;
 			default:
 				break;

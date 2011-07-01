@@ -1,9 +1,19 @@
 package ru.orangesoftware.financisto.activity;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
+import android.app.ListActivity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CreditCardStatementAdapter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -13,21 +23,10 @@ import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
-import android.app.ListActivity;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.MergeCursor;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Display the credit card bill, including scheduled and future transactions for a given period.
@@ -40,7 +39,6 @@ public class MonthlyViewActivity extends ListActivity {
 	private Cursor transactionsCursor;
 	
 	private long accountId = 0;
-	private Account account;
     private Currency currency;
 	private boolean isCreditCard = false;
 	private boolean isStatementPreview = false;
@@ -48,20 +46,11 @@ public class MonthlyViewActivity extends ListActivity {
 	private String title;
 	private int closingDay = 0;
 	private int paymentDay = 0;
-	private String paymentDayStr;
-	
-	private int month = 0;
-	private String monthStr;
-	private int year = 0;
-	private String yearStr;
-	private Calendar closingDate;
-	
-	private ImageButton bPrevious;
-	private ImageButton bNext;
-	
-	private int negativeColor;
-	private int positiveColor;
-	
+
+    private int month = 0;
+    private int year = 0;
+    private Calendar closingDate;
+
 	private Utils u;
 
 	public static final String ACCOUNT_EXTRA = "account_id";
@@ -71,16 +60,13 @@ public class MonthlyViewActivity extends ListActivity {
 	public static final String HEADER_CREDITS  = "bill_credits";
 	public static final String HEADER_EXPENSES = "bill_expenses";
 	
-	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.monthly_view);
         
         u = new Utils(this);
-        negativeColor = this.getResources().getColor(R.color.negative_amount);
-        positiveColor = this.getResources().getColor(R.color.positive_amount);
-        
+
         Intent intent = getIntent();
 		if (intent != null) {
 			accountId = intent.getLongExtra(ACCOUNT_EXTRA, 0);
@@ -90,24 +76,12 @@ public class MonthlyViewActivity extends ListActivity {
 		initialize();
     }
     
-    /**
-     * When activity lifecycle ends, release resources
-     */
     @Override
     public void onDestroy() {
-    	// close cursor
-    	if (transactionsCursor != null) {
-    		transactionsCursor.close();
-    	}
     	dbAdapter.close();
     	super.onDestroy();
     }
-
     
-    
-    /**
-     * Initialize data and GUI elements.
-     */
     private void initialize() {
     	
     	// get account data
@@ -116,7 +90,7 @@ public class MonthlyViewActivity extends ListActivity {
 		
 		// set currency based on account
 		MyEntityManager em = dbAdapter.em();
-        account = em.getAccount(accountId);
+        Account account = em.getAccount(accountId);
 		
         if (month==0 && year==0) {
 	        // get current month and year in first launch
@@ -183,55 +157,55 @@ public class MonthlyViewActivity extends ListActivity {
 				// set payment date and label on total bar
 				TextView totalLabel = (TextView) findViewById(R.id.monthly_result_label);
 				totalLabel.setText(getResources().getString(R.string.monthly_result));
-			}		
-		
-			bPrevious = (ImageButton) findViewById(R.id.bt_month_previous);
-			bPrevious.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					month--;
-					if (month<1) {
-						month=12;
-						year--;
-					}
-					if (isCreditCard) {
-						if (isStatementPreview) {
-							setCCardTitle();
-							setCCardInterval();
-						} else {
-							setTitle();
-							setInterval();
-						}
-					} else {
-						setTitle();
-						setInterval();
-					}
-				}			
-			});
-			
-			bNext = (ImageButton) findViewById(R.id.bt_month_next);
-			bNext.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					month++;
-					if (month>12) {
-						month=1;
-						year++;
-					}
-					if (isCreditCard) {
-						if (isStatementPreview) {
-							setCCardTitle();
-							setCCardInterval();
-						} else {
-							setTitle();
-							setInterval();
-						}
-					} else {
-						setTitle();
-						setInterval();
-					}
-				}			
-			});
+			}
+
+            ImageButton bPrevious = (ImageButton) findViewById(R.id.bt_month_previous);
+			bPrevious.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    month--;
+                    if (month < 1) {
+                        month = 12;
+                        year--;
+                    }
+                    if (isCreditCard) {
+                        if (isStatementPreview) {
+                            setCCardTitle();
+                            setCCardInterval();
+                        } else {
+                            setTitle();
+                            setInterval();
+                        }
+                    } else {
+                        setTitle();
+                        setInterval();
+                    }
+                }
+            });
+
+            ImageButton bNext = (ImageButton) findViewById(R.id.bt_month_next);
+			bNext.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    month++;
+                    if (month > 12) {
+                        month = 1;
+                        year++;
+                    }
+                    if (isCreditCard) {
+                        if (isStatementPreview) {
+                            setCCardTitle();
+                            setCCardInterval();
+                        } else {
+                            setTitle();
+                            setInterval();
+                        }
+                    } else {
+                        setTitle();
+                        setInterval();
+                    }
+                }
+            });
 		
 		}
 	}
@@ -308,12 +282,7 @@ public class MonthlyViewActivity extends ListActivity {
 		fillData(open, close);
 	}
 	
-	/**
-	 * Returns the day on which the credit card bill closes for a given month/year.
-	 * @param month
-	 * @param year
-	 * @return
-	 */
+	 // Returns the day on which the credit card bill closes for a given month/year.
 	private Calendar getClosingDate(int month, int year) {
 		int m = month;
 		if (closingDay > paymentDay) {
@@ -328,12 +297,6 @@ public class MonthlyViewActivity extends ListActivity {
 		return new GregorianCalendar(year, m-1, day);
 	}
 	
-	/**
-	 * Return the last day (maximum value of day) of the given month.
-	 * @param month
-	 * @param year
-	 * @return
-	 */
 	private int getLastDayOfMonth(int month, int year) {
 		Calendar calCurr = GregorianCalendar.getInstance();
 		calCurr.set(year, month-1, 1); // Months are 0 to 11
@@ -349,6 +312,7 @@ public class MonthlyViewActivity extends ListActivity {
 	private void fillData(Calendar open, Calendar close) {
 		// closing cursor from previous request
     	if (transactionsCursor != null) {
+            stopManagingCursor(transactionsCursor);
     		transactionsCursor.close();
     	}
 		
@@ -401,10 +365,10 @@ public class MonthlyViewActivity extends ListActivity {
     		} else {
 	    		if (total<0) { 
 	    			u.setAmountText(totalText, currency, (-1)*total, false);
-	    			totalText.setTextColor(negativeColor);
+                    u.setNegativeColor(totalText);
 	    		} else {
 	    			u.setAmountText(totalText, currency, total, false);
-	    			totalText.setTextColor(positiveColor);
+                    u.setPositiveColor(totalText);
 	    		}
     		}
     		totalText.setVisibility(View.VISIBLE);
@@ -418,8 +382,6 @@ public class MonthlyViewActivity extends ListActivity {
 	/**
 	 * Calculate the total amount based on cursor expenses and various credits.
 	 * Credit card payments are not included.
-	 * @param cursor
-	 * @return The total amount.
 	 */
 	private long calculateTotal(Cursor cursor) {
 		long total = 0;
@@ -463,18 +425,19 @@ public class MonthlyViewActivity extends ListActivity {
 	private void setCCardTitle() {
 		
 		Calendar date = new GregorianCalendar(year, month-1, paymentDay);
-		
-		monthStr = Integer.toString(date.get(Calendar.MONTH)+1);
-		yearStr = Integer.toString(date.get(Calendar.YEAR));
-		
-		if (paymentDay<10) {
+
+        String monthStr = Integer.toString(date.get(Calendar.MONTH) + 1);
+        String yearStr = Integer.toString(date.get(Calendar.YEAR));
+
+        String paymentDayStr;
+        if (paymentDay < 10) {
         	paymentDayStr = "0"+paymentDay;
         } else {
         	paymentDayStr = Integer.toString(paymentDay);
         }
 		
 		if (monthStr.length()<2) {
-			monthStr = "0"+monthStr;
+			monthStr = "0"+ monthStr;
 		}
 		
 		String pd = paymentDayStr + "/" + monthStr + "/" + yearStr;

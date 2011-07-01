@@ -198,4 +198,12 @@ public class Utils {
 		return manager.getPackageInfo(context.getPackageName(), 0);                         			
 	}
 
+    public void setNegativeColor(TextView textView) {
+        textView.setTextColor(negativeColor);
+    }
+
+    public void setPositiveColor(TextView textView) {
+        textView.setTextColor(positiveColor);
+    }
+
 }
