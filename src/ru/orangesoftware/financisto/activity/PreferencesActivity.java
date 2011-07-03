@@ -12,6 +12,7 @@ package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.utils.MyPreferences;
+import ru.orangesoftware.financisto.utils.PinProtection;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.Intent.ShortcutIconResource;
@@ -73,6 +74,18 @@ public class PreferencesActivity extends PreferenceActivity {
 		intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, shortcutIcon);
 		intent.setAction(action);
 		return intent;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PinProtection.lock(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PinProtection.unlock(this);
 	}
 
 }

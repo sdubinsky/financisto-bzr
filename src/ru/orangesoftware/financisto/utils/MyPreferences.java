@@ -78,10 +78,6 @@ public class MyPreferences {
 		return sharedPreferences.getBoolean("use_my_location", true);
 	}
 
-	public static boolean shouldAskForPin(Context context) {
-		return isPinProtected(context) && isPinRequired;
-	}
-
     public static boolean isPinProtected(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean("pin_protection", false);
@@ -92,6 +88,13 @@ public class MyPreferences {
         return isPinProtected(context) && sharedPreferences.getBoolean("pin_protection_lock", true);
     }
 
+    public static void setPinLockEnabled(Context context, boolean enabled) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("pin_protection_lock", enabled);
+        editor.commit();
+    }
+    
     public static int getLockTimeSeconds(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return isPinLockEnabled(context) ? 60*Integer.parseInt(sharedPreferences.getString("pin_protection_lock_time", "5")) : 0;
@@ -100,10 +103,6 @@ public class MyPreferences {
 	public static String getPin(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getString("pin", null);
-	}
-	
-	public static void setPinRequired(boolean isPinRequired) {
-		MyPreferences.isPinRequired = isPinRequired;
 	}
 
 	public static AccountSortOrder getAccountSortOrder(Context context) {

@@ -16,6 +16,7 @@ import ru.orangesoftware.financisto.view.PinView;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 public class PinActivity extends Activity implements PinView.PinListener {
 	
@@ -39,11 +40,15 @@ public class PinActivity extends Activity implements PinView.PinListener {
 
 	@Override
 	public void onSuccess(String pinBase64) {
-		MyPreferences.setPinRequired(false);
+		MyPreferences.setPinLockEnabled(this, false);
 		Intent data = new Intent();
 		data.putExtra(SUCCESS, true);
 		setResult(RESULT_OK, data);
 		finish();
+	}
+
+	@Override
+	public void onBackPressed() {
 	}
 
 }

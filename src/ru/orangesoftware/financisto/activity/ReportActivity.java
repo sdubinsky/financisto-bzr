@@ -36,6 +36,7 @@ import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.report.PeriodReport;
 import ru.orangesoftware.financisto.report.Report;
 import ru.orangesoftware.financisto.report.ReportData;
+import ru.orangesoftware.financisto.utils.PinProtection;
 
 public class ReportActivity extends ListActivity implements RequeryCursorActivity {
 
@@ -83,6 +84,18 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
         showOrRemoveTotals();
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PinProtection.lock(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PinProtection.unlock(this);
+	}
+	
     private void showOrRemoveTotals() {
         if (!currentReport.shouldDisplayTotal()) {
             findViewById(R.id.labelTotal).setVisibility(View.GONE);
