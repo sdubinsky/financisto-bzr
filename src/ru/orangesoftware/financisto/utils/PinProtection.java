@@ -21,7 +21,7 @@ import ru.orangesoftware.financisto.activity.PinActivity;
 public class PinProtection {
 	private static long lockTime = 0;
 	private static boolean unlocked = false;
-	private static final int MIN_DELTA_TIME_MS = 1000;
+	private static final int MIN_DELTA_TIME_MS = 3000;
 	
 	private static void askForPin(Context c) {
 		Intent intent = new Intent(c, PinActivity.class);

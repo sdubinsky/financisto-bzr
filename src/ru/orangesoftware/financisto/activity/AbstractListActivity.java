@@ -99,7 +99,7 @@ public abstract class AbstractListActivity extends ListActivity implements Reque
 		db.close();
 		super.onDestroy();
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
