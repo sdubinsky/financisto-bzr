@@ -16,7 +16,6 @@ import ru.orangesoftware.financisto.view.PinView;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 public class PinActivity extends Activity implements PinView.PinListener {
 	

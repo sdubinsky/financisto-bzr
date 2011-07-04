@@ -122,6 +122,12 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         super.onPause();
         PinProtection.lock(this);
     }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PinProtection.immediateLock(this);
+    }
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

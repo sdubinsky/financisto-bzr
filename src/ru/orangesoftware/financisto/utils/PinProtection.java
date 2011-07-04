@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import ru.orangesoftware.financisto.activity.PinActivity;
 
 public class PinProtection {
@@ -52,5 +51,10 @@ public class PinProtection {
 		} else {
 			askForPin(c);
 		}
+	}
+	
+	public static void immediateLock(Context c) {
+		lockTime = 0;
+		unlocked = false;
 	}
 }
