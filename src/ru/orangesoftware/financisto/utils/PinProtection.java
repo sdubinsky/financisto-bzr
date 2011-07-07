@@ -48,12 +48,15 @@ public class PinProtection {
 
         @Override
         public LockState unlock(Context c) {
-            long curTime = System.currentTimeMillis();
-            long lockTimeMs = Math.max(MIN_DELTA_TIME_MS, TimeUnit.MILLISECONDS.convert(MyPreferences.getLockTimeSeconds(c), TimeUnit.SECONDS));
-            long deltaTimeMs = curTime - lockTime;
-            if (deltaTimeMs > lockTimeMs) {
-                askForPin(c);
-                return LOCKED;
+            int lockWaitTime = MyPreferences.getLockTimeSeconds(c);
+            if (lockWaitTime > 0) {
+                long curTime = System.currentTimeMillis();
+                long lockTimeMs = Math.max(MIN_DELTA_TIME_MS, TimeUnit.MILLISECONDS.convert(lockWaitTime, TimeUnit.SECONDS));
+                long deltaTimeMs = curTime - lockTime;
+                if (deltaTimeMs > lockTimeMs) {
+                    askForPin(c);
+                    return LOCKED;
+                }
             }
             return this;
         }
