@@ -17,7 +17,7 @@ import ru.orangesoftware.financisto.utils.Utils;
 public class Amount {	
 	
 	public final Currency currency;
-	public long amount;
+	public final long amount;
 
 	public int amountTextWidth;
 	public int amountTextHeight;
@@ -31,8 +31,4 @@ public class Amount {
 		return Utils.amountToString(currency, amount, true);
 	}
 	
-	public void add(long amount) {
-		this.amount += amount;
-	}
-
 }

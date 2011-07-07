@@ -13,55 +13,54 @@ package ru.orangesoftware.financisto.report;
 
 import ru.orangesoftware.financisto.R;
 import android.content.Context;
-import android.os.Bundle;
 
 public enum ReportType {
 
 	BY_PERIOD(R.string.report_by_period, R.string.report_by_period_summary, R.drawable.report_icon_default){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
+		public Report createReport(Context context) {
 			return new PeriodReport(context);
 		}
 	},
 	BY_CATEGORY(R.string.report_by_category, R.string.report_by_category_summary, R.drawable.report_icon_default){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
-			return new CategoryReport(context);
+		public Report createReport(Context context) {
+			return new CategoryReportAll(context);
 		}
 	},
 	BY_SUB_CATEGORY_ROOTS(R.string.report_by_sub_category, R.string.report_by_sub_category_summary, R.drawable.report_icon_default){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
-			return new CategoryReport2(context, extra);
+		public Report createReport(Context context) {
+			return new CategoryReportTopDown(context);
 		}
 	},
 	BY_SUB_CATEGORY(R.string.report_by_category, R.string.report_by_category_summary, R.drawable.report_icon_default){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
-			return new SubCategoryReport(context, extra);
+		public Report createReport(Context context) {
+			return new SubCategoryReport(context);
 		}
 	},
     BY_PAYEE(R.string.report_by_payee, R.string.report_by_payee_summary, R.drawable.report_icon_default){
         @Override
-        public Report createReport(Context context, Bundle extra) {
+        public Report createReport(Context context) {
             return new PayeesReport(context);
         }
     },
 	BY_LOCATION(R.string.report_by_location, R.string.report_by_location_summary, R.drawable.report_icon_default){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
+		public Report createReport(Context context) {
 			return new LocationsReport(context);
 		}
 	},
 	BY_PROJECT(R.string.report_by_project, R.string.report_by_project_summary, R.drawable.report_icon_default){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
+		public Report createReport(Context context) {
 			return new ProjectsReport(context);
 		}
 	}, 
 	BY_ACCOUNT_BY_PERIOD(R.string.report_by_account_by_period, R.string.report_by_account_by_period_summary, R.drawable.report_icon_line){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
+		public Report createReport(Context context) {
 			return null;
 		}
 		
@@ -72,7 +71,7 @@ public enum ReportType {
 	}, 
 	BY_CATEGORY_BY_PERIOD(R.string.report_by_category_by_period, R.string.report_by_category_by_period_summary, R.drawable.report_icon_line){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
+		public Report createReport(Context context) {
 			return null;
 		}
 		
@@ -83,7 +82,7 @@ public enum ReportType {
 	}, 
     BY_PAYEE_BY_PERIOD(R.string.report_by_payee_by_period, R.string.report_by_payee_by_period_summary, R.drawable.report_icon_line){
         @Override
-        public Report createReport(Context context, Bundle extra) {
+        public Report createReport(Context context) {
             return null;
         }
 
@@ -94,7 +93,7 @@ public enum ReportType {
     },
 	BY_LOCATION_BY_PERIOD(R.string.report_by_location_by_period, R.string.report_by_location_by_period_summary, R.drawable.report_icon_line){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
+		public Report createReport(Context context) {
 			return null;
 		}
 		
@@ -105,7 +104,7 @@ public enum ReportType {
 	}, 
 	BY_PROJECT_BY_PERIOD(R.string.report_by_project_by_period, R.string.report_by_project_by_period_summary, R.drawable.report_icon_line){
 		@Override
-		public Report createReport(Context context, Bundle extra) {
+		public Report createReport(Context context) {
 			return null;
 		}
 		
@@ -129,6 +128,6 @@ public enum ReportType {
 		return true;
 	}
 	
-	public abstract Report createReport(Context context, Bundle extra);
+	public abstract Report createReport(Context context);
 
 }

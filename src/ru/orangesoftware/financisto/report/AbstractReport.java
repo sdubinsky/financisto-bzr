@@ -87,7 +87,7 @@ public abstract class AbstractReport implements Report {
 				units.add(u);
 			}
             for (GraphUnit unit : units) {
-                unit.calculateMaxAmount();
+                unit.flatten();
             }
             Collections.sort(units);
 			return units;
@@ -96,25 +96,10 @@ public abstract class AbstractReport implements Report {
 		}
 	}
 	
-	protected GraphUnit getUnitFromCursor(Cursor c, long id) {
-		try {
-			GraphUnit u = new GraphUnit(id, alterName(id, null), DEFAULT_STYLE);
-			while (c.moveToNext()) {				
-				long currencyId = c.getLong(2);
-				long amount = c.getLong(3);
-				Currency currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
-				u.addAmount(currency, amount);
-			}
-			return u;
-		} finally {
-			c.close();
-		}
-	}
-
     protected Total[] calculateTotals(ArrayList<? extends GraphUnit> units) {
         HashMap<Long, Total> map = new HashMap<Long, Total>();
         for (GraphUnit u : units) {
-            for (Amount a : u.amounts.values()) {
+            for (Amount a : u) {
                 Total t = getOrCreate(map, a.currency);
                 long amount = a.amount;
                 if (amount > 0) {

@@ -21,9 +21,9 @@ import ru.orangesoftware.financisto.model.Category;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_CATEGORY;
 
-public class CategoryReport extends AbstractReport {
+public class CategoryReportAll extends AbstractReport {
 
-	public CategoryReport(Context context) {
+	public CategoryReportAll(Context context) {
 		super(context);		
 	}
 

@@ -4,6 +4,7 @@ import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Total;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,10 +13,10 @@ import java.util.ArrayList;
  */
 public class ReportData {
 
-    public final ArrayList<GraphUnit> units;
+    public final List<GraphUnit> units;
     public final Total[] totals;
 
-    public ReportData(ArrayList<GraphUnit> units, Total[] totals) {
+    public ReportData(List<GraphUnit> units, Total[] totals) {
         this.units = units;
         this.totals = totals;
     }

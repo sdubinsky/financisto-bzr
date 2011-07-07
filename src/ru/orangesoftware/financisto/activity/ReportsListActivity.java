@@ -66,7 +66,7 @@ public class ReportsListActivity extends ListActivity {
 	public static Report createReport(Context context, Bundle extras) {
 		String reportTypeName = extras.getString(EXTRA_REPORT_TYPE);
 		ReportType reportType = ReportType.valueOf(reportTypeName);
-		return reportType.createReport(context, extras);
+		return reportType.createReport(context);
 	}
 
 }

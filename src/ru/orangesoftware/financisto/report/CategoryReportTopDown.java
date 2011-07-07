@@ -10,58 +10,54 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.report;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_CATEGORY;
-
-import java.util.ArrayList;
-
+import android.content.Context;
+import android.content.Intent;
 import ru.orangesoftware.financisto.activity.ReportActivity;
 import ru.orangesoftware.financisto.activity.ReportsListActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Category;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
-public class CategoryReport2 extends AbstractReport {
-	
-	private static final String PARENT_CATEGORY_ID_EXTRA = "parentCategoryId";
+import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_CATEGORY;
 
-	private final long parentCategoryId;
+public class CategoryReportTopDown extends AbstractReport {
 	
-	public CategoryReport2(Context context, Bundle extra) {
+	public CategoryReportTopDown(Context context) {
 		super(context);		
-		parentCategoryId = extra.getLong(PARENT_CATEGORY_ID_EXTRA, 0);
 	}
 
 	@Override
 	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
         cleanupFilter(filter);
-		filter.eq("parent_id", String.valueOf(parentCategoryId));
+		filter.eq("parent_id", "0");
 		return queryReport(db, V_REPORT_CATEGORY, filter);
 	}
 
 	@Override
 	public Intent createActivityIntent(Context context, DatabaseAdapter db, WhereFilter parentFilter, long id) {
-		WhereFilter filter = WhereFilter.empty();
-		Criteria c = parentFilter.get(BlotterFilter.DATETIME);
-		if (c != null) {
-			filter.put(c);
-		}
-		filterTransfers(filter);
-		Category category = db.getCategory(id);
-		filter.put(Criteria.gte("left", String.valueOf(category.left)));
-		filter.put(Criteria.lte("right", String.valueOf(category.right)));
+        WhereFilter filter = createFilterForSubCategory(db, parentFilter, id);
 		Intent intent = new Intent(context, ReportActivity.class);
 		filter.toIntent(intent);
 		intent.putExtra(ReportsListActivity.EXTRA_REPORT_TYPE, ReportType.BY_SUB_CATEGORY.name());
 		return intent;
 	}
 
-	@Override
+    public WhereFilter createFilterForSubCategory(DatabaseAdapter db, WhereFilter parentFilter, long id) {
+        WhereFilter filter = WhereFilter.empty();
+        Criteria c = parentFilter.get(BlotterFilter.DATETIME);
+        if (c != null) {
+            filter.put(c);
+        }
+        filterTransfers(filter);
+        Category category = db.getCategory(id);
+        filter.put(Criteria.gte("left", String.valueOf(category.left)));
+        filter.put(Criteria.lte("right", String.valueOf(category.right)));
+        return filter;
+    }
+
+    @Override
 	public Criteria getCriteriaForId(DatabaseAdapter db, long id) {
 		Category c = db.getCategory(id);
 		return Criteria.btw(BlotterFilter.CATEGORY_LEFT, String.valueOf(c.left), String.valueOf(c.right));

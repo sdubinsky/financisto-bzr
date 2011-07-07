@@ -98,5 +98,20 @@ public class MyEntity implements MultiChoiceItem {
 		}
 		return null;
 	}
-	
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MyEntity myEntity = (MyEntity) o;
+
+        return id == myEntity.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+
 }

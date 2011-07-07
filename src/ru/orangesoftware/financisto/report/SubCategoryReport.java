@@ -12,7 +12,6 @@ package ru.orangesoftware.financisto.report;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import ru.orangesoftware.financisto.activity.BlotterActivity;
 import ru.orangesoftware.financisto.activity.SplitsBlotterActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
@@ -28,12 +27,13 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_SUB_CATEGORY;
 
 public class SubCategoryReport extends AbstractReport {
 	
-	public SubCategoryReport(Context context, Bundle extra) {
+	public SubCategoryReport(Context context) {
 		super(context);		
 	}
 
@@ -82,7 +82,7 @@ public class SubCategoryReport extends AbstractReport {
 		return roots;
 	}
 
-	private void flatenTree(ArrayList<GraphUnitTree> tree, ArrayList<GraphUnit> units) {
+	private void flatenTree(List<GraphUnitTree> tree, List<GraphUnit> units) {
 		for (GraphUnitTree t : tree) {
 			units.add(t);
 			if (t.hasChildren()) {
@@ -133,13 +133,13 @@ public class SubCategoryReport extends AbstractReport {
 	
 	private static class GraphUnitTree extends GraphUnit {
 
-		public ArrayList<GraphUnitTree> children;
+		public List<GraphUnitTree> children;
 		
 		public GraphUnitTree(long id, String name, GraphStyle style) {
 			super(id, name, style);
 		}
 		
-		public void setChildren(ArrayList<GraphUnitTree> children) {
+		public void setChildren(List<GraphUnitTree> children) {
 			this.children = children;
 		}
 		
