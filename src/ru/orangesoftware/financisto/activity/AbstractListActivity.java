@@ -17,6 +17,7 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
+import ru.orangesoftware.financisto.utils.PinProtection;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -97,6 +98,18 @@ public abstract class AbstractListActivity extends ListActivity implements Reque
 	protected void onDestroy() {
 		db.close();
 		super.onDestroy();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PinProtection.lock(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PinProtection.unlock(this);
 	}
 	
 	@Override
@@ -192,5 +205,4 @@ public abstract class AbstractListActivity extends ListActivity implements Reque
 			requeryCursor();
 		}
 	}
-	
 }

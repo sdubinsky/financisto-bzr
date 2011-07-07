@@ -62,16 +62,15 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.EntityEnum;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.MyPreferences;
+import ru.orangesoftware.financisto.utils.PinProtection;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends TabActivity implements TabHost.OnTabChangeListener {
 	
-	private static final int ACTIVITY_PIN = 1;
 	private static final int ACTIVITY_CSV_EXPORT = 2;
     private static final int ACTIVITY_QIF_EXPORT = 3;
 
@@ -90,25 +89,12 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
-	private boolean shouldAskForPinOnResume = false;
-    private long activityPausedAtTime = 0;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-		Boolean isPinProtected = (Boolean)getLastNonConfigurationInstance();
-		if (isPinProtected == null) {
-			isPinProtected = true;
-		}
 		
-		if (isPinProtected && MyPreferences.shouldAskForPin(this)) {
-            shouldAskForPinOnResume = false;
-            askForPin();
-		} else {
-			initialLoad();
-		}
+		initialLoad();
 		
 		if (MyPreferences.isSendErrorReport(this)) {
 			ExceptionHandler.register(this, "http://orangesoftware.ru/bugs/server.php");		
@@ -125,45 +111,27 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		tabHost.setOnTabChangedListener(this);		
     }
 
-    private void askForPin() {
-        Intent intent = new Intent(this, PinActivity.class);
-        startActivityForResult(intent, ACTIVITY_PIN);
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
-        if (shouldAskForPinOnResume && MyPreferences.isPinLockEnabled(this)) {
-            long deltaTimeMs = TimeUnit.MILLISECONDS.convert(MyPreferences.getLockTimeSeconds(this), TimeUnit.SECONDS);
-            if (deltaTimeMs > 0 && System.currentTimeMillis() - activityPausedAtTime > deltaTimeMs) {
-                askForPin();
-            }
-        }
+        PinProtection.unlock(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        shouldAskForPinOnResume = true;
-        activityPausedAtTime = System.currentTimeMillis();
-        MyPreferences.setPinRequired(true);
+        PinProtection.lock(this);
     }
-
+    
     @Override
-    public Object onRetainNonConfigurationInstance() {
-        return MyPreferences.shouldAskForPin(this);
+    protected void onDestroy() {
+        super.onDestroy();
+        PinProtection.immediateLock(this);
     }
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == ACTIVITY_PIN) {
-			if (resultCode == RESULT_OK && data != null && data.hasExtra(PinActivity.SUCCESS)) {
-				initialLoad();			
-			} else {		
-				finish();
-				System.exit(-1);
-			}
-		} else if (requestCode == ACTIVITY_CSV_EXPORT) {
+		if (requestCode == ACTIVITY_CSV_EXPORT) {
 			if (resultCode == RESULT_OK) {
 				WhereFilter filter = WhereFilter.fromIntent(data);
 				Currency currency = new Currency();
@@ -230,12 +198,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		db.update(table, values, "_id=0", null);
 	}
 
-	@Override
-	protected void onStop() {
-		super.onStop();
-		MyPreferences.setPinRequired(true);
-	}
-	
 	@Override
 	public void onTabChanged(String tabId) {
 		if (started.containsKey(tabId)) {

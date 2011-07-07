@@ -25,6 +25,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.PinProtection;
 
 import java.text.DecimalFormatSymbols;
 
@@ -153,5 +154,16 @@ public class CurrencyActivity extends Activity {
 		db.close();
 		super.onDestroy();
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PinProtection.lock(this);
+	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PinProtection.unlock(this);
+	}
 }

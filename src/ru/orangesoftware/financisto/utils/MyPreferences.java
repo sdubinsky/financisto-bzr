@@ -54,8 +54,6 @@ public class MyPreferences {
 		}
 	}
 
-	public static boolean isPinRequired = true;
-
     private static Method hasSystemFeatureMethod;
 
     static {
@@ -78,10 +76,6 @@ public class MyPreferences {
 		return sharedPreferences.getBoolean("use_my_location", true);
 	}
 
-	public static boolean shouldAskForPin(Context context) {
-		return isPinProtected(context) && isPinRequired;
-	}
-
     public static boolean isPinProtected(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean("pin_protection", false);
@@ -100,10 +94,6 @@ public class MyPreferences {
 	public static String getPin(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getString("pin", null);
-	}
-	
-	public static void setPinRequired(boolean isPinRequired) {
-		MyPreferences.isPinRequired = isPinRequired;
 	}
 
 	public static AccountSortOrder getAccountSortOrder(Context context) {

@@ -22,6 +22,7 @@ import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.utils.PinProtection;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -81,7 +82,23 @@ public class MonthlyViewActivity extends ListActivity {
     	dbAdapter.close();
     	super.onDestroy();
     }
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PinProtection.lock(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PinProtection.unlock(this);
+	}
     
+    
+    /**
+     * Initialize data and GUI elements.
+     */
     private void initialize() {
     	
     	// get account data
