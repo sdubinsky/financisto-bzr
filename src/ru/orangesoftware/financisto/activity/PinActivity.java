@@ -12,6 +12,7 @@ package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.utils.MyPreferences;
+import ru.orangesoftware.financisto.utils.PinProtection;
 import ru.orangesoftware.financisto.view.PinView;
 import android.app.Activity;
 import android.content.Intent;
@@ -39,11 +40,15 @@ public class PinActivity extends Activity implements PinView.PinListener {
 
 	@Override
 	public void onSuccess(String pinBase64) {
-		MyPreferences.setPinRequired(false);
+        PinProtection.pinUnlock(this);
 		Intent data = new Intent();
 		data.putExtra(SUCCESS, true);
 		setResult(RESULT_OK, data);
 		finish();
+	}
+
+	@Override
+	public void onBackPressed() {
 	}
 
 }

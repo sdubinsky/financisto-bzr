@@ -259,4 +259,12 @@ public class Utils {
         textView.setTextColor(transferColor);
     }
 
+    public void setNegativeColor(TextView textView) {
+        textView.setTextColor(negativeColor);
+    }
+
+    public void setPositiveColor(TextView textView) {
+        textView.setTextColor(positiveColor);
+    }
+
 }

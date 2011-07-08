@@ -319,22 +319,16 @@ public class BudgetActivity extends AbstractActivity {
 				}
 				break;
 			case NEW_CATEGORY_REQUEST:
-				if (resultCode == RESULT_OK) {
-					categories = merge(categories, db.getCategoriesList(true));
-				}
+                categories = merge(categories, db.getCategoriesList(true));
 				break;
 			case NEW_PROJECT_REQUEST:
-				if (resultCode == RESULT_OK) {
-					projects = merge(projects, em.getAllProjectsList(true));
-				}
+                projects = merge(projects, em.getAllProjectsList(true));
 				break;
 			case RECUR_REQUEST:
-				if (resultCode == RESULT_OK) {
-					String recur = data.getStringExtra(RecurActivity.EXTRA_RECUR);
-					if (recur != null) {
-						selectRecur(recur);
-					}
-				}
+                String recur = data.getStringExtra(RecurActivity.EXTRA_RECUR);
+                if (recur != null) {
+                    selectRecur(recur);
+                }
 				break;
 			default:
 				break;

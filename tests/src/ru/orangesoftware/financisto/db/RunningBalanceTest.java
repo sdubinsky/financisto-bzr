@@ -241,6 +241,36 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertFinalBalanceForAccount(a1, 250);
     }
 
+    public void test_should_update_running_balance_when_updating_account_on_existing_transaction() {
+        // A1  | time  | amount | balance
+        // t11 | 11:00 | +1000  | +1000
+        // t12 | 11:05 | -500   | +500
+        // A2  | time  | amount | balance
+        // t21 | 11:00 | +900   | +900
+        // t22 | 12:00 | -100   | +800
+        Transaction t11 = TransactionBuilder.withDb(db).account(a1).amount(1000).dateTime(DateTime.today().at(11,0,0,0)).create();
+        Transaction t12 = TransactionBuilder.withDb(db).account(a1).amount(-500).dateTime(DateTime.today().at(11,5,0,0)).create();
+        Transaction t21 = TransactionBuilder.withDb(db).account(a2).amount(900).dateTime(DateTime.today().at(11,0,0,0)).create();
+        Transaction t22 = TransactionBuilder.withDb(db).account(a2).amount(-100).dateTime(DateTime.today().at(13,0,0,0)).create();
+        db.rebuildRunningBalance();
+        assertFinalBalanceForAccount(a1, 500);
+        assertFinalBalanceForAccount(a2, 800);
+        // A1  | time  | amount | balance
+        // t11 | 11:00 | +1000  | +1000
+        // t12 | 11:05 | -500   | +500
+        // t22 | 12:00 | -100   | +400
+        // A2  | time  | amount | balance
+        // t21 | 11:00 | +900   | +900
+        t22.fromAccountId = a1.id;
+        db.insertOrUpdate(t22);
+        assertAccountBalanceForTransaction(t11, a1, 1000);
+        assertAccountBalanceForTransaction(t12, a1, 500);
+        assertAccountBalanceForTransaction(t22, a1, 400);
+        assertFinalBalanceForAccount(a1, 400);
+        assertAccountBalanceForTransaction(t21, a2, 900);
+        assertFinalBalanceForAccount(a2, 900);
+    }
+
     public void test_should_update_running_balance_when_deleting_existing_transaction() {
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000

@@ -16,6 +16,7 @@ import java.util.Calendar;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.utils.DateUtils;
 import ru.orangesoftware.financisto.utils.LocalizableEnum;
+import ru.orangesoftware.financisto.utils.PinProtection;
 import ru.orangesoftware.financisto.utils.RecurUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.utils.RecurUtils.DayOfWeek;
@@ -38,7 +39,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -422,5 +422,16 @@ public class RecurActivity extends Activity {
 		}
 		return selected;
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PinProtection.lock(this);
+	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PinProtection.unlock(this);
+	}
 }

@@ -16,6 +16,7 @@ import ru.orangesoftware.financisto.adapter.ReportListAdapter;
 import ru.orangesoftware.financisto.graph.Report2DChart;
 import ru.orangesoftware.financisto.report.Report;
 import ru.orangesoftware.financisto.report.ReportType;
+import ru.orangesoftware.financisto.utils.PinProtection;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +48,18 @@ public class ReportsListActivity extends ListActivity {
 		setContentView(R.layout.reports_list);		
 		setListAdapter(new ReportListAdapter(this, reports));
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PinProtection.lock(this);
+	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PinProtection.unlock(this);
+	}
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		if (reports[position].isConventionalBarReport()) {
