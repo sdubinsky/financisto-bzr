@@ -52,7 +52,7 @@ public class SubCategoryReport extends AbstractReport {
 
             ArrayList<GraphUnitTree> roots = createTree(amounts, 0);
             ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
-            flatenTree(roots, units);
+            flattenTree(roots, units);
             Total[] totals = calculateTotals(roots);
             return new ReportData(units, totals);
         } finally {
@@ -78,15 +78,18 @@ public class SubCategoryReport extends AbstractReport {
 				u = null;				
 			}
 		}
+        for (GraphUnitTree root : roots) {
+            root.flatten();
+        }
 		Collections.sort(roots);
 		return roots;
 	}
 
-	private void flatenTree(List<GraphUnitTree> tree, List<GraphUnit> units) {
+	private void flattenTree(List<GraphUnitTree> tree, List<GraphUnit> units) {
 		for (GraphUnitTree t : tree) {
 			units.add(t);
 			if (t.hasChildren()) {
-				flatenTree(t.children, units);
+				flattenTree(t.children, units);
 				t.setChildren(null);
 			}
 		}
@@ -146,8 +149,18 @@ public class SubCategoryReport extends AbstractReport {
 		public boolean hasChildren() {
 			return children != null && children.size() > 0;
 		}
-		
-	}
+
+        @Override
+        public void flatten() {
+            super.flatten();
+            if (children != null) {
+                for (GraphUnitTree child : children) {
+                    child.flatten();
+                }
+                Collections.sort(children);
+            }
+        }
+    }
 
 }
 

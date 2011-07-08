@@ -85,8 +85,12 @@ public class PeriodReport extends AbstractReport {
 
     @Override
 	public Criteria getCriteriaForId(DatabaseAdapter db, long id) {
-		Period p = periods[(int)id];
-		return new DateTimeCriteria(p);
+        for (Period period : periods) {
+            if (period.type.ordinal() == id) {
+                return new DateTimeCriteria(period);
+            }
+        }
+		return null;
 	}
 
     @Override

@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.report;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import ru.orangesoftware.financisto.activity.BlotterActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
@@ -52,6 +53,7 @@ public abstract class AbstractReport implements Report {
 		filterTransfers(filter);
 		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
+        DatabaseUtils.dumpCursor(c);
 		ArrayList<GraphUnit> units = getUnitsFromCursor(c);
         Total[] totals = calculateTotals(units);
         return new ReportData(units, totals);

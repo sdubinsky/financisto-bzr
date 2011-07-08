@@ -49,15 +49,18 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
     }
 
     public void flatten() {
-        long maxAmount = 0;
-        for (Map.Entry<Currency, IncomeExpenseAmount> entry : currencyToAmountMap.entrySet()) {
-            Currency currency = entry.getKey();
-            IncomeExpenseAmount amount = entry.getValue();
-            addToAmounts(currency, amount.income);
-            addToAmounts(currency, amount.expense);
-            maxAmount = Math.max(maxAmount, Math.max(Math.abs(amount.income), Math.abs(amount.expense)));
+        if (amounts.isEmpty()) {
+            long maxAmount = 0;
+            for (Map.Entry<Currency, IncomeExpenseAmount> entry : currencyToAmountMap.entrySet()) {
+                Currency currency = entry.getKey();
+                IncomeExpenseAmount amount = entry.getValue();
+                addToAmounts(currency, amount.income);
+                addToAmounts(currency, amount.expense);
+                maxAmount = Math.max(maxAmount, Math.max(Math.abs(amount.income), Math.abs(amount.expense)));
+            }
+            Collections.sort(amounts);
+            this.maxAmount = maxAmount;
         }
-        this.maxAmount = maxAmount;
     }
 
     private void addToAmounts(Currency currency, long amount) {
@@ -67,8 +70,8 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
     }
 
     @Override
-	public int compareTo(GraphUnit another) {
-		return another.maxAmount > this.maxAmount ? 1 : -1;
+	public int compareTo(GraphUnit that) {
+		return that.maxAmount == this.maxAmount ? 0 : (that.maxAmount > this.maxAmount ? 1 : -1);
 	}
 
     @Override

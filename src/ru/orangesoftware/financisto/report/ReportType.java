@@ -28,7 +28,7 @@ public enum ReportType {
 			return new CategoryReportAll(context);
 		}
 	},
-	BY_SUB_CATEGORY_ROOTS(R.string.report_by_sub_category, R.string.report_by_sub_category_summary, R.drawable.report_icon_default){
+	BY_CATEGORY_TOP_DOWN(R.string.report_by_sub_category, R.string.report_by_sub_category_summary, R.drawable.report_icon_default){
 		@Override
 		public Report createReport(Context context) {
 			return new CategoryReportTopDown(context);
