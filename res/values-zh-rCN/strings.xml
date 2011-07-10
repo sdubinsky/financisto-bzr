@@ -392,12 +392,6 @@
         <item>清单</item>
         <item>选框</item>
     </string-array>
-    <string-array name="report_types">
-        <item>以期间统计</item>
-        <item>以分类统计</item>
-        <item>以地点统计</item>
-        <item>以项目统计</item>
-    </string-array>
     <string-array name="datetime_filter_items">
         <item>今天</item>
         <item>昨天</item>

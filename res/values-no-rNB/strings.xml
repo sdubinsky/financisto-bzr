@@ -158,16 +158,6 @@
 	<string name="report_by_location_by_period_summary">Transaksjonsrapport etter posisjon og periode</string>
 	<string name="report_by_project_by_period">Etter Prosjekt / Periode</string>
 	<string name="report_by_project_by_period_summary">Transaksjonsrapport etter prosjekt og periode</string>
-	<string-array name="report_types">
-		<item>By Periode</item>
-		<item>By Kategori</item>		
-		<item>By Posisjon</item>
-		<item>By Prosjekt</item>
-		<item>By Konto/Periode</item>
-		<item>By Kategori/Periode</item>
-		<item>By Posisjon/Periode</item>
-		<item>By Prosjekt/Periode</item>
-	</string-array>
 	<string name="max_result_label">Maks:</string>
 	<string name="min_result_label">Min:</string>
 	<string name="mean_result_label">Middel:</string>

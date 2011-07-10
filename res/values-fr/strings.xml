@@ -149,12 +149,6 @@
 	<string name="report_by_location_summary">Etat des opérations par position</string>
 	<string name="report_by_project">Par projet</string>
 	<string name="report_by_project_summary">Etat des opérations par projet</string>
-	<string-array name="report_types">
-		<item>Par période</item>
-		<item>Par catégorie</item>		
-		<item>Par position</item>
-		<item>Par projet</item>
-	</string-array>
 	<string name="period_today">Aujourd\'hui</string>
 	<string name="period_yesterday">Hier</string>
 	<string name="period_this_week">Cette semaine</string>
