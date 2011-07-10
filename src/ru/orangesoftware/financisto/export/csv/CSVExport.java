@@ -33,22 +33,11 @@ import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_TIME_ISO_8601;
 public class CSVExport extends Export {
 
 	private final DatabaseAdapter db;
-	private final WhereFilter filter;
-	private final NumberFormat f;
-	private final char fieldSeparator;
-	private final boolean includeHeader;
-	
-	public CSVExport(DatabaseAdapter db, WhereFilter filter, Currency currency,
-			char fieldSeparator, boolean includeHeader) {
+    private final CsvExportOptions options;
+
+	public CSVExport(DatabaseAdapter db, CsvExportOptions options) {
 		this.db = db;
-		this.filter = filter;
-		this.f = CurrencyCache.createCurrencyFormat(currency);
-		this.fieldSeparator = fieldSeparator;
-		this.includeHeader = includeHeader;
-	}
-	
-	public CSVExport(DatabaseAdapter db, WhereFilter filter, Currency currency) {
-		this(db, filter, currency, ',', true);
+		this.options = options;
 	}
 	
 	@Override
@@ -64,8 +53,8 @@ public class CSVExport extends Export {
 		bom[1] = (byte) 0xBB;
 		bom[2] = (byte) 0xBF;
 		bw.write(new String(bom,"UTF-8"));
-		if (includeHeader) {
-			Csv.Writer w = new Csv.Writer(bw).delimiter(fieldSeparator);
+		if (options.includeHeader) {
+			Csv.Writer w = new Csv.Writer(bw).delimiter(options.fieldSeparator);
 			w.value("date").value("time").value("account").value("amount").value("currency");
 			w.value("category").value("parent").value("payee").value("location").value("project").value("note");
 			w.newLine();
@@ -74,10 +63,10 @@ public class CSVExport extends Export {
 
 	@Override
 	protected void writeBody(BufferedWriter bw) throws IOException {
-		Csv.Writer w = new Csv.Writer(bw).delimiter(fieldSeparator);
+		Csv.Writer w = new Csv.Writer(bw).delimiter(options.fieldSeparator);
 		try {
 			HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
-			Cursor c = db.getBlotter(filter);
+			Cursor c = db.getBlotter(options.filter);
 			try {			
 				while (c.moveToNext()) {
 					writeLine(w, c, categoriesMap);
@@ -123,7 +112,7 @@ public class CSVExport extends Export {
 		w.value(FORMAT_DATE_ISO_8601.format(dt));
 		w.value(FORMAT_TIME_ISO_8601.format(dt));
 		w.value(account);
-		w.value(f.format(new BigDecimal(amount).divide(Utils.HUNDRED)));
+		w.value(options.amountFormat.format(new BigDecimal(amount).divide(Utils.HUNDRED)));
 		Currency c = CurrencyCache.getCurrency(currencyId);
 		w.value(c.name);
 		w.value(category != null ? category.title : "");

@@ -151,4 +151,10 @@
         <item>15</item>
     </string-array>
 
+    <string-array name="date_format_values">
+        <item>dd/MM/yyyy</item>
+        <item>MM/dd/yyyy</item>
+        <item>yyyy-MM-dd</item>
+    </string-array>
+
 </resources>

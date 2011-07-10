@@ -648,4 +648,6 @@
         <item>15 minutes</item>
     </string-array>
 
+    <string name="date_format">Date format</string>
+
 </resources>

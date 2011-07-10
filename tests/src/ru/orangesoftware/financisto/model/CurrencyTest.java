@@ -12,12 +12,12 @@ public class CurrencyTest extends AndroidTestCase {
 
     public void test_should_format_amount_according_to_the_selected_currency() {
         Currency c = new Currency();
-        c.decimals = 2;
-        c.decimalSeparator = "'.'";
-        c.groupSeparator = "','";
+        c.decimals = 1;
+        c.decimalSeparator = "','";
+        c.groupSeparator = "''";
         c.symbol = "$";
         String actualString = Utils.amountToString(c, 100000);
-        assertEquals("1,000.00 $", actualString);
+        assertEquals("1000,0 $", actualString);
     }
 
 }

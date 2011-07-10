@@ -12,24 +12,31 @@ package ru.orangesoftware.financisto.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.Spinner;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.MultiChoiceItem;
+import ru.orangesoftware.financisto.utils.CurrencyExportPreferences;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class QifExportActivity extends AbstractExportActivity implements ActivityLayoutListener {
 
-    public static final String SELECTED_ACCOUNTS = "SELECTED_ACCOUNTS";
+    public static final String QIF_EXPORT_SELECTED_ACCOUNTS = "QIF_EXPORT_SELECTED_ACCOUNTS";
+    public static final String QIF_EXPORT_DATE_FORMAT = "QIF_EXPORT_DATE_FORMAT";
+
+    private final CurrencyExportPreferences currencyPreferences = new CurrencyExportPreferences("qif");
 
     private DatabaseAdapter db;
     private ArrayList<Account> accounts;
-    private ArrayList<Account> selectedAccounts;
 
     private Button bAccounts;
 
@@ -67,8 +74,8 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
 
     @Override
     public void onSelected(int id, ArrayList<? extends MultiChoiceItem> items) {
-        selectedAccounts = getSelectedAccounts(items);
-        if (selectedAccounts.size() == items.size()) {
+        List<Account> selectedAccounts = getSelectedAccounts();
+        if (selectedAccounts.size() == 0 || selectedAccounts.size() == accounts.size()) {
             bAccounts.setText(R.string.all_accounts);
         } else {
             StringBuilder sb = new StringBuilder();
@@ -79,9 +86,9 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
         }
     }
 
-    private ArrayList<Account> getSelectedAccounts(ArrayList<? extends MultiChoiceItem> items) {
+    private ArrayList<Account> getSelectedAccounts() {
         ArrayList<Account> selected = new ArrayList<Account>();
-        for (MultiChoiceItem i : items) {
+        for (MultiChoiceItem i : accounts) {
             if (i.isChecked()) {
                 selected.add((Account)i);
             }
@@ -110,22 +117,96 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
 
     @Override
     protected void updateResultIntentFromUi(Intent data) {
+        currencyPreferences.updateIntentFromUI(this, data);
         long[] selectedIds = getSelectedAccountsIds();
         if (selectedIds.length > 0) {
-            data.putExtra(SELECTED_ACCOUNTS, selectedIds);
+            data.putExtra(QIF_EXPORT_SELECTED_ACCOUNTS, selectedIds);
         }
+        Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
+        data.putExtra(QIF_EXPORT_DATE_FORMAT, dateFormats.getSelectedItem().toString());
     }
 
     private long[] getSelectedAccountsIds() {
-        if (selectedAccounts != null) {
-            int count = selectedAccounts.size();
-            long[] ids = new long[count];
-            for (int i=0; i<count; i++) {
-                ids[i] = selectedAccounts.get(i).id;
+        List<Long> selectedAccounts = new ArrayList<Long>(accounts.size());
+        for (Account account : accounts) {
+            if (account.isChecked()) {
+                selectedAccounts.add(account.id);
             }
-            return ids;
         }
-        return new long[0];
+        int count = selectedAccounts.size();
+        long[] ids = new long[count];
+        for (int i=0; i<count; i++) {
+            ids[i] = selectedAccounts.get(i);
+        }
+        return ids;
+    }
+
+    @Override
+	protected void onPause() {
+		super.onPause();
+		savePreferences();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		restorePreferences();
+	}
+
+	private void savePreferences() {
+		SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
+
+        currencyPreferences.savePreferences(this, editor);
+
+        long[] selectedIds = getSelectedAccountsIds();
+        if (selectedIds.length > 0) {
+            editor.putString(QIF_EXPORT_SELECTED_ACCOUNTS, joinSelectedAccounts(selectedIds));
+        }
+
+        Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
+		editor.putInt(QIF_EXPORT_DATE_FORMAT, dateFormats.getSelectedItemPosition());
+
+		editor.commit();
+	}
+
+    private String joinSelectedAccounts(long[] selectedIds) {
+        StringBuilder sb = new StringBuilder();
+        for (long selectedId : selectedIds) {
+            if (sb.length() > 0) sb.append(",");
+            sb.append(selectedId);
+        }
+        return sb.toString();
+    }
+
+    private void restorePreferences() {
+		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+
+        currencyPreferences.restorePreferences(this, preferences);
+
+        String selectedIds = preferences.getString(QIF_EXPORT_SELECTED_ACCOUNTS, "");
+        parseSelectedAccounts(selectedIds);
+        onSelected(-1, accounts);
+
+        Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
+        dateFormats.setSelection(preferences.getInt(QIF_EXPORT_DATE_FORMAT, 0));
+	}
+
+    private void parseSelectedAccounts(String selectedIds) {
+        try {
+            TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
+            splitter.setString(selectedIds);
+            for (String s : splitter) {
+                long id = Long.parseLong(s);
+                for (Account account : accounts) {
+                    if (account.id == id) {
+                        account.setChecked(true);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            // ignore
+        }
     }
 
 }

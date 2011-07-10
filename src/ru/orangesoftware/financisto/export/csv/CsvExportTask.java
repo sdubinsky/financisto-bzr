@@ -1,31 +1,22 @@
 package ru.orangesoftware.financisto.export.csv;
 
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
-import ru.orangesoftware.financisto.model.Currency;
 import android.app.ProgressDialog;
 import android.content.Context;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 
 public class CsvExportTask extends ImportExportAsyncTask {
-	
-	private final WhereFilter filter; 
-	private final Currency currency;
-	private final char fieldSeparator;
-	private final boolean includeHeader;
-	
-	public CsvExportTask(Context context, ProgressDialog dialog, WhereFilter filter, Currency currency, 
-			char fieldSeparator, boolean includeHeader) {
+
+    private final CsvExportOptions options;
+
+	public CsvExportTask(Context context, ProgressDialog dialog, CsvExportOptions options) {
 		super(context, dialog, null);
-		this.filter = filter;
-		this.currency = currency;
-		this.fieldSeparator = fieldSeparator;
-		this.includeHeader = includeHeader;
+		this.options = options;
 	}
 	
 	@Override
 	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-		CSVExport export = new CSVExport(db, filter, currency, fieldSeparator, includeHeader);
+		CSVExport export = new CSVExport(db, options);
 		return export.export();
 	}
 

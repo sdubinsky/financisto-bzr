@@ -28,21 +28,15 @@ import java.util.HashMap;
 public class QifExport extends Export {
 
     private final DatabaseAdapter db;
-    private final WhereFilter filter;
+    private final QifExportOptions options;
     private final CategoryTree<Category> categories;
     private final HashMap<Long, Category> categoriesMap;
 
-    private long[] selectedAccounts;
-
-    public QifExport(DatabaseAdapter db, WhereFilter filter) {
+    public QifExport(DatabaseAdapter db, QifExportOptions options) {
         this.db = db;
-        this.filter = filter;
+        this.options = options;
         this.categories = db.getAllCategoriesTree(false);
         this.categoriesMap = categories.asMap();
-    }
-
-    public void exportOnlySelectedAccounts(long[] selectedAccounts) {
-        this.selectedAccounts = selectedAccounts;
     }
 
     @Override
@@ -87,6 +81,7 @@ public class QifExport extends Export {
     }
 
     private boolean isSelectedAccount(Account a) {
+        long[] selectedAccounts = options.selectedAccounts;
         if (selectedAccounts == null || selectedAccounts.length == 0) {
             return true;
         }
@@ -115,7 +110,7 @@ public class QifExport extends Export {
                 }
                 QifTransaction qifTransaction = QifTransaction.fromBlotterCursor(c);
                 qifTransaction.userCategoriesCache(categoriesMap);
-                qifTransaction.writeTo(qifWriter);
+                qifTransaction.writeTo(qifWriter, options);
             }
         } finally {
             c.close();
@@ -123,7 +118,7 @@ public class QifExport extends Export {
     }
 
     private Cursor getBlotterForAccount(Account account) {
-        WhereFilter accountFilter = WhereFilter.copyOf(filter);
+        WhereFilter accountFilter = WhereFilter.copyOf(options.filter);
         accountFilter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
         return db.getTransactions(accountFilter);
     }
