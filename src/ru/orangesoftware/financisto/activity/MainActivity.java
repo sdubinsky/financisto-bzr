@@ -89,9 +89,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+
 		initialLoad();
-		
+
 		if (MyPreferences.isSendErrorReport(this)) {
 			ExceptionHandler.register(this, "http://orangesoftware.ru/bugs/server.php");		
 		}
@@ -111,6 +111,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     protected void onResume() {
         super.onResume();
         PinProtection.unlock(this);
+        if (PinProtection.isUnlocked()) {
+            WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);
+        }
     }
 
     @Override
@@ -177,7 +180,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		}
 		long t4 = System.currentTimeMillis();
 		Log.d("Financisto", "Load time = "+(t4 - t0)+"ms = "+(t2-t1)+"ms+"+(t3-t2)+"ms+"+(t4-t3)+"ms");
-		WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);
 	}
 
 	private void updateZero(SQLiteDatabase db, String table, String field, String value) {
