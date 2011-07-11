@@ -88,4 +88,8 @@ public class PinProtection {
         currentState.lock(c);
     }
 
+    public static boolean isUnlocked() {
+        return currentState == UNLOCKED;
+    }
+
 }

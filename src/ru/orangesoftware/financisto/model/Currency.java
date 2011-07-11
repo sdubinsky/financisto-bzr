@@ -31,6 +31,8 @@ public class Currency extends MyEntity {
 	static {
 		EMPTY.symbol = "";
 		EMPTY.decimals = 2;
+        EMPTY.decimalSeparator = "'.'";
+        EMPTY.groupSeparator = "','";
 	}
 
 	@Column(name = "name")

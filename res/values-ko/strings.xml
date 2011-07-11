@@ -149,12 +149,6 @@
 	<string name="report_by_location_summary">위치 별 거래 보고서</string>
 	<string name="report_by_project">프로젝트 별</string>
 	<string name="report_by_project_summary">프로젝트 별 거래 보고서</string>
-	<string-array name="report_types">
-		<item>기간 별</item>
-		<item>분류 별</item>		
-		<item>위치 별</item>
-		<item>프로젝트 별</item>
-	</string-array>
 	<string name="period_today">오늘</string>
 	<string name="period_yesterday">어제</string>
 	<string name="period_this_week">이번 주</string>

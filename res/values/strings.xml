@@ -160,16 +160,6 @@
 	<string name="report_by_location_by_period_summary">Transactions report by location and period</string>
 	<string name="report_by_project_by_period">By Project / Period</string>
 	<string name="report_by_project_by_period_summary">Transactions report by project and period</string>
-	<string-array name="report_types">
-		<item>By Period</item>
-		<item>By Category</item>		
-		<item>By Location</item>
-		<item>By Project</item>
-		<item>By Account/Period</item>
-		<item>By Category/Period</item>
-		<item>By Location/Period</item>
-		<item>By Project/Period</item>
-	</string-array>
 	<string name="max_result_label">Max:</string>
 	<string name="min_result_label">Min:</string>
 	<string name="mean_result_label">Mean:</string>
@@ -650,11 +640,12 @@
         <item>15 minutes</item>
     </string-array>
 
+    <string name="date_format">Date format</string>
     <string name="split">[Split]</string>
     <string name="split_transfer">[Split-Transfer]</string>
     <string name="unsplit_amount">Unsplit amount</string>
     <string name="unsplit_amount_greater_than_zero">There is still some amount left un-split...</string>
     <string name="delete_transaction_parent_confirm">This transaction is a part of split. Do you want to delete the parent transaction?</string>
     <string name="downloading_rate" formatted="false">Fetching %s/%s conversion rate...</string>
-    
+
 </resources>

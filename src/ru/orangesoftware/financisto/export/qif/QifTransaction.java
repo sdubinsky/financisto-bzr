@@ -2,11 +2,9 @@ package ru.orangesoftware.financisto.export.qif;
 
 import android.database.Cursor;
 import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -18,9 +16,6 @@ import static ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
  * Date: 2/8/11 12:52 AM
  */
 public class QifTransaction {
-
-    // this class must not be used by multiple threads
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
     private HashMap<Long, Category> categoriesMap;
 
@@ -44,9 +39,9 @@ public class QifTransaction {
         return t;
     }
 
-    public void writeTo(QifBufferedWriter qifWriter) throws IOException {
-        qifWriter.write("D").write(DATE_FORMAT.format(date)).newLine();
-        qifWriter.write("T").write(Utils.amountToString(Currency.EMPTY, amount)).newLine();
+    public void writeTo(QifBufferedWriter qifWriter, QifExportOptions options) throws IOException {
+        qifWriter.write("D").write(options.dateFormat.format(date)).newLine();
+        qifWriter.write("T").write(Utils.amountToString(options.currency, amount)).newLine();
         if (toAccountId > 0) {
             qifWriter.write("L[").write(toAccountTitle).write("]").newLine();
         } else if (categoryId > 0) {

@@ -5,6 +5,7 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.QifExport;
+import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.CurrencyBuilder;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
@@ -39,6 +40,65 @@ public class QIFExportTest extends AbstractDbTest {
                         "TCash\n" +
                         "^\n",
                 exportAsString());
+    }
+
+    public void test_should_export_transaction_amount_according_to_the_config() throws Exception {
+        Account a = createFirstAccount();
+        Currency c = new Currency();
+        c.decimals = 1;
+        c.decimalSeparator = "','";
+        c.groupSeparator = "''";
+        c.symbol = "";
+        TransactionBuilder.withDb(db).account(a).amount(-210056).payee("Payee 1").dateTime(date(2011, 2, 7)).create();
+        assertEquals(
+                "!Account\n"+
+                "NMy Cash Account\n"+
+                "TCash\n"+
+                "^\n"+
+                "!Type:Cash\n"+
+                "D07/02/2011\n"+
+                "T-2100,6\n"+
+                "PPayee 1\n"+
+                "^\n",
+                exportAsString(c));
+    }
+
+    public void test_should_export_transaction_date_according_to_the_config() throws Exception {
+        Account a = createFirstAccount();
+        TransactionBuilder.withDb(db).account(a).amount(-210056).payee("Payee 1").dateTime(date(2011, 7, 10)).create();
+        assertEquals(
+                "!Account\n"+
+                "NMy Cash Account\n"+
+                "TCash\n"+
+                "^\n"+
+                "!Type:Cash\n"+
+                "D10/07/2011\n"+
+                "T-2,100.56\n"+
+                "PPayee 1\n"+
+                "^\n",
+                exportAsString("dd/MM/yyyy"));
+        assertEquals(
+                "!Account\n"+
+                "NMy Cash Account\n"+
+                "TCash\n"+
+                "^\n"+
+                "!Type:Cash\n"+
+                "D07/10/2011\n"+
+                "T-2,100.56\n"+
+                "PPayee 1\n"+
+                "^\n",
+                exportAsString("MM/dd/yyyy"));
+        assertEquals(
+                "!Account\n"+
+                "NMy Cash Account\n"+
+                "TCash\n"+
+                "^\n"+
+                "!Type:Cash\n"+
+                "D2011-07-10\n"+
+                "T-2,100.56\n"+
+                "PPayee 1\n"+
+                "^\n",
+                exportAsString("yyyy-MM-dd"));
     }
 
     public void test_should_export_account_with_a_couple_of_transactions() throws Exception {
@@ -180,22 +240,22 @@ public class QIFExportTest extends AbstractDbTest {
     public void test_should_export_categories() throws Exception {
         createCategories();
         assertEquals(
-                "!Type:Cat\n"+
-                "NA1\n"+
-                "I\n"+
-                "^\n"+
-                "NA1:aa1\n"+
-                "I\n"+
-                "^\n"+
-                "NA1:aa2\n"+
-                "I\n"+
-                "^\n"+
-                "NB2\n"+
-                "E\n"+
-                "^\n"+
-                "NB2:bb1\n"+
-                "E\n"+
-                "^\n",
+                "!Type:Cat\n" +
+                        "NA1\n" +
+                        "I\n" +
+                        "^\n" +
+                        "NA1:aa1\n" +
+                        "I\n" +
+                        "^\n" +
+                        "NA1:aa2\n" +
+                        "I\n" +
+                        "^\n" +
+                        "NB2\n" +
+                        "E\n" +
+                        "^\n" +
+                        "NB2:bb1\n" +
+                        "E\n" +
+                        "^\n",
                 exportAsString());
     }
 
@@ -284,21 +344,33 @@ public class QIFExportTest extends AbstractDbTest {
     }
 
     private String exportAsString() throws Exception {
-        return exportAsString(WhereFilter.empty(), null);
+        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, null, WhereFilter.empty());
+        return exportAsString(options);
+    }
+
+    private String exportAsString(Currency currency) throws Exception {
+        QifExportOptions options = new QifExportOptions(currency, QifExportOptions.DEFAULT_DATE_FORMAT, null, WhereFilter.empty());
+        return exportAsString(options);
+    }
+
+    private String exportAsString(String dateFormat) throws Exception {
+        QifExportOptions options = new QifExportOptions(Currency.EMPTY, dateFormat, null, WhereFilter.empty());
+        return exportAsString(options);
     }
 
     private String exportAsString(WhereFilter filter) throws Exception {
-        return exportAsString(filter, null);
+        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, null, filter);
+        return exportAsString(options);
     }
 
     private String exportAsString(long[] accounts) throws Exception {
-        return exportAsString(WhereFilter.empty(), accounts);
+        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, accounts, WhereFilter.empty());
+        return exportAsString(options);
     }
 
-    private String exportAsString(WhereFilter filter, long[] accounts) throws Exception {
+    private String exportAsString(QifExportOptions options) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        QifExport export = new QifExport(db, filter);
-        export.exportOnlySelectedAccounts(accounts);
+        QifExport export = new QifExport(db, options);
         export.export(bos);
         String s = new String(bos.toByteArray(), "UTF-8");
         Log.d("QIF", s);

@@ -159,16 +159,6 @@
 	<string name="report_by_location_by_period_summary">Relatório de transações por localização em determinado período</string>
 	<string name="report_by_project_by_period">Por Projeto / Período</string>
 	<string name="report_by_project_by_period_summary">Relatório de transações por projeto em determinado período</string>
-	<string-array name="report_types">
-		<item>Por Período</item>
-		<item>Por Categoria</item>		
-		<item>Por Localização</item>
-		<item>Por Projeto</item>
-		<item>Por Conta/Período</item>
-		<item>Por Categoria/Período</item>
-		<item>Por Localização/Período</item>
-		<item>Por Projeto/Período</item>
-	</string-array>
 	<string name="max_result_label">Máx:</string>
 	<string name="min_result_label">Mín:</string>
 	<string name="mean_result_label">Média:</string>

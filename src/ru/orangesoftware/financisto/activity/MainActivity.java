@@ -47,21 +47,17 @@ import ru.orangesoftware.financisto.backup.Backup;
 import ru.orangesoftware.financisto.backup.DatabaseExport;
 import ru.orangesoftware.financisto.backup.DatabaseImport;
 import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.dialog.WebViewDialog;
 import ru.orangesoftware.financisto.export.BackupExportTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
+import ru.orangesoftware.financisto.export.csv.CsvExportOptions;
 import ru.orangesoftware.financisto.export.csv.CsvExportTask;
+import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.export.qif.QifExportTask;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
-import ru.orangesoftware.financisto.utils.EntityEnum;
-import ru.orangesoftware.financisto.utils.EnumUtils;
-import ru.orangesoftware.financisto.utils.MyPreferences;
-import ru.orangesoftware.financisto.utils.PinProtection;
+import ru.orangesoftware.financisto.utils.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -92,9 +88,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+
 		initialLoad();
-		
+
 		if (MyPreferences.isSendErrorReport(this)) {
 			ExceptionHandler.register(this, "http://orangesoftware.ru/bugs/server.php");		
 		}
@@ -114,6 +110,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     protected void onResume() {
         super.onResume();
         PinProtection.unlock(this);
+        if (PinProtection.isUnlocked()) {
+            WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);
+        }
     }
 
     @Override
@@ -132,33 +131,25 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ACTIVITY_CSV_EXPORT) {
 			if (resultCode == RESULT_OK) {
-				WhereFilter filter = WhereFilter.fromIntent(data);
-				Currency currency = new Currency();
-				char fieldSeparator = data.getCharExtra(CsvExportActivity.CSV_EXPORT_FIELD_SEPARATOR, ',');
-				boolean includeHeader = data.getBooleanExtra(CsvExportActivity.CSV_EXPORT_INCLUDE_HEADER, true);
-				currency.symbol = "$";
-				currency.decimals = data.getIntExtra(CsvExportActivity.CSV_EXPORT_DECIMALS, 2);
-				currency.decimalSeparator = data.getStringExtra(CsvExportActivity.CSV_EXPORT_DECIMAL_SEPARATOR);
-				currency.groupSeparator = data.getStringExtra(CsvExportActivity.CSV_EXPORT_GROUP_SEPARATOR);
-				doCsvExport(filter, currency, fieldSeparator, includeHeader);
+                CsvExportOptions options = CsvExportOptions.fromIntent(data);
+				doCsvExport(options);
 			}
 		} else if (requestCode == ACTIVITY_QIF_EXPORT) {
 			if (resultCode == RESULT_OK) {
-				WhereFilter filter = WhereFilter.fromIntent(data);
-                long[] selectedAccounts = data.getLongArrayExtra(QifExportActivity.SELECTED_ACCOUNTS);
-                doQifExport(filter, selectedAccounts);
+                QifExportOptions options = QifExportOptions.fromIntent(data);
+                doQifExport(options);
 			}
 		}
 	}
 	
-	private void doCsvExport(WhereFilter filter, Currency currency, char fieldSeparator, boolean includeHeader) {
-		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
-		new CsvExportTask(this, d, filter, currency, fieldSeparator, includeHeader).execute((String[])null);
+	private void doCsvExport(CsvExportOptions options) {
+		ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
+		new CsvExportTask(this, progressDialog, options).execute();
 	}
 	
-    private void doQifExport(WhereFilter filter, long[] selectedAccounts) {
-        ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.qif_export_inprogress), true);
-        new QifExportTask(this, d, filter, selectedAccounts).execute((String[])null);
+    private void doQifExport(QifExportOptions options) {
+        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.qif_export_inprogress), true);
+        new QifExportTask(this, progressDialog, options).execute();
     }
 
 	private void initialLoad() {
@@ -189,7 +180,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		}
 		long t4 = System.currentTimeMillis();
 		Log.d("Financisto", "Load time = "+(t4 - t0)+"ms = "+(t2-t1)+"ms+"+(t3-t2)+"ms+"+(t4-t3)+"ms");
-		WebViewDialog.checkVersionAndShowWhatsNewIfNeeded(this);
 	}
 
 	private void updateFieldInTable(SQLiteDatabase db, String table, long id, String field, String value) {

@@ -159,16 +159,6 @@
 	<string name="report_by_location_by_period_summary">Rapporti transazioni per posizione e periodo</string>
 	<string name="report_by_project_by_period">Per progetto / periodo</string>
 	<string name="report_by_project_by_period_summary">Rapporti transazioni per progetto e periodo</string>
-	<string-array name="report_types">
-		<item>Per periodo</item>
-		<item>Per categoria</item>		
-		<item>Per posizione</item>
-		<item>Per progetto</item>
-		<item>Per conto/periodo</item>
-		<item>Per categoria/periodo</item>
-		<item>Per posizione/periodo</item>
-		<item>Per progetto/periodo</item>
-	</string-array>
 	<string name="report_preferences_not_set">Aggiusta le preferenze nelle impostazioni. Considerando la valuta e il periodo predefiniti.</string>
 	<string name="currency_not_set">Valuta di riferimento non impostata nelle preferenze. Considera il periodo predefinito.</string>
 	<string name="period_not_set">Periodo di riferimento non impostato nelle preferenze. Considera il periodo predefinito.</string>

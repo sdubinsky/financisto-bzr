@@ -160,16 +160,6 @@
 	<string name="report_by_location_by_period_summary">Zpráva o operacích dle polohy za období</string>
 	<string name="report_by_project_by_period">Dle projektu za období</string>
 	<string name="report_by_project_by_period_summary">Zpráva o operacích dle projektu za období</string>
-	<string-array name="report_types">
-		<item>Dle období</item>
-		<item>Dle kategorie</item>		
-		<item>Dle polohy</item>
-		<item>Dle projektu</item>
-		<item>Dle účtu za období</item>
-		<item>Dle kategorie za období</item>
-		<item>Dle polohy za období</item>
-		<item>Dle projektu za období</item>
-	</string-array>
 	<string name="max_result_label">Max:</string>
 	<string name="min_result_label">Min:</string>
 	<string name="mean_result_label">Střed:</string>

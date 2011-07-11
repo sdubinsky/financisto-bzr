@@ -619,4 +619,18 @@
     <string name="empty_report">Пустой отчет</string>
     <string name="day_of_month">День месяца</string>
 
+    <string name="show_running_balance">Показывать текущий баланс</string>
+    <string name="lock_time_summary">Время после истечения которого приложение блокируется ПИНом</string>
+    <string name="lock_time">Блокировка</string>
+    <string name="date_format">Формат даты</string>
+    <string name="new_currency">Новая валюта...</string>
+    <string-array name="lock_time_entities">
+        <item>Выкл</item>
+        <item>1 минута</item>
+        <item>3 минуты</item>
+        <item>5 минут</item>
+        <item>10 минут</item>
+        <item>15 минут</item>
+    </string-array>
+
 </resources>
