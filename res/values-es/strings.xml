@@ -626,9 +626,9 @@
 	<string name="show_running_balance">Mostrar saldo corriente</string>
 	<string name="show_running_balance_summary">Se muestra en cada registro el saldo previsto tras contabilizar dicha transacción (requiere reinicio)</string>
 
-	<string name="new_currency">Nueva[Personalizar]</string>
+	<string name="new_currency">Nueva [Personalizar]</string>
 	<string name="lock_time">Bloqueo de pantalla</string>
-	<string name="lock_time_summary">Tiempo de inactividad permitida antes de que la pantalla se apague</string>
+	<string name="lock_time_summary">Ajustar el tiempo de espera en que se retrasará el bloqueo automático de la aplicación</string>
 	<string-array name="lock_time_entities">
 		<item>Desactivar</item>
 		<item>1 minuto</item>
