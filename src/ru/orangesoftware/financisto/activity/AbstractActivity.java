@@ -46,15 +46,23 @@ public abstract class AbstractActivity extends Activity implements ActivityLayou
 	@Override
 	protected void onPause() {
 		super.onPause();
-		PinProtection.lock(this);
+        if (shouldLock()) {
+		    PinProtection.lock(this);
+        }
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		PinProtection.unlock(this);
+        if (shouldLock()) {
+		    PinProtection.unlock(this);
+        }
 	}
 	
+    protected boolean shouldLock() {
+        return true;
+    }
+
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
