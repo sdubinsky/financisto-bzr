@@ -81,6 +81,11 @@ public class MyPreferences {
         return sharedPreferences.getBoolean("pin_protection", false);
     }
 
+    public static boolean isPinProtectedNewTransaction(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("pin_protection_lock_transaction", true);
+    }
+
     public static boolean isPinLockEnabled(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return isPinProtected(context) && sharedPreferences.getBoolean("pin_protection_lock", true);

@@ -444,7 +444,12 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		super.onPause();
 	}
 
-	@Override
+    @Override
+    protected boolean shouldLock() {
+        return MyPreferences.isPinProtectedNewTransaction(this);
+    }
+
+    @Override
 	protected void onResume() {
 		super.onResume();
 		if (lastFix != null) {

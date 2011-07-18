@@ -633,4 +633,7 @@
         <item>15 минут</item>
     </string-array>
 
+    <string name="pin_protection_lock_transaction">Блокировать ярлыки</string>
+    <string name="pin_protection_lock_transaction_summary">Блокировать ПИНом ярлыки \'Новая транзакция\' и \'Новый перевод\'</string>
+
 </resources>

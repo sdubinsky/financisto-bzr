@@ -641,6 +641,9 @@
     </string-array>
 
     <string name="date_format">Date format</string>
+    <string name="pin_protection_lock_transaction">Lock New Transaction\\Transfer</string>
+    <string name="pin_protection_lock_transaction_summary">Lock \'New transaction\' and \'New transfer\' screens by PIN</string>
+
     <string name="split">[Split]</string>
     <string name="split_transfer">[Split-Transfer]</string>
     <string name="unsplit_amount">Unsplit amount</string>
