@@ -47,9 +47,7 @@ public class MyEntityManager extends EntityManager {
 	
 	private <T extends MyEntity> ArrayList<T> getAllEntitiesList(Class<T> clazz, boolean include0) {
 		Query<T> q = createQuery(clazz);
-		if (!include0) {
-			q.where(Expressions.neq("id", 0));
-		}
+        q.where(include0 ? Expressions.gte("id", 0) : Expressions.gt("id", 0));
 		q.asc("title");
 		Cursor c = q.execute();
 		try {

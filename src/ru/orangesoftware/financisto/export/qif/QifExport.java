@@ -15,6 +15,7 @@ import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
@@ -28,12 +29,14 @@ import java.util.HashMap;
 public class QifExport extends Export {
 
     private final DatabaseAdapter db;
+    private final MyEntityManager em;
     private final QifExportOptions options;
     private final CategoryTree<Category> categories;
     private final HashMap<Long, Category> categoriesMap;
 
     public QifExport(DatabaseAdapter db, QifExportOptions options) {
         this.db = db;
+        this.em = db.em();
         this.options = options;
         this.categories = db.getCategoriesTree(false);
         this.categoriesMap = categories.asMap();
@@ -109,7 +112,10 @@ public class QifExport extends Export {
                     addHeader = false;
                 }
                 QifTransaction qifTransaction = QifTransaction.fromBlotterCursor(c);
-                qifTransaction.userCategoriesCache(categoriesMap);
+//                if (qifTransaction.isSplit()) {
+//                    qifTransaction.setSplits(em.getSplitsForTransaction(qifTransaction.id));
+//                }
+                qifTransaction.useCategoriesCache(categoriesMap);
                 qifTransaction.writeTo(qifWriter, options);
             }
         } finally {

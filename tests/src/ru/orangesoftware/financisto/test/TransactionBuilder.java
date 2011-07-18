@@ -57,9 +57,14 @@ public class TransactionBuilder {
     }
 
     public TransactionBuilder withSplit(Category category, long amount) {
+        return withSplit(category, amount, null);
+    }
+
+    public TransactionBuilder withSplit(Category category, long amount, String note) {
         Transaction split = new Transaction();
         split.categoryId = category.id;
         split.fromAmount = amount;
+        split.note = note;
         t.splits.add(split);
         return this;
     }

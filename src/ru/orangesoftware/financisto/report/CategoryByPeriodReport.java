@@ -29,32 +29,10 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class CategoryByPeriodReport extends Report2DChart {
 	
-	/**
-	 * Default constructor.
-	 * @param dbAdapter
-	 * @param context
-	 * @param periodLength
-	 * @param currency
-	 */
-	public CategoryByPeriodReport(Context context, MyEntityManager em, int periodLength, Currency currency) {
-		super(context, em, periodLength, currency);
-	}
-	
-	/**
-	 * Default constructor.
-	 * @param context
-	 * @param dbAdapter
-	 * @param startPeriod
-	 * @param periodLength
-	 * @param currency
-	 */
 	public CategoryByPeriodReport(Context context, MyEntityManager em, Calendar startPeriod, int periodLength, Currency currency) {
 		super(context, em, startPeriod, periodLength, currency);
 	}
 
-	/* (non-Javadoc)
-	 * @see ru.orangesoftware.financisto.graph.ReportGraphic2D#getFilterName()
-	 */
 	@Override
 	public String getFilterName() {
 		if (filterIds.size()>0) {
@@ -76,17 +54,11 @@ public class CategoryByPeriodReport extends Report2DChart {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see ru.orangesoftware.financisto.graph.ReportGraphic2D#isRoot()
-	 */
 	@Override
 	public boolean isRoot() {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see ru.orangesoftware.financisto.graph.ReportGraphic2D#setFilterIds()
-	 */
 	@Override
 	public void setFilterIds() {
 		boolean includeSubCategories = MyPreferences.includeSubCategoriesInReport(context);
@@ -96,18 +68,17 @@ public class CategoryByPeriodReport extends Report2DChart {
 		List<Category> categories = em.getAllCategoriesList(includeNoCategory);
 		if (categories.size()>0) {
 			Category c;
-			for (int i=0; i<categories.size(); i++) {
-				c = categories.get(i);
-				if (includeSubCategories) {
-					filterIds.add(c.getId());
-				} else {
-					// do not include sub categories
-					if (c.level==1) {
-						// filter root categories only
-						filterIds.add(c.getId());
-					}
-				}
-			}
+            for (Category category : categories) {
+                if (includeSubCategories) {
+                    filterIds.add(category.getId());
+                } else {
+                    // do not include sub categories
+                    if (category.level == 1) {
+                        // filter root categories only
+                        filterIds.add(category.getId());
+                    }
+                }
+            }
 		}
 	}
 
@@ -150,9 +121,9 @@ public class CategoryByPeriodReport extends Report2DChart {
 		points = new ArrayList<Report2DPoint>();
 		List<PeriodValue> pvs = data.getPeriodValues();
 
-		for (int i=0; i<pvs.size(); i++) {
-			points.add(new Report2DPoint(pvs.get(i)));
-		}
+        for (PeriodValue pv : pvs) {
+            points.add(new Report2DPoint(pv));
+        }
 	}
 
 	@Override

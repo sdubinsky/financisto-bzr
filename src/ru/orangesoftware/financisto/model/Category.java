@@ -25,6 +25,7 @@ import java.util.ArrayList;
 @Table(name = "category")
 public class Category extends CategoryEntity<Category> {
 	
+    public static final long NO_CATEGORY_ID = 0;
 	public static final long SPLIT_CATEGORY_ID = -1;
 	
 	@Column(name = "last_location_id")
@@ -38,8 +39,8 @@ public class Category extends CategoryEntity<Category> {
 	
 	@Transient
 	public ArrayList<Attribute> attributes;
-	
-	public Category(){}
+
+    public Category(){}
 	
 	public Category(long id){
 		this.id = id;

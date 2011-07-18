@@ -46,6 +46,10 @@ public class CategoryBuilder {
         return db.getCategory(Category.SPLIT_CATEGORY_ID);
     }
 
+    public static Category noCategory(DatabaseAdapter db) {
+        return db.getCategory(Category.NO_CATEGORY_ID);
+    }
+
     private CategoryBuilder(DatabaseAdapter db) {
         this.db = db;
     }
