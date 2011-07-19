@@ -20,6 +20,8 @@ import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.Utils;
 
+import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateTransactionTitle;
+
 public class TransactionsListAdapter extends BlotterListAdapter {
 	
 	public TransactionsListAdapter(Context context, Cursor c) {
@@ -57,7 +59,7 @@ public class TransactionsListAdapter extends BlotterListAdapter {
         if (categoryId != 0) {
             category = cursor.getString(BlotterColumns.category_title.ordinal());
         }
-        String text = generateTransactionText(sb, payee, note, location, category);
+        String text = generateTransactionTitle(sb, payee, note, location, category);
         v.centerView.setText(text);
 
         long currencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());

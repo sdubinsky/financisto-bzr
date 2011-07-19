@@ -656,6 +656,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 	
 	protected void selectCategory(long categoryId, boolean selectLast) {
+        if (selectedCategoryId == categoryId) {
+            return;
+        }
 		if (Utils.moveCursor(categoryCursor, CategoryViewColumns._id.name(), categoryId) != -1) {
             Category category = Category.formCursor(categoryCursor);
 			categoryText.setText(Category.getTitle(category.title, category.level));

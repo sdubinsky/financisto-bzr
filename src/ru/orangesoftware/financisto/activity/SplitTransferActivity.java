@@ -67,8 +67,10 @@ public class SplitTransferActivity extends AbstractSplitActivity {
     }
 
     private void selectFromAccount(long accountId) {
-        Account account = em.getAccount(accountId);
-        rateView.selectFromAccount(account);
+        if (accountId > 0) {
+            Account account = em.getAccount(accountId);
+            rateView.selectFromAccount(account);
+        }
     }
 
     private void selectToAccount(long accountId) {

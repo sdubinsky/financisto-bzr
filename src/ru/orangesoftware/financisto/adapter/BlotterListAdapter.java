@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryEntity;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.TransactionStatus;
@@ -33,7 +34,8 @@ import ru.orangesoftware.financisto.utils.Utils;
 import java.util.Date;
 import java.util.HashMap;
 
-import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
+import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateTransactionTitle;
+import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateTransactionTitleForSplit;
 
 public class BlotterListAdapter extends ResourceCursorAdapter {
 
@@ -43,6 +45,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
     protected final Drawable icBlotterIncome;
     protected final Drawable icBlotterExpense;
     protected final Drawable icBlotterTransfer;
+    protected final Drawable icBlotterSplit;
     protected final Utils u;
 
     private final int colors[];
@@ -66,6 +69,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
         this.icBlotterIncome = context.getResources().getDrawable(R.drawable.ic_blotter_income);
         this.icBlotterExpense = context.getResources().getDrawable(R.drawable.ic_blotter_expense);
         this.icBlotterTransfer = context.getResources().getDrawable(R.drawable.ic_blotter_transfer);
+        this.icBlotterSplit = context.getResources().getDrawable(R.drawable.ic_blotter_split);
         this.u = new Utils(context);
         this.colors = initializeColors(context);
         this.showRunningBalance = MyPreferences.isShowRunningBalance(context);
@@ -140,16 +144,12 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
             String payee = cursor.getString(BlotterColumns.payee.ordinal());
             String note = cursor.getString(BlotterColumns.note.ordinal());
             long locationId = cursor.getLong(BlotterColumns.location_id.ordinal());
-            String location = "";
-            if (locationId > 0) {
-                location = cursor.getString(BlotterColumns.location.ordinal());
-            }
+            String location = getLocationTitle(cursor, locationId);
             long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
-            String category = "";
-            if (categoryId != 0) {
-                category = cursor.getString(BlotterColumns.category_title.ordinal());
-            }
-            String text = generateTransactionText(sb, payee, note, location, category);
+            String category = getCategoryTitle(cursor, categoryId);
+            String text = isSplit(categoryId)
+                    ? generateTransactionTitleForSplit(sb, payee, note, location, category)
+                    : generateTransactionTitle(sb, payee, note, location, category);
             noteView.setText(text);
             noteView.setTextColor(Color.WHITE);
 
@@ -158,7 +158,9 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
             long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
             sb.setLength(0);
             u.setAmountText(sb, v.rightView, fromCurrency, amount, true);
-            if (amount == 0) {
+            if (isSplit(categoryId)) {
+                v.iconView.setImageDrawable(icBlotterSplit);
+            } else if (amount == 0) {
                 int categoryType = cursor.getInt(BlotterColumns.category_type.ordinal());
                 if (categoryType == CategoryEntity.TYPE_INCOME) {
                     v.iconView.setImageDrawable(icBlotterIncome);
@@ -184,7 +186,6 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
             String recurrence = cursor.getString(BlotterColumns.recurrence.ordinal());
             if (isTemplate == 2 && recurrence != null) {
                 Recurrence r = Recurrence.parse(recurrence);
-                //RRule rrule = r.createRRule();
                 v.bottomView.setText(r.toInfoString(context));
                 v.bottomView.setTextColor(v.topView.getTextColors().getDefaultColor());
             } else {
@@ -215,6 +216,26 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
         }
     }
 
+    private boolean isSplit(long categoryId) {
+        return categoryId == Category.SPLIT_CATEGORY_ID;
+    }
+
+    private String getCategoryTitle(Cursor cursor, long categoryId) {
+        String category = "";
+        if (categoryId != 0) {
+            category = cursor.getString(BlotterColumns.category_title.ordinal());
+        }
+        return category;
+    }
+
+    private String getLocationTitle(Cursor cursor, long locationId) {
+        String location = "";
+        if (locationId > 0) {
+            location = cursor.getString(BlotterColumns.location.ordinal());
+        }
+        return location;
+    }
+
     protected void removeRightCenterViewIfNeeded(BlotterViewHolder v) {
         if (v.rightCenterView != null && !isShowRunningBalance()) {
             v.rightCenterView.setVisibility(View.GONE);
@@ -225,34 +246,6 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
     protected void setIndicatorColor(BlotterViewHolder v, Cursor cursor) {
         TransactionStatus status = TransactionStatus.valueOf(cursor.getString(BlotterColumns.status.ordinal()));
         v.indicator.setBackgroundColor(colors[status.ordinal()]);
-    }
-
-    public static String generateTransactionText(StringBuilder sb, String payee, String note, String location, String category) {
-        sb.setLength(0);
-        append(sb, payee);
-        append(sb, location);
-        append(sb, note);
-        String secondPart = sb.toString();
-        sb.setLength(0);
-        if (isNotEmpty(category)) {
-            if (isNotEmpty(secondPart)) {
-                sb.append(category).append(" (").append(secondPart).append(")");
-                return sb.toString();
-            } else {
-                return category;
-            }
-        } else {
-            return secondPart;
-        }
-    }
-
-    private static void append(StringBuilder sb, String s) {
-        if (isNotEmpty(s)) {
-            if (sb.length() > 0) {
-                sb.append(": ");
-            }
-            sb.append(s);
-        }
     }
 
     public boolean getCheckedState(long id) {
