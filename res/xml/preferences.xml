@@ -100,13 +100,15 @@
         <CheckBoxPreference android:key="pin_protection_lock_transaction"
                             android:title="@string/pin_protection_lock_transaction"
                             android:summary="@string/pin_protection_lock_transaction_summary"
+                            android:dependency="pin_protection"
                             android:defaultValue="true"/>
         <ListPreference android:key="pin_protection_lock_time"
                         android:title="@string/lock_time"
                         android:summary="@string/lock_time_summary"
                         android:entries="@array/lock_time_entities"
                         android:entryValues="@array/lock_time_values"
-                        android:dependency="pin_protection" android:defaultValue="5"/>
+                        android:dependency="pin_protection"
+                        android:defaultValue="5"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/home_screen">
         <Preference android:title="@string/shortcut_new_transaction"
