@@ -26,7 +26,6 @@ public class TransactionTest extends AbstractDbTest {
                 .withTransferSplit(a2, 100, 50)
                 .create();
         List<Transaction> splits = db.em().getSplitsForTransaction(t.id);
-        assertNotNull(splits);
         assertEquals(3, splits.size());
         Transaction split1 = splits.get(0);
         assertEquals(t.payeeId, split1.payeeId);
@@ -56,13 +55,28 @@ public class TransactionTest extends AbstractDbTest {
                 .withTransferSplit(a2, -50, 40)
                 .create();
         List<Transaction> splits = db.em().getSplitsForTransaction(t.id);
-        assertNotNull(splits);
         assertEquals(3, splits.size());
         long newId = db.duplicateTransaction(t.id);
         assertNotSame(t.id, newId);
         List<Transaction> newSplits = db.em().getSplitsForTransaction(newId);
         assertEquals(3, newSplits.size());
         assertEquals(-150, newSplits.get(0).fromAmount+newSplits.get(1).fromAmount+newSplits.get(2).fromAmount);
+    }
+
+    public void test_should_delete_splits() {
+        Account a1 = AccountBuilder.createDefault(db);
+        Account a2 = AccountBuilder.createDefault(db);
+        Map<String, Category> categories = CategoryBuilder.createDefaultHierarchy(db);
+        Transaction t = TransactionBuilder.withDb(db).account(a1).amount(-150).category(CategoryBuilder.split(db))
+                .withSplit(categories.get("A1"), -60)
+                .withSplit(categories.get("A2"), -40)
+                .withTransferSplit(a2, -50, 40)
+                .create();
+        List<Transaction> splits = db.em().getSplitsForTransaction(t.id);
+        assertEquals(3, splits.size());
+        db.deleteTransaction(t.id);
+        splits = db.em().getSplitsForTransaction(t.id);
+        assertEquals(0, splits.size());
     }
 
     public void test_should_store_transaction_in_the_database() {

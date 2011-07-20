@@ -89,7 +89,8 @@ public class TransactionInfoDialog {
             add(layout, R.string.payee, ti.payee.title);
         }
         add(layout, R.string.category, ti.category.title);
-        add(layout, R.string.amount, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
+        TextView amount = add(layout, R.string.amount, "");
+        u.setAmountText(amount, ti.fromAccount.currency, ti.fromAmount, true);
         if (ti.category.isSplit()) {
             List<Transaction> splits = em.getSplitsForTransaction(ti.id);
             for (Transaction split : splits) {
@@ -102,8 +103,9 @@ public class TransactionInfoDialog {
         if (split.isTransfer()) {
             Account toAccount = em.getAccount(split.toAccountId);
             String title = u.getTransferTitleText(fromAccount, toAccount);
-            String amount = u.getTransferAmountText(fromAccount.currency, split.fromAmount, toAccount.currency, split.toAmount);
-            LinearLayout topLayout = add(layout, title, amount);
+            LinearLayout topLayout = add(layout, title, "");
+            TextView amountView = (TextView)topLayout.findViewById(R.id.data);
+            u.setTransferAmountText(amountView, fromAccount.currency, split.fromAmount, toAccount.currency, split.toAmount);
             topLayout.setPadding(splitPadding, 0, 0, 0);
         } else {
             Category c = em.getCategory(split.categoryId);
@@ -114,7 +116,9 @@ public class TransactionInfoDialog {
             if (isNotEmpty(split.note)) {
                 sb.append(" (").append(split.note).append(")");
             }
-            LinearLayout topLayout = add(layout, sb.toString(), Utils.amountToString(fromAccount.currency, split.fromAmount));
+            LinearLayout topLayout = add(layout, sb.toString(), "");
+            TextView amountView = (TextView)topLayout.findViewById(R.id.data);
+            u.setAmountText(amountView, fromAccount.currency, split.fromAmount, true);
             topLayout.setPadding(splitPadding, 0, 0, 0);
         }
     }
@@ -122,10 +126,12 @@ public class TransactionInfoDialog {
     private void createLayoutForTransfer(TransactionInfo ti, LinearLayout layout) {
         AccountType fromAccountType = AccountType.valueOf(ti.fromAccount.type);
         add(layout, R.string.account_from, ti.fromAccount.title, fromAccountType);
-        add(layout, R.string.amount_from, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
+        TextView amountView = add(layout, R.string.amount_from, "");
+        u.setAmountText(amountView, ti.fromAccount.currency, ti.fromAmount, true);
         AccountType toAccountType = AccountType.valueOf(ti.toAccount.type);
         add(layout, R.string.account_to, ti.toAccount.title, toAccountType);
-        add(layout, R.string.amount_to, Utils.amountToString(ti.toAccount.currency, ti.toAmount));
+        amountView = add(layout, R.string.amount_to, "");
+        u.setAmountText(amountView, ti.toAccount.currency, ti.toAmount, true);
         add(layout, R.string.category, ti.category.title);
     }
 
@@ -167,7 +173,9 @@ public class TransactionInfoDialog {
                 Recurrence r = Recurrence.parse(ti.recurrence);
                 titleLabel.setText(r.toInfoString(parentActivity));
             } else {
-                int titleId = ti.toAccount == null ? R.string.transaction : R.string.transfer;
+                int titleId = ti.isSplit()
+                        ? R.string.split
+                        : (ti.toAccount == null ? R.string.transaction : R.string.transfer);
                 titleLabel.setText(titleId);
                 add(layout, R.string.date, DateUtils.formatDateTime(parentActivity, ti.dateTime,
                         DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_YEAR),
@@ -212,9 +220,10 @@ public class TransactionInfoDialog {
                 .withIcon(accountType.iconId).withLabel(labelId).withData(data).create();
     }
 
-    private void add(LinearLayout layout, int labelId, String data) {
-        inflater.new Builder(layout, R.layout.select_entry_simple).withLabel(labelId)
+    private TextView add(LinearLayout layout, int labelId, String data) {
+        View v = inflater.new Builder(layout, R.layout.select_entry_simple).withLabel(labelId)
                 .withData(data).create();
+        return (TextView)v.findViewById(R.id.data);
     }
 
     private void add(LinearLayout layout, int labelId, String data, String pictureFileName) {
