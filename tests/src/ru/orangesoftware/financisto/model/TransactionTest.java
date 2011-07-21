@@ -63,6 +63,28 @@ public class TransactionTest extends AbstractDbTest {
         assertEquals(-150, newSplits.get(0).fromAmount+newSplits.get(1).fromAmount+newSplits.get(2).fromAmount);
     }
 
+    public void test_should_update_splits() {
+        Account a1 = AccountBuilder.createDefault(db);
+        Account a2 = AccountBuilder.createDefault(db);
+        Map<String, Category> categories = CategoryBuilder.createDefaultHierarchy(db);
+        Transaction t = TransactionBuilder.withDb(db).account(a1).amount(-150).category(CategoryBuilder.split(db))
+                .withSplit(categories.get("A1"), -60)
+                .withSplit(categories.get("A2"), -40)
+                .withTransferSplit(a2, -50, 40)
+                .create();
+        List<Transaction> splits = db.em().getSplitsForTransaction(t.id);
+        assertEquals(3, splits.size());
+        t.fromAmount = -250;
+        splits.get(0).fromAmount = -70;
+        splits.get(1).fromAmount = -50;
+        splits.get(2).fromAmount = -130;
+        splits.get(2).toAmount = 70;
+        t.splits = splits;
+        db.insertOrUpdate(t);
+        splits = db.em().getSplitsForTransaction(t.id);
+        assertEquals(3, splits.size());
+    }
+
     public void test_should_delete_splits() {
         Account a1 = AccountBuilder.createDefault(db);
         Account a2 = AccountBuilder.createDefault(db);

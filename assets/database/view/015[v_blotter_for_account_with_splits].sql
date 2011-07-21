@@ -78,7 +78,7 @@ SELECT
 	t.is_ccard_payment as is_ccard_payment,
 	rb.balance as from_account_balance,
 	0 as to_account_balance,
-	1 as is_transfer
+	-1 as is_transfer
 FROM
 	transactions as t
 	INNER JOIN account as a ON a._id=t.to_account_id

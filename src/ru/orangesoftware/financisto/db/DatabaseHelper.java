@@ -99,6 +99,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	
 	public static enum BlotterColumns {
         _id,
+        parent_id,
         from_account_id,
         from_account_title,
         from_account_currency_id,
@@ -127,7 +128,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		status,
         is_ccard_payment,
         from_account_balance,
-        to_account_balance;
+        to_account_balance,
+        is_transfer;
 
 		public static final String[] NORMAL_PROJECTION = asStringArray(BlotterColumns.values());
 

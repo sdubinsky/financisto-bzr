@@ -27,7 +27,7 @@ public class SplitsBlotterActivity extends BlotterActivity {
 	
 	@Override
 	protected Cursor createCursor() {
-        return db.getBlotterWithSplits(blotterFilter);
+        return db.getBlotterForAccountWithSplits(blotterFilter);
 	}
 
 	@Override

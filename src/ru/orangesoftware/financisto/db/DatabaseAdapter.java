@@ -122,7 +122,11 @@ public class DatabaseAdapter {
         return getBlotter(V_BLOTTER, filter);
     }
 
-    public Cursor getBlotterWithSplits(WhereFilter filter) {
+    public Cursor getBlotterForAccount(WhereFilter filter) {
+        return getBlotter(V_BLOTTER_FOR_ACCOUNT, filter);
+    }
+
+    public Cursor getBlotterForAccountWithSplits(WhereFilter filter) {
         return getBlotter(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, filter);
     }
 
@@ -391,8 +395,7 @@ public class DatabaseAdapter {
 				transactionId = transaction.id;
 				db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", 
 						new String[]{String.valueOf(transactionId)});
-                db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?",
-                        new String[]{String.valueOf(transactionId)});
+                deleteSplitsForParentTransaction(transactionId);
 			}
 			if (attributes != null) {
 				insertAttributes(transactionId, attributes);
@@ -499,14 +502,18 @@ public class DatabaseAdapter {
         String[] sid = new String[]{String.valueOf(id)};
         db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
         db.delete(TRANSACTION_TABLE, TransactionColumns._id+"=?", sid);
-        List<Transaction> splits = em().getSplitsForTransaction(id);
+        deleteSplitsForParentTransaction(id);
+	}
+
+    private void deleteSplitsForParentTransaction(long parentId) {
+        List<Transaction> splits = em().getSplitsForTransaction(parentId);
         for (Transaction split : splits) {
             if (split.isTransfer()) {
                 revertToAccountBalance(split);
             }
         }
-        db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?", sid);
-	}
+        db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?", new String[]{String.valueOf(parentId)});
+    }
 
     private void revertFromAccountBalance(Transaction t) {
         updateAccountBalance(t.fromAccountId, -t.fromAmount);
@@ -1444,12 +1451,22 @@ public class DatabaseAdapter {
             WhereFilter filter = new WhereFilter("");
             filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, accountId));
             filter.asc("datetime");
-            Cursor c = getBlotterWithSplits(filter);
+            filter.asc("_id");
+            Cursor c = getBlotterForAccountWithSplits(filter);
             Object[] values = new Object[4];
             values[0] = accountId;
             try {
                 long balance = 0;
                 while (c.moveToNext()) {
+                    long parentId = c.getLong(BlotterColumns.parent_id.ordinal());
+                    if (parentId > 0) {
+                        int isTransfer = c.getInt(BlotterColumns.is_transfer.ordinal());
+                        if (isTransfer >= 0) {
+                            // we only interested in the second part of the transfer-split
+                            // which is marked with is_transfer=-1 (see v_blotter_for_account_with_splits)
+                            continue;
+                        }
+                    }
                     balance += c.getLong(DatabaseHelper.BlotterColumns.from_amount.ordinal());
                     values[1] = c.getString(DatabaseHelper.BlotterColumns._id.ordinal());
                     values[2] = c.getString(DatabaseHelper.BlotterColumns.datetime.ordinal());
