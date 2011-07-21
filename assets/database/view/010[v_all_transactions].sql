@@ -30,7 +30,8 @@ SELECT
 	t.status as status,
 	t.is_ccard_payment as is_ccard_payment,
 	frb.balance as from_account_balance,
-	trb.balance as to_account_balance
+	trb.balance as to_account_balance,
+	t.to_account_id as is_transfer
 FROM 
 	transactions as t	
 	INNER JOIN account as a1 ON a1._id=t.from_account_id
