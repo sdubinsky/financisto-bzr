@@ -649,4 +649,9 @@
 		<item>10 Minuten</item>
 		<item>15 Minuten</item>
 	</string-array>
+
+	<string name="date_format">Datumsformat</string>
+	<string name="pin_protection_lock_transaction">Neue(n) Transaktion\\Transfer sperren</string>
+	<string name="pin_protection_lock_transaction_summary">\'Neue Transaktion\'- und \'Neuer Transfer\'-Bildschirm mit PIN sperren</string>
+
 </resources>
