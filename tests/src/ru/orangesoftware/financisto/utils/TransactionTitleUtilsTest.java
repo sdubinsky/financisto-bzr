@@ -1,17 +1,7 @@
-package ru.orangesoftware.financisto.util;
+package ru.orangesoftware.financisto.utils;
 
-import android.provider.MediaStore;
 import android.test.AndroidTestCase;
-import ru.orangesoftware.financisto.recur.DateRecurrenceIterator;
-import ru.orangesoftware.financisto.recur.Recurrence;
-import ru.orangesoftware.financisto.test.DateTime;
-import ru.orangesoftware.financisto.utils.TransactionTitleUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static ru.orangesoftware.financisto.test.DateTime.date;
 import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.*;
 
 /**

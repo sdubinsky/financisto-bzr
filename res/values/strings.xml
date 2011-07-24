@@ -645,10 +645,15 @@
     <string name="pin_protection_lock_transaction_summary">Lock \'New transaction\' and \'New transfer\' screens by PIN</string>
 
     <string name="split">[Split...]</string>
-    <string name="split_transfer">[Split-Transfer...]</string>
+    <string name="split_transaction">[Split-Transaction]</string>
+    <string name="split_transfer">[Split-Transfer]</string>
     <string name="unsplit_amount">Unsplit amount</string>
     <string name="unsplit_amount_greater_than_zero">There is still some amount left un-split...</string>
     <string name="delete_transaction_parent_confirm">This transaction is a part of split. Do you want to delete the parent transaction?</string>
     <string name="downloading_rate" formatted="false">Fetching %s/%s conversion rate...</string>
+
+    <string name="unsplit_adjust_amount">Amount</string>
+    <string name="unsplit_adjust_evenly">Evenly</string>
+    <string name="unsplit_adjust_last">Last</string>
 
 </resources>

@@ -139,13 +139,13 @@ public class ActivityLayout {
 
     public View addNodeUnsplit(LinearLayout layout) {
         ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_unsplit);
-        View v = b.withButtonId(R.id.add_split, listener).withId(R.id.add_split, listener).withLabel(R.string.unsplit_amount).withData("0").create();
+        View v = b.withButtonId(R.id.add_split, listener).withId(R.id.unsplit_action, listener).withLabel(R.string.unsplit_amount).withData("0").create();
         ImageView transferImageView = (ImageView)v.findViewById(R.id.transfer);
         transferImageView.setId(R.id.add_split_transfer);
+        transferImageView.setImageResource(R.drawable.ic_btn_round_transfer);
         transferImageView.setOnClickListener(listener);
         return v;
     }
-
 
     public View addNodeMinus(LinearLayout layout, int id, int minusId, int labelId, String defaultValue) {
         ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);

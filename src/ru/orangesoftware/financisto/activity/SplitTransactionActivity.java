@@ -18,7 +18,7 @@ import ru.orangesoftware.financisto.widget.AmountInput;
  * User: Denis Solonenko
  * Date: 4/21/11 7:17 PM
  */
-public class SplitActivity extends AbstractSplitActivity {
+public class SplitTransactionActivity extends AbstractSplitActivity {
 
     protected AmountInput amountInput;
 
@@ -26,7 +26,7 @@ public class SplitActivity extends AbstractSplitActivity {
     protected Cursor categoryCursor;
     protected ListAdapter categoryAdapter;
 
-    public SplitActivity() {
+    public SplitTransactionActivity() {
         super(R.layout.split_fixed);
     }
 
@@ -39,7 +39,6 @@ public class SplitActivity extends AbstractSplitActivity {
         amountInput.setOnAmountChangedListener(new AmountInput.OnAmountChangedListener() {
             @Override
             public void onAmountChanged(long oldAmount, long newAmount) {
-                split.fromAmount = newAmount;
                 setUnsplitAmount(split.unsplitAmount - newAmount);
             }
         });
@@ -58,6 +57,12 @@ public class SplitActivity extends AbstractSplitActivity {
         selectCategory(split.categoryId);
         setAmount(split.fromAmount);
         setNote(split.note);
+    }
+
+    @Override
+    protected void updateFromUI() {
+        super.updateFromUI();
+        split.fromAmount = amountInput.getAmount();
     }
 
     private void selectCategory(long categoryId) {
