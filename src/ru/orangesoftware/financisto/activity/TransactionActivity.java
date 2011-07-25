@@ -10,7 +10,9 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -28,16 +30,14 @@ import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.utils.MyPreferences;
-import ru.orangesoftware.financisto.utils.SplitAdjuster;
-import ru.orangesoftware.financisto.utils.TransactionUtils;
-import ru.orangesoftware.financisto.utils.Utils;
+import ru.orangesoftware.financisto.utils.*;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 import static ru.orangesoftware.financisto.utils.Utils.text;
 
@@ -92,14 +92,15 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	}
 
     private void prepareUnsplitActionGrid() {
-        unsplitActionGrid = new QuickActionGrid(this);
-        unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_add, R.string.transaction));
-        unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_transfer, R.string.transfer));
-        unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.unsplit_adjust_amount));
-        unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.unsplit_adjust_evenly));
-        unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.unsplit_adjust_last));
-
-        unsplitActionGrid.setOnQuickActionClickListener(unsplitActionListener);
+        if (isSupportedApiLevel()) {
+            unsplitActionGrid = new QuickActionGrid(this);
+            unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_add, R.string.transaction));
+            unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_transfer, R.string.transfer));
+            unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.unsplit_adjust_amount));
+            unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.unsplit_adjust_evenly));
+            unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.unsplit_adjust_last));
+            unsplitActionGrid.setOnQuickActionClickListener(unsplitActionListener);
+        }
     }
 
     private QuickActionWidget.OnQuickActionClickListener unsplitActionListener = new QuickActionWidget.OnQuickActionClickListener() {
@@ -367,7 +368,11 @@ public class TransactionActivity extends AbstractTransactionActivity {
         super.onClick(v, id);
         switch (id) {
             case R.id.unsplit_action:
-                unsplitActionGrid.show(v);
+                if (isSupportedApiLevel()) {
+                    unsplitActionGrid.show(v);
+                } else {
+                    showQuickActionsDialog();
+                }
                 break;
             case R.id.add_split:
                 createSplit(false);
@@ -385,6 +390,18 @@ public class TransactionActivity extends AbstractTransactionActivity {
             split.unsplitAmount = split.fromAmount + calculateUnsplitAmount();
             editSplit(split, split.toAccountId > 0 ? SplitTransferActivity.class : SplitTransactionActivity.class);
         }
+    }
+
+    private void showQuickActionsDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.unsplit_amount)
+            .setItems(R.array.unsplit_quick_action_items, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    unsplitActionListener.onQuickActionClicked(unsplitActionGrid, i);
+                }
+            })
+            .show();
     }
 
     private void createSplit(boolean asTransfer) {
@@ -494,20 +511,5 @@ public class TransactionActivity extends AbstractTransactionActivity {
         super.onDestroy();
     }
 
-    private static class MyQuickAction extends QuickAction {
-
-        private static final ColorFilter BLACK_CF = new LightingColorFilter(Color.BLACK, Color.BLACK);
-
-        public MyQuickAction(Context ctx, int drawableId, int titleId) {
-            super(ctx, buildDrawable(ctx, drawableId), titleId);
-        }
-
-        private static Drawable buildDrawable(Context ctx, int drawableId) {
-            Drawable d = ctx.getResources().getDrawable(drawableId).mutate();
-            d.setColorFilter(BLACK_CF);
-            return d;
-        }
-
-    }
 
 }

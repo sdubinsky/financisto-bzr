@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.activity;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.util.Log;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
@@ -22,7 +23,6 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +35,7 @@ import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-public abstract class AbstractListActivity extends ListActivity implements RequeryCursorActivity {
+public abstract class AbstractListActivity extends ListActivity implements RecreateCursorSupportedActivity {
 	
 	protected static final int MENU_VIEW = Menu.FIRST+1;
 	protected static final int MENU_EDIT = Menu.FIRST+2;
@@ -144,20 +144,18 @@ public abstract class AbstractListActivity extends ListActivity implements Reque
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		super.onContextItemSelected(item);
+        AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 		switch (item.getItemId()) {
 			case MENU_VIEW: {
-				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-				viewItem(mi.position, mi.id);
+				viewItem(mi.targetView, mi.position, mi.id);
 				return true;
 			} 			
 			case MENU_EDIT: {
-				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-				editItem(mi.position, mi.id);
+				editItem(mi.targetView, mi.position, mi.id);
 				return true;
 			} 			
 			case MENU_DELETE: {
-				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-				deleteItem(mi.position, mi.id);
+				deleteItem(mi.targetView, mi.position, mi.id);
 				return true;
 			} 			
 		}
@@ -166,27 +164,20 @@ public abstract class AbstractListActivity extends ListActivity implements Reque
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		viewItem(position, id);
+		viewItem(v, position, id);
 	}
 	
 	protected void addItem() {
 	}
 
-	protected abstract void deleteItem(int position, long id);
+	protected abstract void deleteItem(View v, int position, long id);
 
-	public abstract void editItem(int position, long id);
+	protected abstract void editItem(View v, int position, long id);
 
-	protected abstract void viewItem(int position, long id);
+	protected abstract void viewItem(View v, int position, long id);
 
-	@Override
-	public void requeryCursor() {
-		if (cursor != null) {
-			Log.i("AbstractListActivity", "Requery cursor");
-			cursor.requery();
-		}
-	}	
-	
 	public void recreateCursor() {
+		Log.i("AbstractListActivity", "Recreating cursor");
 		if (cursor != null) {
 			stopManagingCursor(cursor);
 			cursor.close();
@@ -202,7 +193,7 @@ public abstract class AbstractListActivity extends ListActivity implements Reque
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
-			requeryCursor();
+			recreateCursor();
 		}
 	}
 }

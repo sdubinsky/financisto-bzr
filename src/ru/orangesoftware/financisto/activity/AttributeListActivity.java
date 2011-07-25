@@ -12,6 +12,7 @@ package ru.orangesoftware.financisto.activity;
 
 import java.util.List;
 
+import android.view.View;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.AttributeListAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AttributeColumns;
@@ -65,7 +66,7 @@ public class AttributeListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	protected void deleteItem(int position, final long id) {
+	protected void deleteItem(View v, int position, final long id) {
 		new AlertDialog.Builder(this)
 			.setTitle(R.string.delete)
 			.setIcon(android.R.drawable.ic_dialog_alert)
@@ -82,15 +83,15 @@ public class AttributeListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 		Intent intent = new Intent(this, AttributeActivity.class);
 		intent.putExtra(AttributeColumns.ID, id);
 		startActivityForResult(intent, 2);		
 	}	
 	
 	@Override
-	protected void viewItem(int position, long id) {
-		editItem(position, id);
+	protected void viewItem(View v, int position, long id) {
+		editItem(v, position, id);
 	}		
 
 	@Override

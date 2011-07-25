@@ -114,7 +114,7 @@ public class BudgetListActivity extends AbstractListActivity {
 			}
 			saveFilter();
 		}
-		requeryCursor();
+		recreateCursor();
 	}		
 
 	@Override
@@ -127,14 +127,14 @@ public class BudgetListActivity extends AbstractListActivity {
 		return null;
 	}
 	
-	@Override
-	public void requeryCursor() {
-		budgets = em.getAllBudgets(filter);
-		updateAdapter();
-		calculateTotals();
-	}
+    @Override
+    public void recreateCursor() {
+        budgets = em.getAllBudgets(filter);
+        updateAdapter();
+        calculateTotals();
+    }
 
-	private void updateAdapter() {
+    private void updateAdapter() {
 		((BudgetListAdapter)adapter).setBudgets(budgets);
 	}
 
@@ -158,7 +158,7 @@ public class BudgetListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	protected void deleteItem(int position, final long id) {
+	protected void deleteItem(View v, int position, final long id) {
 		final Budget b = em.load(Budget.class, id);
 		if (b.parentBudgetId > 0) {
 			new AlertDialog.Builder(this)
@@ -167,14 +167,14 @@ public class BudgetListActivity extends AbstractListActivity {
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					em.deleteBudgetOneEntry(id);
-					requeryCursor();
+					recreateCursor();
 				}
 			})
 			.setNeutralButton(R.string.delete_budget_all_entries, new OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					em.deleteBudget(b.parentBudgetId);
-					requeryCursor();
+					recreateCursor();
 				}
 			})			
 			.setNegativeButton(R.string.cancel, null)
@@ -187,7 +187,7 @@ public class BudgetListActivity extends AbstractListActivity {
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					em.deleteBudget(id);
-					requeryCursor();
+					recreateCursor();
 				}
 			})
 			.setNegativeButton(R.string.no, null)
@@ -196,7 +196,7 @@ public class BudgetListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 		Budget b = em.load(Budget.class, id);
 		Recur recur = b.getRecur();
 		if (recur.interval != RecurInterval.NO_RECUR) {
@@ -214,7 +214,7 @@ public class BudgetListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	protected void viewItem(int position, long id) {
+	protected void viewItem(View v, int position, long id) {
         Budget b = em.load(Budget.class, id);
 		Intent intent = new Intent(this, BudgetBlotterActivity.class);
 		WhereFilter.Criteria.eq(BlotterFilter.BUDGET_ID, String.valueOf(id))

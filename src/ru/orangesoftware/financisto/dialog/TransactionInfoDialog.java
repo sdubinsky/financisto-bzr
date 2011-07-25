@@ -20,7 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.activity.AbstractListActivity;
+import ru.orangesoftware.financisto.activity.BlotterActivity;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
@@ -35,8 +35,7 @@ import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 public class TransactionInfoDialog {
 
-    private final AbstractListActivity parentActivity;
-    private final int position;
+    private final BlotterActivity parentActivity;
     private final long transactionId;
     private final MyEntityManager em;
     private final NodeInflater inflater;
@@ -44,10 +43,9 @@ public class TransactionInfoDialog {
     private final int splitPadding;
     private final Utils u;
 
-    public TransactionInfoDialog(AbstractListActivity parentActivity, int position, long transactionId,
+    public TransactionInfoDialog(BlotterActivity parentActivity, long transactionId,
                                  MyEntityManager em, NodeInflater inflater) {
         this.parentActivity = parentActivity;
-        this.position = position;
         this.transactionId = transactionId;
         this.em = em;
         this.inflater = inflater;
@@ -188,7 +186,7 @@ public class TransactionInfoDialog {
         return titleView;
     }
 
-    private void showDialog(View v, View titleView) {
+    private void showDialog(final View v, View titleView) {
         final Dialog d = new AlertDialog.Builder(parentActivity)
                 .setCustomTitle(titleView)
                 .setView(v)
@@ -200,7 +198,7 @@ public class TransactionInfoDialog {
             @Override
             public void onClick(View arg0) {
                 d.dismiss();
-                parentActivity.editItem(position, transactionId);
+                parentActivity.editTransaction(transactionId, false);
             }
         });
 

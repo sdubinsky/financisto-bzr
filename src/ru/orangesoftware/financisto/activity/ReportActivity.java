@@ -38,7 +38,7 @@ import ru.orangesoftware.financisto.report.Report;
 import ru.orangesoftware.financisto.report.ReportData;
 import ru.orangesoftware.financisto.utils.PinProtection;
 
-public class ReportActivity extends ListActivity implements RequeryCursorActivity {
+public class ReportActivity extends ListActivity implements RecreateCursorSupportedActivity {
 
 	private DatabaseAdapter db;
 	private ImageButton bFilter;
@@ -177,7 +177,7 @@ public class ReportActivity extends ListActivity implements RequeryCursorActivit
 	}
 
 	@Override
-	public void requeryCursor() {
+	public void recreateCursor() {
 		selectReport();
 	}
 

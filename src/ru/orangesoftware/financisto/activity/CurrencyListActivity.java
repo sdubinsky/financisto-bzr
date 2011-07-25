@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.view.View;
 import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CurrencyListAdapter;
@@ -50,7 +51,7 @@ public class CurrencyListActivity extends AbstractListActivity {
                     Intent intent = new Intent(CurrencyListActivity.this, CurrencyActivity.class);
                     startActivityForResult(intent, NEW_CURRENCY_REQUEST);
                 } else {
-                    requeryCursor();
+                    recreateCursor();
                 }
             }
         }).show();
@@ -75,7 +76,7 @@ public class CurrencyListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	protected void deleteItem(int position, long id) {
+	protected void deleteItem(View v, int position, long id) {
 		if (em.deleteCurrency(id) == 1) {
 			cursor.requery();
 		} else {
@@ -88,15 +89,15 @@ public class CurrencyListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 		Intent intent = new Intent(this, CurrencyActivity.class);
 		intent.putExtra(CurrencyActivity.CURRENCY_ID_EXTRA, id);
 		startActivityForResult(intent, EDIT_CURRENCY_REQUEST);		
 	}	
 	
 	@Override
-	protected void viewItem(int position, long id) {
-		editItem(position, id);
+	protected void viewItem(View v, int position, long id) {
+		editItem(v, position, id);
 	}		
 
 	@Override

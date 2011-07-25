@@ -190,11 +190,12 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	public void onTabChanged(String tabId) {
 		if (started.containsKey(tabId)) {
 			Context c = getTabHost().getCurrentView().getContext();
-			if (c instanceof RequeryCursorActivity) {
+			if (c instanceof RecreateCursorSupportedActivity) {
+                Log.d("Financisto", "About to change tab ro "+tabId);
 				long t0 = System.currentTimeMillis();
-				((RequeryCursorActivity)c).requeryCursor();
+				((RecreateCursorSupportedActivity)c).recreateCursor();
 				long t1 = System.currentTimeMillis();
-				Log.d("", "onTabChanged "+tabId+" in "+(t1-t0)+"ms");
+				Log.d("Financisto", "Tab changed to "+tabId+" in "+(t1-t0)+"ms");
 			}
 		} else {
 			started.put(tabId, Boolean.TRUE);

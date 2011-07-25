@@ -157,4 +157,12 @@
         <item>yyyy-MM-dd</item>
     </string-array>
 
+    <string-array name="unsplit_quick_action_items">
+        <item>@string/add_transaction</item>
+        <item>@string/add_transfer</item>
+        <item>@string/unsplit_adjust_amount_summary</item>
+        <item>@string/unsplit_adjust_evenly_summary</item>
+        <item>@string/unsplit_adjust_last_summary</item>
+    </string-array>
+
 </resources>

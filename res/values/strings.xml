@@ -653,7 +653,12 @@
     <string name="downloading_rate" formatted="false">Fetching %s/%s conversion rate...</string>
 
     <string name="unsplit_adjust_amount">Amount</string>
+    <string name="unsplit_adjust_amount_summary">Adjust amount</string>
     <string name="unsplit_adjust_evenly">Evenly</string>
+    <string name="unsplit_adjust_evenly_summary">Adjust evenly</string>
     <string name="unsplit_adjust_last">Last</string>
+    <string name="unsplit_adjust_last_summary">Adjust last</string>
+
+    <string name="add_transfer">Add Transfer</string>
 
 </resources>

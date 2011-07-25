@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.view.View;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.AccountListAdapter2;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
@@ -56,13 +57,13 @@ public class AccountListActivity extends AbstractListActivity {
 		calculateTotals();
 	}
 	
-	@Override
-	public void requeryCursor() {
-		super.requeryCursor();
-		calculateTotals();
-	}
-	
-	private AccountTotalsCalculationTask totalCalculationTask;
+    @Override
+    public void recreateCursor() {
+        super.recreateCursor();
+        calculateTotals();
+    }
+
+    private AccountTotalsCalculationTask totalCalculationTask;
 
 	private void calculateTotals() {
 		if (totalCalculationTask != null) {
@@ -133,7 +134,6 @@ public class AccountListActivity extends AbstractListActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		//return new AccountListAdapter(this, R.layout.account_list_item, cursor);
 		return new AccountListAdapter2(this, cursor);
 	}
 
@@ -176,7 +176,7 @@ public class AccountListActivity extends AbstractListActivity {
 				Account a = em.getAccount(mi.id);
 				a.isActive = !a.isActive;
 				em.saveAccount(a);
-				requeryCursor();
+				recreateCursor();
 				return true;
 			} 			
 		}
@@ -190,14 +190,14 @@ public class AccountListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	protected void deleteItem(int position, final long id) {
+	protected void deleteItem(View v, int position, final long id) {
 		new AlertDialog.Builder(this)
 			.setMessage(R.string.delete_account_confirm)
 			.setPositiveButton(R.string.yes, new OnClickListener(){
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					db.deleteAccount(id);
-					requeryCursor();
+					recreateCursor();
 				}
 			})
 			.setNegativeButton(R.string.no, null)
@@ -205,14 +205,14 @@ public class AccountListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 		Intent intent = new Intent(AccountListActivity.this, AccountActivity.class);
 		intent.putExtra(AccountActivity.ACCOUNT_ID_EXTRA, id);
 		startActivityForResult(intent, EDIT_ACCOUNT_REQUEST);
 	}
 
 	@Override
-	protected void viewItem(int position, long id) {
+	protected void viewItem(View v, int position, long id) {
 		Account account = em.getAccount(id);
 		if (account != null) {
 			Intent intent = new Intent(AccountListActivity.this, BlotterActivity.class);
@@ -229,10 +229,9 @@ public class AccountListActivity extends AbstractListActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == VIEW_ACCOUNT_REQUEST) {
-			requeryCursor();
-		} else {
-			super.onActivityResult(requestCode, resultCode, data);
+			recreateCursor();
 		}
 	}
 
