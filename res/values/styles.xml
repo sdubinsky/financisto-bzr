@@ -43,6 +43,10 @@
 		<item name="android:background">@drawable/btn_circle</item>
 		<item name="android:src">@drawable/ic_btn_round_more</item>
 	</style>
+    <style name="SplitButton">
+        <item name="android:background">@drawable/btn_circle</item>
+        <item name="android:src">@drawable/ic_btn_round_split</item>
+    </style>
 	<style name="UpButton">
 		<item name="android:background">@drawable/btn_circle</item>
 		<item name="android:src">@drawable/ic_btn_round_up</item>

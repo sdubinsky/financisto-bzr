@@ -190,7 +190,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
             x.addEditNode(layout, R.string.payee, payeeText);
         }
 		//category
-		categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
+		categoryText = x.addListNodeCategory(layout);
 		//amount
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
@@ -383,6 +383,9 @@ public class TransactionActivity extends AbstractTransactionActivity {
             case R.id.delete_split:
                 View parentView = (View)v.getParent();
                 deleteSplit(parentView);
+                break;
+            case R.id.category_split:
+                selectCategory(Category.SPLIT_CATEGORY_ID);
                 break;
         }
         Transaction split = viewToSplitMap.get(v);

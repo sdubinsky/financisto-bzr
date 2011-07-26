@@ -137,6 +137,15 @@ public class ActivityLayout {
 		return (TextView)v.findViewById(R.id.data);
 	}
 
+    public TextView addListNodeCategory(LinearLayout layout) {
+        ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_category);
+        View v = b.withButtonId(R.id.category_add, listener).withId(R.id.category, listener).withLabel(R.string.category).withData(R.string.select_category).create();
+        ImageView transferImageView = (ImageView)v.findViewById(R.id.split);
+        transferImageView.setId(R.id.category_split);
+        transferImageView.setOnClickListener(listener);
+        return (TextView)v.findViewById(R.id.data);
+    }
+
     public View addNodeUnsplit(LinearLayout layout) {
         ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_unsplit);
         View v = b.withButtonId(R.id.add_split, listener).withId(R.id.unsplit_action, listener).withLabel(R.string.unsplit_amount).withData("0").create();
