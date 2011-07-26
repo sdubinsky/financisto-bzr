@@ -32,6 +32,7 @@ import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
@@ -52,7 +53,6 @@ public class BlotterActivity extends AbstractListActivity {
 	private static final int MONTHLY_VIEW_REQUEST = 6;
 	private static final int BILL_PREVIEW_REQUEST = 7;
 	
-		
 	protected static final int FILTER_REQUEST = 6;
 	private static final int MENU_DUPLICATE = MENU_ADD+1;
 	private static final int MENU_SAVE_AS_TEMPLATE = MENU_ADD+2;
@@ -170,7 +170,9 @@ public class BlotterActivity extends AbstractListActivity {
             transactionActionGrid = new QuickActionGrid(this);
             transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.view));
             transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_edit, R.string.edit));
-            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_action_bar_delete, R.string.delete));
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_trashcan, R.string.delete));
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.duplicate));
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_action_bar_mark, R.string.clear));
             transactionActionGrid.setOnQuickActionClickListener(transactionActionListener);
         }
     }
@@ -188,14 +190,20 @@ public class BlotterActivity extends AbstractListActivity {
                     deleteTransaction(selectedId);
                     break;
                 case 3:
+                    duplicateTransaction(selectedId, 1);
                     break;
                 case 4:
+                    clearTransaction(selectedId);
                     break;
             }
         }
 
     };
 
+    private void clearTransaction(long selectedId) {
+        db.updateTransactionStatus(selectedId, TransactionStatus.CL);
+        recreateCursor();
+    }
 
     @Override
 	protected void onSaveInstanceState(Bundle outState) {

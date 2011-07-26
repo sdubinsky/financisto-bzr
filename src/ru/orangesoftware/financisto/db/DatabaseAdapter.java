@@ -363,7 +363,7 @@ public class DatabaseAdapter {
 			if (attributes.size() > 0) {
 				insertAttributes(transactionId, attributes);
 			}
-            List<Transaction> splits = em().getSplitsForTransaction(id);
+            List<Transaction> splits = em.getSplitsForTransaction(id);
             if (multiplier > 1) {
                 for (Transaction split : splits) {
                     split.fromAmount *= multiplier;
@@ -481,6 +481,12 @@ public class DatabaseAdapter {
 		db.update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
 				new String[]{String.valueOf(t.id)});		
 	}
+
+    public void updateTransactionStatus(long id, TransactionStatus status) {
+        Transaction t = getTransaction(id);
+        t.status = status;
+        updateTransaction(t);
+    }
 
     public void deleteTransaction(long id) {
 		db.beginTransaction();
