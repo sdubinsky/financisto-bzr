@@ -1,5 +1,8 @@
 package ru.orangesoftware.financisto.utils;
 
+import ru.orangesoftware.financisto.model.Category;
+
+import static ru.orangesoftware.financisto.model.Category.isSplit;
 import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 /**
@@ -9,7 +12,15 @@ import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
  */
 public class TransactionTitleUtils {
 
-    public static String generateTransactionTitle(StringBuilder sb, String payee, String note, String location, String category) {
+    public static String generateTransactionTitle(StringBuilder sb, String payee, String note, String location, long categoryId, String category) {
+        if (isSplit(categoryId)) {
+            return generateTransactionTitleForSplit(sb, payee, note, location, category);
+        } else {
+            return generateTransactionTitleForRegular(sb, payee, note, location, category);
+        }
+    }
+
+    private static String generateTransactionTitleForRegular(StringBuilder sb, String payee, String note, String location, String category) {
         String secondPart = joinAdditionalFields(sb, payee, note, location);
         if (isNotEmpty(category)) {
             if (isNotEmpty(secondPart)) {
@@ -33,7 +44,7 @@ public class TransactionTitleUtils {
         return secondPart;
     }
 
-    public static String generateTransactionTitleForSplit(StringBuilder sb, String payee, String note, String location, String category) {
+    private static String generateTransactionTitleForSplit(StringBuilder sb, String payee, String note, String location, String category) {
         String secondPart = joinAdditionalFields(sb, note, location);
         if (isNotEmpty(payee)) {
             if (isNotEmpty(secondPart)) {

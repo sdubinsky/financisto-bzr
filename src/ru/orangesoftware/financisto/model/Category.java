@@ -27,7 +27,11 @@ public class Category extends CategoryEntity<Category> {
 	
     public static final long NO_CATEGORY_ID = 0;
 	public static final long SPLIT_CATEGORY_ID = -1;
-	
+
+    public static boolean isSplit(long categoryId) {
+        return Category.SPLIT_CATEGORY_ID == categoryId;
+    }
+
 	@Column(name = "last_location_id")
 	public long lastLocationId;
 

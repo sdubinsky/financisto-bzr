@@ -1,6 +1,7 @@
 package ru.orangesoftware.financisto.utils;
 
 import android.test.AndroidTestCase;
+import ru.orangesoftware.financisto.model.Category;
 
 import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.*;
 
@@ -12,24 +13,24 @@ import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.*;
 public class TransactionTitleUtilsTest extends AndroidTestCase {
 
     public void test_should_generate_title_for_regular_transactions() {
-        assertEquals("", generateTransactionTitle(sb(), null, null, null, null));
-        assertEquals("Payee", generateTransactionTitle(sb(), "Payee", null, null, null));
-        assertEquals("Note", generateTransactionTitle(sb(), null, "Note", null, null));
-        assertEquals("Location", generateTransactionTitle(sb(), null, null, "Location", null));
-        assertEquals("Category", generateTransactionTitle(sb(), null, null, null, "Category"));
-        assertEquals("Payee: Location: Note", generateTransactionTitle(sb(), "Payee", "Note", "Location", null));
-        assertEquals("Category (Location)", generateTransactionTitle(sb(), null, null, "Location", "Category"));
-        assertEquals("Category (Payee: Note)", generateTransactionTitle(sb(), "Payee", "Note", null, "Category"));
+        assertEquals("", generateTransactionTitle(sb(), null, null, null, Category.NO_CATEGORY_ID, null));
+        assertEquals("Payee", generateTransactionTitle(sb(), "Payee", null, null, Category.NO_CATEGORY_ID, null));
+        assertEquals("Note", generateTransactionTitle(sb(), null, "Note", null, Category.NO_CATEGORY_ID, null));
+        assertEquals("Location", generateTransactionTitle(sb(), null, null, "Location", Category.NO_CATEGORY_ID, null));
+        assertEquals("Category", generateTransactionTitle(sb(), null, null, null, Category.NO_CATEGORY_ID, "Category"));
+        assertEquals("Payee: Location: Note", generateTransactionTitle(sb(), "Payee", "Note", "Location", Category.NO_CATEGORY_ID, null));
+        assertEquals("Category (Location)", generateTransactionTitle(sb(), null, null, "Location", Category.NO_CATEGORY_ID, "Category"));
+        assertEquals("Category (Payee: Note)", generateTransactionTitle(sb(), "Payee", "Note", null, Category.NO_CATEGORY_ID, "Category"));
     }
 
     public void test_should_generate_title_for_a_split() {
-        assertEquals("[Split...]", generateTransactionTitleForSplit(sb(), null, null, null, "[Split...]"));
-        assertEquals("[Payee...]", generateTransactionTitleForSplit(sb(), "Payee", null, null, "[Split...]"));
-        assertEquals("[...] Note", generateTransactionTitleForSplit(sb(), null, "Note", null, "[Split...]"));
-        assertEquals("[...] Location", generateTransactionTitleForSplit(sb(), null, null, "Location", "[Split...]"));
-        assertEquals("[Payee...] Location: Note", generateTransactionTitleForSplit(sb(), "Payee", "Note", "Location", "[Split...]"));
-        assertEquals("[...] Location", generateTransactionTitleForSplit(sb(), null, null, "Location", "[Split...]"));
-        assertEquals("[Payee...] Note", generateTransactionTitleForSplit(sb(), "Payee", "Note", null, "[Split...]"));
+        assertEquals("[Split...]", generateTransactionTitle(sb(), null, null, null, Category.SPLIT_CATEGORY_ID, "[Split...]"));
+        assertEquals("[Payee...]", generateTransactionTitle(sb(), "Payee", null, null, Category.SPLIT_CATEGORY_ID, "[Split...]"));
+        assertEquals("[...] Note", generateTransactionTitle(sb(), null, "Note", null, Category.SPLIT_CATEGORY_ID, "[Split...]"));
+        assertEquals("[...] Location", generateTransactionTitle(sb(), null, null, "Location", Category.SPLIT_CATEGORY_ID, "[Split...]"));
+        assertEquals("[Payee...] Location: Note", generateTransactionTitle(sb(), "Payee", "Note", "Location", Category.SPLIT_CATEGORY_ID, "[Split...]"));
+        assertEquals("[...] Location", generateTransactionTitle(sb(), null, null, "Location", Category.SPLIT_CATEGORY_ID, "[Split...]"));
+        assertEquals("[Payee...] Note", generateTransactionTitle(sb(), "Payee", "Note", null, Category.SPLIT_CATEGORY_ID, "[Split...]"));
     }
 
     private StringBuilder sb() {

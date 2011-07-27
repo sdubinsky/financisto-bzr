@@ -59,7 +59,7 @@ public class TransactionsListAdapter extends BlotterListAdapter {
         if (categoryId != 0) {
             category = cursor.getString(BlotterColumns.category_title.ordinal());
         }
-        String text = generateTransactionTitle(sb, payee, note, location, category);
+        String text = generateTransactionTitle(sb, payee, note, location, categoryId, category);
         v.centerView.setText(text);
 
         long currencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());

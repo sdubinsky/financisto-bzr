@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
-import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryEntity;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.TransactionStatus;
@@ -34,8 +33,8 @@ import ru.orangesoftware.financisto.utils.Utils;
 import java.util.Date;
 import java.util.HashMap;
 
+import static ru.orangesoftware.financisto.model.Category.isSplit;
 import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateTransactionTitle;
-import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateTransactionTitleForSplit;
 
 public class BlotterListAdapter extends ResourceCursorAdapter {
 
@@ -140,24 +139,13 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
         } else {
             String fromAccountTitle = cursor.getString(BlotterColumns.from_account_title.ordinal());
             v.topView.setText(fromAccountTitle);
+            setTransactionTitleText(cursor, noteView);
             sb.setLength(0);
-            String payee = cursor.getString(BlotterColumns.payee.ordinal());
-            String note = cursor.getString(BlotterColumns.note.ordinal());
-            long locationId = cursor.getLong(BlotterColumns.location_id.ordinal());
-            String location = getLocationTitle(cursor, locationId);
-            long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
-            String category = getCategoryTitle(cursor, categoryId);
-            String text = isSplit(categoryId)
-                    ? generateTransactionTitleForSplit(sb, payee, note, location, category)
-                    : generateTransactionTitle(sb, payee, note, location, category);
-            noteView.setText(text);
-            noteView.setTextColor(Color.WHITE);
-
             long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
             Currency fromCurrency = CurrencyCache.getCurrency(fromCurrencyId);
             long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
-            sb.setLength(0);
             u.setAmountText(sb, v.rightView, fromCurrency, amount, true);
+            long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
             if (isSplit(categoryId)) {
                 v.iconView.setImageDrawable(icBlotterSplit);
             } else if (amount == 0) {
@@ -216,8 +204,17 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
         }
     }
 
-    private boolean isSplit(long categoryId) {
-        return categoryId == Category.SPLIT_CATEGORY_ID;
+    private void setTransactionTitleText(Cursor cursor, TextView noteView) {
+        sb.setLength(0);
+        String payee = cursor.getString(BlotterColumns.payee.ordinal());
+        String note = cursor.getString(BlotterColumns.note.ordinal());
+        long locationId = cursor.getLong(BlotterColumns.location_id.ordinal());
+        String location = getLocationTitle(cursor, locationId);
+        long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
+        String category = getCategoryTitle(cursor, categoryId);
+        String text = generateTransactionTitle(sb, payee, note, location, categoryId, category);
+        noteView.setText(text);
+        noteView.setTextColor(Color.WHITE);
     }
 
     private String getCategoryTitle(Cursor cursor, long categoryId) {
