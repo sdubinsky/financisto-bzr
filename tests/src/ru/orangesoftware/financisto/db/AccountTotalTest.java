@@ -287,7 +287,7 @@ public class AccountTotalTest extends AbstractDbTest {
         TransactionBuilder.withDb(db).account(a1).amount(2000).create();
         TransactionBuilder.withDb(db).account(a2).amount(3000).create();
         TransactionBuilder.withDb(db).account(a3).amount(4000).create();
-        TransactionBuilder.withDb(db).account(a1).amount(-1000)
+        Transaction t = TransactionBuilder.withDb(db).account(a1).amount(-1000)
                 .withTransferSplit(a2, -100, 50)
                 .withTransferSplit(a2, -200, 60)
                 .withTransferSplit(a2, -300, 70)
@@ -297,6 +297,11 @@ public class AccountTotalTest extends AbstractDbTest {
         assertAccountTotal(a1, 1000);
         assertAccountTotal(a2, 3180);
         assertAccountTotal(a3, 4170);
+
+        db.deleteTransaction(t.id);
+        assertAccountTotal(a1, 2000);
+        assertAccountTotal(a2, 3000);
+        assertAccountTotal(a3, 4000);
     }
 
     private void assertAccountTotal(Account account, long total) {
