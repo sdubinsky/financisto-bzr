@@ -100,6 +100,38 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertFinalBalanceForAccount(a2, 2050);
     }
 
+    public void test_should_update_running_balance_for_two_accounts_with_transfer_split_with_multiple_transfers() {
+        TransactionBuilder.withDb(db).account(a1).amount(2000).create();
+        TransactionBuilder.withDb(db).account(a2).amount(3000).create();
+        TransactionBuilder.withDb(db).account(a3).amount(4000).create();
+        db.rebuildRunningBalance();
+        Transaction t4 = TransactionBuilder.withDb(db).account(a1).amount(-1000)
+                .withTransferSplit(a2, -100, 50)
+                .withTransferSplit(a2, -200, 60)
+                .withTransferSplit(a2, -300, 70)
+                .withTransferSplit(a3, -100, 80)
+                .withTransferSplit(a3, -300, 90)
+                .create();
+        assertFinalBalanceForAccount(a1, 1000);
+        assertFinalBalanceForAccount(a2, 3180);
+        assertFinalBalanceForAccount(a3, 4170);
+        List<Transaction> splits = em.getSplitsForTransaction(t4.id);
+        assertEquals(5, splits.size());
+        assertAccountBalanceForTransaction(splits.get(0), a2, 3050);
+        assertAccountBalanceForTransaction(splits.get(1), a2, 3110);
+        assertAccountBalanceForTransaction(splits.get(2), a2, 3180);
+        assertAccountBalanceForTransaction(splits.get(3), a3, 4080);
+        assertAccountBalanceForTransaction(splits.get(4), a3, 4170);
+        db.rebuildRunningBalance();
+        assertFinalBalanceForAccount(a1, 1000);
+        assertFinalBalanceForAccount(a2, 3180);
+        assertFinalBalanceForAccount(a3, 4170);
+        db.deleteTransaction(t4.id);
+        assertFinalBalanceForAccount(a1, 2000);
+        assertFinalBalanceForAccount(a2, 3000);
+        assertFinalBalanceForAccount(a3, 4000);
+    }
+
     public void test_should_update_running_balance_for_two_accounts_when_updating_transfer_split() {
         Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
         Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();
@@ -559,7 +591,7 @@ public class RunningBalanceTest extends AbstractDbTest {
     }
 
     private void assertFinalBalanceForAccount(Account a, long expectedBalance) {
-        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? order by datetime desc limit 1",
+        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(a.id)});
         try {
             if (c.moveToFirst()) {

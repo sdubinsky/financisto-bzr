@@ -15,6 +15,7 @@ public class AccountTotalTest extends AbstractDbTest {
 
     Account a1;
     Account a2;
+    Account a3;
     Map<String, Category> categoriesMap;
 
     @Override
@@ -22,6 +23,7 @@ public class AccountTotalTest extends AbstractDbTest {
         super.setUp();
         a1 = AccountBuilder.createDefault(db);
         a2 = AccountBuilder.createDefault(db);
+        a3 = AccountBuilder.createDefault(db);
         categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
     }
 
@@ -278,6 +280,23 @@ public class AccountTotalTest extends AbstractDbTest {
         db.deleteTransaction(t.id);
         assertAccountTotal(a1, 1000);
         assertAccountTotal(a2, 2000);
+    }
+
+
+    public void test_should_update_account_total_when_transfer_split_with_multiple_transfers_is_added() {
+        TransactionBuilder.withDb(db).account(a1).amount(2000).create();
+        TransactionBuilder.withDb(db).account(a2).amount(3000).create();
+        TransactionBuilder.withDb(db).account(a3).amount(4000).create();
+        TransactionBuilder.withDb(db).account(a1).amount(-1000)
+                .withTransferSplit(a2, -100, 50)
+                .withTransferSplit(a2, -200, 60)
+                .withTransferSplit(a2, -300, 70)
+                .withTransferSplit(a3, -100, 80)
+                .withTransferSplit(a3, -300, 90)
+                .create();
+        assertAccountTotal(a1, 1000);
+        assertAccountTotal(a2, 3180);
+        assertAccountTotal(a3, 4170);
     }
 
     private void assertAccountTotal(Account account, long total) {

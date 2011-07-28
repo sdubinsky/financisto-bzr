@@ -587,7 +587,7 @@ public class DatabaseAdapter {
     }
 
     private long fetchAccountBalanceAtTheTime(long accountId, long datetime) {
-        Cursor c = db.rawQuery("select balance from running_balance where account_id = ? and datetime < ? order by datetime desc limit 1",
+        Cursor c = db.rawQuery("select balance from running_balance where account_id = ? and datetime <= ? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(accountId), String.valueOf(datetime)});
         try {
             if (c.moveToFirst()) {

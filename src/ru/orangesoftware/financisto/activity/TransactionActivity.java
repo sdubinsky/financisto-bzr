@@ -37,6 +37,7 @@ import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static ru.orangesoftware.financisto.model.Category.isSplit;
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 import static ru.orangesoftware.financisto.utils.Utils.text;
@@ -327,7 +328,11 @@ public class TransactionActivity extends AbstractTransactionActivity {
 			amount -= currentBalance;
 		}
 		transaction.fromAmount = amount;
-        transaction.splits = new LinkedList<Transaction>(viewToSplitMap.values());
+        if (isSplit(selectedCategoryId)) {
+            transaction.splits = new LinkedList<Transaction>(viewToSplitMap.values());
+        } else {
+            transaction.splits = null;
+        }
 	}
 
     private void selectPayee(long payeeId) {

@@ -16,10 +16,19 @@ import java.util.Map;
  */
 public class TransactionTest extends AbstractDbTest {
 
+    Account a1;
+    Account a2;
+    Map<String, Category> categories;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        a1 = AccountBuilder.createDefault(db);
+        a2 = AccountBuilder.createDefault(db);
+        categories = CategoryBuilder.createDefaultHierarchy(db);
+    }
+
     public void test_should_create_splits() {
-        Account a1 = AccountBuilder.createDefault(db);
-        Account a2 = AccountBuilder.createDefault(db);
-        Map<String, Category> categories = CategoryBuilder.createDefaultHierarchy(db);
         Transaction t = TransactionBuilder.withDb(db).account(a1).amount(200).payee("P1").category(CategoryBuilder.split(db))
                 .withSplit(categories.get("A1"), 60)
                 .withSplit(categories.get("A2"), 40)
@@ -46,9 +55,6 @@ public class TransactionTest extends AbstractDbTest {
     }
 
     public void test_should_duplicate_splits() {
-        Account a1 = AccountBuilder.createDefault(db);
-        Account a2 = AccountBuilder.createDefault(db);
-        Map<String, Category> categories = CategoryBuilder.createDefaultHierarchy(db);
         Transaction t = TransactionBuilder.withDb(db).account(a1).amount(-150).category(CategoryBuilder.split(db))
                 .withSplit(categories.get("A1"), -60)
                 .withSplit(categories.get("A2"), -40)
@@ -63,10 +69,21 @@ public class TransactionTest extends AbstractDbTest {
         assertEquals(-150, newSplits.get(0).fromAmount+newSplits.get(1).fromAmount+newSplits.get(2).fromAmount);
     }
 
+    public void test_should_convert_split_into_regular_transaction() {
+        Transaction t = TransactionBuilder.withDb(db).account(a1).amount(2000)
+                .withSplit(categories.get("A1"), 500)
+                .withSplit(categories.get("A2"), 1500)
+                .create();
+        List<Transaction> splits = db.em().getSplitsForTransaction(t.id);
+        assertEquals(2, splits.size());
+        t.categoryId = categories.get("A").id;
+        t.splits = null;
+        db.insertOrUpdate(t);
+        splits = db.em().getSplitsForTransaction(t.id);
+        assertEquals(0, splits.size());
+    }
+
     public void test_should_update_splits() {
-        Account a1 = AccountBuilder.createDefault(db);
-        Account a2 = AccountBuilder.createDefault(db);
-        Map<String, Category> categories = CategoryBuilder.createDefaultHierarchy(db);
         Transaction t = TransactionBuilder.withDb(db).account(a1).amount(-150).category(CategoryBuilder.split(db))
                 .withSplit(categories.get("A1"), -60)
                 .withSplit(categories.get("A2"), -40)
@@ -86,9 +103,6 @@ public class TransactionTest extends AbstractDbTest {
     }
 
     public void test_should_delete_splits() {
-        Account a1 = AccountBuilder.createDefault(db);
-        Account a2 = AccountBuilder.createDefault(db);
-        Map<String, Category> categories = CategoryBuilder.createDefaultHierarchy(db);
         Transaction t = TransactionBuilder.withDb(db).account(a1).amount(-150).category(CategoryBuilder.split(db))
                 .withSplit(categories.get("A1"), -60)
                 .withSplit(categories.get("A2"), -40)
