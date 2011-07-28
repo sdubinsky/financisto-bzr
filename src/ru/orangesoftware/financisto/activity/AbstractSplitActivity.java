@@ -13,6 +13,7 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import static ru.orangesoftware.financisto.utils.Utils.text;
@@ -108,6 +109,11 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
     protected void setUnsplitAmount(long amount) {
         Currency currency = fromAccount != null ? fromAccount.currency : Currency.defaultCurrency();
         utils.setAmountText(unsplitAmountText, currency, amount, false);
+    }
+
+    @Override
+    protected boolean shouldLock() {
+        return MyPreferences.isPinProtectedNewTransaction(this);
     }
 
 }
