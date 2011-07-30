@@ -25,8 +25,8 @@ import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.orb.EntityManager;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class BudgetActivity extends AbstractActivity {
 	
@@ -52,8 +52,8 @@ public class BudgetActivity extends AbstractActivity {
 
 	private Budget budget = new Budget();
 	
-	private ArrayList<Category> categories;
-	private ArrayList<Project> projects;
+	private List<Category> categories;
+	private List<Project> projects;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class BudgetActivity extends AbstractActivity {
 		startManagingCursor(currencyCursor);
 		currencyAdapter = TransactionUtils.createCurrencyAdapter(this, currencyCursor);
 		
-		categories = db.getAllCategoriesList(true);
+		categories = db.getCategoriesList(true);
 		projects = em.getAllProjectsList(true);
 		
 		LinearLayout layout = (LinearLayout) findViewById(R.id.list);
@@ -101,7 +101,7 @@ public class BudgetActivity extends AbstractActivity {
 			public void onClick(View arg0) {
 				if (checkSelectedId(budget.currencyId, R.string.select_currency)) {
 					updateBudgetFromUI();
-					long id = em.saveOrUpdate(budget);
+					long id = em.insertBudget(budget);
 					Intent intent = new Intent();
 					intent.putExtra(BUDGET_ID_EXTRA, id);
 					setResult(RESULT_OK, intent);
@@ -147,7 +147,7 @@ public class BudgetActivity extends AbstractActivity {
 		cbMode.setChecked(budget.expanded);
 	}
 
-	private void updateEntities(ArrayList<? extends MyEntity> list, String selected) {
+	private void updateEntities(List<? extends MyEntity> list, String selected) {
 		if (!Utils.isEmpty(selected)) {
 			String[] a = selected.split(",");
 			for (String s : a) {
@@ -162,7 +162,7 @@ public class BudgetActivity extends AbstractActivity {
 		}
 	}
 	
-	private String getSelectedAsString(ArrayList<? extends MyEntity> list) {
+	private String getSelectedAsString(List<? extends MyEntity> list) {
 		StringBuilder sb = new StringBuilder();
 		for (MyEntity e : list) {
 			if (e.checked) {
@@ -240,7 +240,7 @@ public class BudgetActivity extends AbstractActivity {
 	}
 	
 	@Override
-	public void onSelected(int id, ArrayList<? extends MultiChoiceItem> items) {
+	public void onSelected(int id, List<? extends MultiChoiceItem> items) {
 		switch (id) {
 		case R.id.category:
 			selectCategories();
@@ -282,7 +282,7 @@ public class BudgetActivity extends AbstractActivity {
 		}
 	}
 	
-	private String getCheckedEntities(ArrayList<? extends MyEntity> list) {
+	private String getCheckedEntities(List<? extends MyEntity> list) {
 		StringBuilder sb = new StringBuilder();
 		for (MyEntity e : list) {
 			if (e.checked) {
@@ -319,7 +319,7 @@ public class BudgetActivity extends AbstractActivity {
 				}
 				break;
 			case NEW_CATEGORY_REQUEST:
-                categories = merge(categories, db.getAllCategoriesList(true));
+                categories = merge(categories, db.getCategoriesList(true));
 				break;
 			case NEW_PROJECT_REQUEST:
                 projects = merge(projects, em.getAllProjectsList(true));
@@ -336,7 +336,7 @@ public class BudgetActivity extends AbstractActivity {
 		}
 	}
 
-	private static <T extends MyEntity> ArrayList<T> merge(ArrayList<T> oldList, ArrayList<T> newList) {
+	private static <T extends MyEntity> List<T> merge(List<T> oldList, List<T> newList) {
 		for (T newT : newList) {
 			for (Iterator<T> i = oldList.iterator(); i.hasNext(); ) {
 				T oldT = i.next();

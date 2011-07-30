@@ -10,10 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.view;
 
-import java.io.File;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.utils.ThumbnailUtil;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,12 +17,12 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 import android.widget.RelativeLayout.LayoutParams;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.ThumbnailUtil;
+
+import java.io.File;
 
 public class NodeInflater {
 	
@@ -135,6 +131,11 @@ public class NodeInflater {
 			plusImageView.setOnClickListener(listener);
 			return this;
 		}
+
+        public ListBuilder withoutMoreButton() {
+            v.findViewById(R.id.more).setVisibility(View.GONE);
+            return this;
+        }
 
 	}
 	

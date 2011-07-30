@@ -29,7 +29,7 @@ import ru.orangesoftware.financisto.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static ru.orangesoftware.financisto.adapter.BlotterListAdapter.generateTransactionText;
+import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateTransactionTitle;
 
 public class ScheduledListAdapter extends BaseAdapter {
 	
@@ -141,7 +141,7 @@ public class ScheduledListAdapter extends BaseAdapter {
 				category = t.category.title;
 			}
             String payee = t.payee != null ? t.payee.title : null;
-            String text = generateTransactionText(sb, payee, note, location, category);
+            String text = generateTransactionTitle(sb, payee, note, location, t.category.id, category);
             noteView.setText(text);
 			noteView.setTextColor(Color.WHITE);
 			

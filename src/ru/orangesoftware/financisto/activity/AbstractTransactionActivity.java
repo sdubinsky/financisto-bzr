@@ -159,7 +159,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
 		
-		categoryCursor = db.getAllCategories(true);
+		categoryCursor = fetchCategories();
 		startManagingCursor(categoryCursor);
 		categoryAdapter = TransactionUtils.createCategoryAdapter(db, this, categoryCursor);
 
@@ -182,7 +182,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			transactionId = intent.getLongExtra(TRAN_ID_EXTRA, -1);
 			if (transactionId != -1) {
 				transaction = db.getTransaction(transactionId);
-				isDuplicate = intent.getBooleanExtra(DUPLICATE_EXTRA, false);				
+				isDuplicate = intent.getBooleanExtra(DUPLICATE_EXTRA, false);
 				if (isDuplicate) {
 					transaction.id = -1;
 					transaction.dateTime = System.currentTimeMillis();
@@ -324,6 +324,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		Log.i("TransactionActivity", "onCreate "+(t1-t0)+"ms");
 	}
 
+    protected abstract Cursor fetchCategories();
+
     private boolean saveAndFinish() {
         long id = save();
         if (id > 0) {
@@ -388,24 +390,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		layout.addView(attributesLayout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 	}
 
-	private void addAttributes() {
-		attributesLayout.removeAllViews();
-		ArrayList<Attribute> attributes = db.getAllAttributesForCategory(selectedCategoryId);
-		HashMap<Long, String> values = null;
-		if (transaction.id > 0) {
-			values = db.getAllAttributesForTransaction(transaction.id);
-		}
-		for (Attribute a : attributes) {
-			AttributeView av = inflateAttribute(a);
-			String value = values != null ? values.get(a.id) : null;
-			if (value == null) {
-				value = a.defaultValue;
-			}
-			View v = av.inflateView(attributesLayout, value);
-			v.setTag(av);
-		}
-	}
-	
 	protected LinkedList<TransactionAttribute> getAttributes() {
 		LinkedList<TransactionAttribute> list = new LinkedList<TransactionAttribute>();
 		long count = attributesLayout.getChildCount();
@@ -672,10 +656,14 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 	
 	protected void selectCategory(long categoryId, boolean selectLast) {
+        if (selectedCategoryId == categoryId) {
+            return;
+        }
 		if (Utils.moveCursor(categoryCursor, CategoryViewColumns._id.name(), categoryId) != -1) {
             Category category = Category.formCursor(categoryCursor);
 			categoryText.setText(Category.getTitle(category.title, category.level));
 			selectedCategoryId = categoryId;
+            addOrRemoveSplits();
 			addAttributes();
             switchIncomeExpenseButton(category);
 			if (selectLast && isRememberLastLocation) {
@@ -688,6 +676,27 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			}
 		}
 	}
+
+    protected void addOrRemoveSplits() {
+    }
+
+    private void addAttributes() {
+        attributesLayout.removeAllViews();
+        ArrayList<Attribute> attributes = db.getAllAttributesForCategory(selectedCategoryId);
+        HashMap<Long, String> values = null;
+        if (transaction.id > 0) {
+            values = db.getAllAttributesForTransaction(transaction.id);
+        }
+        for (Attribute a : attributes) {
+            AttributeView av = inflateAttribute(a);
+            String value = values != null ? values.get(a.id) : null;
+            if (value == null) {
+                value = a.defaultValue;
+            }
+            View v = av.inflateView(attributesLayout, value);
+            v.setTag(av);
+        }
+    }
 
     protected void switchIncomeExpenseButton(Category category) {
 
@@ -836,8 +845,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		dateText.setText(df.format(d));
 		timeText.setText(tf.format(d));		
 	}
-	
-	protected void editTransaction(Transaction transaction) {
+
+    protected abstract void editTransaction(Transaction transaction);
+
+	protected void commonEditTransaction(Transaction transaction) {
 		selectStatus(transaction.status);
 		selectCategory(transaction.categoryId, false);
 		selectProject(transaction.projectId);

@@ -10,16 +10,18 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.graph;
 
-import java.util.HashMap;
+import java.util.*;
 
 import ru.orangesoftware.financisto.model.Currency;
 
-public class GraphUnit implements Comparable<GraphUnit> {
+public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
 
 	public final long id;
 	public final String name;
 	public final GraphStyle style;
-	public final HashMap<String, Amount> amounts = new HashMap<String, Amount>(2);
+
+    private final Map<Currency, IncomeExpenseAmount> currencyToAmountMap = new LinkedHashMap<Currency, IncomeExpenseAmount>(2);
+    private final List<Amount> amounts = new LinkedList<Amount>();
 
     private long maxAmount;
 	
@@ -33,27 +35,52 @@ public class GraphUnit implements Comparable<GraphUnit> {
         if (amount == 0) {
             return;
         }
-		String key = currency.symbol+(amount >= 0 ? "_1" : "_2");
-		Amount a = amounts.get(key);
-		if (a == null) {
-			a = new Amount(currency, amount);
-			amounts.put(key, a);
-		} else {
-			a.add(amount);
-		}
+        IncomeExpenseAmount incomeExpenseAmount = getIncomeExpense(currency);
+        incomeExpenseAmount.add(amount);
 	}
 
-    public void calculateMaxAmount() {
-        long maxAmount = 0;
-        for (Amount a : amounts.values()) {
-            maxAmount = Math.max(maxAmount, Math.abs(a.amount));
+    public IncomeExpenseAmount getIncomeExpense(Currency currency) {
+        IncomeExpenseAmount amount = currencyToAmountMap.get(currency);
+        if (amount == null) {
+            amount = new IncomeExpenseAmount();
+            currencyToAmountMap.put(currency, amount);
         }
-        this.maxAmount = maxAmount;
+        return amount;
     }
 
-	@Override
-	public int compareTo(GraphUnit another) {
-		return another.maxAmount > this.maxAmount ? 1 : -1;
+    public void flatten() {
+        if (amounts.isEmpty()) {
+            long maxAmount = 0;
+            for (Map.Entry<Currency, IncomeExpenseAmount> entry : currencyToAmountMap.entrySet()) {
+                Currency currency = entry.getKey();
+                IncomeExpenseAmount amount = entry.getValue();
+                addToAmounts(currency, amount.income);
+                addToAmounts(currency, amount.expense);
+                maxAmount = Math.max(maxAmount, Math.max(Math.abs(amount.income), Math.abs(amount.expense)));
+            }
+            Collections.sort(amounts);
+            this.maxAmount = maxAmount;
+        }
+    }
+
+    private void addToAmounts(Currency currency, long amount) {
+        if (amount != 0) {
+            amounts.add(new Amount(currency, amount));
+        }
+    }
+
+    @Override
+	public int compareTo(GraphUnit that) {
+		return that.maxAmount == this.maxAmount ? 0 : (that.maxAmount > this.maxAmount ? 1 : -1);
 	}
+
+    @Override
+    public Iterator<Amount> iterator() {
+        return amounts.iterator();
+    }
+
+    public int size() {
+        return amounts.size();
+    }
 
 }

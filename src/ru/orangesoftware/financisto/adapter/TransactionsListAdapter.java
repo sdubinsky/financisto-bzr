@@ -20,6 +20,8 @@ import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.Utils;
 
+import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateTransactionTitle;
+
 public class TransactionsListAdapter extends BlotterListAdapter {
 	
 	public TransactionsListAdapter(Context context, Cursor c) {
@@ -42,11 +44,10 @@ public class TransactionsListAdapter extends BlotterListAdapter {
             v.topView.setText(R.string.transfer);
             if (fromAmount > 0) {
                 note = toAccount+" \u00BB";
-                v.centerView.setTextColor(transferColor);
             } else {
                 note = "\u00AB "+toAccount;
-                v.centerView.setTextColor(transferColor);
             }
+            u.setTransferTextColor(v.centerView);
         } else {
             String title = cursor.getString(BlotterColumns.from_account_title.ordinal());
             v.topView.setText(title);
@@ -55,10 +56,10 @@ public class TransactionsListAdapter extends BlotterListAdapter {
 
         long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
         String category = "";
-        if (categoryId > 0) {
+        if (categoryId != 0) {
             category = cursor.getString(BlotterColumns.category_title.ordinal());
         }
-        String text = generateTransactionText(sb, payee, note, location, category);
+        String text = generateTransactionTitle(sb, payee, note, location, categoryId, category);
         v.centerView.setText(text);
 
         long currencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
@@ -74,7 +75,7 @@ public class TransactionsListAdapter extends BlotterListAdapter {
         v.bottomView.setText(DateUtils.formatDateTime(context, date,
                 DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_ABBREV_MONTH));
         if (date > System.currentTimeMillis()) {
-            v.bottomView.setTextColor(futureColor);
+            u.setFutureTextColor(v.bottomView);
         } else {
             v.bottomView.setTextColor(v.topView.getTextColors().getDefaultColor());
         }

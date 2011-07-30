@@ -5,6 +5,8 @@ import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Transaction;
 
+import java.util.LinkedList;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -21,6 +23,7 @@ public class TransactionBuilder {
 
     private TransactionBuilder(DatabaseAdapter db) {
         this.db = db;
+        this.t.splits = new LinkedList<Transaction>();
     }
 
     public TransactionBuilder account(Account a) {
@@ -53,9 +56,30 @@ public class TransactionBuilder {
         return this;
     }
 
+    public TransactionBuilder withSplit(Category category, long amount) {
+        return withSplit(category, amount, null);
+    }
+
+    public TransactionBuilder withSplit(Category category, long amount, String note) {
+        Transaction split = new Transaction();
+        split.categoryId = category.id;
+        split.fromAmount = amount;
+        split.note = note;
+        t.splits.add(split);
+        return this;
+    }
+
+    public TransactionBuilder withTransferSplit(Account toAccount, long fromAmount, long toAmount) {
+        Transaction split = new Transaction();
+        split.toAccountId = toAccount.id;
+        split.fromAmount = fromAmount;
+        split.toAmount = toAmount;
+        t.splits.add(split);
+        return this;
+    }
+
     public Transaction create() {
-        long id = db.insertOrUpdate(t, null);
-        t.id = id;
+        t.id = db.insertOrUpdate(t);
         return t;
     }
 

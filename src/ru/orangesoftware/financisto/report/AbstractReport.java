@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.report;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import ru.orangesoftware.financisto.activity.BlotterActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
@@ -52,6 +53,7 @@ public abstract class AbstractReport implements Report {
 		filterTransfers(filter);
 		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
+        DatabaseUtils.dumpCursor(c);
 		ArrayList<GraphUnit> units = getUnitsFromCursor(c);
         Total[] totals = calculateTotals(units);
         return new ReportData(units, totals);
@@ -87,7 +89,7 @@ public abstract class AbstractReport implements Report {
 				units.add(u);
 			}
             for (GraphUnit unit : units) {
-                unit.calculateMaxAmount();
+                unit.flatten();
             }
             Collections.sort(units);
 			return units;
@@ -96,25 +98,10 @@ public abstract class AbstractReport implements Report {
 		}
 	}
 	
-	protected GraphUnit getUnitFromCursor(Cursor c, long id) {
-		try {
-			GraphUnit u = new GraphUnit(id, alterName(id, null), DEFAULT_STYLE);
-			while (c.moveToNext()) {				
-				long currencyId = c.getLong(2);
-				long amount = c.getLong(3);
-				Currency currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
-				u.addAmount(currency, amount);
-			}
-			return u;
-		} finally {
-			c.close();
-		}
-	}
-
     protected Total[] calculateTotals(ArrayList<? extends GraphUnit> units) {
         HashMap<Long, Total> map = new HashMap<Long, Total>();
         for (GraphUnit u : units) {
-            for (Amount a : u.amounts.values()) {
+            for (Amount a : u) {
                 Total t = getOrCreate(map, a.currency);
                 long amount = a.amount;
                 if (amount > 0) {
@@ -151,10 +138,14 @@ public abstract class AbstractReport implements Report {
 		if (c != null) {
 			filter.put(c);
 		}
-		Intent intent = new Intent(context, BlotterActivity.class);
+		Intent intent = new Intent(context, getBlotterActivityClass());
 		filter.toIntent(intent);
 		return intent;
 	}
+
+    protected Class<? extends BlotterActivity> getBlotterActivityClass() {
+        return BlotterActivity.class;
+    }
 
     protected void cleanupFilter(WhereFilter filter) {
         // fixing a bug with saving incorrect filter fot this report

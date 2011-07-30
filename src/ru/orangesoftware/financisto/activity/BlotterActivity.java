@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
+import greendroid.widget.QuickActionGrid;
+import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.BlotterListAdapter;
 import ru.orangesoftware.financisto.adapter.TransactionsListAdapter;
@@ -30,10 +32,13 @@ import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
+
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 
 public class BlotterActivity extends AbstractListActivity {
 	
@@ -48,7 +53,6 @@ public class BlotterActivity extends AbstractListActivity {
 	private static final int MONTHLY_VIEW_REQUEST = 6;
 	private static final int BILL_PREVIEW_REQUEST = 7;
 	
-		
 	protected static final int FILTER_REQUEST = 6;
 	private static final int MENU_DUPLICATE = MENU_ADD+1;
 	private static final int MENU_SAVE_AS_TEMPLATE = MENU_ADD+2;
@@ -59,6 +63,8 @@ public class BlotterActivity extends AbstractListActivity {
 	protected ImageButton bFilter;	
 	protected ImageButton bTemplate;	
 	
+    private QuickActionWidget transactionActionGrid;
+
 	private BlotterTotalsCalculationTask calculationTask;
 
 	protected boolean saveFilter;
@@ -78,18 +84,31 @@ public class BlotterActivity extends AbstractListActivity {
 			calculationTask.stop();
 			calculationTask.cancel(true);
 		}
-		calculationTask = new BlotterTotalsCalculationTask(
-				this, db, blotterFilter, totalTextFlipper, totalText, filterAccounts); 
+        calculationTask = createTotalCalculationTask();
 		calculationTask.execute();
 	}
-	
-	@Override
-	public void requeryCursor() {
-		super.requeryCursor();
-		calculateTotals();
-	}
-	
-	@Override
+
+    protected BlotterTotalsCalculationTask createTotalCalculationTask() {
+        WhereFilter filter = getFilterForTotals();
+        return new BlotterTotalsCalculationTask(this, db, filter, totalTextFlipper, totalText);
+    }
+
+    private WhereFilter getFilterForTotals() {
+        WhereFilter filter = blotterFilter;
+        if (filterAccounts) {
+            filter = WhereFilter.copyOf(filter);
+            filter.put(WhereFilter.Criteria.eq("from_account_is_include_into_totals", "1"));
+        }
+        return filter;
+    }
+
+    @Override
+    public void recreateCursor() {
+        super.recreateCursor();
+        calculateTotals();
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -143,9 +162,50 @@ public class BlotterActivity extends AbstractListActivity {
 		}
 		applyFilter();
 		calculateTotals();
+        prepareTransactionActionGrid();
 	}
-	
-	@Override
+
+    private void prepareTransactionActionGrid() {
+        if (isSupportedApiLevel()) {
+            transactionActionGrid = new QuickActionGrid(this);
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.view));
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_edit, R.string.edit));
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_trashcan, R.string.delete));
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.duplicate));
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_action_bar_mark, R.string.clear));
+            transactionActionGrid.setOnQuickActionClickListener(transactionActionListener);
+        }
+    }
+
+    private QuickActionWidget.OnQuickActionClickListener transactionActionListener = new QuickActionWidget.OnQuickActionClickListener() {
+        public void onQuickActionClicked(QuickActionWidget widget, int position) {
+            switch (position) {
+                case 0:
+                    showTransactionInfo(selectedId);
+                    break;
+                case 1:
+                    editTransaction(selectedId, false);
+                    break;
+                case 2:
+                    deleteTransaction(selectedId);
+                    break;
+                case 3:
+                    duplicateTransaction(selectedId, 1);
+                    break;
+                case 4:
+                    clearTransaction(selectedId);
+                    break;
+            }
+        }
+
+    };
+
+    private void clearTransaction(long selectedId) {
+        db.updateTransactionStatus(selectedId, TransactionStatus.CL);
+        recreateCursor();
+    }
+
+    @Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		blotterFilter.toBundle(outState);
@@ -176,18 +236,15 @@ public class BlotterActivity extends AbstractListActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		if (!super.onContextItemSelected(item)) {
+            AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 			switch (item.getItemId()) {
-			case MENU_DUPLICATE: {
-				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+			case MENU_DUPLICATE:
 				duplicateTransaction(mi.id, 1);
 				return true;
-			} 			
-			case MENU_SAVE_AS_TEMPLATE: {
-				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+			case MENU_SAVE_AS_TEMPLATE:
 				db.duplicateTransactionAsTemplate(mi.id);
 				Toast.makeText(this, R.string.save_as_template_success, Toast.LENGTH_SHORT).show();
 				return true;
-			} 			
 			}
 		}
 		return false;
@@ -204,19 +261,9 @@ public class BlotterActivity extends AbstractListActivity {
 			toastText = getString(R.string.duplicate_success);
 		}
 		Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
-		requeryCursor();
+		recreateCursor();
         AccountWidget.updateWidgets(BlotterActivity.this);
 		return newId;
-	}
-
-	protected void addItem(int requestId, Class<? extends AbstractTransactionActivity> clazz) {
-		Intent intent = new Intent(BlotterActivity.this, clazz);
-		long accountId = blotterFilter.getAccountId();
-		if (accountId != -1) {
-			intent.putExtra(TransactionActivity.ACCOUNT_ID_EXTRA, accountId);
-		}
-		intent.putExtra(TransactionActivity.TEMPLATE_EXTRA, blotterFilter.getIsTemplate());
-		startActivityForResult(intent, requestId);
 	}
 
 	@Override
@@ -224,6 +271,16 @@ public class BlotterActivity extends AbstractListActivity {
 		addItem(NEW_TRANSACTION_REQUEST, TransactionActivity.class);
 	}
 	
+    protected void addItem(int requestId, Class<? extends AbstractTransactionActivity> clazz) {
+        Intent intent = new Intent(BlotterActivity.this, clazz);
+        long accountId = blotterFilter.getAccountId();
+        if (accountId != -1) {
+            intent.putExtra(TransactionActivity.ACCOUNT_ID_EXTRA, accountId);
+        }
+        intent.putExtra(TransactionActivity.TEMPLATE_EXTRA, blotterFilter.getIsTemplate());
+        startActivityForResult(intent, requestId);
+    }
+
 	@Override
 	protected Cursor createCursor() {
 		Cursor c;
@@ -247,31 +304,39 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 	
 	@Override
-	protected void deleteItem(int position, final long id) {
-		new AlertDialog.Builder(this)
-		.setMessage(blotterFilter.isTemplate() ? R.string.delete_template_confirm : R.string.delete_transaction_confirm)
-		.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener(){
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				db.deleteTransaction(id);
-				requeryCursor();
-                afterDeletingTransaction(id);
-			}
-		})
-		.setNegativeButton(R.string.no, null)
-		.show();
+	protected void deleteItem(View v, int position, final long id) {
+        deleteTransaction(id);
 	}
+
+    private void deleteTransaction(long id) {
+        final Transaction t = db.getTransaction(id);
+        int titleId = t.isTemplate() ? R.string.delete_template_confirm
+                : (t.isSplit() ? R.string.delete_transaction_parent_confirm : R.string.delete_transaction_confirm);
+        new AlertDialog.Builder(this)
+                .setMessage(titleId)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        long transactionIdToDelete = t.isSplit() ? t.parentId : t.id;
+                        db.deleteTransaction(transactionIdToDelete);
+                        afterDeletingTransaction(transactionIdToDelete);
+                        recreateCursor();
+                    }
+                })
+                .setNegativeButton(R.string.no, null)
+                .show();
+    }
 
     protected void afterDeletingTransaction(long id) {
         AccountWidget.updateWidgets(this);
     }
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 		editTransaction(id, false);
 	}
 	
-	protected void editTransaction(long id, boolean duplicate) {
+	public void editTransaction(long id, boolean duplicate) {
 		Transaction t = db.getTransaction(id);
 		if (t.isTransfer()) {
 			Intent intent = new Intent(BlotterActivity.this, TransferActivity.class);
@@ -280,7 +345,7 @@ public class BlotterActivity extends AbstractListActivity {
 			startActivityForResult(intent, EDIT_TRANSFER_REQUEST);			
 		} else {
 			Intent intent = new Intent(BlotterActivity.this, TransactionActivity.class);
-			intent.putExtra(TransactionActivity.TRAN_ID_EXTRA, id);
+			intent.putExtra(TransactionActivity.TRAN_ID_EXTRA, t.isSplit() ? t.parentId : id);
 			intent.putExtra(TransactionActivity.DUPLICATE_EXTRA, duplicate);
 			startActivityForResult(intent, EDIT_TRANSACTION_REQUEST);
 		}		
@@ -307,7 +372,7 @@ public class BlotterActivity extends AbstractListActivity {
 				long id = duplicateTransaction(templateId, multiplier);
 				Transaction t = db.getTransaction(id);
 				if (t.fromAmount == 0 || edit) {
-					editItem(-1, id);
+					editItem(null, -1, id);
 				} else {
 					AccountWidget.updateWidgets(BlotterActivity.this);
 				}
@@ -342,17 +407,24 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 
 	private NodeInflater inflater;
+    private long selectedId = -1;
 
 	@Override
-	protected void viewItem(int position, long id) {
-		TransactionInfoDialog transactionInfoView = new TransactionInfoDialog(this, position, id, em, inflater);
-		transactionInfoView.show(id);
+	protected void viewItem(View v, int position, long id) {
+        if (isSupportedApiLevel()) {
+            selectedId = id;
+            transactionActionGrid.show(v);
+        } else {
+            showTransactionInfo(id);
+        }
 	}
 
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-	 */
-	@Override
+    private void showTransactionInfo(long id) {
+        TransactionInfoDialog transactionInfoView = new TransactionInfoDialog(this, id, em, inflater);
+        transactionInfoView.show();
+    }
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
 		long accountId = blotterFilter.getAccountId();
@@ -380,9 +452,6 @@ public class BlotterActivity extends AbstractListActivity {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-	 */
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

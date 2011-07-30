@@ -7,12 +7,11 @@ import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.QifExport;
 import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.test.CurrencyBuilder;
-import ru.orangesoftware.financisto.test.TransactionBuilder;
-import ru.orangesoftware.financisto.test.TransferBuilder;
+import ru.orangesoftware.financisto.test.*;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Map;
 
 import static ru.orangesoftware.financisto.test.DateTime.date;
 
@@ -208,7 +207,9 @@ public class QIFExportTest extends AbstractDbTest {
     }
 
     public void test_should_export_transfers() throws Exception {
-        createTransfers();
+        Account a1 = createFirstAccount();
+        Account a2 = createSecondAccount();
+        TransferBuilder.withDb(db).fromAccount(a2).fromAmount(-2000).toAccount(a1).toAmount(2000).dateTime(date(2011, 2, 8)).create();
         assertEquals(
                 "!Account\n"+
                 "NMy Cash Account\n"+
@@ -231,10 +232,64 @@ public class QIFExportTest extends AbstractDbTest {
                 exportAsString());
     }
 
-    private void createTransfers() {
-        Account a1 = createFirstAccount();
-        Account a2 = createSecondAccount();
-        TransferBuilder.withDb(db).fromAccount(a2).fromAmount(-2000).toAccount(a1).toAmount(2000).dateTime(date(2011, 2, 8)).create();
+    public void ignore_test_should_export_splits() throws Exception {
+        a1 = createFirstAccount();
+        Map<String, Category> categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
+        TransactionBuilder.withDb(db).account(a1).amount(-260066).dateTime(DateTime.date(2011, 7, 12))
+                .category(CategoryBuilder.split(db))
+                .withSplit(categoriesMap.get("A1"), -110056, "Note on first split")
+                .withSplit(categoriesMap.get("A2"), -100000)
+                .withSplit(CategoryBuilder.noCategory(db), -50010, "Note on third split")
+                .create();
+        assertEquals(
+                "!Type:Cat\nNA\nE\n^\nNA:A1\nE\n^\nNA:A2\nE\n^\nNB\nE\n^\n"+ // this is not important
+                "!Account\n"+
+                "NMy Cash Account\n"+
+                "TCash\n"+
+                "^\n"+
+                "!Type:Cash\n"+
+                "D12/07/2011\n"+
+                "T-2,600.66\n"+
+                "SA:A1\n"+
+                "$-1,100.56\n"+
+                "ENote on first split\n"+
+                "SA:A2\n"+
+                "$-1,000.00\n"+
+                "S<NO_CATEGORY>\n"+
+                "$-500.10\n"+
+                "ENote on third split\n"+
+                "^\n",
+                exportAsString());
+    }
+
+    public void ignore_test_should_export_transfer_splits() throws Exception {
+        a1 = createFirstAccount();
+        a2 = createSecondAccount();
+        TransactionBuilder.withDb(db).account(a1).amount(-260066).dateTime(DateTime.date(2011, 7, 12))
+                .category(CategoryBuilder.split(db))
+                .withTransferSplit(a2, -110056, 50025)
+                .create();
+        assertEquals(
+                "!Account\n"+
+                "NMy Cash Account\n"+
+                "TCash\n"+
+                "^\n"+
+                "!Type:Cash\n"+
+                "D12/07/2011\n"+
+                "T-2,600.66\n"+
+                "S[My Bank Account]\n"+
+                "$-1,100.56\n"+
+                "^\n",
+                "!Account\n"+
+                "NMy Bank Account\n"+
+                "TBank\n"+
+                "^\n"+
+                "!Type:Bank\n"+
+                "D12/07/2011\n"+
+                "T500.25\n"+
+                "L[My Cash Account]\n"+
+                "^\n",
+                exportAsString());
     }
 
     public void test_should_export_categories() throws Exception {

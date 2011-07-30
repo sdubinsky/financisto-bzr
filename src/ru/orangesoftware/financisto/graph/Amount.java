@@ -14,10 +14,10 @@ import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
 
 
-public class Amount {	
+public class Amount implements Comparable<Amount> {
 	
 	public final Currency currency;
-	public long amount;
+	public final long amount;
 
 	public int amountTextWidth;
 	public int amountTextHeight;
@@ -30,9 +30,12 @@ public class Amount {
 	public String getAmountText() {
 		return Utils.amountToString(currency, amount, true);
 	}
-	
-	public void add(long amount) {
-		this.amount += amount;
-	}
+
+    @Override
+    public int compareTo(Amount that) {
+        long thisAmount = Math.abs(this.amount);
+        long thatAmount = Math.abs(that.amount);
+        return thisAmount == thatAmount ? 0 : (thisAmount > thatAmount ? -1 : 1);
+    }
 
 }

@@ -10,27 +10,19 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.MultiChoiceItem;
-import ru.orangesoftware.financisto.utils.Utils;
-import ru.orangesoftware.financisto.view.NodeInflater;
-import ru.orangesoftware.financisto.view.NodeInflater.Builder;
-import ru.orangesoftware.financisto.view.NodeInflater.CheckBoxBuilder;
-import ru.orangesoftware.financisto.view.NodeInflater.EditBuilder;
-import ru.orangesoftware.financisto.view.NodeInflater.ListBuilder;
-import ru.orangesoftware.financisto.view.NodeInflater.PictureBuilder;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TextView;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.MultiChoiceItem;
+import ru.orangesoftware.financisto.utils.Utils;
+import ru.orangesoftware.financisto.view.NodeInflater;
+import ru.orangesoftware.financisto.view.NodeInflater.*;
+
+import java.util.List;
 
 public class ActivityLayout {
 
@@ -145,6 +137,30 @@ public class ActivityLayout {
 		return (TextView)v.findViewById(R.id.data);
 	}
 
+    public TextView addListNodeCategory(LinearLayout layout) {
+        ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_category);
+        View v = b.withButtonId(R.id.category_add, listener).withId(R.id.category, listener).withLabel(R.string.category).withData(R.string.select_category).create();
+        ImageView transferImageView = (ImageView)v.findViewById(R.id.split);
+        transferImageView.setId(R.id.category_split);
+        transferImageView.setOnClickListener(listener);
+        return (TextView)v.findViewById(R.id.data);
+    }
+
+    public View addNodeUnsplit(LinearLayout layout) {
+        ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_unsplit);
+        View v = b.withButtonId(R.id.add_split, listener).withId(R.id.unsplit_action, listener).withLabel(R.string.unsplit_amount).withData("0").create();
+        ImageView transferImageView = (ImageView)v.findViewById(R.id.transfer);
+        transferImageView.setId(R.id.add_split_transfer);
+        transferImageView.setImageResource(R.drawable.ic_btn_round_transfer);
+        transferImageView.setOnClickListener(listener);
+        return v;
+    }
+
+    public View addNodeMinus(LinearLayout layout, int id, int minusId, int labelId, String defaultValue) {
+        ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);
+        return b.withButtonId(minusId, listener).withoutMoreButton().withId(id, listener).withLabel(labelId).withData(defaultValue).create();
+    }
+
 	public TextView addListNodeMinus(LinearLayout layout, int id, int minusId, int labelId, int defaultValueResId) {
 		ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);
 		View v = b.withButtonId(minusId, listener).withId(id, listener).withLabel(labelId).withData(defaultValueResId).create();
@@ -177,7 +193,7 @@ public class ActivityLayout {
 		.show();
 	}
 	
-	public void selectMultiChoice(Context context, final int id, int titleId, final ArrayList<? extends MultiChoiceItem> items) {
+	public void selectMultiChoice(Context context, final int id, int titleId, final List<? extends MultiChoiceItem> items) {
 		int count = items.size();
 		String[] titles = new String[count];
 		boolean[] checked = new boolean[count];

@@ -81,9 +81,9 @@ public class CategoryActivity extends AbstractActivity {
 				attributeCursor, new String[]{AttributeColumns.NAME}, new int[]{android.R.id.text1});
 		
 		if (category.id == -1) {
-			categoryCursor = db.getAllCategories(true);
+			categoryCursor = db.getCategories(true);
 		} else {
-			categoryCursor = db.getAllCategoriesWithoutSubtree(category.id);
+			categoryCursor = db.getCategoriesWithoutSubtree(category.id);
 		}
 		startManagingCursor(categoryCursor);
 		//DatabaseUtils.dumpCursor(categoryCursor);

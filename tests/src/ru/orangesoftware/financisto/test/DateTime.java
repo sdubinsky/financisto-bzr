@@ -18,6 +18,12 @@ public class DateTime {
         return new DateTime();
     }
 
+    public static DateTime yesterday() {
+        DateTime dt = new DateTime();
+        dt.c.add(Calendar.DAY_OF_YEAR, -1);
+        return dt;
+    }
+
     public static DateTime date(int year, int month, int day) {
         DateTime dt = new DateTime();
         dt.c.set(Calendar.YEAR, year);

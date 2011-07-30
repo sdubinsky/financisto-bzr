@@ -10,35 +10,35 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
-import java.util.ArrayList;
-
-import ru.orangesoftware.financisto.graph.Amount;
-import ru.orangesoftware.financisto.graph.GraphUnit;
-import ru.orangesoftware.financisto.graph.GraphWidget;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import ru.orangesoftware.financisto.graph.Amount;
+import ru.orangesoftware.financisto.graph.GraphUnit;
+import ru.orangesoftware.financisto.graph.GraphWidget;
+
+import java.util.List;
 
 public class ReportAdapter extends BaseAdapter {
 		
 	private final Context context; 
-	private final ArrayList<GraphUnit> units;
+	private final List<GraphUnit> units;
 
 	private long maxAmount = 0;
 	private long maxAmountWidth = 0;
 	
-	public ReportAdapter(Context context, ArrayList<GraphUnit> units) {
+	public ReportAdapter(Context context, List<GraphUnit> units) {
 		this.context = context;
 		this.units = units;
 		Rect rect = new Rect();
 		for (GraphUnit u : units) {
-			for (Amount a : u.amounts.values()) {
+			for (Amount a : u) {
 				String amountText = a.getAmountText();
 				u.style.amountPaint.getTextBounds(amountText, 0, amountText.length(), rect);
-				a.amountTextWidth = (int)rect.width();
-				a.amountTextHeight = (int)rect.height();
+				a.amountTextWidth = rect.width();
+				a.amountTextHeight = rect.height();
 				maxAmount = Math.max(maxAmount, Math.abs(a.amount));
 				maxAmountWidth = Math.max(maxAmountWidth, a.amountTextWidth);			
 			}			

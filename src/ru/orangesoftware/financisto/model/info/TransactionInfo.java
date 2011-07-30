@@ -113,6 +113,10 @@ public class TransactionInfo {
 		return toAccount != null;
 	}
 
+    public boolean isSplit() {
+        return category.isSplit();
+    }
+
 	public Class<? extends Activity> getActivity() {
 		return isTransfer() ? TransferActivity.class : TransactionActivity.class;
 	}

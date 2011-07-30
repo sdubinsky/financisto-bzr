@@ -10,14 +10,14 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.recur;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.content.Context;
+import android.text.InputType;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.ActivityLayout;
 import ru.orangesoftware.financisto.activity.ActivityLayoutListener;
@@ -28,18 +28,9 @@ import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.LocalizableEnum;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.view.NodeInflater;
-import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
-import android.content.Context;
-import android.text.InputType;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+
+import java.text.ParseException;
+import java.util.*;
 
 public class RecurrenceViewFactory {
 
@@ -130,7 +121,7 @@ public class RecurrenceViewFactory {
 		protected abstract void stateFromMap(HashMap<String, String> state);
 		
 		@Override
-		public void onSelected(int id, ArrayList<? extends MultiChoiceItem> items) {
+		public void onSelected(int id, List<? extends MultiChoiceItem> items) {
 		}
 
 		@Override
@@ -365,7 +356,7 @@ public class RecurrenceViewFactory {
 		}
 		
 		@Override
-		public void onSelected(int id, ArrayList<? extends MultiChoiceItem> items) {
+		public void onSelected(int id, List<? extends MultiChoiceItem> items) {
 			if (id == R.id.recurrence_pattern) {
 				days.clear();
 				for (MultiChoiceItem i : items) {

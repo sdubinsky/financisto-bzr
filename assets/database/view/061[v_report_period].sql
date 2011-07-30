@@ -6,5 +6,5 @@ select
        t.from_amount as amount,
        t.datetime as datetime,
        t.is_transfer as is_transfer
-from v_blotter_for_currency t;
+from v_blotter_for_account t;
 	

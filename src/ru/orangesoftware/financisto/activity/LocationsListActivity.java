@@ -12,6 +12,7 @@ package ru.orangesoftware.financisto.activity;
 
 import java.util.List;
 
+import android.view.View;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.LocationListAdapter;
 import ru.orangesoftware.financisto.model.MyLocation;
@@ -46,8 +47,7 @@ public class LocationsListActivity extends AbstractListActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		//DatabaseUtils.dumpCursor(cursor);
-		return new LocationListAdapter(db, this, cursor);	
+		return new LocationListAdapter(db, this, cursor);
 	}
 
 	@Override
@@ -80,13 +80,13 @@ public class LocationsListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	protected void deleteItem(int position, long id) {
+	protected void deleteItem(View v, int position, long id) {
 		em.deleteLocation(id);
 		cursor.requery();
 	}
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 		Intent intent = new Intent(this, LocationActivity.class);
 		intent.putExtra(LocationActivity.LOCATION_ID_EXTRA, id);
 		startActivityForResult(intent, EDIT_LOCATION_REQUEST);
@@ -98,17 +98,9 @@ public class LocationsListActivity extends AbstractListActivity {
 	}
 
 	@Override
-	protected void viewItem(int position, long id) {
-		editItem(position, id);
-//		try { 
-//			cursor.moveToPosition(position);
-//			MyLocation location = EntityManager.loadFromCursor(cursor, MyLocation.class);
-//			Intent myIntent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:"
-//					+Location.convert(location.latitude, Location.FORMAT_DEGREES)+","
-//					+Location.convert(location.longitude, Location.FORMAT_DEGREES))); 
-//		    startActivity(myIntent); 
-//		} catch (Exception e) { }
-	}	
+	protected void viewItem(View v, int position, long id) {
+		editItem(v, position, id);
+	}
 
     private void startGeocode(MyLocation location) {
         new GeocoderTask(location).execute(location.latitude, location.longitude);
@@ -150,13 +142,11 @@ public class LocationsListActivity extends AbstractListActivity {
 				t.show();
 				location.resolvedAddress = found;
 				em.saveLocation(location);
-				requeryCursor();
-        		//locationText.setText(found.name);            		
+				recreateCursor();
             } else if (geocoder.lastException != null) {
 				Toast t = Toast.makeText(LocationsListActivity.this, R.string.service_is_not_available, Toast.LENGTH_LONG);
 				t.show();            	
             }
-            //setActionEnabled(true);
             Log.d("Geocoder", "About to exit from onPostExecute");
         }
     }

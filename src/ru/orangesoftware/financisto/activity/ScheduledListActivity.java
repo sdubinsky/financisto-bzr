@@ -51,14 +51,14 @@ public class ScheduledListActivity extends BlotterActivity {
 		return new ScheduledListAdapter(this, transactions);
 	}
 
-	@Override
-	public void requeryCursor() {
-		long now = System.currentTimeMillis();
-		ArrayList<TransactionInfo> transactions = scheduler.scheduleAll(this, now);
-		updateAdapter(transactions);
-	}
+    @Override
+    public void recreateCursor() {
+        long now = System.currentTimeMillis();
+        ArrayList<TransactionInfo> transactions = scheduler.scheduleAll(this, now);
+        updateAdapter(transactions);
+    }
 
-	private void updateAdapter(ArrayList<TransactionInfo> transactions) {
+    private void updateAdapter(ArrayList<TransactionInfo> transactions) {
 		((ScheduledListAdapter)adapter).setTransactions(transactions);
 	}
 	
@@ -85,7 +85,7 @@ public class ScheduledListActivity extends BlotterActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
-			requeryCursor();
+			recreateCursor();
 		}
 	}
 

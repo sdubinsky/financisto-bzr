@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Public License v2.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
+ *
  * Contributors:
  *     Denis Solonenko - initial API and implementation
  ******************************************************************************/
@@ -20,7 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.activity.AbstractListActivity;
+import ru.orangesoftware.financisto.activity.BlotterActivity;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
@@ -35,79 +35,112 @@ import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 public class TransactionInfoDialog {
 
-	private final AbstractListActivity parentActivity;
-	private final int position;
-	private final long id;
-	private final MyEntityManager em;
-	private final NodeInflater inflater;
-	private final LayoutInflater layoutInflater;	
-	
-	public TransactionInfoDialog(AbstractListActivity parentActivity, int position, long id, 
-			MyEntityManager em, NodeInflater inflater) {
-		this.parentActivity = parentActivity;
-		this.position = position;
-		this.id = id;
-		this.em = em;
-		this.inflater = inflater;
-		this.layoutInflater = (LayoutInflater)parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
+    private final BlotterActivity parentActivity;
+    private final long transactionId;
+    private final MyEntityManager em;
+    private final NodeInflater inflater;
+    private final LayoutInflater layoutInflater;
+    private final int splitPadding;
+    private final Utils u;
 
-	public void show(long transactionId) {
-		final AbstractListActivity parentActivity = this.parentActivity;
-		View v = layoutInflater.inflate(R.layout.transaction_info, null);
-		LinearLayout layout = (LinearLayout)v.findViewById(R.id.list);
-		TransactionInfo ti = em.getTransactionInfo(transactionId);
-		if (ti == null) {
-			Toast t = Toast.makeText(parentActivity, R.string.no_transaction_found, Toast.LENGTH_LONG);
-			t.show();
-			return;
-		}
+    public TransactionInfoDialog(BlotterActivity parentActivity, long transactionId,
+                                 MyEntityManager em, NodeInflater inflater) {
+        this.parentActivity = parentActivity;
+        this.transactionId = transactionId;
+        this.em = em;
+        this.inflater = inflater;
+        this.layoutInflater = (LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.splitPadding = parentActivity.getResources().getDimensionPixelSize(R.dimen.transaction_icon_padding);
+        this.u = new Utils(parentActivity);
+    }
 
-        TransactionStatus status = TransactionStatus.valueOf(ti.status);
-        View titleView = layoutInflater.inflate(R.layout.transaction_info_title, null);
-        TextView titleLabel = (TextView)titleView.findViewById(R.id.label);
-        TextView titleData = (TextView)titleView.findViewById(R.id.data);
-        ImageView titleIcon = (ImageView)titleView.findViewById(R.id.icon);
-		if (ti.isTemplate()) {
-            titleLabel.setText(ti.templateName);
-		} else {
-			if (ti.isSchedule() && ti.recurrence != null) {
-				Recurrence r = Recurrence.parse(ti.recurrence);
-                titleLabel.setText(r.toInfoString(parentActivity));
-			} else {
-                int titleId = ti.toAccount == null ? R.string.transaction : R.string.transfer;
-                titleLabel.setText(titleId);
-				add(layout, R.string.date, DateUtils.formatDateTime(parentActivity, ti.dateTime,
-						DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_SHOW_YEAR),
-						ti.attachedPicture);				
-			}
-		}
-        titleData.setText(parentActivity.getString(status.titleId));
-        titleIcon.setImageResource(status.iconId);
-		if (ti.toAccount == null) {
-			AccountType formAccountType = AccountType.valueOf(ti.fromAccount.type);
-			add(layout, R.string.account, ti.fromAccount.title, formAccountType);
-            if (ti.payee != null) {
-                add(layout, R.string.payee, ti.payee.title);
+    public void show() {
+        TransactionInfo ti = em.getTransactionInfo(transactionId);
+        if (ti == null) {
+            Toast t = Toast.makeText(parentActivity, R.string.no_transaction_found, Toast.LENGTH_LONG);
+            t.show();
+            return;
+        }
+        View v = layoutInflater.inflate(R.layout.transaction_info, null);
+        LinearLayout layout = (LinearLayout) v.findViewById(R.id.list);
+
+        View titleView = createTitleView(ti, layout);
+        createMainInfoNodes(ti, layout);
+        createAdditionalInfoNodes(ti, layout);
+
+        showDialog(v, titleView);
+    }
+
+    private void createMainInfoNodes(TransactionInfo ti, LinearLayout layout) {
+        if (ti.toAccount == null) {
+            createLayoutForTransaction(ti, layout);
+        } else {
+            createLayoutForTransfer(ti, layout);
+        }
+    }
+
+    private void createLayoutForTransaction(TransactionInfo ti, LinearLayout layout) {
+        Account fromAccount = ti.fromAccount;
+        AccountType formAccountType = AccountType.valueOf(ti.fromAccount.type);
+        add(layout, R.string.account, ti.fromAccount.title, formAccountType);
+        if (ti.payee != null) {
+            add(layout, R.string.payee, ti.payee.title);
+        }
+        add(layout, R.string.category, ti.category.title);
+        TextView amount = add(layout, R.string.amount, "");
+        u.setAmountText(amount, ti.fromAccount.currency, ti.fromAmount, true);
+        if (ti.category.isSplit()) {
+            List<Transaction> splits = em.getSplitsForTransaction(ti.id);
+            for (Transaction split : splits) {
+                addSplitInfo(layout, fromAccount, split);
             }
-            add(layout, R.string.category, ti.category.title);
-			add(layout, R.string.amount, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
-		} else {
-			AccountType fromAccountType = AccountType.valueOf(ti.fromAccount.type);
-			add(layout, R.string.account_from, ti.fromAccount.title, fromAccountType);
-			add(layout, R.string.amount_from, Utils.amountToString(ti.fromAccount.currency, ti.fromAmount));
-			AccountType toAccountType = AccountType.valueOf(ti.toAccount.type);
-			add(layout, R.string.account_to, ti.toAccount.title, toAccountType);
-			add(layout, R.string.amount_to, Utils.amountToString(ti.toAccount.currency, ti.toAmount));
-            add(layout, R.string.category, ti.category.title);
-		}
-		List<TransactionAttributeInfo> attributes = em.getAttributesForTransaction(transactionId);
-		for (TransactionAttributeInfo tai : attributes) {
+        }
+    }
+
+    private void addSplitInfo(LinearLayout layout, Account fromAccount, Transaction split) {
+        if (split.isTransfer()) {
+            Account toAccount = em.getAccount(split.toAccountId);
+            String title = u.getTransferTitleText(fromAccount, toAccount);
+            LinearLayout topLayout = add(layout, title, "");
+            TextView amountView = (TextView)topLayout.findViewById(R.id.data);
+            u.setTransferAmountText(amountView, fromAccount.currency, split.fromAmount, toAccount.currency, split.toAmount);
+            topLayout.setPadding(splitPadding, 0, 0, 0);
+        } else {
+            Category c = em.getCategory(split.categoryId);
+            StringBuilder sb = new StringBuilder();
+            if (c != null && c.id > 0) {
+                sb.append(c.title);
+            }
+            if (isNotEmpty(split.note)) {
+                sb.append(" (").append(split.note).append(")");
+            }
+            LinearLayout topLayout = add(layout, sb.toString(), "");
+            TextView amountView = (TextView)topLayout.findViewById(R.id.data);
+            u.setAmountText(amountView, fromAccount.currency, split.fromAmount, true);
+            topLayout.setPadding(splitPadding, 0, 0, 0);
+        }
+    }
+
+    private void createLayoutForTransfer(TransactionInfo ti, LinearLayout layout) {
+        AccountType fromAccountType = AccountType.valueOf(ti.fromAccount.type);
+        add(layout, R.string.account_from, ti.fromAccount.title, fromAccountType);
+        TextView amountView = add(layout, R.string.amount_from, "");
+        u.setAmountText(amountView, ti.fromAccount.currency, ti.fromAmount, true);
+        AccountType toAccountType = AccountType.valueOf(ti.toAccount.type);
+        add(layout, R.string.account_to, ti.toAccount.title, toAccountType);
+        amountView = add(layout, R.string.amount_to, "");
+        u.setAmountText(amountView, ti.toAccount.currency, ti.toAmount, true);
+        add(layout, R.string.category, ti.category.title);
+    }
+
+    private void createAdditionalInfoNodes(TransactionInfo ti, LinearLayout layout) {
+        List<TransactionAttributeInfo> attributes = em.getAttributesForTransaction(ti.id);
+        for (TransactionAttributeInfo tai : attributes) {
             String value = tai.getValue(parentActivity);
             if (isNotEmpty(value)) {
-			    add(layout, tai.name, value);
+                add(layout, tai.name, value);
             }
-		}
+        }
 
         Project project = ti.project;
         if (project != null && project.id > 0) {
@@ -121,62 +154,92 @@ public class TransactionInfoDialog {
         MyLocation location = ti.location;
         String locationName;
         if (location != null && location.id > 0) {
-            locationName = location.name+(location.resolvedAddress != null ? " ("+location.resolvedAddress+")" : "");
+            locationName = location.name + (location.resolvedAddress != null ? " (" + location.resolvedAddress + ")" : "");
             add(layout, R.string.location, locationName);
         }
+    }
 
-		final Dialog d = new AlertDialog.Builder(parentActivity)
-			.setCustomTitle(titleView)
-			.setView(v)
-			.create();
-		d.setCanceledOnTouchOutside(true);
+    private View createTitleView(TransactionInfo ti, LinearLayout layout) {
+        View titleView = layoutInflater.inflate(R.layout.transaction_info_title, null);
+        TextView titleLabel = (TextView) titleView.findViewById(R.id.label);
+        TextView titleData = (TextView) titleView.findViewById(R.id.data);
+        ImageView titleIcon = (ImageView) titleView.findViewById(R.id.icon);
+        if (ti.isTemplate()) {
+            titleLabel.setText(ti.templateName);
+        } else {
+            if (ti.isSchedule() && ti.recurrence != null) {
+                Recurrence r = Recurrence.parse(ti.recurrence);
+                titleLabel.setText(r.toInfoString(parentActivity));
+            } else {
+                int titleId = ti.isSplit()
+                        ? R.string.split
+                        : (ti.toAccount == null ? R.string.transaction : R.string.transfer);
+                titleLabel.setText(titleId);
+                add(layout, R.string.date, DateUtils.formatDateTime(parentActivity, ti.dateTime,
+                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_YEAR),
+                        ti.attachedPicture);
+            }
+        }
+        TransactionStatus status = TransactionStatus.valueOf(ti.status);
+        titleData.setText(parentActivity.getString(status.titleId));
+        titleIcon.setImageResource(status.iconId);
+        return titleView;
+    }
 
-		Button bEdit = (Button)v.findViewById(R.id.bEdit);
-		bEdit.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				d.dismiss();
-				parentActivity.editItem(position, id);
-			}
-		});
-		
-		Button bClose = (Button)v.findViewById(R.id.bClose);
-		bClose.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				d.dismiss();
-			}
-		});
+    private void showDialog(final View v, View titleView) {
+        final Dialog d = new AlertDialog.Builder(parentActivity)
+                .setCustomTitle(titleView)
+                .setView(v)
+                .create();
+        d.setCanceledOnTouchOutside(true);
 
-		d.show();
-	}
+        Button bEdit = (Button) v.findViewById(R.id.bEdit);
+        bEdit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                d.dismiss();
+                parentActivity.editTransaction(transactionId, false);
+            }
+        });
 
-	private void add(LinearLayout layout, int labelId, String data, AccountType accountType) {
-		inflater.new Builder(layout, R.layout.select_entry_simple_icon)
-			.withIcon(accountType.iconId).withLabel(labelId).withData(data).create();
-	}
+        Button bClose = (Button) v.findViewById(R.id.bClose);
+        bClose.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                d.dismiss();
+            }
+        });
 
-	private void add(LinearLayout layout, int labelId, String data) {
-		inflater.new Builder(layout, R.layout.select_entry_simple).withLabel(labelId)
-			.withData(data).create();
-	}
+        d.show();
+    }
 
-	private void add(LinearLayout layout, int labelId, String data, String pictureFileName) {
-		Bitmap thumb = ThumbnailUtil.loadThumbnail(pictureFileName);
-		View v = inflater.new PictureBuilder(layout)
-			.withPicture(parentActivity, thumb)
-			.withLabel(labelId)
-			.withData(data).create();
-		v.setClickable(false);
-		v.setFocusable(false);
-		v.setFocusableInTouchMode(false);
-		ImageView pictureView = (ImageView)v.findViewById(R.id.picture);
-		pictureView.setTag(pictureFileName);
-	}
+    private void add(LinearLayout layout, int labelId, String data, AccountType accountType) {
+        inflater.new Builder(layout, R.layout.select_entry_simple_icon)
+                .withIcon(accountType.iconId).withLabel(labelId).withData(data).create();
+    }
 
-	private void add(LinearLayout layout, String label, String data) {
-		inflater.new Builder(layout, R.layout.select_entry_simple).withLabel(label)
-			.withData(data).create();
-	}
+    private TextView add(LinearLayout layout, int labelId, String data) {
+        View v = inflater.new Builder(layout, R.layout.select_entry_simple).withLabel(labelId)
+                .withData(data).create();
+        return (TextView)v.findViewById(R.id.data);
+    }
+
+    private void add(LinearLayout layout, int labelId, String data, String pictureFileName) {
+        Bitmap thumb = ThumbnailUtil.loadThumbnail(pictureFileName);
+        View v = inflater.new PictureBuilder(layout)
+                .withPicture(parentActivity, thumb)
+                .withLabel(labelId)
+                .withData(data).create();
+        v.setClickable(false);
+        v.setFocusable(false);
+        v.setFocusableInTouchMode(false);
+        ImageView pictureView = (ImageView) v.findViewById(R.id.picture);
+        pictureView.setTag(pictureFileName);
+    }
+
+    private LinearLayout add(LinearLayout layout, String label, String data) {
+        return (LinearLayout) inflater.new Builder(layout, R.layout.select_entry_simple).withLabel(label)
+                .withData(data).create();
+    }
 
 }

@@ -111,12 +111,12 @@ public class SelectTemplateActivity extends TemplatesListActivity {
 	}
 
 	@Override
-	protected void viewItem(int position, long id) {
+	protected void viewItem(View v, int position, long id) {
 		returnResult(id, false);
 	}
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 	}
 
 	@Override

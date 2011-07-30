@@ -64,5 +64,11 @@
 	<item type="id" name="attach_picture"/>	
 	<item type="id" name="delete_picture"/>	
 	<item type="id" name="negative_opening_amount"/>
-	<item type="id" name="is_ccard_payment"/>		
+	<item type="id" name="is_ccard_payment"/>
+    <item type="id" name="add_split"/>
+    <item type="id" name="edit_aplit"/>
+    <item type="id" name="delete_split"/>
+    <item type="id" name="add_split_transfer"/>
+    <item type="id" name="unsplit_action"/>
+    <item type="id" name="category_split"/>
 </resources>

@@ -47,9 +47,7 @@ public class MyEntityManager extends EntityManager {
 	
 	private <T extends MyEntity> ArrayList<T> getAllEntitiesList(Class<T> clazz, boolean include0) {
 		Query<T> q = createQuery(clazz);
-		if (!include0) {
-			q.where(Expressions.neq("id", 0));
-		}
+        q.where(include0 ? Expressions.gte("id", 0) : Expressions.gt("id", 0));
 		q.asc("title");
 		Cursor c = q.execute();
 		try {
@@ -339,7 +337,7 @@ public class MyEntityManager extends EntityManager {
 //		return q.list();
 //	}
 
-	public long saveOrUpdate(Budget budget) {
+	public long insertBudget(Budget budget) {
 		db.beginTransaction();
 		try {
 			if (budget.id > 0) {
@@ -450,4 +448,11 @@ public class MyEntityManager extends EntityManager {
         q.where(Expressions.like("title", "%"+constraint+"%"));
         return q.asc("title").execute();
     }
+
+    public List<Transaction> getSplitsForTransaction(long transactionId) {
+        Query<Transaction> q = createQuery(Transaction.class);
+        q.where(Expressions.eq("parentId", transactionId));
+        return q.list();
+    }
+
 }

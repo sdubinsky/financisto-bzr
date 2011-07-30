@@ -52,7 +52,7 @@ public class GraphWidget extends View {
 		String name = u.name;
 		canvas.drawText(name, x, y+style.nameHeight, style.namePaint);
 		y += style.nameHeight+style.textDy;
-		for (Amount a : u.amounts.values()) {
+		for (Amount a : u) {
 			long amount = a.amount;
 			int lineWidth = Math.max(1, (int)(1.0*Math.abs(amount)/maxAmount*(w-style.textDy-maxAmountWidth)));
 			style.linePaint.setColor(amount == 0 ? zeroLineColor : (amount > 0 ? positiveLineColor : negativeLineColor));
@@ -72,7 +72,7 @@ public class GraphWidget extends View {
 		int specWidth = MeasureSpec.getSize(widthMeasureSpec);
 		int h = 0;
 		h += style.nameHeight + style.textDy;
-		h += (style.lineHeight+style.dy)*unit.amounts.size();
+		h += (style.lineHeight+style.dy)*unit.size();
 		setMeasuredDimension(specWidth, getPaddingTop()+h+getPaddingBottom());
 	}
 

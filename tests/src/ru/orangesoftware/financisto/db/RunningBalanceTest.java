@@ -10,17 +10,19 @@ package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
 import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.test.AccountBuilder;
-import ru.orangesoftware.financisto.test.DateTime;
-import ru.orangesoftware.financisto.test.TransactionBuilder;
-import ru.orangesoftware.financisto.test.TransferBuilder;
+import ru.orangesoftware.financisto.test.*;
+
+import java.util.List;
+import java.util.Map;
 
 public class RunningBalanceTest extends AbstractDbTest {
 
     Account a1;
     Account a2;
     Account a3;
+    Map<String, Category> categoriesMap;
 
     @Override
     public void setUp() throws Exception {
@@ -28,6 +30,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         a1 = AccountBuilder.createDefault(db);
         a2 = AccountBuilder.createDefault(db);
         a3 = AccountBuilder.createDefault(db);
+        categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
     }
 
     public void test_should_update_running_balance_for_single_account() {
@@ -37,6 +40,31 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t1, a1, 1000);
         assertAccountBalanceForTransaction(t2, a1, 2234);
         assertFinalBalanceForAccount(a1, 2234);
+    }
+
+    public void test_should_not_duplicate_running_balance_with_splits() {
+        // add new transaction before split
+        Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(2000).create();
+        db.rebuildRunningBalanceForAccount(a1);
+        // insert new split
+        Transaction t2 = TransactionBuilder.withDb(db).account(a1).amount(1000)
+                .withSplit(categoriesMap.get("A"), 600)
+                .withSplit(categoriesMap.get("B"), 400).create();
+        assertAccountBalanceForTransaction(t1, a1, 2000);
+        assertAccountBalanceForTransaction(t2, a1, 3000);
+        assertFinalBalanceForAccount(a1, 3000);
+        // add new transaction after split
+        Transaction t3 = TransactionBuilder.withDb(db).account(a1).amount(-1500).create();
+        assertAccountBalanceForTransaction(t1, a1, 2000);
+        assertAccountBalanceForTransaction(t2, a1, 3000);
+        assertAccountBalanceForTransaction(t3, a1, 1500);
+        assertFinalBalanceForAccount(a1, 1500);
+        // rebuild balance
+        db.rebuildRunningBalance();
+        assertAccountBalanceForTransaction(t1, a1, 2000);
+        assertAccountBalanceForTransaction(t2, a1, 3000);
+        assertAccountBalanceForTransaction(t3, a1, 1500);
+        assertFinalBalanceForAccount(a1, 1500);
     }
 
     public void test_should_update_running_balance_for_two_accounts() {
@@ -50,6 +78,107 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t3, a2, 2500);
         assertFinalBalanceForAccount(a1, 500);
         assertFinalBalanceForAccount(a2, 2500);
+    }
+
+    public void test_should_update_running_balance_for_two_accounts_with_transfer_split() {
+        Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
+        Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();
+        db.rebuildRunningBalance();
+        Transaction t3 = TransactionBuilder.withDb(db).account(a1).amount(-100)
+                .withTransferSplit(a2, -100, 50).create();
+        assertAccountBalanceForTransaction(t1, a1, 1000);
+        assertAccountBalanceForTransaction(t2, a2, 2000);
+        assertAccountBalanceForTransaction(t3, a1, 900);
+        List<Transaction> splits = em.getSplitsForTransaction(t3.id);
+        assertEquals(1, splits.size());
+        // running balance is attach to the split, not to the parent transaction!
+        assertAccountBalanceForTransaction(splits.get(0), a2, 2050);
+        assertFinalBalanceForAccount(a1, 900);
+        assertFinalBalanceForAccount(a2, 2050);
+        db.rebuildRunningBalance();
+        assertFinalBalanceForAccount(a1, 900);
+        assertFinalBalanceForAccount(a2, 2050);
+    }
+
+    public void test_should_update_running_balance_for_two_accounts_with_transfer_split_with_multiple_transfers() {
+        TransactionBuilder.withDb(db).account(a1).amount(2000).create();
+        TransactionBuilder.withDb(db).account(a2).amount(3000).create();
+        TransactionBuilder.withDb(db).account(a3).amount(4000).create();
+        db.rebuildRunningBalance();
+        Transaction t4 = TransactionBuilder.withDb(db).account(a1).amount(-1000)
+                .withTransferSplit(a2, -100, 50)
+                .withTransferSplit(a2, -200, 60)
+                .withTransferSplit(a2, -300, 70)
+                .withTransferSplit(a3, -100, 80)
+                .withTransferSplit(a3, -300, 90)
+                .create();
+        assertFinalBalanceForAccount(a1, 1000);
+        assertFinalBalanceForAccount(a2, 3180);
+        assertFinalBalanceForAccount(a3, 4170);
+        List<Transaction> splits = em.getSplitsForTransaction(t4.id);
+        assertEquals(5, splits.size());
+        assertAccountBalanceForTransaction(splits.get(0), a2, 3050);
+        assertAccountBalanceForTransaction(splits.get(1), a2, 3110);
+        assertAccountBalanceForTransaction(splits.get(2), a2, 3180);
+        assertAccountBalanceForTransaction(splits.get(3), a3, 4080);
+        assertAccountBalanceForTransaction(splits.get(4), a3, 4170);
+        db.rebuildRunningBalance();
+        assertFinalBalanceForAccount(a1, 1000);
+        assertFinalBalanceForAccount(a2, 3180);
+        assertFinalBalanceForAccount(a3, 4170);
+        db.deleteTransaction(t4.id);
+        assertFinalBalanceForAccount(a1, 2000);
+        assertFinalBalanceForAccount(a2, 3000);
+        assertFinalBalanceForAccount(a3, 4000);
+    }
+
+    public void test_should_update_running_balance_for_two_accounts_when_updating_transfer_split() {
+        Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
+        Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();
+        Transaction t3 = TransactionBuilder.withDb(db).account(a1).amount(-100)
+                .withTransferSplit(a2, -100, 50).create();
+        Transaction t4 = TransactionBuilder.withDb(db).account(a1).amount(-100).create();
+        Transaction t5 = TransactionBuilder.withDb(db).account(a2).amount(-100).create();
+        db.rebuildRunningBalance();
+        assertFinalBalanceForAccount(a1, 800);
+        assertFinalBalanceForAccount(a2, 1950);
+        // update split -100 -> +50 >>> -200 -> +100
+        List<Transaction> splits = em.getSplitsForTransaction(t3.id);
+        t3.fromAmount = -200;
+        splits.get(0).fromAmount = -200;
+        splits.get(0).toAmount = 100;
+        t3.splits = splits;
+        db.insertOrUpdate(t3);
+        assertAccountBalanceForTransaction(t1, a1, 1000);
+        assertAccountBalanceForTransaction(t2, a2, 2000);
+        assertAccountBalanceForTransaction(t3, a1, 800);
+        assertAccountBalanceForTransaction(t4, a1, 700);
+        assertAccountBalanceForTransaction(t5, a2, 2000);
+        assertFinalBalanceForAccount(a1, 700);
+        assertFinalBalanceForAccount(a2, 2000);
+        db.rebuildRunningBalance();
+        assertFinalBalanceForAccount(a1, 700);
+        assertFinalBalanceForAccount(a2, 2000);
+    }
+
+    public void test_should_update_running_balance_when_deleting_transfer_split() {
+        Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
+        Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();
+        db.rebuildRunningBalance();
+        assertFinalBalanceForAccount(a1, 1000);
+        assertFinalBalanceForAccount(a2, 2000);
+        Transaction t3 = TransactionBuilder.withDb(db).account(a1).amount(-200)
+                .withTransferSplit(a2, -200, 100).create();
+        assertFinalBalanceForAccount(a1, 800);
+        assertFinalBalanceForAccount(a2, 2100);
+        db.deleteTransaction(t3.id);
+        assertFinalBalanceForAccount(a1, 1000);
+        assertFinalBalanceForAccount(a2, 2000);
+        db.rebuildRunningBalance();
+        assertFinalBalanceForAccount(a1, 1000);
+        assertFinalBalanceForAccount(a2, 2000);
+        assertAccountBalanceForTransaction(t1, a1, 1000);
+        assertAccountBalanceForTransaction(t2, a2, 2000);
     }
 
     public void test_should_update_running_balance_when_inserting_new_transaction() {
@@ -300,6 +429,22 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t14, a2, 1000);
         assertAccountBalanceForTransaction(t22, a2, 900);
         assertFinalBalanceForAccount(a2, 900);
+        // A1  | time  | amount | balance
+        // t11 | 11:00 | +1000  | +1000
+        // t12 | 11:05 | -500   | +500
+        // t13 | 12:00 | -250   | +250
+        // t14 | 12:30 | -100   | +150 -> A2
+        // t15 | 13:30 | -50    | +100 -> A2 (rate=0.4)
+        // A2  | time  | amount | balance
+        // t21 | 11:00 | +900   | +900
+        // t14 | 12:30 | +100   | +1000 <- A1
+        // t22 | 13:00 | -100   | +900
+        // t15 | 13:30 | +20    | +920 <- A1
+        Transaction t15 = TransferBuilder.withDb(db).fromAccount(a1).fromAmount(-50).toAccount(a2).toAmount(20).dateTime(DateTime.today().at(13,30,0,0)).create();
+        assertAccountBalanceForTransaction(t15, a1, 100);
+        assertFinalBalanceForAccount(a1, 100);
+        assertAccountBalanceForTransaction(t15, a2, 920);
+        assertFinalBalanceForAccount(a2, 920);
     }
 
     public void test_should_update_running_balance_when_updating_amount_on_existing_transfer() {
@@ -446,7 +591,7 @@ public class RunningBalanceTest extends AbstractDbTest {
     }
 
     private void assertFinalBalanceForAccount(Account a, long expectedBalance) {
-        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? order by datetime desc limit 1",
+        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(a.id)});
         try {
             if (c.moveToFirst()) {

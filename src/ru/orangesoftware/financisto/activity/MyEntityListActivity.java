@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.EntityListAdapter;
@@ -61,37 +62,37 @@ public abstract class MyEntityListActivity<T extends MyEntity> extends AbstractL
 		return null;
 	}
 	
-	@Override
-	public void requeryCursor() {
-		entities = loadEntities();
+    @Override
+    public void recreateCursor() {
+        entities = loadEntities();
         @SuppressWarnings("unchecked")
         EntityListAdapter<T> a = (EntityListAdapter<T>)adapter;
         a.setEntities(entities);
-	}
+    }
 
-	@Override
+    @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
-			requeryCursor();
+			recreateCursor();
 		}
 	}
 
 	@Override
-	protected void deleteItem(int position, final long id) {
+	protected void deleteItem(View v, int position, final long id) {
         em.delete(clazz, id);
-		requeryCursor();
+		recreateCursor();
 	}
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 		Intent intent = new Intent(MyEntityListActivity.this, getEditActivityClass());
 		intent.putExtra(MyEntityActivity.ENTITY_ID_EXTRA, id);
 		startActivityForResult(intent, EDIT_ENTITY_REQUEST);
 	}	
 	
 	@Override
-	protected void viewItem(int position, long id) {
+	protected void viewItem(View v, int position, long id) {
 		T e = em.load(clazz, id);
 		Intent intent = new Intent(this, BlotterActivity.class);
         WhereFilter.Criteria blotterFilter = createBlotterCriteria(e);

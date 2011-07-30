@@ -10,15 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.blotter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
-import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -28,6 +19,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.Total;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total[]> {
 	
@@ -41,28 +40,21 @@ public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total
 	
 	private final Context context;
 	private final DatabaseAdapter db;
-	private final WhereFilter blotterFilter;
+	private final WhereFilter filter;
 	private final ViewFlipper totalTextFlipper;
 	private final TextView totalText;
-	private final boolean filterAccounts;
-	
+
 	public BlotterTotalsCalculationTask(Context context, DatabaseAdapter db, 
-			WhereFilter blotterFilter, ViewFlipper totalTextFlipper, TextView totalText,
-			boolean filterAccounts) {
+			WhereFilter filter, ViewFlipper totalTextFlipper, TextView totalText) {
 		this.context = context;
 		this.db = db;
-		this.blotterFilter = blotterFilter;
+		this.filter = filter;
 		this.totalTextFlipper = totalTextFlipper;
 		this.totalText = totalText;
-		this.filterAccounts = filterAccounts;
 	}
 
-	private Total[] getTransactionsBalance(WhereFilter filter) {
-		if (filterAccounts) {
-			filter = WhereFilter.copyOf(filter);
-			filter.put(Criteria.eq("from_account_is_include_into_totals", "1"));			
-		}
-		Cursor c = db.db().query("v_blotter_for_account", BALANCE_PROJECTION, 
+	protected Total[] getTransactionsBalance() {
+		Cursor c = db.db().query(getDatabaseViewForTotals(), BALANCE_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), 
 				BALANCE_GROUPBY, null, null);
 		//DatabaseUtils.dumpCursor(c);
@@ -83,10 +75,14 @@ public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total
 		}
 	}
 
-	@Override
+    protected String getDatabaseViewForTotals() {
+        return "v_blotter_for_account";
+    }
+
+    @Override
 	protected Total[] doInBackground(Object... params) {
 		try {
-			return getTransactionsBalance(blotterFilter);
+			return getTransactionsBalance();
 		} catch (Exception ex) {
 			Log.e("TotalBalance", "Unexpected error", ex);
 			return new Total[0];

@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 
@@ -32,14 +33,23 @@ import java.math.BigDecimal;
 public class Utils {
 	
 	public static final BigDecimal HUNDRED = new BigDecimal(100);
-	private static final int zeroColor = Resources.getSystem().getColor(android.R.color.secondary_text_dark);
+    public static final String TRANSFER_DELIMITER = " \u00BB ";
+
+    private static final int zeroColor = Resources.getSystem().getColor(android.R.color.secondary_text_dark);
+
+    private final StringBuilder sb = new StringBuilder();
+
 	private final int positiveColor;
 	private final int negativeColor;	
-	
+    private final int transferColor;
+    private final int futureColor;
+
 	public Utils(Context context) {
 		Resources r = context.getResources();
-		positiveColor = r.getColor(R.color.positive_amount);
-		negativeColor = r.getColor(R.color.negative_amount);
+		this.positiveColor = r.getColor(R.color.positive_amount);
+		this.negativeColor = r.getColor(R.color.negative_amount);
+        this.transferColor = r.getColor(R.color.transfer_color);
+        this.futureColor = r.getColor(R.color.future_color);
 	}
 		
 	public static String amountToString(Currency c, long amount) {
@@ -123,16 +133,14 @@ public class Utils {
 	}
 	
 	public static int moveCursor(Cursor cursor, String idColumnName, long id) {
-		if (id != -1) {			
-			int pos = cursor.getColumnIndexOrThrow(idColumnName);
-			if (cursor.moveToFirst()) {
-				do {
-					if (cursor.getLong(pos) == id) {
-						return cursor.getPosition();
-					}
-				} while(cursor.moveToNext());				
-			}
-		}
+        int pos = cursor.getColumnIndexOrThrow(idColumnName);
+        if (cursor.moveToFirst()) {
+            do {
+                if (cursor.getLong(pos) == id) {
+                    return cursor.getPosition();
+                }
+            } while(cursor.moveToNext());
+        }
 		return -1;
 	}
 
@@ -197,6 +205,59 @@ public class Utils {
 		PackageManager manager = context.getPackageManager();                         
 		return manager.getPackageInfo(context.getPackageName(), 0);                         			
 	}
+
+    public void setTransferTitleText(TextView textView, Account fromAccount, Account toAccount) {
+        setTransferTitleText(textView, fromAccount.title, toAccount.title);
+    }
+
+    public void setTransferTitleText(TextView textView, String fromAccountTitle, String toAccountTitle) {
+        textView.setText(getTransferTitleText(fromAccountTitle, toAccountTitle));
+        setTransferTextColor(textView);
+    }
+
+    public String getTransferTitleText(Account fromAccount, Account toAccount) {
+        return getTransferTitleText(fromAccount.title, toAccount.title);
+    }
+
+    public String getTransferTitleText(String fromAccountTitle, String toAccountTitle) {
+        sb.setLength(0);
+        sb.append(fromAccountTitle).append(TRANSFER_DELIMITER).append(toAccountTitle);
+        return sb.toString();
+    }
+
+    public void setFutureTextColor(TextView textView) {
+        textView.setTextColor(futureColor);
+    }
+
+    public void setTransferAmountText(TextView textView, Currency fromCurrency, long fromAmount, Currency toCurrency, long toAmount) {
+        textView.setText(getTransferAmountText(fromCurrency, fromAmount, toCurrency, toAmount));
+    }
+
+    public String getTransferAmountText(Currency fromCurrency, long fromAmount, Currency toCurrency, long toAmount) {
+        sb.setLength(0);
+        if (sameCurrency(fromCurrency, toCurrency)) {
+            Utils.amountToString(sb, fromCurrency, fromAmount);
+        } else {
+            Utils.amountToString(sb, fromCurrency, Math.abs(fromAmount)).append(TRANSFER_DELIMITER);
+            Utils.amountToString(sb, toCurrency, toAmount);
+        }
+        return sb.toString();
+    }
+
+    public static boolean sameCurrency(Currency fromCurrency, Currency toCurrency) {
+        return fromCurrency.id == toCurrency.id;
+    }
+
+    public void setTransferBalanceText(TextView textView, Currency fromCurrency, long fromBalance, Currency toCurrency, long toBalance) {
+        sb.setLength(0);
+        Utils.amountToString(sb, fromCurrency, fromBalance, false).append(TRANSFER_DELIMITER);
+        Utils.amountToString(sb, toCurrency, toBalance, false);
+        textView.setText(sb.toString());
+    }
+
+    public void setTransferTextColor(TextView textView) {
+        textView.setTextColor(transferColor);
+    }
 
     public void setNegativeColor(TextView textView) {
         textView.setTextColor(negativeColor);

@@ -10,14 +10,15 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import ru.orangesoftware.financisto.utils.Utils;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-
-import ru.orangesoftware.financisto.utils.Utils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MyEntity implements MultiChoiceItem {
 
@@ -69,7 +70,7 @@ public class MyEntity implements MultiChoiceItem {
 		return ids;
 	}
 	
-	public static <T extends MyEntity> HashMap<Long, T> asMap(ArrayList<T> list) {
+	public static <T extends MyEntity> Map<Long, T> asMap(List<T> list) {
 		HashMap<Long, T> map = new HashMap<Long, T>();
 		for (T e : list) {
 			map.put(e.id, e);
@@ -77,7 +78,7 @@ public class MyEntity implements MultiChoiceItem {
 		return map;
 	}
 
-	public static int indexOf(ArrayList<? extends MyEntity> entities, long id) {
+	public static int indexOf(List<? extends MyEntity> entities, long id) {
 		if (entities != null) {
 			int count = entities.size();
 			for (int i=0; i<count; i++) {
@@ -97,5 +98,20 @@ public class MyEntity implements MultiChoiceItem {
 		}
 		return null;
 	}
-	
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MyEntity myEntity = (MyEntity) o;
+
+        return id == myEntity.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+
 }

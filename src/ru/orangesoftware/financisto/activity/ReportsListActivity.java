@@ -31,7 +31,7 @@ public class ReportsListActivity extends ListActivity {
 	public final ReportType[] reports = new ReportType[]{
 			ReportType.BY_PERIOD,
 			ReportType.BY_CATEGORY,
-			ReportType.BY_SUB_CATEGORY_ROOTS,
+			ReportType.BY_CATEGORY_TOP_DOWN,
             ReportType.BY_PAYEE,
 			ReportType.BY_LOCATION,
 			ReportType.BY_PROJECT,
@@ -78,7 +78,7 @@ public class ReportsListActivity extends ListActivity {
 	public static Report createReport(Context context, Bundle extras) {
 		String reportTypeName = extras.getString(EXTRA_REPORT_TYPE);
 		ReportType reportType = ReportType.valueOf(reportTypeName);
-		return reportType.createReport(context, extras);
+		return reportType.createReport(context);
 	}
 
 }

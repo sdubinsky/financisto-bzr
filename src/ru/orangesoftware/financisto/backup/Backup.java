@@ -10,12 +10,12 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.backup;
 
+import ru.orangesoftware.financisto.export.Export;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.Comparator;
-
-import ru.orangesoftware.financisto.export.Export;
 
 public final class Backup {
 
@@ -23,10 +23,16 @@ public final class Backup {
 		"account","attributes","category_attribute",
 		"transaction_attribute","budget","category",
 		"currency","locations","project","transactions",
-        "payee","ccard_closing_date"};
+        "payee","ccard_closing_date","split"};
 	
 	public static final String[] BACKUP_TABLES_WITH_SYSTEM_IDS = {
-		"attributes"};
+		"attributes", "category"};
+
+    public static final String[] RESTORE_SCRIPTS = {
+            "20100114_1158_alter_accounts_types.sql",
+            "20100511_2253_add_delete_after_expired_attribute.sql",
+            "20110420_2316_add_split_category.sql"
+    };
 
 	private Backup() {}
 	

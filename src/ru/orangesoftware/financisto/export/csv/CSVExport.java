@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_DATE_ISO_8601;
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_TIME_ISO_8601;
@@ -65,7 +65,7 @@ public class CSVExport extends Export {
 	protected void writeBody(BufferedWriter bw) throws IOException {
 		Csv.Writer w = new Csv.Writer(bw).delimiter(options.fieldSeparator);
 		try {
-			HashMap<Long, Category> categoriesMap = db.getAllCategoriesMap(false);
+			Map<Long, Category> categoriesMap = db.getCategoriesMap(false);
 			Cursor c = db.getBlotter(options.filter);
 			try {			
 				while (c.moveToNext()) {
@@ -79,7 +79,7 @@ public class CSVExport extends Export {
 		}
 	}
 
-	private void writeLine(Csv.Writer w, Cursor cursor, HashMap<Long, Category> categoriesMap) {
+	private void writeLine(Csv.Writer w, Cursor cursor, Map<Long, Category> categoriesMap) {
 		long date = cursor.getLong(BlotterColumns.datetime.ordinal());
 		Date dt = new Date(date);
 		long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
@@ -141,7 +141,7 @@ public class CSVExport extends Export {
 	protected void writeFooter(BufferedWriter bw) throws IOException {
 	}
 
-	public Category getCategoryById(HashMap<Long, Category> categoriesMap, long id) {
+	public Category getCategoryById(Map<Long, Category> categoriesMap, long id) {
 		return categoriesMap.get(id);
 	}
 	

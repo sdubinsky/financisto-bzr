@@ -33,6 +33,7 @@ import java.util.zip.GZIPInputStream;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.ACCOUNT_TABLE;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT;
+import static ru.orangesoftware.financisto.backup.Backup.RESTORE_SCRIPTS;
 
 public class DatabaseImport {
 
@@ -149,11 +150,6 @@ public class DatabaseImport {
         scheduler.scheduleAll(context);
 	}
 
-	private static final String[] RESTORE_SCRIPTS = {
-		"20100114_1158_alter_accounts_types.sql",
-		"20100511_2253_add_delete_after_expired_attribute.sql"
-	};
-	
 	private void runRestoreAlterscripts() throws IOException {
 		for (String script : RESTORE_SCRIPTS) {
 			schemaEvolution.runAlterScript(db, script);

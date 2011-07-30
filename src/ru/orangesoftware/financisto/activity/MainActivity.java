@@ -13,7 +13,6 @@ package ru.orangesoftware.financisto.activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -162,9 +161,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			x.beginTransaction();
 			t1 = System.currentTimeMillis();
 			try {
-				updateZero(x, DatabaseHelper.CATEGORY_TABLE, "title", getString(R.string.no_category));
-				updateZero(x, DatabaseHelper.PROJECT_TABLE, "title", getString(R.string.no_project));
-				updateZero(x, DatabaseHelper.LOCATIONS_TABLE, "name", getString(R.string.current_location));
+				updateFieldInTable(x, DatabaseHelper.CATEGORY_TABLE, 0, "title", getString(R.string.no_category));
+                updateFieldInTable(x, DatabaseHelper.CATEGORY_TABLE, -1, "title", getString(R.string.split));
+				updateFieldInTable(x, DatabaseHelper.PROJECT_TABLE, 0, "title", getString(R.string.no_project));
+				updateFieldInTable(x, DatabaseHelper.LOCATIONS_TABLE, 0, "name", getString(R.string.current_location));
 				x.setTransactionSuccessful();
 			} finally {
 				x.endTransaction();
@@ -182,21 +182,20 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		Log.d("Financisto", "Load time = "+(t4 - t0)+"ms = "+(t2-t1)+"ms+"+(t3-t2)+"ms+"+(t4-t3)+"ms");
 	}
 
-	private void updateZero(SQLiteDatabase db, String table, String field, String value) {
-		ContentValues values = new ContentValues();
-		values.put(field, value);
-		db.update(table, values, "_id=0", null);
+	private void updateFieldInTable(SQLiteDatabase db, String table, long id, String field, String value) {
+        db.execSQL("update " + table + " set " + field + "=? where _id=?", new Object[]{value, id});
 	}
 
 	@Override
 	public void onTabChanged(String tabId) {
 		if (started.containsKey(tabId)) {
 			Context c = getTabHost().getCurrentView().getContext();
-			if (c instanceof RequeryCursorActivity) {
+			if (c instanceof RecreateCursorSupportedActivity) {
+                Log.d("Financisto", "About to change tab ro "+tabId);
 				long t0 = System.currentTimeMillis();
-				((RequeryCursorActivity)c).requeryCursor();
+				((RecreateCursorSupportedActivity)c).recreateCursor();
 				long t1 = System.currentTimeMillis();
-				Log.d("", "onTabChanged "+tabId+" in "+(t1-t0)+"ms");
+				Log.d("Financisto", "Tab changed to "+tabId+" in "+(t1-t0)+"ms");
 			}
 		} else {
 			started.put(tabId, Boolean.TRUE);

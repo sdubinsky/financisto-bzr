@@ -250,7 +250,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			clear(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID, currency);
 			break;
 		case R.id.category: {
-			Cursor cursor = db.getAllCategories(false);
+			Cursor cursor = db.getCategories(false);
 			startManagingCursor(cursor);
 			ListAdapter adapter = TransactionUtils.createCategoryAdapter(db, this, cursor);
 			Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);

@@ -10,24 +10,28 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
-import java.util.ArrayList;
+import android.content.ContentValues;
+import android.database.Cursor;
+import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
+import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
-import android.content.ContentValues;
-import android.database.Cursor;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "category")
 public class Category extends CategoryEntity<Category> {
 	
-	public static final String NO_CATEGORY = "<NO_CATEGORY>";
-	
+    public static final long NO_CATEGORY_ID = 0;
+	public static final long SPLIT_CATEGORY_ID = -1;
+
+    public static boolean isSplit(long categoryId) {
+        return Category.SPLIT_CATEGORY_ID == categoryId;
+    }
+
 	@Column(name = "last_location_id")
 	public long lastLocationId;
 
@@ -39,8 +43,8 @@ public class Category extends CategoryEntity<Category> {
 	
 	@Transient
 	public ArrayList<Attribute> attributes;
-	
-	public Category(){}
+
+    public Category(){}
 	
 	public Category(long id){
 		this.id = id;
@@ -120,5 +124,9 @@ public class Category extends CategoryEntity<Category> {
         if (parent != null) {
             this.type = parent.type;
         }
+    }
+
+    public boolean isSplit() {
+        return id == SPLIT_CATEGORY_ID;
     }
 }

@@ -10,13 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.widget;
 
-import java.math.BigDecimal;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import android.widget.*;
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,8 +23,19 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.utils.Utils;
+
+import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AmountInput extends LinearLayout {
+
+    public static interface OnAmountChangedListener {
+		void onAmountChanged(long oldAmount, long newAmount);
+	}
 
 	public static final String EXTRA_AMOUNT = "amount";
 	public static final String EXTRA_CURRENCY = "currency";
@@ -49,6 +53,7 @@ public class AmountInput extends LinearLayout {
 	
 	private int requestId;
 	private OnAmountChangedListener onAmountChangedListener;
+    private boolean incomeExpenseEnabled = true;
 
 	public AmountInput(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -61,7 +66,12 @@ public class AmountInput extends LinearLayout {
 	}
 	
     public void disableIncomeExpenseButton() {
+        incomeExpenseEnabled = false;
         toggleView.setEnabled(false);
+    }
+
+    public boolean isIncomeExpenseEnabled() {
+        return incomeExpenseEnabled;
     }
 
     public void setIncome() {
@@ -73,17 +83,16 @@ public class AmountInput extends LinearLayout {
     }
 
     public boolean isExpense() {
-        return toggleView.isEnabled() && !toggleView.isChecked();
+        return !toggleView.isChecked();
     }
-
-    public static interface OnAmountChangedListener {
-		void onAmountChanged(long oldAmount, long newAmount);
-	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		Utils.setEnabled(this, enabled);
+        if (!incomeExpenseEnabled) {
+            disableIncomeExpenseButton();
+        }
 	}
 
 	public void setOnAmountChangedListener(
@@ -185,13 +194,15 @@ public class AmountInput extends LinearLayout {
 					onDotOrComma();
 					return "";
 				}
-                if (c == '-') {
-                    setExpense();
-					return "";
-				}
-                if (c == '+') {
-                    setIncome();
-                    return "";
+                if (isIncomeExpenseEnabled()) {
+                    if (c == '-') {
+                        setExpense();
+                        return "";
+                    }
+                    if (c == '+') {
+                        setIncome();
+                        return "";
+                    }
                 }
 			}
 			return super.filter(source, start, end, dest, dstart, dend);
@@ -286,7 +297,7 @@ public class AmountInput extends LinearLayout {
 		long y = absAmount - 100 * x;
 		primary.setText(String.valueOf(x));
 		secondary.setText(String.format("%02d", y));
-        if (amount != 0) {
+        if (isIncomeExpenseEnabled() && amount != 0) {
             if (amount > 0) {
                 setIncome();
             } else {

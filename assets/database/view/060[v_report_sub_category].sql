@@ -10,7 +10,7 @@ select
        t.is_transfer as is_transfer
 from v_category c
 inner join v_blotter_for_currency t on t.category_left between c.left and c.right
-where c._id != 0 and t.from_amount > 0
+where c._id > 0 and t.from_amount > 0
 union all
 select 
 	   c._id as _id,
@@ -23,5 +23,5 @@ select
        t.is_transfer as is_transfer
 from v_category c
 inner join v_blotter_for_currency t on t.category_left between c.left and c.right
-where c._id != 0 and t.from_amount < 0;
+where c._id > 0 and t.from_amount < 0;
 	

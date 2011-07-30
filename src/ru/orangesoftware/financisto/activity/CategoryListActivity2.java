@@ -10,30 +10,22 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.adapter.CategoryListAdapter2;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.CategoryTree;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.TextView;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.adapter.CategoryListAdapter2;
+import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.CategoryTree;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CategoryListActivity2 extends AbstractListActivity {
 	
@@ -52,7 +44,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	@Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
-		categories = db.getAllCategoriesTree(false);
+		categories = db.getCategoriesTree(false);
 		attributes = db.getAllAttributesMap();
 		ImageButton b = (ImageButton)findViewById(R.id.bAttributes);
 		b.setOnClickListener(new OnClickListener(){
@@ -96,24 +88,24 @@ public class CategoryListActivity2 extends AbstractListActivity {
 		return null;
 	}
 	
-	@Override
-	public void requeryCursor() {
-		long t0 = System.currentTimeMillis();
-		categories = db.getAllCategoriesTree(false);
-		attributes = db.getAllAttributesMap();
-		updateAdapter();
-		long t1 = System.currentTimeMillis();
-		Log.d("CategoryListActivity2", "Requery in "+(t1-t0)+"ms");
-	}
+    @Override
+    public void recreateCursor() {
+        long t0 = System.currentTimeMillis();
+        categories = db.getCategoriesTree(false);
+        attributes = db.getAllAttributesMap();
+        updateAdapter();
+        long t1 = System.currentTimeMillis();
+        Log.d("CategoryListActivity2", "Requery in "+(t1-t0)+"ms");
+    }
 
-	private void updateAdapter() {
+    private void updateAdapter() {
 		((CategoryListAdapter2)adapter).setCategories(categories);
 		((CategoryListAdapter2)adapter).setAttributes(attributes);
 		notifyDataSetChanged();
 	}
 
 	@Override
-	protected void deleteItem(int position, final long id) {
+	protected void deleteItem(View v, int position, final long id) {
 		Category c = (Category)getListAdapter().getItem(position);
 		new AlertDialog.Builder(this)
 			.setTitle(c.getTitle())
@@ -123,7 +115,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					db.deleteCategory(id);
-					requeryCursor();
+					recreateCursor();
 				}				
 			})
 			.setNegativeButton(R.string.no, null)
@@ -131,14 +123,14 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	}
 
 	@Override
-	public void editItem(int position, long id) {
+	public void editItem(View v, int position, long id) {
 		Intent intent = new Intent(CategoryListActivity2.this, CategoryActivity.class);
 		intent.putExtra(CategoryActivity.CATEGORY_ID_EXTRA, id);
 		startActivityForResult(intent, EDIT_CATEGORY_REQUEST);		
 	}
 
 	@Override
-	protected void viewItem(final int position, long id) {
+	protected void viewItem(View v, final int position, long id) {
 		final Category c = (Category)getListAdapter().getItem(position);
 		final ArrayList<PositionAction> actions = new ArrayList<PositionAction>();
 		Category p = c.parent;
