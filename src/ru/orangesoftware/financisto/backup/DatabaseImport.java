@@ -25,8 +25,10 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 import ru.orangesoftware.financisto.db.DatabaseSchemaEvolution;
+import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.service.RecurrenceScheduler;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;
@@ -39,6 +41,7 @@ public class DatabaseImport {
 
 	private final Context context;
 	private final DatabaseAdapter dbAdapter;
+    private final MyEntityManager em;
 	private final SQLiteDatabase db;
 	private final String backupFile;
 	private final DatabaseSchemaEvolution schemaEvolution;
@@ -47,6 +50,7 @@ public class DatabaseImport {
 		this.context = context;
 		this.dbAdapter = dbAdapter;
 		this.db = dbAdapter.db();
+        this.em = dbAdapter.em();
 		this.backupFile = backupFile;
 		this.schemaEvolution = new DatabaseSchemaEvolution(context, Database.DATABASE_NAME, null, Database.DATABASE_VERSION);
 	}
@@ -129,6 +133,7 @@ public class DatabaseImport {
 			} finally {
 				db.endTransaction();
 			}
+            CurrencyCache.initialize(em);
             dbAdapter.rebuildRunningBalance();
 			scheduleAll();
 		} finally {
