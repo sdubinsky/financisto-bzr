@@ -123,9 +123,14 @@ public class DatabaseAdapter {
     }
 
     public Cursor getBlotterForAccount(WhereFilter filter) {
-        WhereFilter accountFilter = WhereFilter.copyOf(filter);
-        accountFilter.put(WhereFilter.Criteria.raw(BlotterColumns.parent_id+"=0 OR "+BlotterColumns.is_transfer+"=-1"));
+        WhereFilter accountFilter = enhanceFilterForAccountBlotter(filter);
         return getBlotter(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, accountFilter);
+    }
+
+    public static WhereFilter enhanceFilterForAccountBlotter(WhereFilter filter) {
+        WhereFilter accountFilter = WhereFilter.copyOf(filter);
+        accountFilter.put(WhereFilter.Criteria.raw(BlotterColumns.parent_id+"=0 OR "+ BlotterColumns.is_transfer+"=-1"));
+        return accountFilter;
     }
 
     public Cursor getBlotterForAccountWithSplits(WhereFilter filter) {

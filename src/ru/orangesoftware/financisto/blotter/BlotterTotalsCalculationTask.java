@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.blotter;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -20,22 +19,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.db.TransactionsTotalCalculator;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total[]> {
 	
-	public static final String[] BALANCE_PROJECTION = {
-		"from_account_currency_id",
-		"SUM(from_amount)"};
-
-	public static final String BALANCE_GROUPBY = "from_account_currency_id";
-
 	private volatile boolean isRunning = true;
 	
 	private final Context context;
@@ -54,28 +45,12 @@ public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total
 	}
 
 	protected Total[] getTransactionsBalance() {
-		Cursor c = db.db().query(getDatabaseViewForTotals(), BALANCE_PROJECTION,
-				filter.getSelection(), filter.getSelectionArgs(), 
-				BALANCE_GROUPBY, null, null);
-		try {
-			int count = c.getCount();
-			List<Total> totals = new ArrayList<Total>(count);
-			while (c.moveToNext()) {
-				long currencyId = c.getLong(0);
-				long balance = c.getLong(1);
-				Currency currency = CurrencyCache.getCurrency(currencyId);
-				Total total = new Total(currency);
-				total.balance = balance; 
-				totals.add(total);
-			}
-			return totals.toArray(new Total[totals.size()]);
-		} finally {
-			c.close();
-		}
+        TransactionsTotalCalculator calculator = createTotalCalculator();
+        return calculator.getTransactionsBalance();
 	}
 
-    protected String getDatabaseViewForTotals() {
-        return "v_blotter_for_account";
+    protected TransactionsTotalCalculator createTotalCalculator() {
+        return new TransactionsTotalCalculator(db, filter);
     }
 
     @Override

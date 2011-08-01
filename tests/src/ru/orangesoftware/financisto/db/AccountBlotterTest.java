@@ -13,6 +13,7 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
@@ -69,11 +70,13 @@ public class AccountBlotterTest extends AbstractDbTest {
         TransactionBuilder.withDb(db).account(a2).amount(200).create();
         assertRunningBalance(a1, 1000);
         assertRunningBalance(a2, 200);
+        assertTotals(1000, 200);
 
         // regular transfer
         TransferBuilder.withDb(db).fromAccount(a1).fromAmount(-100).toAccount(a2).toAmount(50).create();
         assertRunningBalance(a1, 900, 1000);
         assertRunningBalance(a2, 250, 200);
+        assertTotals(900, 250);
 
         // regular split
         TransactionBuilder.withDb(db).account(a1).amount(-500)
@@ -82,6 +85,7 @@ public class AccountBlotterTest extends AbstractDbTest {
                 .create();
         assertRunningBalance(a1, 400, 900, 1000);
         assertRunningBalance(a2, 250, 200);
+        assertTotals(400, 250);
 
         // transfer split
         TransactionBuilder.withDb(db).account(a2).amount(-120)
@@ -90,6 +94,7 @@ public class AccountBlotterTest extends AbstractDbTest {
                 .create();
         assertRunningBalance(a1, 600, 400, 900, 1000);
         assertRunningBalance(a2, 130, 250, 200);
+        assertTotals(600, 130);
     }
 
     private void assertAccountBlotter(Account account, long...amounts) {
@@ -126,6 +131,16 @@ public class AccountBlotterTest extends AbstractDbTest {
         WhereFilter filter = WhereFilter.empty();
         filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
         return filter;
+    }
+
+    private void assertTotals(long...totalAmounts) {
+        WhereFilter filter = WhereFilter.empty();
+        TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
+        Total[] totals = calculator.getTransactionsBalance();
+        assertEquals(totalAmounts.length, totals.length);
+        for (int i=0; i<totalAmounts.length; i++) {
+            assertEquals("Total "+i, totalAmounts[i], totals[i].balance);
+        }
     }
 
 }
