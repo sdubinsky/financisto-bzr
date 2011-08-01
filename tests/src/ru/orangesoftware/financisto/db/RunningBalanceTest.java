@@ -96,6 +96,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertFinalBalanceForAccount(a1, 900);
         assertFinalBalanceForAccount(a2, 2050);
         db.rebuildRunningBalance();
+        assertAccountBalanceForTransaction(splits.get(0), a2, 2050);
         assertFinalBalanceForAccount(a1, 900);
         assertFinalBalanceForAccount(a2, 2050);
     }

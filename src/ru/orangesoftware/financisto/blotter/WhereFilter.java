@@ -100,7 +100,7 @@ public class WhereFilter {
 			}
 			sb.append(c.getSelection());
 		}
-		return sb.toString();
+		return sb.toString().trim();
 	}
 
 	private String[] getSelectionArgs(List<Criteria> criterias) {
@@ -305,7 +305,7 @@ public class WhereFilter {
 	}
 	
 	public static enum Operation {
-		EQ("=?"),GT(">?"),GTE(">=?"),LT("<?"),LTE("<=?"),BTW("BETWEEN ? AND ?");
+		NOPE(""), EQ("=?"),GT(">?"),GTE(">=?"),LT("<?"),LTE("<=?"),BTW("BETWEEN ? AND ?");
 		
 		public final String op;
 		
@@ -339,6 +339,10 @@ public class WhereFilter {
 		public static Criteria lte(String column, String value) {
 			return new Criteria(column, Operation.LTE, value);
 		}		
+
+        public static Criteria raw(String text) {
+            return new Criteria("("+text+")", Operation.NOPE);
+        }
 
 		protected final String columnName;
 		protected final Operation operation;
@@ -444,12 +448,12 @@ public class WhereFilter {
 		static {
 			Calendar c = Calendar.getInstance();
 			c.set(Calendar.YEAR, 1970);
-			c.set(Calendar.MONTH, 01);
-			c.set(Calendar.DAY_OF_MONTH, 01);
-			c.set(Calendar.HOUR_OF_DAY, 00);
-			c.set(Calendar.MINUTE, 00);
-			c.set(Calendar.SECOND, 00);
-			c.set(Calendar.MILLISECOND, 000);
+			c.set(Calendar.MONTH, 1);
+			c.set(Calendar.DAY_OF_MONTH, 1);
+			c.set(Calendar.HOUR_OF_DAY, 0);
+			c.set(Calendar.MINUTE, 0);
+			c.set(Calendar.SECOND, 0);
+			c.set(Calendar.MILLISECOND, 0);
 			START_OF_ERA = c.getTimeInMillis();
 			c.set(Calendar.YEAR, 2025);
 			c.set(Calendar.MONTH, 12);

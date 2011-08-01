@@ -84,7 +84,7 @@ FROM
 	INNER JOIN account as a ON a._id=t.to_account_id
 	INNER JOIN currency as c ON c._id=a.currency_id
 	INNER JOIN category as cat ON cat._id=t.category_id
-	LEFT OUTER JOIN running_balance as rb ON rb.transaction_id=(CASE WHEN t.parent_id=0 THEN t._id ELSE t.parent_id END) AND rb.account_id=t.to_account_id
+	LEFT OUTER JOIN running_balance as rb ON rb.transaction_id=t._id AND rb.account_id=t.to_account_id
 	LEFT OUTER JOIN account as a2 ON a2._id=t.from_account_id
 	LEFT OUTER JOIN locations as loc ON loc._id=t.location_id
 	LEFT OUTER JOIN project as p ON p._id=t.project_id

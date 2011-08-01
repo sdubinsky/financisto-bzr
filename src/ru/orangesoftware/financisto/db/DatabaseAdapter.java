@@ -123,7 +123,9 @@ public class DatabaseAdapter {
     }
 
     public Cursor getBlotterForAccount(WhereFilter filter) {
-        return getBlotter(V_BLOTTER_FOR_ACCOUNT, filter);
+        WhereFilter accountFilter = WhereFilter.copyOf(filter);
+        accountFilter.put(WhereFilter.Criteria.raw(BlotterColumns.parent_id+"=0 OR "+BlotterColumns.is_transfer+"=-1"));
+        return getBlotter(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, accountFilter);
     }
 
     public Cursor getBlotterForAccountWithSplits(WhereFilter filter) {
@@ -280,13 +282,6 @@ public class DatabaseAdapter {
         }
     }
     
-	public Cursor getTransactions(WhereFilter filter) {
-		String sortOrder = getBlotterSortOrder(filter);
-		return db.query(V_BLOTTER_FOR_ACCOUNT, BlotterColumns.NORMAL_PROJECTION, 
-				filter.getSelection(), filter.getSelectionArgs(), null, null, 
-				sortOrder);
-	}
-	
 	private static final String LOCATION_COUNT_UPDATE = "UPDATE "+LOCATIONS_TABLE
 	+" SET count=count+(?) WHERE _id=?";
 

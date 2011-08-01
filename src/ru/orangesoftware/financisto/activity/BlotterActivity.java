@@ -286,7 +286,7 @@ public class BlotterActivity extends AbstractListActivity {
 		Cursor c;
 		long accountId = blotterFilter.getAccountId();
 		if (accountId != -1) {
-			c = db.getTransactions(blotterFilter);
+			c = db.getBlotterForAccount(blotterFilter);
 		} else {
 			c = db.getBlotter(blotterFilter);
 		}
