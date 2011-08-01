@@ -1502,5 +1502,45 @@ public class DatabaseAdapter {
         return 0;
     }
 
+    public void recalculateAccountsBalances() {
+        db.beginTransaction();
+        try {
+            Cursor accountsCursor = db.query(ACCOUNT_TABLE, new String[]{AccountColumns.ID}, null, null, null, null, null);
+            try {
+                while (accountsCursor.moveToNext()) {
+                    long accountId = accountsCursor.getLong(0);
+                    recalculateAccountsBalances(accountId);
+                }
+            } finally {
+                accountsCursor.close();
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private void recalculateAccountsBalances(long accountId) {
+        long amount = fetchAccountBalance(accountId);
+        ContentValues values = new ContentValues();
+        values.put(AccountColumns.TOTAL_AMOUNT, amount);
+        db.update(ACCOUNT_TABLE, values, AccountColumns.ID+"=?", new String[]{String.valueOf(accountId)});
+        Log.i("DatabaseImport", "Recalculating amount for "+accountId);
+    }
+
+    private long fetchAccountBalance(long accountId) {
+        Cursor c = db.query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, new String[]{"SUM("+BlotterColumns.from_amount+")"},
+                BlotterColumns.from_account_id+"=? and ("+BlotterColumns.parent_id+"=0 or "+BlotterColumns.is_transfer+"=-1)",
+                new String[]{String.valueOf(accountId)}, null, null, null);
+        try {
+            if (c.moveToFirst()) {
+                return c.getLong(0);
+            }
+            return 0;
+        } finally {
+            c.close();
+        }
+    }
+
 }
 

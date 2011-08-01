@@ -128,12 +128,12 @@ public class DatabaseImport {
 					}
 				}
 				runRestoreAlterscripts();
-				recalculateAccountsBalances();
 				db.setTransactionSuccessful();
 			} finally {
 				db.endTransaction();
 			}
             CurrencyCache.initialize(em);
+            dbAdapter.recalculateAccountsBalances();
             dbAdapter.rebuildRunningBalance();
 			scheduleAll();
 		} finally {
@@ -152,34 +152,4 @@ public class DatabaseImport {
 		}
 	}
 
-	private void recalculateAccountsBalances() {
-		Cursor accountsCursor = db.query(ACCOUNT_TABLE, new String[]{AccountColumns.ID}, null, null, null, null, null);
-		try {
-			while (accountsCursor.moveToNext()) {
-				long accountId = accountsCursor.getLong(0);
-				recalculateAccountsBalances(accountId);
-			}			
-		} finally {
-			accountsCursor.close();
-		}
-	}
-
-	private void recalculateAccountsBalances(long accountId) {
-		Cursor c = db.query(V_BLOTTER_FOR_ACCOUNT, new String[]{"SUM("+BlotterColumns.from_amount+")"},
-				BlotterColumns.from_account_id +"=?", new String[]{String.valueOf(accountId)},
-				null, null, null);
-		try {	
-			long amount = 0;
-			if (c.moveToFirst()) {
-				amount = c.getLong(0);
-			}
-			ContentValues values = new ContentValues();
-			values.put(AccountColumns.TOTAL_AMOUNT, amount);
-			db.update(ACCOUNT_TABLE, values, AccountColumns.ID+"=?", new String[]{String.valueOf(accountId)});
-			Log.i("DatabaseImport", "Recalculating amount for "+accountId);
-		} finally {
-			c.close();
-		}
-	}
-	
 }
