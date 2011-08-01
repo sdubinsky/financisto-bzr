@@ -884,7 +884,6 @@ public class DatabaseAdapter {
 		List<Category> list = new LinkedList<Category>();
 		Cursor c = db.query(V_SUBORDINATES, new String[]{CategoryViewColumns._id.name(), CategoryViewColumns.title.name(), CategoryViewColumns.level.name()}, null,
 				new String[]{String.valueOf(parentId)}, null, null, null);
-		//DatabaseUtils.dumpCursor(c);
 		try {
 			while (c.moveToNext()) {
 				long id = c.getLong(0);

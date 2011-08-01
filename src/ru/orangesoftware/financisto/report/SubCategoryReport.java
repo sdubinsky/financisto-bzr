@@ -41,7 +41,8 @@ public class SubCategoryReport extends AbstractReport {
 	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
 		filterTransfers(filter);
 		Cursor c = db.db().query(V_REPORT_SUB_CATEGORY, DatabaseHelper.SubCategoryReportColumns.NORMAL_PROJECTION,
-				filter.getSelection(), filter.getSelectionArgs(), null, null, "left");
+				filter.getSelection(), filter.getSelectionArgs(), null, null,
+                DatabaseHelper.SubCategoryReportColumns.CURRENCY_ID+","+DatabaseHelper.SubCategoryReportColumns.LEFT);
         try {
             CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
                 @Override
@@ -63,15 +64,14 @@ public class SubCategoryReport extends AbstractReport {
 	private ArrayList<GraphUnitTree> createTree(CategoryTree<CategoryAmount> amounts, int level) {
 		ArrayList<GraphUnitTree> roots = new ArrayList<GraphUnitTree>();
 		GraphUnitTree u = null;
-		Currency c = null;
 		long lastId = -1;
 		for (CategoryAmount a : amounts) {
 			if (u == null || lastId != a.id) {
 				u = new GraphUnitTree(a.id, a.title, getStyle(level));
-				c = CurrencyCache.getCurrency(a.currencyId);
 				roots.add(u);
 				lastId = a.id;
 			}
+            Currency c = CurrencyCache.getCurrency(a.currencyId);
 			u.addAmount(c, a.amount);
 			if (a.hasChildren()) {
 				u.setChildren(createTree(a.children, level+1));

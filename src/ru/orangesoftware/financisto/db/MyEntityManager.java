@@ -89,7 +89,6 @@ public class MyEntityManager extends EntityManager {
 			q.asc(LocationsSortOrder.NAME.property);
 		}
 		Cursor c = q.execute();
-		//DatabaseUtils.dumpCursor(c);
 		return c;
 	}
 

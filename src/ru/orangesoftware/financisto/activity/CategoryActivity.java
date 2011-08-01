@@ -86,8 +86,7 @@ public class CategoryActivity extends AbstractActivity {
 			categoryCursor = db.getCategoriesWithoutSubtree(category.id);
 		}
 		startManagingCursor(categoryCursor);
-		//DatabaseUtils.dumpCursor(categoryCursor);
-		
+
 		LinearLayout layout = (LinearLayout)findViewById(R.id.layout);
 		parentCategoryText = x.addListNode(layout, R.id.category, R.string.parent, R.string.select_category);
 

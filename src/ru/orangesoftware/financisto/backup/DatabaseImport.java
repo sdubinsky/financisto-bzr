@@ -141,15 +141,6 @@ public class DatabaseImport {
 		}
 	}
 
-	/*private void printCurrentSchema() {
-		Cursor c = db.rawQuery("SELECT * FROM sqlite_master where type='table'", null);
-		try {
-			DatabaseUtils.dumpCursor(c);
-		} finally {
-			c.close();
-		}
-	}*/
-
 	private void scheduleAll() {
         RecurrenceScheduler scheduler = new RecurrenceScheduler(dbAdapter);
         scheduler.scheduleAll(context);

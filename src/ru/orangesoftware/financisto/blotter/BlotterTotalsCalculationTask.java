@@ -57,8 +57,7 @@ public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total
 		Cursor c = db.db().query(getDatabaseViewForTotals(), BALANCE_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), 
 				BALANCE_GROUPBY, null, null);
-		//DatabaseUtils.dumpCursor(c);
-		try {			
+		try {
 			int count = c.getCount();
 			List<Total> totals = new ArrayList<Total>(count);
 			while (c.moveToNext()) {

@@ -140,7 +140,6 @@ public class AccountListActivity extends AbstractListActivity {
 	@Override
 	protected Cursor createCursor() {
 		Cursor c = em.getAllAccounts();
-		//DatabaseUtils.dumpCursor(c);
 		return c;
 	}
 
