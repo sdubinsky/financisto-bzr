@@ -18,6 +18,7 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.utils.DateUtils.Period;
 import ru.orangesoftware.financisto.utils.MyPreferences;
@@ -30,9 +31,7 @@ import ru.orangesoftware.orb.Expression;
 import ru.orangesoftware.orb.Expressions;
 import ru.orangesoftware.orb.Query;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 
@@ -242,6 +241,15 @@ public class MyEntityManager extends EntityManager {
 		}
 		return list;
 	}
+
+    public Map<Long, Account> getAllAccountsMap() {
+        Map<Long, Account> accountsMap = new HashMap<Long, Account>();
+        List<Account> list = getAllAccountsList();
+        for (Account account : list) {
+            accountsMap.put(account.id, account);
+        }
+        return accountsMap;
+    }
 
 	/* ===============================================
 	 * CURRENCY

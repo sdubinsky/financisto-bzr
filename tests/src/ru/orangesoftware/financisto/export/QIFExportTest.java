@@ -232,7 +232,7 @@ public class QIFExportTest extends AbstractDbTest {
                 exportAsString());
     }
 
-    public void ignore_test_should_export_splits() throws Exception {
+    public void test_should_export_splits() throws Exception {
         a1 = createFirstAccount();
         Map<String, Category> categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
         TransactionBuilder.withDb(db).account(a1).amount(-260066).dateTime(DateTime.date(2011, 7, 12))
@@ -262,7 +262,7 @@ public class QIFExportTest extends AbstractDbTest {
                 exportAsString());
     }
 
-    public void ignore_test_should_export_transfer_splits() throws Exception {
+    public void test_should_export_transfer_splits() throws Exception {
         a1 = createFirstAccount();
         a2 = createSecondAccount();
         TransactionBuilder.withDb(db).account(a1).amount(-260066).dateTime(DateTime.date(2011, 7, 12))
@@ -279,7 +279,7 @@ public class QIFExportTest extends AbstractDbTest {
                 "T-2,600.66\n"+
                 "S[My Bank Account]\n"+
                 "$-1,100.56\n"+
-                "^\n",
+                "^\n"+
                 "!Account\n"+
                 "NMy Bank Account\n"+
                 "TBank\n"+
@@ -287,6 +287,56 @@ public class QIFExportTest extends AbstractDbTest {
                 "!Type:Bank\n"+
                 "D12/07/2011\n"+
                 "T500.25\n"+
+                "L[My Cash Account]\n"+
+                "^\n",
+                exportAsString());
+    }
+
+    public void test_should_export_multiple_transfer_splits() throws Exception {
+        a1 = createFirstAccount();
+        a2 = createSecondAccount();
+        TransactionBuilder.withDb(db).account(a1).amount(-260066).dateTime(DateTime.date(2011, 7, 12))
+                .category(CategoryBuilder.split(db))
+                .withTransferSplit(a2, -110056, 50025)
+                .withTransferSplit(a2, -150010, 62000)
+                .create();
+        TransactionBuilder.withDb(db).account(a2).amount(-420012).dateTime(DateTime.date(2011, 7, 13))
+                .category(CategoryBuilder.split(db))
+                .withTransferSplit(a1, -420012, 123456)
+                .create();
+        assertEquals(
+                "!Account\n"+
+                "NMy Cash Account\n"+
+                "TCash\n"+
+                "^\n"+
+                "!Type:Cash\n"+
+                "D13/07/2011\n"+
+                "T1,234.56\n"+
+                "L[My Bank Account]\n"+
+                "^\n"+
+                "D12/07/2011\n"+
+                "T-2,600.66\n"+
+                "S[My Bank Account]\n"+
+                "$-1,100.56\n"+
+                "S[My Bank Account]\n"+
+                "$-1,500.10\n"+
+                "^\n"+
+                "!Account\n"+
+                "NMy Bank Account\n"+
+                "TBank\n"+
+                "^\n"+
+                "!Type:Bank\n"+
+                "D13/07/2011\n"+
+                "T-4,200.12\n"+
+                "S[My Cash Account]\n"+
+                "$-4,200.12\n"+
+                "^\n"+
+                "D12/07/2011\n"+
+                "T500.25\n"+
+                "L[My Cash Account]\n"+
+                "^\n"+
+                "D12/07/2011\n"+
+                "T620.00\n"+
                 "L[My Cash Account]\n"+
                 "^\n",
                 exportAsString());

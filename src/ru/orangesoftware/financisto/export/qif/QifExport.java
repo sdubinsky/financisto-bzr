@@ -24,7 +24,7 @@ import ru.orangesoftware.financisto.model.CategoryTree;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 public class QifExport extends Export {
 
@@ -32,7 +32,8 @@ public class QifExport extends Export {
     private final MyEntityManager em;
     private final QifExportOptions options;
     private final CategoryTree<Category> categories;
-    private final HashMap<Long, Category> categoriesMap;
+    private final Map<Long, Category> categoriesMap;
+    private final Map<Long, Account> accountsMap;
 
     public QifExport(DatabaseAdapter db, QifExportOptions options) {
         this.db = db;
@@ -40,6 +41,7 @@ public class QifExport extends Export {
         this.options = options;
         this.categories = db.getCategoriesTree(false);
         this.categoriesMap = categories.asMap();
+        this.accountsMap = db.em().getAllAccountsMap();
     }
 
     @Override
@@ -112,10 +114,11 @@ public class QifExport extends Export {
                     addHeader = false;
                 }
                 QifTransaction qifTransaction = QifTransaction.fromBlotterCursor(c);
-//                if (qifTransaction.isSplit()) {
-//                    qifTransaction.setSplits(em.getSplitsForTransaction(qifTransaction.id));
-//                }
+                if (qifTransaction.isSplit()) {
+                    qifTransaction.setSplits(em.getSplitsForTransaction(qifTransaction.id));
+                }
                 qifTransaction.useCategoriesCache(categoriesMap);
+                qifTransaction.useAccountsCache(accountsMap);
                 qifTransaction.writeTo(qifWriter, options);
             }
         } finally {
