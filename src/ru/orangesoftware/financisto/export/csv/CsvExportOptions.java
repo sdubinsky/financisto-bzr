@@ -28,12 +28,14 @@ public class CsvExportOptions {
     public final char fieldSeparator;
     public final boolean includeHeader;
     public final WhereFilter filter;
+    public final boolean writeUtfBom;
 
-    public CsvExportOptions(Currency currency, char fieldSeparator, boolean includeHeader, WhereFilter filter) {
+    public CsvExportOptions(Currency currency, char fieldSeparator, boolean includeHeader, WhereFilter filter, boolean writeUtfBom) {
         this.filter = filter;
         this.amountFormat = CurrencyCache.createCurrencyFormat(currency);
         this.fieldSeparator = fieldSeparator;
         this.includeHeader = includeHeader;
+        this.writeUtfBom = writeUtfBom;
     }
 
     public static CsvExportOptions fromIntent(Intent data) {
@@ -41,7 +43,7 @@ public class CsvExportOptions {
         Currency currency = CurrencyExportPreferences.fromIntent(data, "csv");
         char fieldSeparator = data.getCharExtra(CsvExportActivity.CSV_EXPORT_FIELD_SEPARATOR, ',');
         boolean includeHeader = data.getBooleanExtra(CsvExportActivity.CSV_EXPORT_INCLUDE_HEADER, true);
-        return new CsvExportOptions(currency, fieldSeparator, includeHeader, filter);
+        return new CsvExportOptions(currency, fieldSeparator, includeHeader, filter, true);
     }
 
 }

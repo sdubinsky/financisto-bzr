@@ -1,15 +1,12 @@
 package ru.orangesoftware.financisto.export;
 
-import android.util.Log;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.QifExport;
 import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.*;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -20,7 +17,7 @@ import static ru.orangesoftware.financisto.test.DateTime.date;
  * User: Denis Solonenko
  * Date: 2/4/11 10:23 PM
  */
-public class QIFExportTest extends AbstractDbTest {
+public class QIFExportTest extends AbstractExportTest<QifExport, QifExportOptions> {
 
     Account a1;
     Account a2;
@@ -66,26 +63,26 @@ public class QIFExportTest extends AbstractDbTest {
         Account a = createFirstAccount();
         TransactionBuilder.withDb(db).account(a).amount(-210056).payee("Payee 1").dateTime(date(2011, 7, 10)).create();
         assertEquals(
-                "!Account\n"+
-                "NMy Cash Account\n"+
-                "TCash\n"+
-                "^\n"+
-                "!Type:Cash\n"+
-                "D10/07/2011\n"+
-                "T-2,100.56\n"+
-                "PPayee 1\n"+
-                "^\n",
+                "!Account\n" +
+                        "NMy Cash Account\n" +
+                        "TCash\n" +
+                        "^\n" +
+                        "!Type:Cash\n" +
+                        "D10/07/2011\n" +
+                        "T-2,100.56\n" +
+                        "PPayee 1\n" +
+                        "^\n",
                 exportAsString("dd/MM/yyyy"));
         assertEquals(
-                "!Account\n"+
-                "NMy Cash Account\n"+
-                "TCash\n"+
-                "^\n"+
-                "!Type:Cash\n"+
-                "D07/10/2011\n"+
-                "T-2,100.56\n"+
-                "PPayee 1\n"+
-                "^\n",
+                "!Account\n" +
+                        "NMy Cash Account\n" +
+                        "TCash\n" +
+                        "^\n" +
+                        "!Type:Cash\n" +
+                        "D07/10/2011\n" +
+                        "T-2,100.56\n" +
+                        "PPayee 1\n" +
+                        "^\n",
                 exportAsString("MM/dd/yyyy"));
         assertEquals(
                 "!Account\n"+
@@ -242,7 +239,7 @@ public class QIFExportTest extends AbstractDbTest {
                 .withSplit(CategoryBuilder.noCategory(db), -50010, "Note on third split")
                 .create();
         assertEquals(
-                "!Type:Cat\nNA\nE\n^\nNA:A1\nE\n^\nNA:A2\nE\n^\nNB\nE\n^\n"+ // this is not important
+                "!Type:Cat\nNA\nE\n^\nNA:A1\nE\n^\nNA:A1:AA1\nE\n^\nNA:A2\nE\n^\nNB\nE\n^\n"+ // this is not important
                 "!Account\n"+
                 "NMy Cash Account\n"+
                 "TCash\n"+
@@ -388,42 +385,6 @@ public class QIFExportTest extends AbstractDbTest {
         TransactionBuilder.withDb(db).account(a2).amount(5400).dateTime(date(2011, 1, 2).atMidnight()).create();
     }
 
-    private Account createFirstAccount() {
-        Currency c = createCurrency();
-        Account a = new Account();
-        a.title = "My Cash Account";
-        a.type = AccountType.CASH.name();
-        a.currency = c;
-        a.totalAmount = 10000;
-        a.sortOrder = 100;
-        em.saveAccount(a);
-        assertNotNull(em.load(Account.class, a.id));
-        return a;
-    }
-
-    private Account createSecondAccount() {
-        Currency c = em.load(Currency.class, 1);
-        Account a = new Account();
-        a.title = "My Bank Account";
-        a.type = AccountType.BANK.name();
-        a.currency = c;
-        a.totalAmount = 23450;
-        a.sortOrder = 50;
-        em.saveAccount(a);
-        assertNotNull(em.load(Account.class, a.id));
-        return a;
-    }
-
-    private Currency createCurrency() {
-        Currency c = CurrencyBuilder.withDb(db)
-                .title("Singapore Dollar")
-                .name("SGD")
-                .symbol("S$")
-                .create();
-        assertNotNull(em.load(Currency.class, c.id));
-        return c;
-    }
-
     private Category createExpenseCategory(String name) {
         return createCategory(name, Category.TYPE_EXPENSE);
     }
@@ -473,13 +434,9 @@ public class QIFExportTest extends AbstractDbTest {
         return exportAsString(options);
     }
 
-    private String exportAsString(QifExportOptions options) throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        QifExport export = new QifExport(db, options);
-        export.export(bos);
-        String s = new String(bos.toByteArray(), "UTF-8");
-        Log.d("QIF", s);
-        return s;
+    @Override
+    protected QifExport createExport(QifExportOptions options) {
+        return new QifExport(db, options);
     }
 
 }

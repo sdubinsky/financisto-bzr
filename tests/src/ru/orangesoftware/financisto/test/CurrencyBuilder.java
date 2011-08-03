@@ -3,8 +3,6 @@ package ru.orangesoftware.financisto.test;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Currency;
 
-import static junit.framework.Assert.assertNotNull;
-
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -39,6 +37,12 @@ public class CurrencyBuilder {
 
     public CurrencyBuilder symbol(String symbol) {
         c.symbol = symbol;
+        return this;
+    }
+
+    public CurrencyBuilder separators(String groupSeparator, String decimalSeparator) {
+        c.groupSeparator = groupSeparator;
+        c.decimalSeparator = decimalSeparator;
         return this;
     }
 

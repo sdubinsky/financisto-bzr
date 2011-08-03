@@ -47,12 +47,13 @@ public class CSVExport extends Export {
 
 	@Override
 	protected void writeHeader(BufferedWriter bw) throws IOException  {
-		//writing utf bom into file
-		byte[] bom = new byte[3];
-		bom[0] = (byte) 0xEF;
-		bom[1] = (byte) 0xBB;
-		bom[2] = (byte) 0xBF;
-		bw.write(new String(bom,"UTF-8"));
+        if (options.writeUtfBom) {
+            byte[] bom = new byte[3];
+            bom[0] = (byte) 0xEF;
+            bom[1] = (byte) 0xBB;
+            bom[2] = (byte) 0xBF;
+            bw.write(new String(bom,"UTF-8"));
+        }
 		if (options.includeHeader) {
 			Csv.Writer w = new Csv.Writer(bw).delimiter(options.fieldSeparator);
 			w.value("date").value("time").value("account").value("amount").value("currency");

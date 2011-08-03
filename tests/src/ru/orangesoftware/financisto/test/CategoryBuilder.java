@@ -22,12 +22,14 @@ public class CategoryBuilder {
     /**
      * A
      * - A1
+     * -- AA1
      * - A2
      * B
      */
     public static Map<String, Category> createDefaultHierarchy(DatabaseAdapter db) {
         Category a = new CategoryBuilder(db).withTitle("A").create();
-        new CategoryBuilder(db).withParent(a).withTitle("A1").create();
+        Category a1 = new CategoryBuilder(db).withParent(a).withTitle("A1").create();
+        new CategoryBuilder(db).withParent(a1).withTitle("AA1").create();
         new CategoryBuilder(db).withParent(a).withTitle("A2").create();
         new CategoryBuilder(db).withTitle("B").create();
         return allCategoriesAsMap(db);

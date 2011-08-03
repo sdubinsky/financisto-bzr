@@ -1,9 +1,7 @@
 package ru.orangesoftware.financisto.test;
 
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.*;
 
 import java.util.LinkedList;
 
@@ -38,6 +36,20 @@ public class TransactionBuilder {
 
     public TransactionBuilder payee(String payee) {
         t.payeeId = db.insertPayee(payee);
+        return this;
+    }
+
+    public TransactionBuilder location(String location) {
+        MyLocation myLocation = new MyLocation();
+        myLocation.name = location;
+        t.locationId = db.em().saveLocation(myLocation);
+        return this;
+    }
+
+    public TransactionBuilder project(String project) {
+        Project myProject = new Project();
+        myProject.title = project;
+        t.projectId = db.em().saveOrUpdate(myProject);
         return this;
     }
 
