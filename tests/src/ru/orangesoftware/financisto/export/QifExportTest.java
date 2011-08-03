@@ -17,7 +17,7 @@ import static ru.orangesoftware.financisto.test.DateTime.date;
  * User: Denis Solonenko
  * Date: 2/4/11 10:23 PM
  */
-public class QIFExportTest extends AbstractExportTest<QifExport, QifExportOptions> {
+public class QifExportTest extends AbstractExportTest<QifExport, QifExportOptions> {
 
     Account a1;
     Account a2;
@@ -267,25 +267,25 @@ public class QIFExportTest extends AbstractExportTest<QifExport, QifExportOption
                 .withTransferSplit(a2, -110056, 50025)
                 .create();
         assertEquals(
-                "!Account\n"+
-                "NMy Cash Account\n"+
-                "TCash\n"+
-                "^\n"+
-                "!Type:Cash\n"+
-                "D12/07/2011\n"+
-                "T-2,600.66\n"+
-                "S[My Bank Account]\n"+
-                "$-1,100.56\n"+
-                "^\n"+
-                "!Account\n"+
-                "NMy Bank Account\n"+
-                "TBank\n"+
-                "^\n"+
-                "!Type:Bank\n"+
-                "D12/07/2011\n"+
-                "T500.25\n"+
-                "L[My Cash Account]\n"+
-                "^\n",
+                "!Account\n" +
+                        "NMy Cash Account\n" +
+                        "TCash\n" +
+                        "^\n" +
+                        "!Type:Cash\n" +
+                        "D12/07/2011\n" +
+                        "T-2,600.66\n" +
+                        "S[My Bank Account]\n" +
+                        "$-1,100.56\n" +
+                        "^\n" +
+                        "!Account\n" +
+                        "NMy Bank Account\n" +
+                        "TBank\n" +
+                        "^\n" +
+                        "!Type:Bank\n" +
+                        "D12/07/2011\n" +
+                        "T500.25\n" +
+                        "L[My Cash Account]\n" +
+                        "^\n",
                 exportAsString());
     }
 

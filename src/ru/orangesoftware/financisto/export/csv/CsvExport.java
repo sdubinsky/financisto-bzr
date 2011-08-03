@@ -30,12 +30,12 @@ import java.util.Map;
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_DATE_ISO_8601;
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_TIME_ISO_8601;
 
-public class CSVExport extends Export {
+public class CsvExport extends Export {
 
 	private final DatabaseAdapter db;
     private final CsvExportOptions options;
 
-	public CSVExport(DatabaseAdapter db, CsvExportOptions options) {
+	public CsvExport(DatabaseAdapter db, CsvExportOptions options) {
 		this.db = db;
 		this.options = options;
 	}

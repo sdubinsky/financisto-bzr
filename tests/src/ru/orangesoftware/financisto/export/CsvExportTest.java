@@ -9,8 +9,7 @@
 package ru.orangesoftware.financisto.export;
 
 import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.export.csv.CSVExport;
-import ru.orangesoftware.financisto.export.csv.Csv;
+import ru.orangesoftware.financisto.export.csv.CsvExport;
 import ru.orangesoftware.financisto.export.csv.CsvExportOptions;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
@@ -25,7 +24,7 @@ import java.util.Map;
  * User: Denis Solonenko
  * Date: 8/3/11 12:04 AM
  */
-public class CsvExportTest extends AbstractExportTest<CSVExport, CsvExportOptions> {
+public class CsvExportTest extends AbstractExportTest<CsvExport, CsvExportOptions> {
 
     Account a1;
     Account a2;
@@ -74,8 +73,8 @@ public class CsvExportTest extends AbstractExportTest<CSVExport, CsvExportOption
     }
 
     @Override
-    protected CSVExport createExport(CsvExportOptions options) {
-        return new CSVExport(db, options);
+    protected CsvExport createExport(CsvExportOptions options) {
+        return new CsvExport(db, options);
     }
 
 }
