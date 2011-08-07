@@ -183,20 +183,20 @@ public class DatabaseAdapter {
         // query
 		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+"<? AND "+
 						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						   TransactionColumns.is_template+"!=?";
+						   TransactionColumns.is_template+"=0";
 		
 		String whereTo = TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+"<? AND "+
 						 TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						 TransactionColumns.is_template+"!=?";
+						 TransactionColumns.is_template+"=0";
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
 					    whereFrom, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate), "1"}, 
+						String.valueOf(startDate), String.valueOf(endDate)},
 						null, null, TransactionColumns.datetime.name());
 			
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
 					    whereTo, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate), "1"}, 
+						String.valueOf(startDate), String.valueOf(endDate)},
 						null, null, TransactionColumns.datetime.name());
 
             return new MergeCursor(new Cursor[] {c1, c2});
@@ -214,21 +214,21 @@ public class DatabaseAdapter {
         // query
 		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+">? AND "+
 						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						   TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"!=?";
+						   TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"=0";
 		
 		String whereTo = TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+">? AND "+
 						 TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						 TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"!=?";
+						 TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"=0";
 		
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
 					   	whereFrom, new String[]{String.valueOf(accountId), "0", 
-					    String.valueOf(startDate), String.valueOf(endDate), "0", "1"}, 
+					    String.valueOf(startDate), String.valueOf(endDate), "0"},
 					    null, null, TransactionColumns.datetime.name());
 			
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
 					    whereTo, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate), "0", "1"}, 
+						String.valueOf(startDate), String.valueOf(endDate), "0"},
 						null, null, TransactionColumns.datetime.name());
 
             return new MergeCursor(new Cursor[] {c1, c2});
@@ -245,21 +245,21 @@ public class DatabaseAdapter {
         // query direct payments
 		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+">? AND "+
 						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						   TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"!=?";
+						   TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"=0";
 		
 		String whereTo =  TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+">? AND "+
 						  TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						  TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"!=?";
+						  TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"=0";
 		
 		try {
 			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
 					   	whereFrom, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate), "1", "1"}, 
+						String.valueOf(startDate), String.valueOf(endDate), "1"},
 						null, null, TransactionColumns.datetime.name());
 			
 			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
 						whereTo, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate), "1", "1"}, 
+						String.valueOf(startDate), String.valueOf(endDate), "1"},
 						null, null, TransactionColumns.datetime.name());
 
             return new MergeCursor(new Cursor[] {c1, c2});
@@ -276,11 +276,11 @@ public class DatabaseAdapter {
         // query
         String where = "("+TransactionColumns.from_account_id+"=? OR "+TransactionColumns.to_account_id+"=?) AND "+
         			   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-        			   TransactionColumns.is_template+"!=?";       
+        			   TransactionColumns.is_template+"=0";
         try {
             return db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION,
                        where, new String[]{String.valueOf(accountId), String.valueOf(accountId),
-            		   String.valueOf(startDate), String.valueOf(endDate), "1"}, null, null,
+            		   String.valueOf(startDate), String.valueOf(endDate)}, null, null,
             		   TransactionColumns.datetime.name());
         } catch(SQLiteException e) {
             return null;
