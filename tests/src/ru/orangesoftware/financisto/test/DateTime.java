@@ -32,6 +32,12 @@ public class DateTime {
         return dt;
     }
 
+    public static DateTime fromTimestamp(long timestamp) {
+        DateTime dt = new DateTime();
+        dt.c.setTimeInMillis(timestamp);
+        return dt;
+    }
+
     public DateTime atMidnight() {
         return at(0, 0, 0, 0);
     }

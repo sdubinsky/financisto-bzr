@@ -63,6 +63,11 @@ public class TransactionBuilder {
         return this;
     }
 
+    public TransactionBuilder ccPayment() {
+        t.isCCardPayment = 1;
+        return this;
+    }
+
     public TransactionBuilder dateTime(DateTime dateTime) {
         t.dateTime = dateTime.asLong();
         return this;

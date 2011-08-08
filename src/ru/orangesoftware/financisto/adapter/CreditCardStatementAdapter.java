@@ -7,7 +7,7 @@ import java.util.HashMap;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MonthlyViewActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
 import android.content.Context;
@@ -99,20 +99,20 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	    	}
 	    	
 	    	// get amount of expense
-	    	int valueCol = c.getColumnIndex(TransactionColumns.from_amount.name());
+	    	int valueCol = c.getColumnIndex(DatabaseHelper.BlotterColumns.from_amount.name());
 	    	// to consider correct value from transfers
-	    	if (c.getLong(c.getColumnIndex(TransactionColumns.to_account_id.name()))==account) {
-	    		valueCol = c.getColumnIndex(TransactionColumns.to_amount.name());
+	    	if (c.getLong(c.getColumnIndex(DatabaseHelper.BlotterColumns.to_account_id.name()))==account) {
+	    		valueCol = c.getColumnIndex(DatabaseHelper.BlotterColumns.to_amount.name());
 	    	}
 	    	
 	    	long value = c.getLong(valueCol);
 	    	// is scheduled?
-	    	boolean isScheduled = c.getInt(c.getColumnIndex(TransactionColumns.is_template.name()))==2;
+	    	boolean isScheduled = c.getInt(c.getColumnIndex(DatabaseHelper.BlotterColumns.is_template.name()))==2;
 	        
 	        // get columns values or needed parameters
-	    	long date = c.getLong(TransactionColumns.datetime.ordinal());
-	        String note = c.getString(TransactionColumns.note.ordinal());
-	        long locId = c.getLong(TransactionColumns.location_id.ordinal());
+	    	long date = c.getLong(DatabaseHelper.BlotterColumns.datetime.ordinal());
+	        String note = c.getString(DatabaseHelper.BlotterColumns.note.ordinal());
+	        long locId = c.getLong(DatabaseHelper.BlotterColumns.location_id.ordinal());
 	        String location = null;
 	        String desc = "";
 	        boolean future = date>Calendar.getInstance().getTimeInMillis();

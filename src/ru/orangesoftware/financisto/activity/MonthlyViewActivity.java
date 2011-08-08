@@ -335,9 +335,9 @@ public class MonthlyViewActivity extends ListActivity {
 		
 		if (isStatementPreview) {
 			// display expenses and credits separated	    	
-			Cursor expenses = dbAdapter.getAllExpenses(accountId, open.getTimeInMillis(), close.getTimeInMillis());
-			Cursor credits = dbAdapter.getCredits(accountId, open.getTimeInMillis(), close.getTimeInMillis());
-			Cursor payments = dbAdapter.getPayments(accountId, open.getTimeInMillis(), close.getTimeInMillis());
+			Cursor expenses = dbAdapter.getMonthlyViewExpenses(accountId, open.getTimeInMillis(), close.getTimeInMillis());
+			Cursor credits = dbAdapter.getMonthlyViewCredits(accountId, open.getTimeInMillis(), close.getTimeInMillis());
+			Cursor payments = dbAdapter.getMonthlyViewPayments(accountId, open.getTimeInMillis(), close.getTimeInMillis());
 			
 			transactionsCursor = new MergeCursor(new Cursor[] { getHeader(HEADER_PAYMENTS, payments.getCount()), payments, 
 																getHeader(HEADER_CREDITS, credits.getCount()), credits, 
@@ -345,7 +345,7 @@ public class MonthlyViewActivity extends ListActivity {
 			
 		} else {
 			// account filtering: credit card transactions, from open to close date
-			transactionsCursor = dbAdapter.getAllTransactions(accountId, open.getTimeInMillis(), close.getTimeInMillis());
+			transactionsCursor = dbAdapter.getAccountMonthlyView(accountId, open.getTimeInMillis(), close.getTimeInMillis());
 		}
 
     	TextView totalText = (TextView)findViewById(R.id.monthly_result);

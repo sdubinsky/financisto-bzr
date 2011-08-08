@@ -179,112 +179,49 @@ public class DatabaseAdapter {
 	 * [Bill Filtering] Returns all the expenses (negative amount) for a given Account in a given period.
 	 * @return Transactions (negative amount) of the given Account, from start date to end date.
 	 */
-	public Cursor getAllExpenses(long accountId, long startDate, long endDate) {
-        // query
-		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+"<? AND "+
-						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						   TransactionColumns.is_template+"=0";
-		
-		String whereTo = TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+"<? AND "+
-						 TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						 TransactionColumns.is_template+"=0";
-		try {
-			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					    whereFrom, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate)},
-						null, null, TransactionColumns.datetime.name());
-			
-			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					    whereTo, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate)},
-						null, null, TransactionColumns.datetime.name());
-
-            return new MergeCursor(new Cursor[] {c1, c2});
-		} catch(SQLiteException e) {
-			return null;
-		}
+	public Cursor getMonthlyViewExpenses(long accountId, long startDate, long endDate) {
+        WhereFilter filter = createMonthlyViewFilter(accountId, startDate, endDate)
+                .lt(BlotterColumns.from_amount.name(), "0");
+        return getBlotterForAccountWithSplits(filter);
 	}
-	
 	
 	/**
 	 * [Bill Filtering] Returns the credits (positive amount) for a given Account in a given period, excluding payments.
 	 * @return Transactions (positive amount) of the given Account, from start date to end date.
 	 */
-	public Cursor getCredits(long accountId, long startDate, long endDate) {
-        // query
-		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+">? AND "+
-						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						   TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"=0";
-		
-		String whereTo = TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+">? AND "+
-						 TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						 TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"=0";
-		
-		try {
-			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   	whereFrom, new String[]{String.valueOf(accountId), "0", 
-					    String.valueOf(startDate), String.valueOf(endDate), "0"},
-					    null, null, TransactionColumns.datetime.name());
-			
-			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					    whereTo, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate), "0"},
-						null, null, TransactionColumns.datetime.name());
-
-            return new MergeCursor(new Cursor[] {c1, c2});
-		} catch(SQLiteException e) {
-			return null;
-		}
+	public Cursor getMonthlyViewCredits(long accountId, long startDate, long endDate) {
+        WhereFilter filter = createMonthlyViewFilter(accountId, startDate, endDate)
+                .gt(BlotterColumns.from_amount.name(), "0")
+                .eq(BlotterColumns.is_ccard_payment.name(), "0");
+        return getBlotterForAccountWithSplits(filter);
 	}
 	
 	/**
 	 * [Bill Filtering] Returns all the payments for a given Credit Card Account in a given period.
 	 * @return Transactions of the given Account, from start date to end date.
 	 */
-	public Cursor getPayments(long accountId, long startDate, long endDate) {
-        // query direct payments
-		String whereFrom = TransactionColumns.from_account_id+"=? AND "+TransactionColumns.from_amount+">? AND "+
-						   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						   TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"=0";
-		
-		String whereTo =  TransactionColumns.to_account_id+"=? AND "+TransactionColumns.to_amount+">? AND "+
-						  TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-						  TransactionColumns.is_ccard_payment+"=? AND "+TransactionColumns.is_template+"=0";
-		
-		try {
-			Cursor c1 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-					   	whereFrom, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate), "1"},
-						null, null, TransactionColumns.datetime.name());
-			
-			Cursor c2 = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION, 
-						whereTo, new String[]{String.valueOf(accountId), "0", 
-						String.valueOf(startDate), String.valueOf(endDate), "1"},
-						null, null, TransactionColumns.datetime.name());
-
-            return new MergeCursor(new Cursor[] {c1, c2});
-		} catch(SQLiteException e) {
-			return null;
-		}
-	}
+	public Cursor getMonthlyViewPayments(long accountId, long startDate, long endDate) {
+        WhereFilter filter = createMonthlyViewFilter(accountId, startDate, endDate)
+                .gt(BlotterColumns.from_amount.name(), "0")
+                .eq(BlotterColumns.is_ccard_payment.name(), "1");
+        return getBlotterForAccountWithSplits(filter);
+    }
 	
     /**
      * [Monthly view] Returns all the transactions for a given Account in a given period (month).
-     * @return Transactions (negative value) of the given Account, from start date to end date.
+     * @return Transactions of the given Account, from start date to end date.
      */
-    public Cursor getAllTransactions(long accountId, long startDate, long endDate) {
-        // query
-        String where = "("+TransactionColumns.from_account_id+"=? OR "+TransactionColumns.to_account_id+"=?) AND "+
-        			   TransactionColumns.datetime+">? AND "+TransactionColumns.datetime+"<? AND "+
-        			   TransactionColumns.is_template+"=0";
-        try {
-            return db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION,
-                       where, new String[]{String.valueOf(accountId), String.valueOf(accountId),
-            		   String.valueOf(startDate), String.valueOf(endDate)}, null, null,
-            		   TransactionColumns.datetime.name());
-        } catch(SQLiteException e) {
-            return null;
-        }
+    public Cursor getAccountMonthlyView(long accountId, long startDate, long endDate) {
+        WhereFilter filter = createMonthlyViewFilter(accountId, startDate, endDate);
+        return getBlotterForAccountWithSplits(filter);
+    }
+
+    private WhereFilter createMonthlyViewFilter(long accountId, long startDate, long endDate) {
+        return WhereFilter.empty()
+                .eq(BlotterColumns.from_account_id.name(), String.valueOf(accountId))
+                .btw(BlotterColumns.datetime.name(), String.valueOf(startDate), String.valueOf(endDate))
+                .eq(WhereFilter.Criteria.raw("("+TransactionColumns.parent_id+"=0 OR "+BlotterColumns.is_transfer+"=-1)"))
+                .asc(BlotterColumns.datetime.name());
     }
     
 	private static final String LOCATION_COUNT_UPDATE = "UPDATE "+LOCATIONS_TABLE
