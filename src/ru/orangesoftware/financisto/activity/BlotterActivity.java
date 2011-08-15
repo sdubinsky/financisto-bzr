@@ -13,7 +13,6 @@ package ru.orangesoftware.financisto.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -32,7 +31,6 @@ import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
@@ -46,9 +44,7 @@ public class BlotterActivity extends AbstractListActivity {
 	public static final String EXTRA_FILTER_ACCOUNTS = "filterAccounts";
 	
 	private static final int NEW_TRANSACTION_REQUEST = 1;
-	private static final int EDIT_TRANSACTION_REQUEST = 2;
 	private static final int NEW_TRANSFER_REQUEST = 3;
-	private static final int EDIT_TRANSFER_REQUEST = 4;
 	private static final int NEW_TRANSACTION_FROM_TEMPLATE_REQUEST = 5;
 	private static final int MONTHLY_VIEW_REQUEST = 6;
 	private static final int BILL_PREVIEW_REQUEST = 7;
@@ -184,7 +180,7 @@ public class BlotterActivity extends AbstractListActivity {
                     showTransactionInfo(selectedId);
                     break;
                 case 1:
-                    editTransaction(selectedId, false);
+                    editTransaction(selectedId);
                     break;
                 case 2:
                     deleteTransaction(selectedId);
@@ -201,7 +197,7 @@ public class BlotterActivity extends AbstractListActivity {
     };
 
     private void clearTransaction(long selectedId) {
-        db.updateTransactionStatus(selectedId, TransactionStatus.CL);
+        new BlotterOperations(this, db, selectedId).clearTransaction();
         recreateCursor();
     }
 
@@ -242,7 +238,7 @@ public class BlotterActivity extends AbstractListActivity {
 				duplicateTransaction(mi.id, 1);
 				return true;
 			case MENU_SAVE_AS_TEMPLATE:
-				db.duplicateTransactionAsTemplate(mi.id);
+                new BlotterOperations(this, db, mi.id).duplicateAsTemplate();
 				Toast.makeText(this, R.string.save_as_template_success, Toast.LENGTH_SHORT).show();
 				return true;
 			}
@@ -251,13 +247,11 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 
 	private long duplicateTransaction(long id, int multiplier) {
+        long newId = new BlotterOperations(this, db, id).duplicateTransaction(multiplier);
 		String toastText;
-		long newId;
 		if (multiplier > 1) {
-			newId = db.duplicateTransactionWithMultiplier(id, multiplier);
 			toastText = getString(R.string.duplicate_success_with_multiplier, multiplier);
 		} else {
-			newId = db.duplicateTransaction(id);
 			toastText = getString(R.string.duplicate_success);
 		}
 		Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
@@ -309,49 +303,24 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 
     private void deleteTransaction(long id) {
-        final Transaction t = db.getTransaction(id);
-        int titleId = t.isTemplate() ? R.string.delete_template_confirm
-                : (t.isSplit() ? R.string.delete_transaction_parent_confirm : R.string.delete_transaction_confirm);
-        new AlertDialog.Builder(this)
-                .setMessage(titleId)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        long transactionIdToDelete = t.isSplit() ? t.parentId : t.id;
-                        db.deleteTransaction(transactionIdToDelete);
-                        afterDeletingTransaction(transactionIdToDelete);
-                        recreateCursor();
-                    }
-                })
-                .setNegativeButton(R.string.no, null)
-                .show();
+        new BlotterOperations(this, db, id).deleteTransaction();
     }
 
     protected void afterDeletingTransaction(long id) {
+        recreateCursor();
         AccountWidget.updateWidgets(this);
     }
 
 	@Override
 	public void editItem(View v, int position, long id) {
-		editTransaction(id, false);
+		editTransaction(id);
 	}
-	
-	public void editTransaction(long id, boolean duplicate) {
-		Transaction t = db.getTransaction(id);
-		if (t.isTransfer()) {
-			Intent intent = new Intent(BlotterActivity.this, TransferActivity.class);
-			intent.putExtra(TransferActivity.TRAN_ID_EXTRA, id);
-			intent.putExtra(TransferActivity.DUPLICATE_EXTRA, duplicate);
-			startActivityForResult(intent, EDIT_TRANSFER_REQUEST);			
-		} else {
-			Intent intent = new Intent(BlotterActivity.this, TransactionActivity.class);
-			intent.putExtra(TransactionActivity.TRAN_ID_EXTRA, t.isSplit() ? t.parentId : id);
-			intent.putExtra(TransactionActivity.DUPLICATE_EXTRA, duplicate);
-			startActivityForResult(intent, EDIT_TRANSACTION_REQUEST);
-		}		
-	}
-	
-	@Override
+
+    private void editTransaction(long id) {
+        new BlotterOperations(this, db, id).editTransaction();
+    }
+
+    @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == FILTER_REQUEST) {
 			if (resultCode == RESULT_FIRST_USER) {
@@ -420,7 +389,7 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 
     private void showTransactionInfo(long id) {
-        TransactionInfoDialog transactionInfoView = new TransactionInfoDialog(this, id, em, inflater);
+        TransactionInfoDialog transactionInfoView = new TransactionInfoDialog(this, id, db, inflater);
         transactionInfoView.show();
     }
 

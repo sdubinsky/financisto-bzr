@@ -138,10 +138,6 @@ public class MyEntityManager extends EntityManager {
 		return get(TransactionInfo.class, transactionId);
 	}
 
-	public TransactionInfo loadTransactionInfo(long transactionId) {
-		return load(TransactionInfo.class, transactionId);
-	}
-
 	public List<TransactionAttributeInfo> getAttributesForTransaction(long transactionId) {
 		Query<TransactionAttributeInfo> q = createQuery(TransactionAttributeInfo.class).asc("name");
 		q.where(Expressions.and(

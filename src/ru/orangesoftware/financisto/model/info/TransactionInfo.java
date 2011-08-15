@@ -35,6 +35,9 @@ public class TransactionInfo {
 	@Column(name = "_id")
 	public long id = -1;
 	
+    @Column(name = "parent_id")
+    public long parentId;
+
 	@JoinColumn(name = "from_account_id")
 	public Account fromAccount;
 

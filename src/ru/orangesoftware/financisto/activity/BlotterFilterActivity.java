@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
@@ -31,12 +32,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TextView;
 
 
 public class BlotterFilterActivity extends AbstractActivity {	
@@ -126,7 +121,22 @@ public class BlotterFilterActivity extends AbstractActivity {
 		
 	}
 
-	private void updateSortOrderFromFilter() {
+    private void showMinusButton(TextView textView) {
+        ImageView v = findMinusButton(textView);
+        v.setVisibility(View.VISIBLE);
+    }
+
+    private void hideMinusButton(TextView textView) {
+        ImageView v = findMinusButton(textView);
+        v.setVisibility(View.GONE);
+    }
+
+    private ImageView findMinusButton(TextView textView) {
+        LinearLayout layout = (LinearLayout) textView.getParent().getParent();
+        return (ImageView) layout.getChildAt(layout.getChildCount()-1);
+    }
+
+    private void updateSortOrderFromFilter() {
 		String s = filter.getSortOrder();
 		if (BlotterFilter.SORT_OLDER_TO_NEWER.equals(s)) {
 			sortOrder.setText(sortBlotterEntries[1]);
@@ -140,8 +150,10 @@ public class BlotterFilterActivity extends AbstractActivity {
 		if (c != null) {
 			MyLocation loc = em.get(MyLocation.class, c.getLongValue1());
 			location.setText(loc != null ? loc.name : filterValueNotFound);
+            showMinusButton(location);
 		} else {
 			location.setText(R.string.no_filter);
+            hideMinusButton(location);
 		}
 	}
 
@@ -162,8 +174,10 @@ public class BlotterFilterActivity extends AbstractActivity {
             } else {
                 category.setText(filterValueNotFound);
             }
+            showMinusButton(category);
 		} else {
 			category.setText(R.string.no_filter);
+            hideMinusButton(category);
 		}
 	}
 
@@ -178,8 +192,9 @@ public class BlotterFilterActivity extends AbstractActivity {
 			} else {
 				period.setText(p.type.titleId);
 			}
+            showMinusButton(period);
 		} else {
-			period.setText(R.string.no_filter);
+            clear(BlotterFilter.DATETIME, period);
 		}
 	}
 
@@ -196,8 +211,10 @@ public class BlotterFilterActivity extends AbstractActivity {
 		if (c != null) {
 			TransactionStatus s = TransactionStatus.valueOf(c.getStringValue());
 			status.setText(getString(s.titleId));
+            showMinusButton(status);
 		} else {
 			status.setText(R.string.no_filter);
+            hideMinusButton(status);
 		}
 	}
 
@@ -210,8 +227,10 @@ public class BlotterFilterActivity extends AbstractActivity {
             } else {
                 filterView.setText(filterValueNotFound);
             }
+            showMinusButton(filterView);
         } else {
             filterView.setText(R.string.no_filter);
+            hideMinusButton(filterView);
         }
     }
 
@@ -224,8 +243,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			startActivityForResult(intent, 1);
 			break;
 		case R.id.period_clear:
-			filter.remove(BlotterFilter.DATETIME);
-			period.setText(R.string.no_filter);
+            clear(BlotterFilter.DATETIME, period);
 			break;
 		case R.id.account: {
 			Cursor cursor = em.getAllAccounts();
@@ -318,6 +336,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 	private void clear(String criteria, TextView textView) {
 		filter.remove(criteria);
 		textView.setText(R.string.no_filter);
+        hideMinusButton(textView);
 	}
 
 	@Override

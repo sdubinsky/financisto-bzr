@@ -22,7 +22,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class CreditCardStatementAdapter extends SimpleCursorAdapter implements Filterable {
- 
+
 		private final DatabaseAdapter dba;
 	    private int layout;
 	    
@@ -151,25 +151,15 @@ public class CreditCardStatementAdapter extends SimpleCursorAdapter implements F
 	        TextView dateText = h.dateText;
 	        TextView descText = h.descText;
 	        TextView valueText = h.valueText;
-	
-	        dateText.setBackgroundColor(Color.rgb(17,17,17));
-        	descText.setBackgroundColor(Color.rgb(17,17,17));
-        	valueText.setBackgroundColor(Color.rgb(17,17,17));
-        	
-	        if (dateText != null) {
-	            dateText.setText(getDate(date)+" ");
-	        }
-	        if (descText != null) {
-	            descText.setText(desc);
-	        }
-	        if (valueText != null) {
-	        	if (isStatementPreview) {
-	        		u.setAmountText(valueText, currency, (-1)*value, false);
-	        	} else {
-	        		u.setAmountText(valueText, currency, value, false);
-	        	}
-	        }
-	        
+
+            dateText.setText(getDate(date)+" ");
+            descText.setText(desc);
+            if (isStatementPreview) {
+                u.setAmountText(valueText, currency, (-1)*value, false);
+            } else {
+                u.setAmountText(valueText, currency, value, false);
+            }
+
 	        // set style 
 	        if (isScheduled) {
 	        	dateText.setTypeface(Typeface.defaultFromStyle(scheduledStyle), scheduledStyle);

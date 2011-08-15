@@ -21,6 +21,8 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.BlotterActivity;
+import ru.orangesoftware.financisto.activity.BlotterOperations;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
@@ -37,6 +39,7 @@ public class TransactionInfoDialog {
 
     private final BlotterActivity parentActivity;
     private final long transactionId;
+    private final DatabaseAdapter db;
     private final MyEntityManager em;
     private final NodeInflater inflater;
     private final LayoutInflater layoutInflater;
@@ -44,10 +47,11 @@ public class TransactionInfoDialog {
     private final Utils u;
 
     public TransactionInfoDialog(BlotterActivity parentActivity, long transactionId,
-                                 MyEntityManager em, NodeInflater inflater) {
+                                 DatabaseAdapter db, NodeInflater inflater) {
         this.parentActivity = parentActivity;
         this.transactionId = transactionId;
-        this.em = em;
+        this.db = db;
+        this.em = db.em();
         this.inflater = inflater;
         this.layoutInflater = (LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.splitPadding = parentActivity.getResources().getDimensionPixelSize(R.dimen.transaction_icon_padding);
@@ -60,6 +64,9 @@ public class TransactionInfoDialog {
             Toast t = Toast.makeText(parentActivity, R.string.no_transaction_found, Toast.LENGTH_LONG);
             t.show();
             return;
+        }
+        if (ti.parentId > 0) {
+            ti = em.getTransactionInfo(ti.parentId);
         }
         View v = layoutInflater.inflate(R.layout.transaction_info, null);
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.list);
@@ -198,7 +205,7 @@ public class TransactionInfoDialog {
             @Override
             public void onClick(View arg0) {
                 d.dismiss();
-                parentActivity.editTransaction(transactionId, false);
+                new BlotterOperations(parentActivity, db, transactionId).editTransaction();
             }
         });
 
