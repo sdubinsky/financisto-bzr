@@ -63,6 +63,9 @@ public class CalculatorInput extends Activity implements OnClickListener {
         b.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                if (!isInEquals) {
+                    doEqualsChar();
+                }
                 close();
             }
         });
