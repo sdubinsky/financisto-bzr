@@ -33,11 +33,20 @@ import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_SUB_CATEGO
 
 public class SubCategoryReport extends AbstractReport {
 	
+    private final GraphStyle[] styles = new GraphStyle[3];
+
 	public SubCategoryReport(Context context) {
-		super(context);		
+		super(context);
+        createStyles(context);
 	}
 
-	@Override
+    private void createStyles(Context context) {
+        styles[0] = new GraphStyle.Builder(context).dy(2).textDy(5).lineHeight(30).nameTextSize(14).amountTextSize(12).indent(0).build();
+        styles[1] = new GraphStyle.Builder(context).dy(2).textDy(5).lineHeight(20).nameTextSize(12).amountTextSize(10).indent(10).build();
+        styles[2] = new GraphStyle.Builder(context).dy(2).textDy(5).lineHeight(20).nameTextSize(12).amountTextSize(10).indent(30).build();
+    }
+
+    @Override
 	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {
 		filterTransfers(filter);
 		Cursor c = db.db().query(V_REPORT_SUB_CATEGORY, DatabaseHelper.SubCategoryReportColumns.NORMAL_PROJECTION,
@@ -95,16 +104,8 @@ public class SubCategoryReport extends AbstractReport {
 		}
 	}
 	
-	private static final GraphStyle[] STYLES = new GraphStyle[3];
-	
-	static {
-		STYLES[0] = new GraphStyle.Builder().dy(2).textDy(5).lineHeight(30).nameTextSize(14).amountTextSize(12).indent(0).build();
-		STYLES[1] = new GraphStyle.Builder().dy(2).textDy(5).lineHeight(20).nameTextSize(12).amountTextSize(10).indent(10).build();
-		STYLES[2] = new GraphStyle.Builder().dy(2).textDy(5).lineHeight(20).nameTextSize(12).amountTextSize(10).indent(30).build();
-	}
-
 	private GraphStyle getStyle(int level) {
-		return STYLES[Math.min(2, level)];
+		return styles[Math.min(2, level)];
 	}
 
 	@Override

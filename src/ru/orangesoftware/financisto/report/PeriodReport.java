@@ -77,7 +77,7 @@ public class PeriodReport extends AbstractReport {
     }
 
     private GraphUnit createGraphUnit(Period p) {
-        return new GraphUnit(p.type.ordinal(), context.getString(p.type.titleId), DEFAULT_STYLE);
+        return new GraphUnit(p.type.ordinal(), context.getString(p.type.titleId), style);
     }
 
     @Override

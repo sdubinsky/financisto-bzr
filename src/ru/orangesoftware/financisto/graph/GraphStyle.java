@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.graph;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -46,15 +47,21 @@ public class GraphStyle {
 	}
 
 	public static class Builder {
-		
+
+        private final Context context;
+
 		private int dy = 2;
 		private int textDy = 5;
 		private int lineHeight = 30;
 		private int nameTextSize = 14;
 		private int amountTextSize = 12;
 		private int indent = 0;
-		
-		public Builder dy(int x) {
+
+        public Builder(Context context) {
+            this.context = context;
+        }
+
+        public Builder dy(int x) {
 			this.dy = x;
 			return this;
 		}
@@ -85,6 +92,7 @@ public class GraphStyle {
 		}		
 
 		public GraphStyle build() {
+            float density = context.getResources().getDisplayMetrics().density;
 			Rect rect = new Rect();
 			Paint namePaint = new Paint();
 			Paint amountPaint = new Paint();
@@ -92,23 +100,33 @@ public class GraphStyle {
 			namePaint.setColor(Color.WHITE);
 			namePaint.setAntiAlias(true);
 			namePaint.setTextAlign(Align.LEFT);
-			namePaint.setTextSize(nameTextSize);
+			namePaint.setTextSize(spToPx(nameTextSize, density));
 			namePaint.setTypeface(Typeface.DEFAULT_BOLD);
 			namePaint.getTextBounds("A", 0, 1, rect);		
 			int nameHeight = rect.height();
 			amountPaint.setColor(Color.WHITE);
 			amountPaint.setAntiAlias(true);
-			amountPaint.setTextSize(amountTextSize);
+			amountPaint.setTextSize(spToPx(amountTextSize, density));
 			amountPaint.setTextAlign(Align.CENTER);
 			amountPaint.getTextBounds("8", 0, 1, rect);		
 			int amountHeight = rect.height();
 			linePaint.setStyle(Style.FILL);
 			return new GraphStyle(
-					dy, textDy, indent, 
-					lineHeight, nameHeight, amountHeight, 
-					namePaint, amountPaint, linePaint);
+					spToPx(dy, density),
+                    spToPx(textDy, density),
+                    spToPx(indent, density),
+					spToPx(lineHeight, density),
+                    nameHeight,
+                    amountHeight,
+					namePaint,
+                    amountPaint,
+                    linePaint);
 		}
-		
-	}
+
+        private int spToPx(int textSizeSp, float density) {
+            return (int)(0.5f+density*textSizeSp);
+        }
+
+    }
 	
 }

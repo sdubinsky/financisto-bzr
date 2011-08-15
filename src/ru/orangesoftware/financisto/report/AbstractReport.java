@@ -34,14 +34,15 @@ import java.util.HashMap;
 
 public abstract class AbstractReport implements Report {
 	
-	public static final GraphStyle DEFAULT_STYLE = new GraphStyle.Builder().build();
+	public final GraphStyle style;
 	
 	protected final Context context;
 	protected final boolean includeTransfers;
 	
 	public AbstractReport(Context context) {
 		this.context = context;
-		this.includeTransfers = MyPreferences.isIncludeTransfersIntoReports(context); 
+		this.includeTransfers = MyPreferences.isIncludeTransfersIntoReports(context);
+        this.style = new GraphStyle.Builder(context).build();
 	}
 	
 	protected String alterName(long id, String name) {
@@ -77,7 +78,7 @@ public abstract class AbstractReport implements Report {
 					if (u != null) {
 						units.add(u);
 					}
-					u = new GraphUnit(id, alterName(id, name), DEFAULT_STYLE);
+					u = new GraphUnit(id, alterName(id, name), style);
 					lastId = id;
 				}
 				Currency currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
