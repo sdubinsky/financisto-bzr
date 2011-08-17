@@ -83,6 +83,7 @@ public class TransactionBuilder {
         split.fromAmount = amount;
         split.note = note;
         t.splits.add(split);
+        t.categoryId = Category.SPLIT_CATEGORY_ID;
         return this;
     }
 
@@ -92,6 +93,7 @@ public class TransactionBuilder {
         split.fromAmount = fromAmount;
         split.toAmount = toAmount;
         t.splits.add(split);
+        t.categoryId = Category.SPLIT_CATEGORY_ID;
         return this;
     }
 

@@ -14,7 +14,6 @@ package ru.orangesoftware.financisto.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
@@ -110,6 +109,9 @@ public class DatabaseAdapter {
 			if (c.moveToFirst()) {
 				Transaction t = Transaction.fromCursor(c);
 				t.systemAttributes = getSystemAttributesForTransaction(id);
+                if (t.isSplitParent()) {
+                    t.splits = em.getSplitsForTransaction(t.id);
+                }
 				return t;
 			}
 		} finally {
@@ -271,7 +273,7 @@ public class DatabaseAdapter {
 		try {
 			long now = System.currentTimeMillis();
 			Transaction transaction = getTransaction(id);
-            if (transaction.isSplit()) {
+            if (transaction.isSplitChild()) {
                 id = transaction.parentId;
                 transaction = getTransaction(id);
             }
@@ -317,7 +319,7 @@ public class DatabaseAdapter {
 	}
 
     public long insertOrUpdate(Transaction transaction) {
-        return insertOrUpdate(transaction, null);
+        return insertOrUpdate(transaction, Collections.<TransactionAttribute>emptyList());
     }
 
 	public long insertOrUpdate(Transaction transaction, List<TransactionAttribute> attributes) {
@@ -380,7 +382,7 @@ public class DatabaseAdapter {
     private long insertTransaction(Transaction t) {
         long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
         if (!t.isTemplateLike()) {
-            if (t.isSplit()) {
+            if (t.isSplitChild()) {
                 if (t.isTransfer()) {
                     updateToAccountBalance(t, id);
                 }
@@ -1272,11 +1274,14 @@ public class DatabaseAdapter {
 	private static final String UPDATE_LAST_RECURRENCE = 
 		"UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.last_recurrence +"=? WHERE "+TransactionColumns._id +"=?";
 
-	public void storeMissedSchedules(List<RestoredTransaction> restored, long now) {
+	public long[] storeMissedSchedules(List<RestoredTransaction> restored, long now) {
 		db.beginTransaction();
 		try {
+            int count = restored.size();
+            long[] restoredIds = new long[count];
 			HashMap<Long, Transaction> transactions = new HashMap<Long, Transaction>();
-			for (RestoredTransaction rt : restored) {
+			for (int i=0; i<count; i++) {
+                RestoredTransaction rt = restored.get(i);
 				long transactionId = rt.transactionId;
 				Transaction t = transactions.get(transactionId);
 				if (t == null) {
@@ -1287,13 +1292,14 @@ public class DatabaseAdapter {
 				t.dateTime = rt.dateTime.getTime();
 				t.status = TransactionStatus.RS;
 				t.isTemplate = 0;
-				insertTransaction(t);
+				restoredIds[i] = insertOrUpdate(t);
 				t.id = transactionId;
 			}
 			for (Transaction t : transactions.values()) {
 				db.execSQL(UPDATE_LAST_RECURRENCE, new Object[]{now, t.id});		
 			}
 			db.setTransactionSuccessful();
+            return restoredIds;
 		} finally {
 			db.endTransaction();
 		}

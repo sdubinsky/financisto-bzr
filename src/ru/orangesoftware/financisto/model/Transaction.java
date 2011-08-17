@@ -214,7 +214,11 @@ public class Transaction {
 		return isCCardPayment == 1;
 	}
 
-    public boolean isSplit() {
+    public boolean isSplitParent() {
+        return categoryId == Category.SPLIT_CATEGORY_ID;
+    }
+
+    public boolean isSplitChild() {
         return parentId > 0;
     }
 	

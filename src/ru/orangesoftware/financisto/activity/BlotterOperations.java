@@ -35,7 +35,7 @@ public class BlotterOperations {
         this.activity = activity;
         this.db = db;
         this.originalTransaction = db.getTransaction(transactionId);
-        if (this.originalTransaction.isSplit()) {
+        if (this.originalTransaction.isSplitChild()) {
             this.targetTransaction = db.getTransaction(this.originalTransaction.parentId);
         } else {
             this.targetTransaction = this.originalTransaction;
@@ -58,7 +58,7 @@ public class BlotterOperations {
 
     public void deleteTransaction() {
         int titleId = targetTransaction.isTemplate() ? R.string.delete_template_confirm
-                : (originalTransaction.isSplit() ? R.string.delete_transaction_parent_confirm : R.string.delete_transaction_confirm);
+                : (originalTransaction.isSplitChild() ? R.string.delete_transaction_parent_confirm : R.string.delete_transaction_confirm);
         new AlertDialog.Builder(activity)
                 .setMessage(titleId)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
