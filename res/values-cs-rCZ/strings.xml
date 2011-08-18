@@ -267,7 +267,7 @@
 	<string name="backup_database_gdocs_inprogress">Databáze se zálohuje..</string>
 	<string name="csv_export">Exportovat do CSV</string>
 	<string name="csv_export_inprogress">Exportuje se do CSV..</string>	
-	<string name="restore_database">Obdnovit databázi</string>
+	<string name="restore_database">Obnovit databázi</string>
 	<string name="restore_database_inprogress">Databáze se obnovuje...</string>
 	<string name="restore_database_gdocs">Obnovit z Google Docs</string>
 	<string name="restore_database_inprogress_gdocs">Databáze se obnovuje...</string>
