@@ -65,8 +65,9 @@ public class BlotterActivity extends AbstractListActivity {
 
 	protected boolean saveFilter;
 	protected WhereFilter blotterFilter;
-	protected boolean filterAccounts = false;
-	
+	private boolean filterAccounts = false;
+    private boolean isAccountBlotter = false;
+
     public BlotterActivity(int layoutId) {
 		super(layoutId);
 	}
@@ -129,6 +130,7 @@ public class BlotterActivity extends AbstractListActivity {
 			public void onClick(View v) {
 				Intent intent = new Intent(BlotterActivity.this, BlotterFilterActivity.class);
 				blotterFilter.toIntent(intent);
+                intent.putExtra(BlotterFilterActivity.IS_ACCOUNT_FILTER, isAccountBlotter && blotterFilter.getAccountId() > 0);
 				startActivityForResult(intent, FILTER_REQUEST);
 			}
 		});
@@ -149,6 +151,7 @@ public class BlotterActivity extends AbstractListActivity {
 			blotterFilter = WhereFilter.fromIntent(intent);
 			saveFilter = intent.getBooleanExtra(SAVE_FILTER, false);
 			filterAccounts = intent.getBooleanExtra(EXTRA_FILTER_ACCOUNTS, false);
+            isAccountBlotter = intent.getBooleanExtra(BlotterFilterActivity.IS_ACCOUNT_FILTER, false);
 		}
 		if (savedInstanceState != null) {
 			blotterFilter = WhereFilter.fromBundle(savedInstanceState);

@@ -216,7 +216,8 @@ public class AccountListActivity extends AbstractListActivity {
 		if (account != null) {
 			Intent intent = new Intent(AccountListActivity.this, BlotterActivity.class);
 			WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(id))
-				.toIntent(account.title, intent);		
+				.toIntent(account.title, intent);
+            intent.putExtra(BlotterFilterActivity.IS_ACCOUNT_FILTER, true);
 			startActivityForResult(intent, VIEW_ACCOUNT_REQUEST);
 		}
 	}

@@ -36,6 +36,7 @@ import android.view.View.OnClickListener;
 
 public class BlotterFilterActivity extends AbstractActivity {	
 	
+    public static final String IS_ACCOUNT_FILTER = "IS_ACCOUNT_FILTER";
 	private static final TransactionStatus[] statuses = TransactionStatus.values();
 
 	private WhereFilter filter = WhereFilter.empty();
@@ -54,8 +55,10 @@ public class BlotterFilterActivity extends AbstractActivity {
 	private String[] sortBlotterEntries;
 
     private String filterValueNotFound;
-	
-	@Override
+    private long accountId;
+    private boolean isAccountFilter;
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -100,15 +103,24 @@ public class BlotterFilterActivity extends AbstractActivity {
 		bNoFilter.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				setResult(RESULT_FIRST_USER);
-				finish();
+                if (isAccountFilter()) {
+                    Intent data = new Intent();
+                    WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(accountId))
+                        .toIntent(filter.getTitle(), data);
+                    setResult(RESULT_OK, data);
+                    finish();
+                } else {
+				    setResult(RESULT_FIRST_USER);
+				    finish();
+                }
 			}
 		});		
 		
 		Intent intent = getIntent();
 		if (intent != null) {
 			filter = WhereFilter.fromIntent(intent);
-			updatePeriodFromFilter();
+            getAccountIdFromFilter(intent);
+            updatePeriodFromFilter();
 			updateAccountFromFilter();
 			updateCurrencyFromFilter();
 			updateCategoryFromFilter();
@@ -117,9 +129,25 @@ public class BlotterFilterActivity extends AbstractActivity {
 			updateLocationFromFilter();
 			updateSortOrderFromFilter();
 			updateStatusFromFilter();
+            disableAccountResetButtonIfNeeded();
 		}
 		
 	}
+
+    private boolean isAccountFilter() {
+        return isAccountFilter && accountId > 0;
+    }
+
+    private void getAccountIdFromFilter(Intent intent) {
+        isAccountFilter = intent.getBooleanExtra(IS_ACCOUNT_FILTER, false);
+        accountId = filter.getAccountId();
+    }
+
+    private void disableAccountResetButtonIfNeeded() {
+        if (isAccountFilter()) {
+            hideMinusButton(account);
+        }
+    }
 
     private void showMinusButton(TextView textView) {
         ImageView v = findMinusButton(textView);
@@ -246,6 +274,9 @@ public class BlotterFilterActivity extends AbstractActivity {
             clear(BlotterFilter.DATETIME, period);
 			break;
 		case R.id.account: {
+            if (isAccountFilter()) {
+                return;
+            }
 			Cursor cursor = em.getAllAccounts();
 			startManagingCursor(cursor);
 			ListAdapter adapter = TransactionUtils.createAccountAdapter(this, cursor);
@@ -254,7 +285,10 @@ public class BlotterFilterActivity extends AbstractActivity {
 			x.select(this, R.id.account, R.string.account, cursor, adapter, "_id", selectedId);
 		} break;
 		case R.id.account_clear:
-			clear(BlotterFilter.FROM_ACCOUNT_ID, account);
+            if (isAccountFilter()) {
+                return;
+            }
+		    clear(BlotterFilter.FROM_ACCOUNT_ID, account);
 			break;
 		case R.id.currency: {
 			Cursor cursor = em.getAllCurrencies("name");
