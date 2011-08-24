@@ -437,7 +437,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
     private void addOrEditSplit(Transaction split) {
         View v = findView(split);
         if (v  == null) {
-            v = x.addNodeMinus(splitsLayout, R.id.edit_aplit, R.id.delete_split, R.string.split, "");
+            v = x.addSplitNodeMinus(splitsLayout, R.id.edit_aplit, R.id.delete_split, R.string.split, "");
         }
         setSplitData(v, split);
         viewToSplitMap.put(v, split);

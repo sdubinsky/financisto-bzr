@@ -66,15 +66,15 @@ public class BlotterFilterActivity extends AbstractActivity {
         filterValueNotFound = getString(R.string.filter_value_not_found);
 
 		LinearLayout layout = (LinearLayout)findViewById(R.id.layout);
-		period = x.addListNodeMinus(layout, R.id.period, R.id.period_clear, R.string.period, R.string.no_filter);
-		account = x.addListNodeMinus(layout, R.id.account, R.id.account_clear, R.string.account, R.string.no_filter);
-		currency = x.addListNodeMinus(layout, R.id.currency, R.id.currency_clear, R.string.currency, R.string.no_filter);
-		category = x.addListNodeMinus(layout, R.id.category, R.id.category_clear, R.string.category, R.string.no_filter);
-        payee = x.addListNodeMinus(layout, R.id.payee, R.id.payee_clear, R.string.payee, R.string.no_filter);
-		project = x.addListNodeMinus(layout, R.id.project, R.id.project_clear, R.string.project, R.string.no_filter);
-		location = x.addListNodeMinus(layout, R.id.location, R.id.location_clear, R.string.location, R.string.no_filter);
-		status = x.addListNodeMinus(layout, R.id.status, R.id.status_clear, R.string.transaction_status, R.string.no_filter);
-		sortOrder = x.addListNodeMinus(layout, R.id.sort_order, R.id.sort_order_clear, R.string.sort_order, sortBlotterEntries[0]);
+		period = x.addFilterNodeMinus(layout, R.id.period, R.id.period_clear, R.string.period, R.string.no_filter);
+		account = x.addFilterNodeMinus(layout, R.id.account, R.id.account_clear, R.string.account, R.string.no_filter);
+		currency = x.addFilterNodeMinus(layout, R.id.currency, R.id.currency_clear, R.string.currency, R.string.no_filter);
+		category = x.addFilterNodeMinus(layout, R.id.category, R.id.category_clear, R.string.category, R.string.no_filter);
+        payee = x.addFilterNodeMinus(layout, R.id.payee, R.id.payee_clear, R.string.payee, R.string.no_filter);
+		project = x.addFilterNodeMinus(layout, R.id.project, R.id.project_clear, R.string.project, R.string.no_filter);
+		location = x.addFilterNodeMinus(layout, R.id.location, R.id.location_clear, R.string.location, R.string.no_filter);
+		status = x.addFilterNodeMinus(layout, R.id.status, R.id.status_clear, R.string.transaction_status, R.string.no_filter);
+		sortOrder = x.addFilterNodeMinus(layout, R.id.sort_order, R.id.sort_order_clear, R.string.sort_order, sortBlotterEntries[0]);
 
 		Button bOk = (Button)findViewById(R.id.bOK);
 		bOk.setOnClickListener(new OnClickListener(){

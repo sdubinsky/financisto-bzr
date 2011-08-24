@@ -156,24 +156,31 @@ public class ActivityLayout {
         return v;
     }
 
-    public View addNodeMinus(LinearLayout layout, int id, int minusId, int labelId, String defaultValue) {
+    public View addSplitNodeMinus(LinearLayout layout, int id, int minusId, int labelId, String defaultValue) {
         ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);
         return b.withButtonId(minusId, listener).withoutMoreButton().withId(id, listener).withLabel(labelId).withData(defaultValue).create();
     }
 
-	public TextView addListNodeMinus(LinearLayout layout, int id, int minusId, int labelId, int defaultValueResId) {
+	public TextView addFilterNodeMinus(LinearLayout layout, int id, int minusId, int labelId, int defaultValueResId) {
 		ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);
 		View v = b.withButtonId(minusId, listener).withId(id, listener).withLabel(labelId).withData(defaultValueResId).create();
+        hideMinusButton(v, minusId);
 		return (TextView)v.findViewById(R.id.data);
 	}
 
-	public TextView addListNodeMinus(LinearLayout layout, int id, int minusId, int labelId, String defaultValue) {
+	public TextView addFilterNodeMinus(LinearLayout layout, int id, int minusId, int labelId, String defaultValue) {
 		ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_minus);
 		View v = b.withButtonId(minusId, listener).withId(id, listener).withLabel(labelId).withData(defaultValue).create();
+        hideMinusButton(v, minusId);
 		return (TextView)v.findViewById(R.id.data);
 	}
 
-	public ImageView addPictureNodeMinus(Context context, LinearLayout layout, int id, int minusId, int labelId, int defaultLabelResId) {
+    private void hideMinusButton(View v, int minusId) {
+        ImageView plusImageView = (ImageView)v.findViewById(minusId);
+        plusImageView.setVisibility(View.GONE);
+    }
+
+    public ImageView addPictureNodeMinus(Context context, LinearLayout layout, int id, int minusId, int labelId, int defaultLabelResId) {
 		PictureBuilder b = inflater.new PictureBuilder(layout);
 		View v = b.withPicture(context, null).withButtonId(minusId, listener).withId(id, listener)
 				  .withLabel(labelId).withData(defaultLabelResId).create();
