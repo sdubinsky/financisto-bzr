@@ -10,6 +10,18 @@ import java.util.Date;
  */
 public class DateTime {
 
+    public static DateTime NULL_DATE = new DateTime(){
+        @Override
+        public Date asDate() {
+            return new Date(0);
+        }
+
+        @Override
+        public long asLong() {
+            return 0;
+        }
+    };
+
     private final Calendar c = Calendar.getInstance();
 
     private DateTime() {}

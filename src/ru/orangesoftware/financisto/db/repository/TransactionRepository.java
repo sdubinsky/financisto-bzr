@@ -61,7 +61,7 @@ public class TransactionRepository {
 				null, null, null);
 		try {
 			if (c.moveToFirst()) {
-				Transaction t = Transaction.fromCursor(c);
+				Transaction t = Transaction.fromBlotterCursor(c);
 				t.systemAttributes = getSystemAttributesForTransaction(id);
 				return t;
 			}

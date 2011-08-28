@@ -11,13 +11,9 @@
 package ru.orangesoftware.financisto.recur;
 
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
+import java.util.*;
 
 import android.util.Log;
-import com.google.ical.util.TimeUtils;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.utils.DateUtils;
 import android.content.Context;
@@ -81,6 +77,19 @@ public class Recurrence {
 		startDate.set(Calendar.SECOND, s);
 		startDate.set(Calendar.MILLISECOND, 0);
 	}
+
+    public List<Date> generateDates(Date start, Date end) {
+        DateRecurrenceIterator ri = createIterator(start);
+        List<Date> dates = new ArrayList<Date>();
+        while (ri.hasNext()) {
+            Date nextDate = ri.next();
+            if (nextDate.after(end)) {
+                break;
+            }
+            dates.add(nextDate);
+        }
+        return dates;
+    }
 
     public DateRecurrenceIterator createIterator(Date now) {
         RRule rrule = createRRule();

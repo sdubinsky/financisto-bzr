@@ -29,6 +29,8 @@ SELECT
 	t.notification_options as notification_options,
 	t.status as status,
 	t.is_ccard_payment as is_ccard_payment,
+	t.last_recurrence as last_recurrence,
+	t.attached_picture as attached_picture,
 	frb.balance as from_account_balance,
 	trb.balance as to_account_balance,
 	t.to_account_id as is_transfer

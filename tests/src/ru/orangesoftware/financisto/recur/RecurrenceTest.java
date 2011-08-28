@@ -6,6 +6,7 @@ import ru.orangesoftware.financisto.test.DateTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import static ru.orangesoftware.financisto.test.DateTime.date;
 
@@ -39,17 +40,52 @@ public class RecurrenceTest extends AndroidTestCase {
                 "2011-02-28 19:30:00,2011-03-01 19:30:00,...");
     }
 
+    public void test_should_generate_scheduled_times_for_specific_period() throws Exception {
+        assertDates(generateDates("2011-08-02T21:40:00~DAILY:interval@1#~INDEFINETELY:null", date(2011, 8, 1).atMidnight(), date(2011, 8, 5).atDayEnd()),
+                "2011-08-02 21:40:00,2011-08-03 21:40:00,2011-08-04 21:40:00,2011-08-05 21:40:00");
+
+        assertDates(generateDates("2011-08-02T21:40:00~DAILY:interval@2#~INDEFINETELY:null", date(2011, 8, 8).at(23, 20, 0, 0), date(2011, 8, 16).atDayEnd()),
+                "2011-08-10 21:40:00,2011-08-12 21:40:00,2011-08-14 21:40:00,2011-08-16 21:40:00");
+
+        assertDates(generateDates("2011-08-02T23:00:00~WEEKLY:days@TUE#interval@1#~INDEFINETELY:null", date(2011, 8, 8).at(23, 20, 0, 0), date(2011, 8, 16).atDayEnd()),
+                "2011-08-09 23:00:00,2011-08-16 23:00:00");
+
+        assertDates(generateDates("2011-08-02T21:20:00~WEEKLY:days@FRI#interval@1#~INDEFINETELY:null", date(2011, 8, 8).at(23, 20, 0, 0), date(2011, 8, 16).atDayEnd()),
+                "2011-08-12 21:20:00");
+    }
+
+    private List<Date> generateDates(String pattern, DateTime start, DateTime end) {
+        Recurrence r = Recurrence.parse(pattern);
+        return r.generateDates(start.asDate(), end.asDate());
+    }
+
+    private void assertDates(List<Date> dates, String datesAsString) throws ParseException {
+        String[] expectedDates = datesAsString.split(",");
+        int count = expectedDates.length;
+        if (count < dates.size()) {
+            fail("Too many dates generated: Expected "+count+", Got "+dates.size());
+        }
+        if (count > dates.size()) {
+            fail("Too few dates generated: Expected "+count+", Got "+dates.size());
+        }
+        for (int i=0; i<count; i++) {
+            String expectedDate = expectedDates[i];
+            String actualDate = formatDateTime(dates.get(i));
+            assertEquals(i+" -> Expected: "+expectedDate+" Got: "+actualDate, expectedDate, actualDate);
+        }
+    }
+
     private void assertDates(String pattern, DateTime startDateTime, String datesAsString) throws ParseException {
         Recurrence r = Recurrence.parse(pattern);
         DateRecurrenceIterator ri = r.createIterator(startDateTime.asDate());
         assertTrue(ri.hasNext());
-        String[] dates = datesAsString.split(",");
-        for (String d : dates) {
-            if ("...".equals(d)) {
+        String[] expectedDates = datesAsString.split(",");
+        for (String expectedDate : expectedDates) {
+            if ("...".equals(expectedDate)) {
                 assertTrue(ri.hasNext());
                 return;
             }
-            assertEquals(d, formatDateTime(ri.next()));
+            assertEquals(expectedDate, formatDateTime(ri.next()));
         }
     }
 

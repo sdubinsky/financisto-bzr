@@ -102,21 +102,14 @@ public class DatabaseAdapter {
 	// ===================================================================
 	
 	public Transaction getTransaction(long id) {
-		Cursor c = db.query(TRANSACTION_TABLE, TransactionColumns.NORMAL_PROJECTION,
-                TransactionColumns._id + "=?", new String[]{String.valueOf(id)},
-                null, null, null);
-		try {
-			if (c.moveToFirst()) {
-				Transaction t = Transaction.fromCursor(c);
-				t.systemAttributes = getSystemAttributesForTransaction(id);
-                if (t.isSplitParent()) {
-                    t.splits = em.getSplitsForTransaction(t.id);
-                }
-				return t;
-			}
-		} finally {
-			c.close();
-		}
+        Transaction t = em.get(Transaction.class, id);
+        if (t != null) {
+            t.systemAttributes = getSystemAttributesForTransaction(id);
+            if (t.isSplitParent()) {
+                t.splits = em.getSplitsForTransaction(t.id);
+            }
+            return t;
+        }
 		return new Transaction();
 	}
 
@@ -160,6 +153,12 @@ public class DatabaseAdapter {
 		return sortOrder;
 	}
 
+    public Cursor getAllScheduledTransactions() {
+        return db.query(V_ALL_TRANSACTIONS, BlotterColumns.NORMAL_PROJECTION,
+                BlotterColumns.is_template+"=?", new String[]{"2"},
+                null, null, BlotterFilter.SORT_OLDER_TO_NEWER);
+    }
+
 	public Cursor getAllTemplates(WhereFilter filter) {
 		long t0 = System.currentTimeMillis();
 		try {
@@ -177,55 +176,6 @@ public class DatabaseAdapter {
                 BlotterColumns.datetime+" DESC");
     }
 
-	/**
-	 * [Bill Filtering] Returns all the expenses (negative amount) for a given Account in a given period.
-	 * @return Transactions (negative amount) of the given Account, from start date to end date.
-	 */
-	public Cursor getMonthlyViewExpenses(long accountId, long startDate, long endDate) {
-        WhereFilter filter = createMonthlyViewFilter(accountId, startDate, endDate)
-                .lt(BlotterColumns.from_amount.name(), "0");
-        return getBlotterForAccountWithSplits(filter);
-	}
-	
-	/**
-	 * [Bill Filtering] Returns the credits (positive amount) for a given Account in a given period, excluding payments.
-	 * @return Transactions (positive amount) of the given Account, from start date to end date.
-	 */
-	public Cursor getMonthlyViewCredits(long accountId, long startDate, long endDate) {
-        WhereFilter filter = createMonthlyViewFilter(accountId, startDate, endDate)
-                .gt(BlotterColumns.from_amount.name(), "0")
-                .eq(BlotterColumns.is_ccard_payment.name(), "0");
-        return getBlotterForAccountWithSplits(filter);
-	}
-	
-	/**
-	 * [Bill Filtering] Returns all the payments for a given Credit Card Account in a given period.
-	 * @return Transactions of the given Account, from start date to end date.
-	 */
-	public Cursor getMonthlyViewPayments(long accountId, long startDate, long endDate) {
-        WhereFilter filter = createMonthlyViewFilter(accountId, startDate, endDate)
-                .gt(BlotterColumns.from_amount.name(), "0")
-                .eq(BlotterColumns.is_ccard_payment.name(), "1");
-        return getBlotterForAccountWithSplits(filter);
-    }
-	
-    /**
-     * [Monthly view] Returns all the transactions for a given Account in a given period (month).
-     * @return Transactions of the given Account, from start date to end date.
-     */
-    public Cursor getAccountMonthlyView(long accountId, long startDate, long endDate) {
-        WhereFilter filter = createMonthlyViewFilter(accountId, startDate, endDate);
-        return getBlotterForAccountWithSplits(filter);
-    }
-
-    private WhereFilter createMonthlyViewFilter(long accountId, long startDate, long endDate) {
-        return WhereFilter.empty()
-                .eq(BlotterColumns.from_account_id.name(), String.valueOf(accountId))
-                .btw(BlotterColumns.datetime.name(), String.valueOf(startDate), String.valueOf(endDate))
-                .eq(WhereFilter.Criteria.raw("("+TransactionColumns.parent_id+"=0 OR "+BlotterColumns.is_transfer+"=-1)"))
-                .asc(BlotterColumns.datetime.name());
-    }
-    
 	private static final String LOCATION_COUNT_UPDATE = "UPDATE "+LOCATIONS_TABLE
 	+" SET count=count+(?) WHERE _id=?";
 

@@ -15,14 +15,16 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
+import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 
 @Entity
 @Table(name = "transactions")
-public class Transaction {
+public class Transaction implements Cloneable {
 	
 	@Id
 	@Column(name = "_id")
@@ -160,33 +162,33 @@ public class Transaction {
 		return t;
 	}
 
-	public static Transaction fromCursor(Cursor c) {
-		long id = c.getLong(TransactionColumns._id.ordinal());
+	public static Transaction fromBlotterCursor(Cursor c) {
+		long id = c.getLong(BlotterColumns._id.ordinal());
 		Transaction t = new Transaction();
 		t.id = id;
-        t.parentId = c.getLong(TransactionColumns.parent_id.ordinal());
-		t.fromAccountId = c.getLong(TransactionColumns.from_account_id.ordinal());
-		t.toAccountId = c.getLong(TransactionColumns.to_account_id.ordinal());
-		t.categoryId = c.getLong(TransactionColumns.category_id.ordinal());
-		t.projectId = c.getLong(TransactionColumns.project_id.ordinal());
-        t.payeeId = c.getLong(TransactionColumns.payee_id.ordinal());
-		t.note = c.getString(TransactionColumns.note.ordinal());
-		t.fromAmount = c.getLong(TransactionColumns.from_amount.ordinal());
-		t.toAmount = c.getLong(TransactionColumns.to_amount.ordinal());
-		t.dateTime = c.getLong(TransactionColumns.datetime.ordinal());
-		t.locationId = c.getLong(TransactionColumns.location_id.ordinal());
-		t.provider = c.getString(TransactionColumns.provider.ordinal());
-		t.accuracy = c.getFloat(TransactionColumns.accuracy.ordinal());
-		t.latitude = c.getDouble(TransactionColumns.latitude.ordinal());
-		t.longitude = c.getDouble(TransactionColumns.longitude.ordinal());
-		t.isTemplate = c.getInt(TransactionColumns.is_template.ordinal());
-		t.templateName = c.getString(TransactionColumns.template_name.ordinal());
-		t.recurrence = c.getString(TransactionColumns.recurrence.ordinal());
-		t.notificationOptions = c.getString(TransactionColumns.notification_options.ordinal());
-		t.status = TransactionStatus.valueOf(c.getString(TransactionColumns.status.ordinal()));
-		t.attachedPicture = c.getString(TransactionColumns.attached_picture.ordinal());
-		t.isCCardPayment = c.getInt(TransactionColumns.is_ccard_payment.ordinal());
-		t.lastRecurrence = c.getLong(TransactionColumns.last_recurrence.ordinal());
+        t.parentId = c.getLong(BlotterColumns.parent_id.ordinal());
+		t.fromAccountId = c.getLong(BlotterColumns.from_account_id.ordinal());
+		t.toAccountId = c.getLong(BlotterColumns.to_account_id.ordinal());
+		t.categoryId = c.getLong(BlotterColumns.category_id.ordinal());
+		t.projectId = c.getLong(BlotterColumns.project_id.ordinal());
+        t.payeeId = c.getLong(BlotterColumns.payee_id.ordinal());
+		t.note = c.getString(BlotterColumns.note.ordinal());
+		t.fromAmount = c.getLong(BlotterColumns.from_amount.ordinal());
+		t.toAmount = c.getLong(BlotterColumns.to_amount.ordinal());
+		t.dateTime = c.getLong(BlotterColumns.datetime.ordinal());
+		t.locationId = c.getLong(BlotterColumns.location_id.ordinal());
+//		t.provider = c.getString(BlotterColumns.provider.ordinal());
+//		t.accuracy = c.getFloat(BlotterColumns.accuracy.ordinal());
+//		t.latitude = c.getDouble(BlotterColumns.latitude.ordinal());
+//		t.longitude = c.getDouble(BlotterColumns.longitude.ordinal());
+		t.isTemplate = c.getInt(BlotterColumns.is_template.ordinal());
+		t.templateName = c.getString(BlotterColumns.template_name.ordinal());
+		t.recurrence = c.getString(BlotterColumns.recurrence.ordinal());
+		t.notificationOptions = c.getString(BlotterColumns.notification_options.ordinal());
+		t.status = TransactionStatus.valueOf(c.getString(BlotterColumns.status.ordinal()));
+		t.attachedPicture = c.getString(BlotterColumns.attached_picture.ordinal());
+		t.isCCardPayment = c.getInt(BlotterColumns.is_ccard_payment.ordinal());
+		t.lastRecurrence = c.getLong(BlotterColumns.last_recurrence.ordinal());
 		return t;
 	}		
 	
@@ -198,6 +200,9 @@ public class Transaction {
 		return isTemplate == 1;
 	}
 	
+    public void setAsScheduled() {
+        this.isTemplate = 2;
+    }
 	public boolean isScheduled() {
 		return isTemplate == 2;
 	}
@@ -225,5 +230,23 @@ public class Transaction {
 	public String getSystemAttribute(SystemAttribute sa) {
 		return systemAttributes != null ? systemAttributes.get(sa) : null;
 	}
-	
+
+    @Override
+    public Transaction clone() {
+        try {
+            return (Transaction)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(new Date(dateTime)).append(":");
+        sb.append("FA(").append(fromAccountId).append(")->").append(fromAmount).append(",");
+        sb.append("TA(").append(toAccountId).append(")->").append(toAmount);
+        return sb.toString();
+    }
+
 }

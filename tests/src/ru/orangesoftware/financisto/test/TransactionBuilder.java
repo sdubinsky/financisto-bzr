@@ -73,6 +73,18 @@ public class TransactionBuilder {
         return this;
     }
 
+    public TransactionBuilder scheduleOnce(DateTime dateTime) {
+        t.dateTime = dateTime.asLong();
+        t.setAsScheduled();
+        return this;
+    }
+
+    public TransactionBuilder scheduleRecur(String pattern) {
+        t.recurrence = pattern;
+        t.setAsScheduled();
+        return this;
+    }
+
     public TransactionBuilder withSplit(Category category, long amount) {
         return withSplit(category, amount, null);
     }

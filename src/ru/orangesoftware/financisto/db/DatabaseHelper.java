@@ -127,6 +127,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		notification_options,
 		status,
         is_ccard_payment,
+        attached_picture,
+        last_recurrence,
         from_account_balance,
         to_account_balance,
         is_transfer;

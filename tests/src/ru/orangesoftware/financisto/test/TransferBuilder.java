@@ -47,6 +47,18 @@ public class TransferBuilder {
         return this;
     }
 
+    public TransferBuilder scheduleOnce(DateTime dateTime) {
+        t.dateTime = dateTime.asLong();
+        t.setAsScheduled();
+        return this;
+    }
+
+    public TransferBuilder scheduleRecur(String pattern) {
+        t.recurrence = pattern;
+        t.setAsScheduled();
+        return this;
+    }
+
     public Transaction create() {
         long id = db.insertOrUpdate(t, null);
         t.id = id;
