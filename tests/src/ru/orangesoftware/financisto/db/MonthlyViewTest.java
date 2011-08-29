@@ -25,6 +25,10 @@ public class MonthlyViewTest extends AbstractDbTest {
     Account a2;
     Map<String, Category> categoriesMap;
 
+    Date from = DateTime.date(2011, 8, 1).atMidnight().asDate();
+    Date to = DateTime.date(2011, 8, 16).atDayEnd().asDate();
+    Date now = DateTime.date(2011, 8, 8).at(23, 20, 0, 0).asDate();
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -34,6 +38,127 @@ public class MonthlyViewTest extends AbstractDbTest {
     }
 
     public void test_should_generate_monthly_view_for_account() {
+        prepareData();
+        //a1
+        //2011-08-08 +1000          t1
+        //2011-08-09 -100 -> a2     t2
+        //2011-08-09 +40            r2
+        //2011-08-10 -500           t3
+        //2011-08-10 -50            r1
+        //2011-08-11 -100 -> a2     t4
+        //2011-08-12 +200 <- a2     t5
+        //2011-08-12 +52  <- a2     r4
+        //2011-08-12 -50            r1
+        //2011-08-12 +30  <- a2     r6
+        //2011-08-14 -100           t7
+        //2011-08-14 -50            r1
+        //2011-08-15 +400           t6
+        //2011-08-15 -210 -> a2     r3
+        //2011-08-15 -105 -> a2     r5
+        //2011-08-16 -50            r1
+        //2011-08-16 +40            r2
+        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
+        List<Transaction> transactions = planner.getAccountMonthlyView();
+        logTransactions(transactions);
+        assertTransactions(transactions,
+                DateTime.date(2011, 8, 8), 1000,
+                DateTime.date(2011, 8, 9), -100,
+                DateTime.date(2011, 8, 9), 40,
+                DateTime.date(2011, 8, 10), -500,
+                DateTime.date(2011, 8, 10), -50,
+                DateTime.date(2011, 8, 11), -100,
+                DateTime.date(2011, 8, 12), 200,
+                DateTime.date(2011, 8, 12), 52,
+                DateTime.date(2011, 8, 12), -50,
+                DateTime.date(2011, 8, 12), 30,
+                DateTime.date(2011, 8, 14), -100,
+                DateTime.date(2011, 8, 14), -50,
+                DateTime.date(2011, 8, 15), 400,
+                DateTime.date(2011, 8, 15), -210,
+                DateTime.date(2011, 8, 15), -105,
+                DateTime.date(2011, 8, 16), -50,
+                DateTime.date(2011, 8, 16), 40
+        );
+    }
+
+    public void test_should_generate_credit_card_statement() {
+        prepareData();
+        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
+        List<Transaction> transactions = planner.getCreditCardStatement();
+        logTransactions(transactions);
+        assertTransactions(transactions,
+                //payments
+                DateTime.NULL_DATE, 0,
+                DateTime.date(2011, 8, 15), 400,
+                //credits
+                DateTime.NULL_DATE, 0,
+                DateTime.date(2011, 8, 8), 1000,
+                DateTime.date(2011, 8, 9), 40,
+                DateTime.date(2011, 8, 12), 200,
+                DateTime.date(2011, 8, 12), 52,
+                DateTime.date(2011, 8, 12), 30,
+                DateTime.date(2011, 8, 16), 40,
+                //expenses
+                DateTime.NULL_DATE, 0,
+                DateTime.date(2011, 8, 9), -100,
+                DateTime.date(2011, 8, 10), -500,
+                DateTime.date(2011, 8, 10), -50,
+                DateTime.date(2011, 8, 11), -100,
+                DateTime.date(2011, 8, 12), -50,
+                DateTime.date(2011, 8, 14), -100,
+                DateTime.date(2011, 8, 14), -50,
+                DateTime.date(2011, 8, 15), -210,
+                DateTime.date(2011, 8, 15), -105,
+                DateTime.date(2011, 8, 16), -50
+        );
+    }
+
+    public void test_should_generate_monthly_preview_for_the_next_month_correctly(){
+        prepareData();
+        from = DateTime.date(2011, 9, 1).atMidnight().asDate();
+        to = DateTime.date(2011, 9, 16).atDayEnd().asDate();
+
+        //2011-09-02 -50            r1
+        //2011-09-02 +52  <- a2     r4
+        //2011-09-02 +30  <- a2     r6
+        //2011-09-04 -50            r1
+        //2011-09-06 -50            r1
+        //2011-08-06 +40            r2
+        //2011-09-08 -50            r1
+        //2011-09-09 +52  <- a2     r4
+        //2011-09-09 +30  <- a2     r6
+        //2011-09-10 -50            r1
+        //2011-09-12 -50            r1
+        //2011-09-13 +40            r2
+        //2011-09-14 -50            r1
+        //2011-09-16 -50            r1
+        //2011-09-16 +52  <- a2     r4
+        //2011-09-16 +30  <- a2     r6
+        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
+        List<Transaction> transactions = planner.getAccountMonthlyView();
+        logTransactions(transactions);
+        assertTransactions(transactions,
+                DateTime.date(2011, 9, 1), -50,
+                DateTime.date(2011, 9, 2), 52,
+                DateTime.date(2011, 9, 2), 30,
+                DateTime.date(2011, 9, 3), -50,
+                DateTime.date(2011, 9, 5), -50,
+                DateTime.date(2011, 9, 6), 40,
+                DateTime.date(2011, 9, 7), -50,
+                DateTime.date(2011, 9, 9), 52,
+                DateTime.date(2011, 9, 9), -50,
+                DateTime.date(2011, 9, 9), 30,
+                DateTime.date(2011, 9, 11), -50,
+                DateTime.date(2011, 9, 13), -50,
+                DateTime.date(2011, 9, 13), 40,
+                DateTime.date(2011, 9, 15), -50,
+                DateTime.date(2011, 9, 16), 52,
+                DateTime.date(2011, 9, 16), 30
+        );
+
+    }
+
+    private void prepareData() {
         // regular transactions and transfers
         //t1
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 8).atNoon())
@@ -106,80 +231,6 @@ public class MonthlyViewTest extends AbstractDbTest {
                 .withSplit(categoriesMap.get("B"), -20)
                 .withTransferSplit(a1, -88, 30)
                 .create();
-
-        //a1
-        //2011-08-08 +1000          t1
-        //2011-08-09 -100 -> a2     t2
-        //2011-08-09 +40            r2
-        //2011-08-10 -500           t3
-        //2011-08-10 -50            r1
-        //2011-08-11 -100 -> a2     t4
-        //2011-08-12 +200 <- a2     t5
-        //2011-08-12 +52  <- a2     r4
-        //2011-08-12 -50            r1
-        //2011-08-12 +30  <- a2     r6
-        //2011-08-14 -100           t7
-        //2011-08-14 -50            r1
-        //2011-08-15 +400           t6
-        //2011-08-15 -210 -> a2     r3
-        //2011-08-15 -105 -> a2     r5
-        //2011-08-16 -50            r1
-        //2011-08-16 +40            r2
-        Date from = DateTime.date(2011, 8, 1).atMidnight().asDate();
-        Date to = DateTime.date(2011, 8, 16).atDayEnd().asDate();
-        Date now = DateTime.date(2011, 8, 8).at(23, 20, 0, 0).asDate();
-
-        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<Transaction> transactions = planner.getAccountMonthlyView();
-        logTransactions(transactions);
-        assertTransactions(transactions,
-                DateTime.date(2011, 8, 8), 1000,
-                DateTime.date(2011, 8, 9), -100,
-                DateTime.date(2011, 8, 9), 40,
-                DateTime.date(2011, 8, 10), -500,
-                DateTime.date(2011, 8, 10), -50,
-                DateTime.date(2011, 8, 11), -100,
-                DateTime.date(2011, 8, 12), 200,
-                DateTime.date(2011, 8, 12), 52,
-                DateTime.date(2011, 8, 12), -50,
-                DateTime.date(2011, 8, 12), 30,
-                DateTime.date(2011, 8, 14), -100,
-                DateTime.date(2011, 8, 14), -50,
-                DateTime.date(2011, 8, 15), 400,
-                DateTime.date(2011, 8, 15), -210,
-                DateTime.date(2011, 8, 15), -105,
-                DateTime.date(2011, 8, 16), -50,
-                DateTime.date(2011, 8, 16), 40
-        );
-
-        transactions = planner.getCreditCardStatement();
-        logTransactions(transactions);
-        assertTransactions(transactions,
-                //payments
-                DateTime.NULL_DATE, 0,
-                DateTime.date(2011, 8, 15), 400,
-                //credits
-                DateTime.NULL_DATE, 0,
-                DateTime.date(2011, 8, 8), 1000,
-                DateTime.date(2011, 8, 9), 40,
-                DateTime.date(2011, 8, 12), 200,
-                DateTime.date(2011, 8, 12), 52,
-                DateTime.date(2011, 8, 12), 30,
-                DateTime.date(2011, 8, 16), 40,
-                //expenses
-                DateTime.NULL_DATE, 0,
-                DateTime.date(2011, 8, 9), -100,
-                DateTime.date(2011, 8, 10), -500,
-                DateTime.date(2011, 8, 10), -50,
-                DateTime.date(2011, 8, 11), -100,
-                DateTime.date(2011, 8, 12), -50,
-                DateTime.date(2011, 8, 14), -100,
-                DateTime.date(2011, 8, 14), -50,
-                DateTime.date(2011, 8, 15), -210,
-                DateTime.date(2011, 8, 15), -105,
-                DateTime.date(2011, 8, 16), -50
-        );
-
     }
 
     private void logTransactions(List<Transaction> transactions) {

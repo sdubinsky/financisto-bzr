@@ -106,13 +106,17 @@ public class MonthlyViewPlanner {
 
     private List<Date> calculatePlannedDates(Transaction scheduledTransaction) {
         String recurrence = scheduledTransaction.recurrence;
+        Date calcDate = startDate.before(now) ? now : startDate;
         if (recurrence == null) {
-            return Collections.singletonList(new Date(scheduledTransaction.dateTime));
+            Date scheduledDate = new Date(scheduledTransaction.dateTime);
+            if (scheduledDate.after(calcDate) || scheduledDate.equals(calcDate)) {
+                return Collections.singletonList(scheduledDate);
+            }
         } else {
             Recurrence r = Recurrence.parse(recurrence);
-            Date calcDate = startDate.before(now) ? now : startDate;
             return r.generateDates(calcDate, endDate);
         }
+        return Collections.emptyList();
     }
 
     private void duplicateTransaction(Transaction scheduledTransaction, List<Date> dates, List<Transaction> plannedTransactions) {
