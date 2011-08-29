@@ -158,8 +158,25 @@ public class MonthlyViewTest extends AbstractDbTest {
 
     }
 
+    public void test_should_generate_monthly_preview_for_the_previous_month_correctly(){
+        prepareData();
+        from = DateTime.date(2011, 7, 1).atMidnight().asDate();
+        to = DateTime.date(2011, 7, 16).atDayEnd().asDate();
+
+        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
+        List<Transaction> transactions = planner.getAccountMonthlyView();
+        logTransactions(transactions);
+        assertTransactions(transactions,
+                DateTime.date(2011, 7, 9), 122
+        );
+
+    }
+
     private void prepareData() {
         // regular transactions and transfers
+        //t0
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 7, 9).atNoon())
+                .account(a1).amount(122).create();
         //t1
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 8).atNoon())
                 .account(a1).amount(1000).create();
@@ -207,7 +224,7 @@ public class MonthlyViewTest extends AbstractDbTest {
                 .account(a1).amount(+40).create();
 
         //this should not be included because the account is differ
-        TransactionBuilder.withDb(db).scheduleRecur("2011-08-02T21:40:00~DAILY:interval@2#~INDEFINETELY:null")
+        TransactionBuilder.withDb(db).scheduleRecur("2011-07-01T21:40:00~DAILY:interval@2#~INDEFINETELY:null")
                 .account(a2).amount(-50).create();
 
         //this is a scheduled transfer which should appear in the monthly view

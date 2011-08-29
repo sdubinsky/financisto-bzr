@@ -55,7 +55,7 @@ public class MonthlyViewPlanner {
     public List<Transaction> getAccountMonthlyView() {
         WhereFilter filter = createMonthlyViewFilter();
         List<Transaction> regularTransactions = asTransactionList(db.getBlotterForAccountWithSplits(filter));
-        List<Transaction> scheduledTransactions = asTransactionList(db.getAllScheduledTransactions());
+        List<Transaction> scheduledTransactions = getScheduledTransactions();
         if (scheduledTransactions.isEmpty()) {
             return regularTransactions;
         } else {
@@ -65,6 +65,13 @@ public class MonthlyViewPlanner {
             sortTransactions(allTransactions);
             return allTransactions;
         }
+    }
+
+    private List<Transaction> getScheduledTransactions() {
+        if (now.before(endDate)) {
+            return asTransactionList(db.getAllScheduledTransactions());
+        }
+        return Collections.emptyList();
     }
 
     private List<Transaction> planSchedules(List<Transaction> scheduledTransactions) {

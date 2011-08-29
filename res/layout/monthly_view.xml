@@ -71,7 +71,7 @@
 			android:textStyle="bold" 
 			android:background="#DEDEDE"
 			android:textColor="#000"
-			android:visibility="gone" />
-			
+            android:text=""/>
 	</LinearLayout>
+
 </LinearLayout>

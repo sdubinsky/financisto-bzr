@@ -3,6 +3,7 @@ package ru.orangesoftware.financisto.activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +37,9 @@ import java.util.List;
  */
 public class MonthlyViewActivity extends ListActivity {
 	
+    public static final String ACCOUNT_EXTRA = "account_id";
+    public static final String BILL_PREVIEW_EXTRA = "bill_preview";
+
 	private DatabaseAdapter dbAdapter;
 
 	private long accountId = 0;
@@ -53,13 +57,8 @@ public class MonthlyViewActivity extends ListActivity {
 
 	private Utils u;
 
-	public static final String ACCOUNT_EXTRA = "account_id";
-	public static final String BILL_PREVIEW_EXTRA = "bill_preview";
-	
-	public static final String HEADER_PAYMENTS = "bill_payments";
-	public static final String HEADER_CREDITS  = "bill_credits";
-	public static final String HEADER_EXPENSES = "bill_expenses";
-	
+    private MonthlyPreviewTask currentTask;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,18 +70,25 @@ public class MonthlyViewActivity extends ListActivity {
 		if (intent != null) {
 			accountId = intent.getLongExtra(ACCOUNT_EXTRA, 0);
 			isStatementPreview = intent.getBooleanExtra(BILL_PREVIEW_EXTRA, false);
-		}		
-		
+		}
 		initialize();
     }
     
     @Override
     public void onDestroy() {
-    	dbAdapter.close();
+        cancelCurrentTask();
+        dbAdapter.close();
     	super.onDestroy();
     }
-	
-	@Override
+
+    private void cancelCurrentTask() {
+        if (currentTask != null) {
+            currentTask.cancel(true);
+            currentTask = null;
+        }
+    }
+
+    @Override
 	protected void onPause() {
 		super.onPause();
 		PinProtection.lock(this);
@@ -320,71 +326,103 @@ public class MonthlyViewActivity extends ListActivity {
 		return calCurr.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
 	}
 
+    private class MonthlyPreviewTask extends AsyncTask<Void, Void, MonthlyPreviewReport> {
+
+        private final Date open;
+        private final Date close;
+        private final Date now;
+
+        private MonthlyPreviewTask(Date open, Date close, Date now) {
+            this.open = open;
+            this.close = close;
+            this.now = now;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            ((TextView)findViewById(android.R.id.empty)).setText(R.string.calculating);
+        }
+
+        @Override
+        protected MonthlyPreviewReport doInBackground(Void... voids) {
+            MonthlyViewPlanner planner = new MonthlyViewPlanner(dbAdapter, accountId, open, close, now);
+            List<Transaction> transactions;
+            if (isStatementPreview) {
+                transactions = planner.getCreditCardStatement();
+            } else {
+                transactions = planner.getAccountMonthlyView();
+            }
+            long total = calculateTotal(transactions);
+            return new MonthlyPreviewReport(transactions, total);
+        }
+
+        @Override
+        protected void onPostExecute(MonthlyPreviewReport monthlyPreviewReport) {
+            List<Transaction> transactions = monthlyPreviewReport.transactions;
+            long total = monthlyPreviewReport.total;
+            if (transactions == null || transactions.isEmpty()) {
+                displayNoTransactions();
+            } else { // display data
+
+                // Mapping data to view
+                CreditCardStatementAdapter expenses = new CreditCardStatementAdapter(dbAdapter, MonthlyViewActivity.this, R.layout.credit_card_transaction, transactions, currency, accountId);
+                expenses.setStatementPreview(isStatementPreview);
+                setListAdapter(expenses);
+
+                // calculate total
+                // display total
+                TextView totalText = (TextView)findViewById(R.id.monthly_result);
+                if (isStatementPreview) {
+                    u.setAmountText(totalText, currency, (-1)*total, false);
+                    totalText.setTextColor(Color.BLACK);
+                } else {
+                    if (total<0) {
+                        u.setAmountText(totalText, currency, (-1)*total, false);
+                        u.setNegativeColor(totalText);
+                    } else {
+                        u.setAmountText(totalText, currency, total, false);
+                        u.setPositiveColor(totalText);
+                    }
+                }
+            }
+        }
+    }
+
+    private static class MonthlyPreviewReport {
+
+        public final List<Transaction> transactions;
+        public final long total;
+
+        public MonthlyPreviewReport(List<Transaction> transactions, long total) {
+            this.transactions = transactions;
+            this.total = total;
+        }
+
+    }
 
 	/**
-	 * Get data for a given period and display the related credit card expenses. 
+	 * Get data for a given period and display the related credit card expenses.
 	 * @param open Start of period.
 	 * @param close End of period.
 	 */
 	private void fillData(Calendar open, Calendar close) {
-        MonthlyViewPlanner planner = new MonthlyViewPlanner(dbAdapter, accountId, open.getTime(), close.getTime(), new Date());
-        List<Transaction> transactions;
-        if (isStatementPreview) {
-            transactions = planner.getCreditCardStatement();
-		} else {
-			transactions = planner.getAccountMonthlyView();
-		}
-
-    	TextView totalText = (TextView)findViewById(R.id.monthly_result);
-
-    	if (transactions == null || transactions.isEmpty()) {
-    		// display total = 0
-    		u.setAmountText(totalText, currency, 0, false);
-    		totalText.setTextColor(Color.BLACK);
-    		totalText.setVisibility(View.VISIBLE);
-    		
-    		// hide list and display empty message
-    		this.getListView().setVisibility(View.GONE);
-    		setListAdapter(null);
-    		findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
-
-    	} else { // display data
-
-    		// Mapping data to view
-    		CreditCardStatementAdapter expenses = new CreditCardStatementAdapter(dbAdapter, this, R.layout.credit_card_transaction, transactions, currency, accountId);
-    		expenses.setStatementPreview(isStatementPreview);
-    		setListAdapter(expenses);
-    		
-    		// calculate total
-    		long total = calculateTotal(transactions);
-    		// display total
-    		if (isStatementPreview) {
-    			u.setAmountText(totalText, currency, (-1)*total, false);
-    			totalText.setTextColor(Color.BLACK);
-    		} else {
-	    		if (total<0) { 
-	    			u.setAmountText(totalText, currency, (-1)*total, false);
-                    u.setNegativeColor(totalText);
-	    		} else {
-	    			u.setAmountText(totalText, currency, total, false);
-                    u.setPositiveColor(totalText);
-	    		}
-    		}
-    		totalText.setVisibility(View.VISIBLE);
-    		
-    		// display list and hide empty message
-    		this.getListView().setVisibility(View.VISIBLE);
-    		findViewById(android.R.id.empty).setVisibility(View.GONE);
-    	}
+        cancelCurrentTask();
+        currentTask = new MonthlyPreviewTask(open.getTime(), close.getTime(), new Date());
+        currentTask.execute();
     }
-	
-	/**
-	 * Calculate the total amount based on cursor expenses and various credits.
-	 * Credit card payments are not included.
-	 */
+
+    private void displayNoTransactions() {
+        TextView totalText = (TextView)findViewById(R.id.monthly_result);
+        // display total = 0
+        u.setAmountText(totalText, currency, 0, false);
+        totalText.setTextColor(Color.BLACK);
+        // hide list and display empty message
+        ((TextView)findViewById(android.R.id.empty)).setText(R.string.no_transactions);
+        setListAdapter(null);
+    }
+
 	private long calculateTotal(List<Transaction> transactions) {
 		long total = 0;
-
 		if (isStatementPreview) {
 			// exclude payments
             for (Transaction t : transactions) {
