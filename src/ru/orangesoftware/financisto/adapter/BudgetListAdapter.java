@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.adapter;
 import java.util.ArrayList;
 
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Budget;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
@@ -31,12 +32,14 @@ import android.widget.TextView;
 public class BudgetListAdapter extends BaseAdapter {
 
 	private final Context context;
+    private final DatabaseAdapter db;
 	private final LayoutInflater inflater;
 	private final Utils u;
 	private ArrayList<Budget> budgets;
 	
-	public BudgetListAdapter(Context context, ArrayList<Budget> budgets) {
+	public BudgetListAdapter(Context context, DatabaseAdapter db, ArrayList<Budget> budgets) {
 		this.context = context;
+        this.db = db;
 		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.budgets = budgets;
 		this.u = new Utils(context);
@@ -77,7 +80,7 @@ public class BudgetListAdapter extends BaseAdapter {
 		v.bottomView.setText("*/*");
 		v.centerView.setText(b.title);
 		
-		Currency c = CurrencyCache.getCurrency(b.currencyId);
+		Currency c = CurrencyCache.getCurrency(db.em(), b.currencyId);
 		long amount = b.amount;
 		v.rightCenterView.setText(Utils.amountToString(c, amount));
 		

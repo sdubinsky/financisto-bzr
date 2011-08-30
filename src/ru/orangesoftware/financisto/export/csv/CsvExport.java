@@ -114,7 +114,7 @@ public class CsvExport extends Export {
 		w.value(FORMAT_TIME_ISO_8601.format(dt));
 		w.value(account);
 		w.value(options.amountFormat.format(new BigDecimal(amount).divide(Utils.HUNDRED)));
-		Currency c = CurrencyCache.getCurrency(currencyId);
+		Currency c = CurrencyCache.getCurrency(db.em(), currencyId);
 		w.value(c.name);
 		w.value(category != null ? category.title : "");
 		String sParent = buildPath(category);

@@ -51,7 +51,7 @@ public class TransactionsTotalCalculator {
             while (c.moveToNext()) {
                 long currencyId = c.getLong(0);
                 long balance = c.getLong(1);
-                Currency currency = CurrencyCache.getCurrency(currencyId);
+                Currency currency = CurrencyCache.getCurrency(db.em(), currencyId);
                 Total total = new Total(currency);
                 total.balance = balance;
                 totals.add(total);

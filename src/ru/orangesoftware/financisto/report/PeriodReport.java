@@ -17,6 +17,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
+import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
@@ -51,7 +52,7 @@ public class PeriodReport extends AbstractReport {
             newFilter.put(Criteria.btw(ReportColumns.DATETIME, String.valueOf(p.start), String.valueOf(p.end)));
             Cursor c = db.db().query(V_REPORT_PERIOD, ReportColumns.NORMAL_PROJECTION,
                     newFilter.getSelection(), newFilter.getSelectionArgs(), null, null, null);
-            GraphUnit u = getUnitFromCursor(c, p);
+            GraphUnit u = getUnitFromCursor(db.em(), c, p);
             if (u.size() > 0) {
                 units.add(u);
             }
@@ -60,13 +61,13 @@ public class PeriodReport extends AbstractReport {
 		return new ReportData(units, totals);
 	}
 
-    private GraphUnit getUnitFromCursor(Cursor c, Period p) {
+    private GraphUnit getUnitFromCursor(MyEntityManager em, Cursor c, Period p) {
         try {
             GraphUnit u = createGraphUnit(p);
             while (c.moveToNext()) {
                 long currencyId = c.getLong(2);
                 long amount = c.getLong(3);
-                Currency currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
+                Currency currency = CurrencyCache.getCurrency(em, currencyId);
                 u.addAmount(currency, amount);
             }
             u.flatten();

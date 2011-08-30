@@ -107,7 +107,7 @@ public class SelectTemplateActivity extends TemplatesListActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		return new TemplateListAdapter(this, cursor);
+		return new TemplateListAdapter(this, db, cursor);
 	}
 
 	@Override

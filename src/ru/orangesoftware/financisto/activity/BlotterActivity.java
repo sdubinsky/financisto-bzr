@@ -294,9 +294,9 @@ public class BlotterActivity extends AbstractListActivity {
 	protected ListAdapter createAdapter(Cursor cursor) {
 		long accountId = blotterFilter.getAccountId();
 		if (accountId != -1) {
-			return new TransactionsListAdapter(this, cursor);
+			return new TransactionsListAdapter(this, db, cursor);
 		} else {
-			return new BlotterListAdapter(this, cursor);			
+			return new BlotterListAdapter(this, db, cursor);
 		}		
 	}
 	

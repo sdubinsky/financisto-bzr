@@ -14,36 +14,39 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.orb.EntityManager;
 import ru.orangesoftware.orb.Query;
 import android.database.Cursor;
 
 public class CurrencyCache {
 
-	private static volatile ConcurrentHashMap<Long, Currency> CURRENCIES = new ConcurrentHashMap<Long, Currency>();	
+	private static HashMap<Long, Currency> CURRENCIES = new HashMap<Long, Currency>();
 	
-	public static Currency getCurrency(long currencyId) {
-		return CURRENCIES.get(currencyId);
+	public static synchronized Currency getCurrency(EntityManager em, long currencyId) {
+		Currency cachedCurrency = CURRENCIES.get(currencyId);
+        if (cachedCurrency == null) {
+            cachedCurrency = em.get(Currency.class, currencyId);
+            if (cachedCurrency == null) {
+                cachedCurrency = Currency.EMPTY;
+            }
+            CURRENCIES.put(currencyId, cachedCurrency);
+        }
+        return cachedCurrency;
 	}
 	
-	public static Currency getCurrencyOrEmpty(long currencyId) {
+	public static synchronized Currency getCurrencyOrEmpty(long currencyId) {
 		Currency c = CURRENCIES.get(currencyId);
 		return c != null ? c : Currency.EMPTY;
 	}
 
-	public static Currency putCurrency(Currency currency) {
-		Currency c = CURRENCIES.putIfAbsent(currency.id, currency);
-		if (c == null) {
-			c = currency;
-		}
-		return c;
-	}
-	
-	public static void initialize(EntityManager em) {
-		ConcurrentHashMap<Long, Currency> currencies = new ConcurrentHashMap<Long, Currency>();
+	public static synchronized void initialize(EntityManager em) {
+		HashMap<Long, Currency> currencies = new HashMap<Long, Currency>();
 		Query<Currency> q = em.createQuery(Currency.class);
 		Cursor c = q.execute();
 		try {
@@ -76,7 +79,7 @@ public class CurrencyCache {
 		return s != null ? (s.length() > 2 ? s.charAt(1) : 0): c;
 	}
 
-	public static ArrayList<Currency> getAllCurrencies() {
+	public static synchronized ArrayList<Currency> getAllCurrencies() {
 		Collection<Currency> currencies = CURRENCIES.values();
 		return new ArrayList<Currency>(currencies);
 	}

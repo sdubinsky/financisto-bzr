@@ -15,6 +15,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.text.format.DateUtils;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
@@ -24,8 +25,8 @@ import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateT
 
 public class TransactionsListAdapter extends BlotterListAdapter {
 	
-	public TransactionsListAdapter(Context context, Cursor c) {
-		super(context, c);
+	public TransactionsListAdapter(Context context, DatabaseAdapter db, Cursor c) {
+		super(context, db, c);
 	}
 
     @Override
@@ -63,7 +64,7 @@ public class TransactionsListAdapter extends BlotterListAdapter {
         v.centerView.setText(text);
 
         long currencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
-        Currency c = CurrencyCache.getCurrency(currencyId);
+        Currency c = CurrencyCache.getCurrency(em, currencyId);
         u.setAmountText(v.rightView, c, fromAmount, true);
         if (fromAmount > 0) {
             v.iconView.setImageDrawable(icBlotterIncome);

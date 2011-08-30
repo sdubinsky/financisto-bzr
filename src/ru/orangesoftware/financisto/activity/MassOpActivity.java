@@ -104,7 +104,7 @@ public class MassOpActivity extends BlotterActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		return new BlotterListAdapter(this, R.layout.blotter_mass_op_list_item, cursor, true);
+		return new BlotterListAdapter(this, db, R.layout.blotter_mass_op_list_item, cursor, true);
 	}
 
 	private enum MassOp implements LocalizableEnum{

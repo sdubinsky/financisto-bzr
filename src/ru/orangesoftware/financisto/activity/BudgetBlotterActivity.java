@@ -47,7 +47,7 @@ public class BudgetBlotterActivity extends BlotterActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		return new TransactionsListAdapter(this, cursor);
+		return new TransactionsListAdapter(this, db, cursor);
 	}
 	
 	private Cursor getBlotterForBudget(long budgetId) {
@@ -66,7 +66,7 @@ public class BudgetBlotterActivity extends BlotterActivity {
                     try {
                         long budgetId = blotterFilter.getBudgetId();
                         Budget b = em.load(Budget.class, budgetId);
-                        Currency c = CurrencyCache.getCurrency(b.currencyId);
+                        Currency c = CurrencyCache.getCurrency(em, b.currencyId);
                         Total[] totals = new Total[]{new Total(c)};
                         totals[0].balance = db.fetchBudgetBalance(categories, projects, b);
                         return totals;

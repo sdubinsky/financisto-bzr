@@ -21,7 +21,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.CategoryEntity;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.TransactionStatus;
@@ -46,6 +48,8 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
     protected final Drawable icBlotterTransfer;
     protected final Drawable icBlotterSplit;
     protected final Utils u;
+    protected final DatabaseAdapter db;
+    protected final MyEntityManager em;
 
     private final int colors[];
 
@@ -55,15 +59,15 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
     private boolean showRunningBalance;
     private int topPadding;
 
-    public BlotterListAdapter(Context context, Cursor c) {
-        this(context, R.layout.blotter_list_item, c, false);
+    public BlotterListAdapter(Context context, DatabaseAdapter db, Cursor c) {
+        this(context, db, R.layout.blotter_list_item, c, false);
     }
 
-    public BlotterListAdapter(Context context, int layoutId, Cursor c) {
-        this(context, layoutId, c, false);
+    public BlotterListAdapter(Context context, DatabaseAdapter db, int layoutId, Cursor c) {
+        this(context, db, layoutId, c, false);
     }
 
-    public BlotterListAdapter(Context context, int layoutId, Cursor c, boolean autoRequery) {
+    public BlotterListAdapter(Context context, DatabaseAdapter db, int layoutId, Cursor c, boolean autoRequery) {
         super(context, layoutId, c, autoRequery);
         this.icBlotterIncome = context.getResources().getDrawable(R.drawable.ic_blotter_income);
         this.icBlotterExpense = context.getResources().getDrawable(R.drawable.ic_blotter_expense);
@@ -73,6 +77,8 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
         this.colors = initializeColors(context);
         this.showRunningBalance = MyPreferences.isShowRunningBalance(context);
         this.topPadding = context.getResources().getDimensionPixelSize(R.dimen.transaction_icon_padding);
+        this.db = db;
+        this.em = db.em();
     }
 
     private int[] initializeColors(Context context) {
@@ -120,9 +126,9 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
             u.setTransferTitleText(noteView, fromAccountTitle, toAccountTitle);
 
             long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
-            Currency fromCurrency = CurrencyCache.getCurrency(fromCurrencyId);
+            Currency fromCurrency = CurrencyCache.getCurrency(em, fromCurrencyId);
             long toCurrencyId = cursor.getLong(BlotterColumns.to_account_currency_id.ordinal());
-            Currency toCurrency = CurrencyCache.getCurrency(toCurrencyId);
+            Currency toCurrency = CurrencyCache.getCurrency(em, toCurrencyId);
 
             int dateViewColor = v.bottomView.getCurrentTextColor();
 
@@ -142,7 +148,7 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
             setTransactionTitleText(cursor, noteView);
             sb.setLength(0);
             long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
-            Currency fromCurrency = CurrencyCache.getCurrency(fromCurrencyId);
+            Currency fromCurrency = CurrencyCache.getCurrency(em, fromCurrencyId);
             long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
             u.setAmountText(sb, v.rightView, fromCurrency, amount, true);
             long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());

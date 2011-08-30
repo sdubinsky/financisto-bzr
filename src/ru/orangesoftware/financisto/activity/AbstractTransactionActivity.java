@@ -641,9 +641,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected void selectAccount(long accountId, boolean selectLast) {
 		if (Utils.moveCursor(accountCursor, AccountColumns.ID, accountId) != -1) {
 			Account a = EntityManager.loadFromCursor(accountCursor, Account.class);
-			Currency c = CurrencyCache.putCurrency(a.currency);
-			accountText.setText(a.title);						
-			amountInput.setCurrency(c);
+			accountText.setText(a.title);
+			amountInput.setCurrency(a.currency);
 			selectedAccountId = accountId;
 			if (selectLast && isRememberLastCategory) {
 				selectCategory(a.lastCategoryId, true);

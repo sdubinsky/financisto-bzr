@@ -119,7 +119,7 @@ public class BudgetListActivity extends AbstractListActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		return new BudgetListAdapter(this, budgets);	
+		return new BudgetListAdapter(this, db, budgets);
 	}
 	
 	@Override
@@ -254,7 +254,7 @@ public class BudgetListActivity extends AbstractListActivity {
                 final Map<Long, Category> categories = MyEntity.asMap(db.getCategoriesList(true));
                 final Map<Long, Project> projects = MyEntity.asMap(em.getAllProjectsList(true));
                 for (final Budget b : budgets) {
-                    Currency currency = CurrencyCache.getCurrency(b.currencyId);
+                    Currency currency = CurrencyCache.getCurrency(em, b.currencyId);
                     String s = currency.symbol;
                     Total t = map.get(s);
                     if (t == null) {

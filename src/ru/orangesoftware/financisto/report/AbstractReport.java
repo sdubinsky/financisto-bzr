@@ -20,6 +20,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
+import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.graph.Amount;
 import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
@@ -53,7 +54,7 @@ public abstract class AbstractReport implements Report {
 		filterTransfers(filter);
 		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
-		ArrayList<GraphUnit> units = getUnitsFromCursor(c);
+		ArrayList<GraphUnit> units = getUnitsFromCursor(db.em(), c);
         Total[] totals = calculateTotals(units);
         return new ReportData(units, totals);
 	}
@@ -64,7 +65,7 @@ public abstract class AbstractReport implements Report {
 		}
 	}
 
-	private ArrayList<GraphUnit> getUnitsFromCursor(Cursor c) {
+	private ArrayList<GraphUnit> getUnitsFromCursor(MyEntityManager em, Cursor c) {
 		try {
 			ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
 			GraphUnit u = null;
@@ -81,7 +82,7 @@ public abstract class AbstractReport implements Report {
 					u = new GraphUnit(id, alterName(id, name), style);
 					lastId = id;
 				}
-				Currency currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
+				Currency currency = CurrencyCache.getCurrency(em, currencyId);
 				u.addAmount(currency, amount);
 			}
 			if (u != null) {

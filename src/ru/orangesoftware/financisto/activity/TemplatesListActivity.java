@@ -41,7 +41,7 @@ public class TemplatesListActivity extends BlotterActivity {
 
     @Override
     protected ListAdapter createAdapter(Cursor cursor) {
-        return new BlotterListAdapter(this, cursor) {
+        return new BlotterListAdapter(this, db, cursor) {
             @Override
             protected boolean isShowRunningBalance() {
                 return false;

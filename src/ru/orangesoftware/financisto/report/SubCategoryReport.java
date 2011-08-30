@@ -19,6 +19,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.*;
@@ -60,7 +61,7 @@ public class SubCategoryReport extends AbstractReport {
                 }
             });
 
-            ArrayList<GraphUnitTree> roots = createTree(amounts, 0);
+            ArrayList<GraphUnitTree> roots = createTree(db.em(), amounts, 0);
             ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
             flattenTree(roots, units);
             Total[] totals = calculateTotals(roots);
@@ -70,7 +71,7 @@ public class SubCategoryReport extends AbstractReport {
         }
 	}
 	
-	private ArrayList<GraphUnitTree> createTree(CategoryTree<CategoryAmount> amounts, int level) {
+	private ArrayList<GraphUnitTree> createTree(MyEntityManager em, CategoryTree<CategoryAmount> amounts, int level) {
 		ArrayList<GraphUnitTree> roots = new ArrayList<GraphUnitTree>();
 		GraphUnitTree u = null;
 		long lastId = -1;
@@ -80,10 +81,10 @@ public class SubCategoryReport extends AbstractReport {
 				roots.add(u);
 				lastId = a.id;
 			}
-            Currency c = CurrencyCache.getCurrency(a.currencyId);
+            Currency c = CurrencyCache.getCurrency(em, a.currencyId);
 			u.addAmount(c, a.amount);
 			if (a.hasChildren()) {
-				u.setChildren(createTree(a.children, level+1));
+				u.setChildren(createTree(em, a.children, level+1));
 				u = null;				
 			}
 		}

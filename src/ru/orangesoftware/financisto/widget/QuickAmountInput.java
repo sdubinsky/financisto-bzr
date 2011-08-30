@@ -42,11 +42,8 @@ public class QuickAmountInput extends Activity {
 		
 		String amount = intent.getStringExtra(AmountInput.EXTRA_AMOUNT);
 		long currencyId = intent.getLongExtra(AmountInput.EXTRA_CURRENCY, -1);
-		currency = CurrencyCache.getCurrency(currencyId);
-		if (currency == null) {
-			currency = Currency.EMPTY;
-		}		
-		
+		currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
+
 		LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);        
         LinearLayout.LayoutParams lpWrapWrap = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
