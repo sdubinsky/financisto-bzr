@@ -16,7 +16,7 @@ import android.view.View;
 import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.adapter.TransactionsListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.blotter.WhereFilter;
 
 public class SplitsBlotterActivity extends BlotterActivity {
 
@@ -38,7 +38,12 @@ public class SplitsBlotterActivity extends BlotterActivity {
 
     @Override
     protected BlotterTotalsCalculationTask createTotalCalculationTask() {
-        return new BlotterTotalsCalculationTask(this, db, blotterFilter, totalTextFlipper, totalText);
+        return new BlotterTotalsCalculationTask(this, db, blotterFilter, totalTextFlipper, totalText){
+            @Override
+            protected WhereFilter createFilterForTotals() {
+                return WhereFilter.copyOf(blotterFilter);
+            }
+        };
     }
 
 }

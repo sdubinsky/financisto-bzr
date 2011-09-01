@@ -21,6 +21,8 @@ import ru.orangesoftware.financisto.test.TransferBuilder;
 
 import java.util.Map;
 
+import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
+
 public class AccountBlotterTest extends AbstractDbTest {
 
     Account a1;
@@ -134,7 +136,7 @@ public class AccountBlotterTest extends AbstractDbTest {
     }
 
     private void assertTotals(long...totalAmounts) {
-        WhereFilter filter = WhereFilter.empty();
+        WhereFilter filter = enhanceFilterForAccountBlotter(WhereFilter.empty());
         TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
         Total[] totals = calculator.getTransactionsBalance();
         assertEquals(totalAmounts.length, totals.length);

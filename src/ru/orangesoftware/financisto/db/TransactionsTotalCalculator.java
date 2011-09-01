@@ -17,7 +17,7 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
+import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,9 +41,8 @@ public class TransactionsTotalCalculator {
     }
 
     public Total[] getTransactionsBalance() {
-        WhereFilter blotterFilter = enhanceFilterForAccountBlotter(filter);
-        Cursor c = db.db().query(DatabaseHelper.V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, BALANCE_PROJECTION,
-                blotterFilter.getSelection(), blotterFilter.getSelectionArgs(),
+        Cursor c = db.db().query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, BALANCE_PROJECTION,
+                filter.getSelection(), filter.getSelectionArgs(),
                 BALANCE_GROUPBY, null, null);
         try {
             int count = c.getCount();

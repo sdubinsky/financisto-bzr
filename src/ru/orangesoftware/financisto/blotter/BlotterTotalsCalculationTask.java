@@ -19,11 +19,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.TransactionsTotalCalculator;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.Utils;
+
+import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
 
 public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total[]> {
 	
@@ -50,7 +51,12 @@ public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total
 	}
 
     protected TransactionsTotalCalculator createTotalCalculator() {
-        return new TransactionsTotalCalculator(db, filter);
+        WhereFilter blotterFilter = createFilterForTotals();
+        return new TransactionsTotalCalculator(db, blotterFilter);
+    }
+
+    protected WhereFilter createFilterForTotals() {
+        return enhanceFilterForAccountBlotter(filter);
     }
 
     @Override
