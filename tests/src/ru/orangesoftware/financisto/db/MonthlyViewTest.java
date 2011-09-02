@@ -11,10 +11,13 @@ package ru.orangesoftware.financisto.db;
 import android.util.Log;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.test.*;
 import ru.orangesoftware.financisto.utils.MonthlyViewPlanner;
+import ru.orangesoftware.financisto.utils.Utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -176,84 +179,96 @@ public class MonthlyViewTest extends AbstractDbTest {
         // regular transactions and transfers
         //t0
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 7, 9).atNoon())
-                .account(a1).amount(122).create();
+                .account(a1).amount(122).note("t0").create();
         //t1
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 8).atNoon())
-                .account(a1).amount(1000).create();
+                .account(a1).amount(1000).note("t1").create();
 
         // regular transfer
         //t2
         TransferBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 9).atNoon())
-                .fromAccount(a1).fromAmount(-100).toAccount(a2).toAmount(50).create();
+                .fromAccount(a1).fromAmount(-100).toAccount(a2).toAmount(50).note("t2").create();
 
         // regular split
         //t3
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 10).atNoon())
                 .account(a1).amount(-500)
-                .withSplit(categoriesMap.get("A1"), -200)
-                .withSplit(categoriesMap.get("A1"), -300)
+                .withSplit(categoriesMap.get("A1"), -200, "t3-s1")
+                .withSplit(categoriesMap.get("A1"), -300, "t3-s2")
+                .note("t3")
                 .create();
 
         // transfer split
         //t4
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 11).atNoon())
                 .account(a1).amount(-100)
-                .withTransferSplit(a2, -100, 20)
+                .withTransferSplit(a2, -100, 20, "t4-s1")
+                .note("t4")
                 .create();
         //t5
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 12).atNoon())
                 .account(a2).amount(-120)
-                .withSplit(categoriesMap.get("B"), -20)
-                .withTransferSplit(a1, -100, 200)
+                .withSplit(categoriesMap.get("B"), -20, "t5-s1")
+                .withTransferSplit(a1, -100, 200, "t5-s2")
+                .note("t5")
                 .create();
 
         // payment
         //t6
-        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 15).atNoon()).account(a1).amount(400).ccPayment().create();
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 15).atNoon()).account(a1).amount(400).ccPayment().note("t6").create();
 
         //scheduled once
         //t7
-        TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 8, 14).atNoon()).account(a1).amount(-100).create();
+        TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 8, 14).atNoon()).account(a1).amount(-100).note("t7").create();
 
         //scheduled recur
         //r1
         TransactionBuilder.withDb(db).scheduleRecur("2011-08-02T21:40:00~DAILY:interval@2#~INDEFINETELY:null")
-                .account(a1).amount(-50).create();
+                .account(a1).amount(-50).note("r1").create();
         //r2
         TransactionBuilder.withDb(db).scheduleRecur("2011-08-02T23:00:00~WEEKLY:days@TUE#interval@1#~INDEFINETELY:null")
-                .account(a1).amount(+40).create();
+                .account(a1).amount(+40).note("r2").create();
 
         //this should not be included because the account is differ
         TransactionBuilder.withDb(db).scheduleRecur("2011-07-01T21:40:00~DAILY:interval@2#~INDEFINETELY:null")
-                .account(a2).amount(-50).create();
+                .account(a2).amount(-50).note("?").create();
+
+        //these should not be included because the date is out of picture
+        TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 10, 14).at(13, 0, 0, 0))
+                .account(a1).amount(-500).note("?").create();
+        TransactionBuilder.withDb(db).scheduleRecur("2011-10-01T21:40:00~DAILY:interval@2#~INDEFINETELY:null")
+                .account(a1).amount(-500).note("?").create();
 
         //this is a scheduled transfer which should appear in the monthly view
         //r3
         TransferBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 8, 15).at(13, 0, 0, 0))
-                .fromAccount(a1).fromAmount(-210).toAccount(a2).toAmount(51).create();
+                .fromAccount(a1).fromAmount(-210).toAccount(a2).toAmount(51).note("r3").create();
         //r4
         TransferBuilder.withDb(db).scheduleRecur("2011-08-02T21:20:00~WEEKLY:days@FRI#interval@1#~INDEFINETELY:null")
-                .fromAccount(a2).fromAmount(-600).toAccount(a1).toAmount(52).create();
+                .fromAccount(a2).fromAmount(-600).toAccount(a1).toAmount(52).note("r3").create();
 
         //this is a scheduled split with a transfer which should appear in the monthly view
         //r5
         TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 8, 15).at(14, 0, 0, 0))
                 .account(a1).amount(-105)
-                .withSplit(categoriesMap.get("A1"), -5)
-                .withTransferSplit(a2, -100, 22)
+                .withSplit(categoriesMap.get("A1"), -5, "r5-s1")
+                .withTransferSplit(a2, -100, 22, "r5-s2")
+                .note("r5")
                 .create();
         //r6
         TransactionBuilder.withDb(db).scheduleRecur("2011-08-02T22:30:00~WEEKLY:days@FRI#interval@1#~INDEFINETELY:null")
                 .account(a2).amount(-120)
-                .withSplit(categoriesMap.get("B"), -20)
-                .withTransferSplit(a1, -88, 30)
+                .withSplit(categoriesMap.get("B"), -20, "r6-s1")
+                .withTransferSplit(a1, -88, 30, "r6-s2")
+                .note("r6")
                 .create();
     }
 
     private void logTransactions(List<Transaction> transactions) {
         Log.d("MonthlyViewTest", "===== Planned transactions: "+transactions.size()+" =====");
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         for (Transaction transaction : transactions) {
-            Log.d("MonthlyViewTest", transaction.toString());
+            Log.d("MonthlyViewTest", df.format(new Date(transaction.dateTime))+" "+ Utils.amountToString(Currency.EMPTY, transaction.fromAmount)+" "+transaction.note);
         }
         Log.d("MonthlyViewTest", "==========");
     }

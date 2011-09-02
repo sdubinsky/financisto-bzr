@@ -52,6 +52,8 @@ public class RecurrenceTest extends AndroidTestCase {
 
         assertDates(generateDates("2011-08-02T21:20:00~WEEKLY:days@FRI#interval@1#~INDEFINETELY:null", date(2011, 8, 8).at(23, 20, 0, 0), date(2011, 8, 16).atDayEnd()),
                 "2011-08-12 21:20:00");
+
+        assertTrue(generateDates("2011-09-02T21:20:00~WEEKLY:days@FRI#interval@1#~INDEFINETELY:null", date(2011, 8, 8).at(23, 20, 0, 0), date(2011, 8, 16).atDayEnd()).isEmpty());
     }
 
     private List<Date> generateDates(String pattern, DateTime start, DateTime end) {

@@ -116,7 +116,7 @@ public class MonthlyViewPlanner {
         Date calcDate = startDate.before(now) ? now : startDate;
         if (recurrence == null) {
             Date scheduledDate = new Date(scheduledTransaction.dateTime);
-            if (scheduledDate.after(calcDate) || scheduledDate.equals(calcDate)) {
+            if (insideTheRequiredPeriod(calcDate, endDate, scheduledDate)) {
                 return Collections.singletonList(scheduledDate);
             }
         } else {
@@ -124,6 +124,10 @@ public class MonthlyViewPlanner {
             return r.generateDates(calcDate, endDate);
         }
         return Collections.emptyList();
+    }
+
+    private boolean insideTheRequiredPeriod(Date startDate, Date endDate, Date date) {
+        return !(date.before(startDate) || date.after(endDate));
     }
 
     private void duplicateTransaction(Transaction scheduledTransaction, List<Date> dates, List<Transaction> plannedTransactions) {
