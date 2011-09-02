@@ -413,7 +413,9 @@ public class MyEntityManager extends EntityManager {
 
 	public ArrayList<TransactionInfo> getAllScheduledTransactions() {
 		Query<TransactionInfo> q = createQuery(TransactionInfo.class);
-		q.where(Expressions.eq("isTemplate", 2));
+		q.where(Expressions.and(
+                Expressions.eq("isTemplate", 2),
+                Expressions.eq("parentId", 0)));
 		return (ArrayList<TransactionInfo>)q.list();
 	}
 

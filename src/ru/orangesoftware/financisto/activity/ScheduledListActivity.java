@@ -79,6 +79,7 @@ public class ScheduledListActivity extends BlotterActivity {
 		// fix filter
 		blotterFilter = new WhereFilter("schedules");
 		blotterFilter.eq(BlotterFilter.IS_TEMPLATE, String.valueOf(2));
+        blotterFilter.eq(BlotterFilter.PARENT_ID, String.valueOf(0));
 	}
 
 	@Override

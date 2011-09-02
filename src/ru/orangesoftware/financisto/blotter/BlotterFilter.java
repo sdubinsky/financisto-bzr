@@ -24,6 +24,7 @@ public interface BlotterFilter {
 	String DATETIME = BlotterColumns.datetime.name();
 	String BUDGET_ID = "budget_id";
 	String IS_TEMPLATE = BlotterColumns.is_template.name();
+    String PARENT_ID = BlotterColumns.parent_id.name();
 	String STATUS = BlotterColumns.status.name();
 	
 	String SORT_NEWER_TO_OLDER = BlotterColumns.datetime+" desc";

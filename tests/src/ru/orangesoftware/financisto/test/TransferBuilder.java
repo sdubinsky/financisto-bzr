@@ -59,6 +59,11 @@ public class TransferBuilder {
         return this;
     }
 
+    public TransferBuilder note(String note) {
+        t.note = note;
+        return this;
+    }
+
     public Transaction create() {
         long id = db.insertOrUpdate(t, null);
         t.id = id;

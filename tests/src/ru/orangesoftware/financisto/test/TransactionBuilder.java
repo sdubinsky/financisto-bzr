@@ -100,10 +100,15 @@ public class TransactionBuilder {
     }
 
     public TransactionBuilder withTransferSplit(Account toAccount, long fromAmount, long toAmount) {
+        return withTransferSplit(toAccount, fromAmount, toAmount, null);
+    }
+
+    public TransactionBuilder withTransferSplit(Account toAccount, long fromAmount, long toAmount, String note) {
         Transaction split = new Transaction();
         split.toAccountId = toAccount.id;
         split.fromAmount = fromAmount;
         split.toAmount = toAmount;
+        split.note = note;
         t.splits.add(split);
         t.categoryId = Category.SPLIT_CATEGORY_ID;
         return this;

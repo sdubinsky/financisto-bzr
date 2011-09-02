@@ -65,6 +65,7 @@ public class TemplatesListActivity extends BlotterActivity {
 		// fix filter
 		blotterFilter = new WhereFilter("templates");
 		blotterFilter.eq(BlotterFilter.IS_TEMPLATE, String.valueOf(1));
-	}	
+        blotterFilter.eq(BlotterFilter.PARENT_ID, String.valueOf(0));
+	}
 	
 }

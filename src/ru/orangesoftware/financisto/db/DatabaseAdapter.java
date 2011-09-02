@@ -155,14 +155,14 @@ public class DatabaseAdapter {
 
     public Cursor getAllScheduledTransactions() {
         return db.query(V_ALL_TRANSACTIONS, BlotterColumns.NORMAL_PROJECTION,
-                BlotterColumns.is_template+"=?", new String[]{"2"},
+                BlotterColumns.is_template+"=? AND "+BlotterColumns.parent_id+"=?", new String[]{"2","0"},
                 null, null, BlotterFilter.SORT_OLDER_TO_NEWER);
     }
 
 	public Cursor getAllTemplates(WhereFilter filter) {
 		long t0 = System.currentTimeMillis();
 		try {
-			return db.query(V_ALL_TRANSACTIONS, BlotterColumns.NORMAL_PROJECTION, 
+			return db.query(V_ALL_TRANSACTIONS, BlotterColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null, 
 				BlotterFilter.SORT_NEWER_TO_OLDER);
 		} finally {
@@ -315,6 +315,7 @@ public class DatabaseAdapter {
                 split.dateTime = parent.dateTime;
                 split.fromAccountId = parent.fromAccountId;
                 split.payeeId = parent.payeeId;
+                split.isTemplate = parent.isTemplate;
                 insertTransaction(split);
             }
         }
@@ -1209,6 +1210,8 @@ public class DatabaseAdapter {
 								.append(" WHERE ")
 								.append(TransactionColumns.is_template)
 								.append("=0 AND ")
+                                .append(TransactionColumns.parent_id)
+                                .append("=0 AND ")
 								.append(TransactionColumns._id)
 								.append(" IN (");
 		for (int i=x; i<y; i++) {
