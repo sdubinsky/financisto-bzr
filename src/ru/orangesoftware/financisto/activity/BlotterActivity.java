@@ -164,7 +164,7 @@ public class BlotterActivity extends AbstractListActivity {
         prepareTransactionActionGrid();
 	}
 
-    private void prepareTransactionActionGrid() {
+    protected void prepareTransactionActionGrid() {
         if (isSupportedApiLevel()) {
             transactionActionGrid = new QuickActionGrid(this);
             transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.view));

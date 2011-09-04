@@ -67,6 +67,7 @@ public class MassOpActivity extends BlotterActivity {
 		}
 		spOperation.setPrompt(getString(R.string.mass_operations));
 		spOperation.setAdapter(EnumUtils.createSpinnerAdapter(this, operations));
+        prepareTransactionActionGrid();
 	}
 	
 	protected void applyMassOp(final MassOp op) {
