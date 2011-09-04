@@ -8,15 +8,4 @@ select
        t.is_transfer as is_transfer
 from locations l
 inner join v_blotter_for_account t on t.location_id=l._id
-where t.from_amount > 0 and l._id != 0
-union all
-select 
-	   l._id as _id,
-       l.name as name,    
-       t.from_account_currency_id as currency_id,          
-       t.from_amount as amount,
-       t.datetime as datetime,
-       t.is_transfer as is_transfer
-from locations l
-inner join v_blotter_for_account t on t.location_id=l._id
-where t.from_amount < 0 and l._id != 0;	
+where l._id != 0;
