@@ -223,7 +223,7 @@
 	<string name="account_type_credit_card">Tarjeta de Crédito</string>
 	<string name="account_type_asset">Activo</string>	
 	<string name="account_type_liability">Pasivo</string>
-	<string name="account_type_other">Definida</string>
+	<string name="account_type_other">Indefinida</string>
 	<string name="card_type">Clase de Tarjeta</string>
 	<string name="card_number">Número de la Tarjeta</string>
 	<string name="card_number_hint">Últimos 4 dígitos del número de la tarjeta</string>
@@ -231,7 +231,7 @@
 	<string name="cash">Efectivo</string>	
 	<string name="sort_order">Posición de lista</string>
 	<string name="force_gps_location">Forzar Ubicación GPS</string>
-	<string name="whats_new">¿Qué hay de nuevo?</string>
+	<string name="whats_new">Historial</string>
 	<string name="attribute_delete_alert">Se eliminará el atributo de las categorías y las transacciones donde se estuviera usando.</string>
 	<string name="user_interface">Interfaz de usuario</string>
 	<string name="sort_accounts">Vista de cuentas</string>
@@ -386,7 +386,7 @@
 	<string name="budget_mode_summary">Solo se deberá cumplir un criterio [Categoría OR Proyecto] y no ambos</string>
 	<string name="gdocs_backup">Respaldo en Google Docs</string>
 	<string name="user_login">Usuario</string>
-	<string name="user_login_summary">Nombre de usuario de la cuenta de Google</string>
+	<string name="user_login_summary">Nombre de usuario de la cuenta de Google [user@gmail.com]</string>
 	<string name="user_password">Contraseña</string>
 	<string name="user_password_summary">Contraseña de la cuenta de Google</string>
 	<string name="backup_folder">Carpeta de Respaldo</string>
@@ -598,12 +598,12 @@
 	<string name="proceed">Proceder</string>	
 	<string name="apply_mass_op" formatted="false">Se va a aplicar \'%s\' en %d transacciones, ¿está de acuerdo?</string>
 	<string name="apply_mass_op_zero_count">No hay transacciones seleccionadas...</string>		
-	<string name="entities">Identificadores</string>
+	<string name="entities">Identidades</string>
 	<string name="transaction_status_restored">Restaurado</string>	
 	<string name="scheduled_transactions_restored">Las transacciones programadas han sido restauradas...</string>		
-	<string name="scheduled_transactions_have_been_restored">%d transacciones programadas en desuso han sido restauradas. Use Operaciones Masivas para actualizar su estado o eliminarlas.</string>		
-	<string name="restore_missed_scheduled_transactions">Restaurar programación en desuso</string>		
-	<string name="restore_missed_scheduled_transactions_summary">Transacciones programadas en desuso se restablecerán con el estado \'Restaurado\'</string>
+	<string name="scheduled_transactions_have_been_restored">%d transacciones programadas desfasadas han sido restauradas. Use Operaciones Masivas para actualizar su estado o eliminarlas.</string>		
+	<string name="restore_missed_scheduled_transactions">Restaurar programación desfasada</string>		
+	<string name="restore_missed_scheduled_transactions_summary">Transacciones programadas desfasadas se restablecerán con el estado \'Restaurado\'</string>
 	<string name="save_and_new">Guardar &amp; Nuevo</string>
 	<string name="show_picture">Mostrar \'Adjuntar una foto\'</string>
 	<string name="show_picture_summary">Mostrar la opción de activar la cámara para fotografiar la ubicación actual</string>
@@ -617,12 +617,27 @@
 	<string name="donate">Hacer una donación</string>
 	<string name="donate_error">Android Market no está disponible en su dispositivo</string>
 	<string name="type">Modalidad</string>
-
 	<string name="qif_export">Exportar como QIF</string>
 	<string name="qif_export_inprogress">Exportando datos en formato QIF...</string>
 	<string name="all_accounts">Todas las Cuentas</string>
 	<string name="filter_value_not_found">Sin datos que procesar...</string>
 	<string name="empty_report">Informe sin datos que procesar</string>
 	<string name="day_of_month">Día del mes</string>
+	<string name="show_running_balance">Mostrar saldo corriente</string>
+	<string name="show_running_balance_summary">Se muestra en cada registro el saldo previsto tras contabilizar dicha transacción (requiere reinicio)</string>
+
+	<string name="new_currency">Nueva [Personalizar]</string>
+	<string name="lock_time">Bloqueo de pantalla</string>
+	<string name="lock_time_summary">Ajustar el tiempo de espera en que se retrasará el bloqueo automático de la aplicación</string>
+	<string-array name="lock_time_entities">
+		<item>Desactivar</item>
+		<item>1 minuto</item>
+		<item>3 minutos</item>
+		<item>5 minutos</item>
+		<item>10 minutos</item>
+		<item>15 minutos</item>
+	</string-array>
+
+	<string name="date_format">Formato de fecha</string>
 
 </resources>
