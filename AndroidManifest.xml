@@ -183,7 +183,9 @@
 
         <activity android:name=".activity.SplitTransactionActivity" android:label="@string/split_transaction" />
         <activity android:name=".activity.SplitTransferActivity" android:label="@string/split_transfer"/>
-
+		<activity android:name=".activity.CsvImportActivity" android:label="@string/csv_import" 
+			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
+		
 	</application>
 	
 	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="5"/>

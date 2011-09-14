@@ -660,5 +660,10 @@
     <string name="unsplit_adjust_last_summary">Adjust last</string>
 
     <string name="add_transfer">Add Transfer</string>
+    <string name="file_name">File name</string>
+    <string name="choose_account">Choose account</string>
+    <string name="no_filemanager_installed">No filemanager installed</string>
+    <string name="csv_import">CSV Import</string>
+    <string name="csv_import_inprogress">CSV Import in progress</string>
 
 </resources>

@@ -33,7 +33,7 @@
     <string name="opening_amount">Počáteční zůstatek</string>
     <string name="limit_amount">Limit zůstatku</string>
 	<string name="amount_in" formatted="false">Zůstatek mezi &lt;b&gt;%s %s&lt;/b&gt;</string>
-	<string name="view">Zborazit</string>
+	<string name="view">Zobrazit</string>
 	<string name="edit">Upravit</string>
 	<string name="delete">Smazat</string>
 	<string name="add_transaction">Přidat operaci</string>	
@@ -267,7 +267,7 @@
 	<string name="backup_database_gdocs_inprogress">Databáze se zálohuje..</string>
 	<string name="csv_export">Exportovat do CSV</string>
 	<string name="csv_export_inprogress">Exportuje se do CSV..</string>	
-	<string name="restore_database">Obdnovit databázi</string>
+	<string name="restore_database">Obnovit databázi</string>
 	<string name="restore_database_inprogress">Databáze se obnovuje...</string>
 	<string name="restore_database_gdocs">Obnovit z Google Docs</string>
 	<string name="restore_database_inprogress_gdocs">Databáze se obnovuje...</string>
@@ -624,5 +624,41 @@
 	<string name="filter_value_not_found">Nenalezeno...</string>
 	<string name="empty_report">Prázdná zpráva</string>
 	<string name="day_of_month">Den měsíce</string>
+    
+    <string name="show_running_balance">Zobrazovat průběžný zůstatek</string>
+    <string name="show_running_balance_summary">Zobrazí průběžný zůstatek účtu v záznamíku (vyžaduje restart)</string>
+
+    <string name="new_currency">Nová měna...</string>
+    <string name="lock_time">Zamykací interval</string>
+    <string name="lock_time_summary">Doba po kterou nechat hlavní obrazovku nezamčenou</string>
+    <string-array name="lock_time_entities">
+        <item>Vypnuto</item>
+        <item>1 minuta</item>
+        <item>3 minuty</item>
+        <item>5 minut</item>
+        <item>10 minut</item>
+        <item>15 minut</item>
+    </string-array>
+
+    <string name="date_format">Formát data</string>
+    <string name="pin_protection_lock_transaction">Zamknout novou Operaci\\Převod</string>
+    <string name="pin_protection_lock_transaction_summary">Zamkne obrazovku s přidáváním Operací a Převodů PINem</string>
+
+    <string name="split">[Rozdělit...]</string>
+    <string name="split_transaction">[Rozdělit-Operaci]</string>
+    <string name="split_transfer">[Rozdělit-Převod]</string>
+    <string name="unsplit_amount">Nerozdělená částka</string>
+    <string name="unsplit_amount_greater_than_zero">Stále zbývaá nerozdělená částka...</string>
+    <string name="delete_transaction_parent_confirm">Tato operace je součástí jiné. Chcete smazat nadřazenou operaci?</string>
+    <string name="downloading_rate" formatted="false">Získávám %s/%s převodní poměr...</string>
+
+    <string name="unsplit_adjust_amount">Částka</string>
+    <string name="unsplit_adjust_amount_summary">Upravit částku</string>
+    <string name="unsplit_adjust_evenly">Rovnoměrně</string>
+    <string name="unsplit_adjust_evenly_summary">Upravit rovnoměrně</string>
+    <string name="unsplit_adjust_last">Poslední</string>
+    <string name="unsplit_adjust_last_summary">Upravit poslední</string>
+
+    <string name="add_transfer">Přidat převod</string>
 
 </resources>

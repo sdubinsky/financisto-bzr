@@ -653,5 +653,10 @@
 	<string name="date_format">Datumsformat</string>
 	<string name="pin_protection_lock_transaction">Neue(n) Transaktion\\Transfer sperren</string>
 	<string name="pin_protection_lock_transaction_summary">\'Neue Transaktion\'- und \'Neuer Transfer\'-Bildschirm mit PIN sperren</string>
+	<string name="file_name">Dateiname</string>
+	<string name="chosse_account">Wähle Konto</string>
+	<string name="no_filemanager_installed">Kein Dateimanager installiert</string>
+	<string name="csv_import">CSV Import</string>
+	<string name="csv_import_inprogress">CSV Import in Bearbeitung</string>
 
 </resources>
