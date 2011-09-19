@@ -654,4 +654,21 @@
 	<string name="pin_protection_lock_transaction">Neue(n) Transaktion\\Transfer sperren</string>
 	<string name="pin_protection_lock_transaction_summary">\'Neue Transaktion\'- und \'Neuer Transfer\'-Bildschirm mit PIN sperren</string>
 
+	<string name="split">[Split-Buchung...]</string>
+	<string name="split_transaction">[Split-Transaktion]</string>
+	<string name="split_transfer">[Split-Transfer]</string>
+	<string name="unsplit_amount">Ungesplitteter Betrag</string>
+	<string name="unsplit_amount_greater_than_zero">Es wurde noch nicht der gesamte Betrag aufgesplittet...</string>
+	<string name="delete_transaction_parent_confirm">Diese Transaktion ist Teil einer Split-Buchung. Wollen Sie die zugehörige Transaktion löschen?</string>
+	<string name="downloading_rate" formatted="false">Empfange %s/%s Umrechnungskurs...</string>
+
+	<string name="unsplit_adjust_amount">Betrag</string>
+	<string name="unsplit_adjust_amount_summary">Betrag anpassen</string>
+	<string name="unsplit_adjust_evenly">Gleichmäßig</string>
+	<string name="unsplit_adjust_evenly_summary">Gleichmäßig aufteilen</string>
+	<string name="unsplit_adjust_last">Letzte</string>
+	<string name="unsplit_adjust_last_summary">Letzte Buchung anpassen</string>
+
+	<string name="add_transfer">Transfer hinzufügen</string>
+
 </resources>
