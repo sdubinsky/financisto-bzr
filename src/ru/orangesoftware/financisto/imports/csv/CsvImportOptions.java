@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
  */
 public class CsvImportOptions {
 
-    public static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+    public static final String DEFAULT_DATE_FORMAT = "dd.MM.yyyy";
 
     public final Currency currency;
     public final SimpleDateFormat dateFormat;

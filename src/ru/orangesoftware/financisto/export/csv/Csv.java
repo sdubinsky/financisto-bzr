@@ -215,7 +215,7 @@ public class Csv {
             return result;
         }
 
-        private String unmarkDoubleQuotes(String s) { return s.replace(impossibleString, "\""); }
+        private String unmarkDoubleQuotes(String s) { return s.replace(impossibleString, "\"\""); }
         private String markDoubleQuotes(String s) { return s.replace("\"\"", impossibleString); }
 
         private String removeLeadingSpaces(String s) { return s.replaceFirst(" +", ""); }

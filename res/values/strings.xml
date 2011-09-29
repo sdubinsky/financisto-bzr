@@ -665,5 +665,13 @@
     <string name="no_filemanager_installed">No filemanager installed</string>
     <string name="csv_import">CSV Import</string>
     <string name="csv_import_inprogress">CSV Import in progress</string>
+    <string name="select_filename">Select Import filename</string>
+    <string name="import_file_not_found">Import file not found</string>
+    <string name="import_unknown_category">Unknown category in import file</string>
+    <string name="import_unknown_project">Unknown project in import file</string>
+    <string name="import_wrong_currency">Wrong currency in import file</string>
+    <string name="import_illegal_argument_exception">Illegal argument exception</string>
+    <string name="import_parse_error">Parsing error in import file</string>
+    <string name="csv_import_error">CSV import error</string>
 
 </resources>

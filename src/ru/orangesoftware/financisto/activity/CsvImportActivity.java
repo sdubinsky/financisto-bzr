@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -44,14 +45,13 @@ public class CsvImportActivity extends AbstractImportActivity implements Activit
     public static final String CSV_IMPORT_SELECTED_ACCOUNT = "CSV_IMPORT_SELECTED_ACCOUNT";
     public static final String CSV_IMPORT_DATE_FORMAT = "CSV_IMPORT_DATE_FORMAT";
     public static final String CSV_IMPORT_FILENAME="CSV_IMPORT_FILENAME";
-	public static final String CSV_IMPORT_FIELD_SEPARATOR = "CSV_IMPORT_FIELD_SEPARATOR";
+    public static final String CSV_IMPORT_FIELD_SEPARATOR="CSV_IMPORT_FIELD_SEPARATOR";
     
-    
-    private final CurrencyExportPreferences currencyPreferences = new CurrencyExportPreferences("qif");
+    private final CurrencyExportPreferences currencyPreferences = new CurrencyExportPreferences("csv");
 
     private DatabaseAdapter db;
     private ArrayList<Account> accounts;
-    private int checkedAccount=-1;
+    private int checkedAccount=1;
     private Button bAccounts;
     
     
@@ -114,7 +114,34 @@ public class CsvImportActivity extends AbstractImportActivity implements Activit
 
             }
         });
-       clearFilter();
+      
+        Button bOk = (Button)findViewById(R.id.bOK);
+		bOk.setOnClickListener(new OnClickListener() {
+           public void onClick(View view) {
+           	if (edFilename.getText().toString().equals("")) {
+					Toast.makeText(CsvImportActivity.this, R.string.select_filename, Toast.LENGTH_SHORT).show();
+					return;	
+				}
+           	if (checkedAccount==-1) {
+				Toast.makeText(CsvImportActivity.this, R.string.choose_account, Toast.LENGTH_SHORT).show();
+				return;	
+			}	
+       	
+           		Intent data = new Intent();
+               updateResultIntentFromUi(data);
+               setResult(RESULT_OK, data);
+               finish();
+           }
+       });
+
+		Button bCancel = (Button)findViewById(R.id.bCancel);
+		bCancel.setOnClickListener(new OnClickListener() {
+           public void onClick(View view) {
+               setResult(RESULT_CANCELED);
+               finish();
+           }
+       });
+		
     }
 
     
@@ -129,11 +156,13 @@ public class CsvImportActivity extends AbstractImportActivity implements Activit
 	public void onSelected(int id, List<? extends MultiChoiceItem> items) {
 	    List<Account> selectedAccounts = getSelectedAccounts();
         if (selectedAccounts.size() == 0 || selectedAccounts.size() == accounts.size()) {
-            bAccounts.setText(R.string.all_accounts);
+            bAccounts.setText(R.string.choose_account);
+            checkedAccount=-1;
         } else {
             StringBuilder sb = new StringBuilder();
             for (Account a : selectedAccounts) {
                 appendItemTo(sb, a.title);
+                checkedAccount=1;
             }
             bAccounts.setText(sb.toString());
         }
@@ -178,6 +207,9 @@ public class CsvImportActivity extends AbstractImportActivity implements Activit
         Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
         data.putExtra(CSV_IMPORT_DATE_FORMAT, dateFormats.getSelectedItem().toString());
         data.putExtra(CSV_IMPORT_FILENAME, edFilename.getText().toString());
+        Spinner fieldSeparator = (Spinner)findViewById(R.id.spinnerFieldSeparator);
+        data.putExtra(CSV_IMPORT_FIELD_SEPARATOR, fieldSeparator.getSelectedItem().toString().charAt(1));
+        
     }
 
     private long[] getSelectedAccountsIds() {
@@ -220,6 +252,8 @@ public class CsvImportActivity extends AbstractImportActivity implements Activit
         Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
 		editor.putInt(CSV_IMPORT_DATE_FORMAT, dateFormats.getSelectedItemPosition());
 		editor.putString(CSV_IMPORT_FILENAME, edFilename.getText().toString());
+		Spinner fieldSeparator = (Spinner)findViewById(R.id.spinnerFieldSeparator);
+        editor.putInt(CSV_IMPORT_FIELD_SEPARATOR, fieldSeparator.getSelectedItemPosition());
 		editor.commit();
 	}
 
@@ -245,9 +279,9 @@ public class CsvImportActivity extends AbstractImportActivity implements Activit
         dateFormats.setSelection(preferences.getInt(CSV_IMPORT_DATE_FORMAT, 0));
         edFilename=(EditText)findViewById(R.id.edFilename);
         edFilename.setText(preferences.getString(CSV_IMPORT_FILENAME,""));
-        
-        //edFilename.setText(preferences.getString(XML_IMPORT_FILENAME,""));
-	}
+        Spinner fieldSeparator = (Spinner)findViewById(R.id.spinnerFieldSeparator);
+        fieldSeparator.setSelection(preferences.getInt(CSV_IMPORT_FIELD_SEPARATOR, 0));
+    }
 
     private void parseSelectedAccounts(String selectedIds) {
         try {

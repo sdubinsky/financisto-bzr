@@ -50,6 +50,12 @@
             <Spinner android:id="@+id/spinnerGroupSeparators"
                 android:entries="@array/group_separators"/>
         </TableRow>
+        <TableRow>
+            <TextView android:layout_marginLeft="3dp" android:text="@string/field_separator"></TextView>
+        </TableRow>
+        <TableRow>
+            <Spinner android:entries="@array/field_separators" android:id="@+id/spinnerFieldSeparator"></Spinner>
+        </TableRow>
         <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
             android:layout_width="fill_parent" android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />

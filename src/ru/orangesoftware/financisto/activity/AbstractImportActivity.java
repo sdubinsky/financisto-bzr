@@ -15,6 +15,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -38,7 +39,6 @@ public abstract class AbstractImportActivity extends Activity {
     public static final int IMPORT_XSLFILENAME_REQUESTCODE=0xfe;
     
     private final int layoutId;
-	private final WhereFilter filter = WhereFilter.empty();
 	private DateFormat df;
 	protected ImageButton bBrowse;
     protected EditText edFilename;
@@ -55,26 +55,6 @@ public abstract class AbstractImportActivity extends Activity {
 		
 		df = DateUtils.getShortDateFormat(this);
 		
-		filter.put(new DateTimeCriteria(PeriodType.THIS_MONTH));
-
-		Button bOk = (Button)findViewById(R.id.bOK);
-		bOk.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                Intent data = new Intent();
-                filter.toIntent(data);
-                updateResultIntentFromUi(data);
-                setResult(RESULT_OK, data);
-                finish();
-            }
-        });
-
-		Button bCancel = (Button)findViewById(R.id.bCancel);
-		bCancel.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                setResult(RESULT_CANCELED);
-                finish();
-            }
-        });
         bBrowse = (ImageButton) findViewById(R.id.btn_browse);
         bBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,27 +90,10 @@ public abstract class AbstractImportActivity extends Activity {
 
     protected abstract void updateResultIntentFromUi(Intent data);
 
-    public void clearFilter() {
-        filter.clear();
-    }
-
+    
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == 1) {
-			if (resultCode == RESULT_FIRST_USER) {
-				filter.clearDateTime();
-			} else if (resultCode == RESULT_OK) {
-				String periodType = data.getStringExtra(DateFilterActivity.EXTRA_FILTER_PERIOD_TYPE);
-				PeriodType p = PeriodType.valueOf(periodType);
-				if (PeriodType.CUSTOM == p) {
-					long periodFrom = data.getLongExtra(DateFilterActivity.EXTRA_FILTER_PERIOD_FROM, 0);
-					long periodTo = data.getLongExtra(DateFilterActivity.EXTRA_FILTER_PERIOD_TO, 0);
-					filter.put(new DateTimeCriteria(periodFrom, periodTo));
-				} else {
-					filter.put(new DateTimeCriteria(p));
-				}			
-			}
-		}else if (requestCode ==IMPORT_FILENAME_REQUESTCODE) {
+		if (requestCode ==IMPORT_FILENAME_REQUESTCODE) {
 			if (resultCode == RESULT_OK && data != null) {
 				String filename = data.getDataString();
 				if (filename != null) {

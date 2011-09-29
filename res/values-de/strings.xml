@@ -675,5 +675,10 @@
 	<string name="unsplit_adjust_last_summary">Letzte Buchung anpassen</string>
 
 	<string name="add_transfer">Transfer hinzufügen</string>
+	<string name="select_filename">Wähle Import Dateiname</string>
+	<string name="import_file_not_found">Import Datei nicht gefunden</string>
+	<string name="import_unknown_category">Unbekannte Kategorie in Importdatei</string>
+	<string name="import_unknown_project">Unbekanntes Projekt in Importdatei</string>
+	<string name="import_wrong_currency">Falsche Währung in Importdatei</string>
 
 </resources>

@@ -146,11 +146,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		} else if (requestCode == ACTIVITY_CSV_IMPORT) {
 			if (resultCode == RESULT_OK) {
                 CsvImportOptions options = CsvImportOptions.fromIntent(data);
-                doCsvImport(options);
-                
+                doCsvImport(options);                
 			}
-		}
-		
+		}		
 	}
 	
 	private void doCsvExport(CsvExportOptions options) {
@@ -698,8 +696,28 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 
     	@Override
     	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-    		CsvImport csvimport = new CsvImport(db, options);
-    		return csvimport.doImport();
+    		try{
+    			CsvImport csvimport = new CsvImport(db, options,context);
+        		return csvimport.doImport();	
+    		}catch(Exception e)
+    		{
+    			if(e.getMessage().equals("Import file not found"))
+					handler.sendEmptyMessage(R.string.import_file_not_found);
+				else if(e.getMessage().equals("Unknown category in import line"))
+					handler.sendEmptyMessage(R.string.import_unknown_category);
+				else if(e.getMessage().equals("Unknown project in import line"))
+					handler.sendEmptyMessage(R.string.import_unknown_project);
+				else if(e.getMessage().equals("Wrong currency in import line"))
+					handler.sendEmptyMessage(R.string.import_wrong_currency);
+				else if(e.getMessage().equals("IllegalArgumentException"))
+					handler.sendEmptyMessage(R.string.import_illegal_argument_exception);
+				else if(e.getMessage().equals("ParseException"))
+					handler.sendEmptyMessage(R.string.import_parse_error);
+				else
+					handler.sendEmptyMessage(R.string.csv_import_error);
+    			throw e;
+    		}
+    		
     	}
 
     	@Override
