@@ -178,7 +178,7 @@ public abstract class FieldType {
 	
 	public Object getValueFromCursor(Cursor c, String columnName) {
 		int columnIndex = c.getColumnIndexOrThrow(columnName);
-		return c.isNull(columnIndex) ? null : valueFromCursor(c, columnIndex);
+		return valueFromCursor(c, columnIndex);
 	}
 
 	public void setValue(ContentValues values, String key, Object value) {
