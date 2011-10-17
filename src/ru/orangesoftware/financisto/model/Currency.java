@@ -29,6 +29,9 @@ public class Currency extends MyEntity {
 	public static final Currency EMPTY = new Currency();
 	
 	static {
+        EMPTY.id = -1;
+        EMPTY.name = "";
+        EMPTY.title = "Default";
 		EMPTY.symbol = "";
 		EMPTY.decimals = 2;
         EMPTY.decimalSeparator = "'.'";

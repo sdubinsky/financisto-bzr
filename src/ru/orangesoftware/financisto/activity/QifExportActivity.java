@@ -36,7 +36,7 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
     private final CurrencyExportPreferences currencyPreferences = new CurrencyExportPreferences("qif");
 
     private DatabaseAdapter db;
-    private ArrayList<Account> accounts;
+    private List<Account> accounts;
 
     private Button bAccounts;
 

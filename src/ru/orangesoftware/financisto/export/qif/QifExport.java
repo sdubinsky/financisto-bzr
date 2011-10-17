@@ -20,10 +20,12 @@ import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryTree;
+import ru.orangesoftware.financisto.model.Transaction;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class QifExport extends Export {
@@ -76,7 +78,7 @@ public class QifExport extends Export {
     }
 
     private void writeAccountsAndTransactions(QifBufferedWriter qifWriter) throws IOException {
-        ArrayList<Account> accounts = db.em().getAllAccountsList();
+        List<Account> accounts = db.em().getAllAccountsList();
         for (Account a : accounts) {
             if (isSelectedAccount(a)) {
                 QifAccount qifAccount = writeAccount(qifWriter, a);
@@ -113,17 +115,26 @@ public class QifExport extends Export {
                     qifWriter.write("!Type:").write(qifAccount.type).newLine();
                     addHeader = false;
                 }
-                QifTransaction qifTransaction = QifTransaction.fromBlotterCursor(c);
+                QifTransaction qifTransaction = QifTransaction.fromBlotterCursor(c, categoriesMap);
                 if (qifTransaction.isSplit()) {
-                    qifTransaction.setSplits(em.getSplitsForTransaction(qifTransaction.id));
+                    List<QifTransaction> qifSplits = fromTransactions(
+                            em.getSplitsForTransaction(qifTransaction.id), categoriesMap, accountsMap);
+                    qifTransaction.setSplits(qifSplits);
                 }
-                qifTransaction.useCategoriesCache(categoriesMap);
-                qifTransaction.useAccountsCache(accountsMap);
                 qifTransaction.writeTo(qifWriter, options);
             }
         } finally {
             c.close();
         }
+    }
+
+    private List<QifTransaction> fromTransactions(List<Transaction> transactions, Map<Long, Category> categoriesMap, Map<Long, Account> accountsMap) {
+        List<QifTransaction> qifTransactions = new ArrayList<QifTransaction>(transactions.size());
+        for (Transaction transaction : transactions) {
+            QifTransaction qifTransaction = QifTransaction.fromTransaction(transaction, categoriesMap, accountsMap);
+            qifTransactions.add(qifTransaction);
+        }
+        return qifTransactions;
     }
 
     private Cursor getBlotterForAccount(Account account) {

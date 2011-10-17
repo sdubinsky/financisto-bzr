@@ -2,8 +2,13 @@ package ru.orangesoftware.financisto.export.qif;
 
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
+import ru.orangesoftware.financisto.model.Currency;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static ru.orangesoftware.financisto.export.qif.QifUtils.trimFirstChar;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,14 +17,25 @@ import java.io.IOException;
  */
 public class QifAccount {
 
-    public String type;
-    public String memo;
+    public String type = "";
+    public String memo = "";
+
+    public final List<QifTransaction> transactions = new ArrayList<QifTransaction>();
 
     public static QifAccount fromAccount(Account account) {
         QifAccount qifAccount = new QifAccount();
         qifAccount.type = decodeAccountType(account.type);
         qifAccount.memo = account.title;
         return qifAccount;
+    }
+
+    public Account toAccount() {
+        Account a = new Account();
+        a.id = -1;
+        a.currency = Currency.EMPTY;
+        a.title = memo;
+        a.type = encodeAccountType(type);
+        return a;
     }
 
     /*
@@ -46,11 +62,40 @@ public class QifAccount {
         }
     }
 
-    public void writeTo(QifBufferedWriter bw) throws IOException {
-        bw.writeAccountsHeader();
-        bw.write("N").write(memo).newLine();
-        bw.write("T").write(type).newLine();
-        bw.end();
+    private String encodeAccountType(String type) {
+        if ("Bank".endsWith(type))
+            return AccountType.BANK.name();
+        else if ("Cash".equals(type))
+            return AccountType.CASH.name();
+        else if ("CCard".equals(type))
+            return AccountType.CREDIT_CARD.name();
+        else if ("Oth A".equals(type))
+            return AccountType.ASSET.name();
+        else if ("Oth L".equals(type))
+            return AccountType.LIABILITY.name();
+        else
+            return AccountType.OTHER.name();
+    }
+
+    public void writeTo(QifBufferedWriter w) throws IOException {
+        w.writeAccountsHeader();
+        w.write("N").write(memo).newLine();
+        w.write("T").write(type).newLine();
+        w.end();
+    }
+
+    public void readFrom(QifBufferedReader r) throws IOException {
+        String line;
+        while ((line = r.readLine()) != null) {
+            if (line.startsWith("^")) {
+                break;
+            }
+            if (line.startsWith("N")) {
+                this.memo = trimFirstChar(line);
+            } else if (line.startsWith("T")) {
+                this.type = trimFirstChar(line);
+            }
+        }
     }
 
 }

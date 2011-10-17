@@ -22,7 +22,7 @@ import javax.persistence.Table;
 public class Account extends MyEntity {
 	
 	@Column(name = "creation_date")
-	public long creationDate;
+	public long creationDate = System.currentTimeMillis();
 
 	@JoinColumn(name = "currency_id")
 	public Currency currency;

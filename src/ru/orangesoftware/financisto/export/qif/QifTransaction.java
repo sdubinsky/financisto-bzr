@@ -7,11 +7,15 @@ import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import static ru.orangesoftware.financisto.export.qif.QifUtils.parseDate;
+import static ru.orangesoftware.financisto.export.qif.QifUtils.parseMoney;
+import static ru.orangesoftware.financisto.export.qif.QifUtils.trimFirstChar;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,40 +24,52 @@ import static ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
  */
 public class QifTransaction {
 
-    private Map<Long, Category> categoriesMap;
-    private Map<Long, Account> accountsMap;
-
     public long id;
-    private Date date;
-    private long amount;
-    private String payee;
-    private String memo;
-    private long categoryId;
-    private long toAccountId;
-    private String toAccountTitle;
-    private List<Transaction> splits;
+    public Date date;
+    public long amount;
+    public String payee;
+    public String memo;
+    public String category;
+    public String toAccount;
 
-    public static QifTransaction fromBlotterCursor(Cursor c) {
+    public boolean isSplit = false;
+    public List<QifTransaction> splits;
+
+    public static QifTransaction fromBlotterCursor(Cursor c, Map<Long, Category> categoriesMap) {
         QifTransaction t = new QifTransaction();
         t.id = c.getLong(BlotterColumns._id.ordinal());
         t.date = new Date(c.getLong(BlotterColumns.datetime.ordinal()));
         t.amount = c.getLong(BlotterColumns.from_amount.ordinal());
         t.payee = c.getString(BlotterColumns.payee.ordinal());
         t.memo = c.getString(BlotterColumns.note.ordinal());
-        t.categoryId = c.getLong(BlotterColumns.category_id.ordinal());
-        t.toAccountId = c.getLong(BlotterColumns.to_account_id.ordinal());
-        t.toAccountTitle = c.getString(BlotterColumns.to_account_title.ordinal());
+        Category category = getCategoryFromCursor(c, categoriesMap);
+        if (category != null) {
+            QifCategory qifCategory = QifCategory.fromCategory(category);
+            t.category = qifCategory.name;
+        }
+        t.isSplit = categoryIsSplit(c);
+        t.toAccount = c.getString(BlotterColumns.to_account_title.ordinal());
         return t;
     }
 
-    public void writeTo(QifBufferedWriter qifWriter, QifExportOptions options) throws IOException {
+    private static Category getCategoryFromCursor(Cursor c, Map<Long, Category> categoriesMap) {
+        long categoryId = c.getLong(BlotterColumns.category_id.ordinal());
+        return categoriesMap.get(categoryId);
+    }
+
+    private static boolean categoryIsSplit(Cursor c) {
+        long categoryId = c.getLong(BlotterColumns.category_id.ordinal());
+        return categoryId == Category.SPLIT_CATEGORY_ID;
+    }
+
+    public void writeTo(QifBufferedWriter qifWriter, QifExportOptions options)
+            throws IOException {
         qifWriter.write("D").write(options.dateFormat.format(date)).newLine();
         qifWriter.write("T").write(Utils.amountToString(options.currency, amount)).newLine();
-        if (toAccountId > 0) {
-            qifWriter.write("L[").write(toAccountTitle).write("]").newLine();
-        } else if (categoryId > 0) {
-            QifCategory qifCategory = QifCategory.fromCategory(getCategoryById(categoryId));
-            qifWriter.write("L").write(qifCategory.name).newLine();
+        if (toAccount != null) {
+            qifWriter.write("L[").write(toAccount).write("]").newLine();
+        } else if (category != null) {
+            qifWriter.write("L").write(category).newLine();
         }
         if (Utils.isNotEmpty(payee)) {
             qifWriter.write("P").write(payee).newLine();
@@ -62,49 +78,102 @@ public class QifTransaction {
             qifWriter.write("M").write(memo).newLine();
         }
         if (isSplit()) {
-            for (Transaction split : splits) {
+            for (QifTransaction split : splits) {
                 writeSplit(qifWriter, options, split);
             }
         }
         qifWriter.end();
     }
 
-    private void writeSplit(QifBufferedWriter qifWriter, QifExportOptions options, Transaction split) throws IOException {
-        if (split.isTransfer()) {
-            Account toAccount = accountsMap.get(split.toAccountId);
-            qifWriter.write("S[").write(toAccount.title).write("]").newLine();
+    private void writeSplit(QifBufferedWriter qifWriter, QifExportOptions options, QifTransaction split) throws IOException {
+        if (split.toAccount != null) {
+            qifWriter.write("S[").write(split.toAccount).write("]").newLine();
         } else {
-            if (split.categoryId > 0) {
-                QifCategory qifCategory = QifCategory.fromCategory(getCategoryById(split.categoryId));
-                qifWriter.write("S").write(qifCategory.name).newLine();
+            if (split.category != null) {
+                qifWriter.write("S").write(split.category).newLine();
             } else {
                 qifWriter.write("S<NO_CATEGORY>").newLine();
             }
         }
-        qifWriter.write("$").write(Utils.amountToString(options.currency, split.fromAmount)).newLine();
-        if (Utils.isNotEmpty(split.note)) {
-            qifWriter.write("E").write(split.note).newLine();
+        qifWriter.write("$").write(Utils.amountToString(options.currency, split.amount)).newLine();
+        if (Utils.isNotEmpty(split.memo)) {
+            qifWriter.write("E").write(split.memo).newLine();
         }
     }
 
-    private Category getCategoryById(long categoryId) {
-        return categoriesMap.get(categoryId);
-    }
-
-    public void useCategoriesCache(Map<Long, Category> categoriesMap) {
-        this.categoriesMap = categoriesMap;
-    }
-
-    public void useAccountsCache(Map<Long, Account> accountsMap) {
-        this.accountsMap = accountsMap;
-    }
-
     public boolean isSplit() {
-        return categoryId == Category.SPLIT_CATEGORY_ID;
+        return isSplit;
     }
 
-    public void setSplits(List<Transaction> splits) {
+    public void setSplits(List<QifTransaction> splits) {
         this.splits = splits;
     }
 
+    public void readFrom(QifBufferedReader r) throws IOException {
+        QifTransaction split = null;
+        String line;
+        while ((line = r.readLine()) != null) {
+            if (line.startsWith("^")) {
+                break;
+            }
+            if (line.startsWith("D")) {
+                this.date = parseDate(trimFirstChar(line));
+            } else if (line.startsWith("T")) {
+                this.amount = parseMoney(trimFirstChar(line));
+            } else if (line.startsWith("P")) {
+                this.payee = trimFirstChar(line);
+            } else if (line.startsWith("M")) {
+                this.memo = trimFirstChar(line);
+            } else if (line.startsWith("L")) {
+                this.category = trimFirstChar(line);
+            } else if (line.startsWith("S")) {
+                addSplit(split);
+                split = new QifTransaction();
+                split.category = trimFirstChar(line);
+            } else if (line.startsWith("$")) {
+                if (split != null) {
+                    split.amount = parseMoney(trimFirstChar(line));
+                }
+            } else if (line.startsWith("E")) {
+                if (split != null) {
+                    split.memo = trimFirstChar(line);
+                }
+            }
+        }
+        addSplit(split);
+    }
+
+    private void addSplit(QifTransaction split) {
+        if (split == null) {
+            return;
+        }
+        if (splits == null) {
+            splits = new ArrayList<QifTransaction>();
+        }
+        splits.add(split);
+    }
+
+    public static QifTransaction fromTransaction(Transaction transaction, Map<Long, Category> categoriesMap, Map<Long, Account> accountsMap) {
+        QifTransaction qifTransaction = new QifTransaction();
+        qifTransaction.amount = transaction.fromAmount;
+        qifTransaction.memo = transaction.note;
+        if (transaction.toAccountId > 0) {
+            Account toAccount = accountsMap.get(transaction.toAccountId);
+            qifTransaction.toAccount = toAccount.title;
+            //TODO: test if from and to accounts have different currencies
+        }
+        Category category = categoriesMap.get(transaction.categoryId);
+        if (category != null) {
+            QifCategory qifCategory = QifCategory.fromCategory(category);
+            qifTransaction.category = qifCategory.name;
+        }
+        qifTransaction.isSplit = transaction.isSplitParent();
+        return qifTransaction;
+    }
+
+    public Transaction toTransaction() {
+        Transaction t = new Transaction();
+        t.id = -1;
+        return t;
+    }
 }

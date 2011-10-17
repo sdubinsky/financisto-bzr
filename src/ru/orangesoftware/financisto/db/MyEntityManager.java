@@ -224,8 +224,8 @@ public class MyEntityManager extends EntityManager {
 		return saveOrUpdate(account);
 	}
 
-	public ArrayList<Account> getAllAccountsList() {
-		ArrayList<Account> list = new ArrayList<Account>();
+	public List<Account> getAllAccountsList() {
+		List<Account> list = new ArrayList<Account>();
 		Cursor c = getAllAccounts();
 		try {
 			while (c.moveToNext()) {

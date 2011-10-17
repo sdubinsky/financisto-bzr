@@ -4,6 +4,8 @@ import ru.orangesoftware.financisto.model.Category;
 
 import java.io.IOException;
 
+import static ru.orangesoftware.financisto.export.qif.QifUtils.trimFirstChar;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -14,7 +16,7 @@ public class QifCategory {
     public static final String SEPARATOR = ":";
 
     public String name;
-    public boolean isIncome;
+    public boolean isIncome = false;
 
     public static QifCategory fromCategory(Category c) {
         QifCategory qifCategory = new QifCategory();
@@ -37,6 +39,20 @@ public class QifCategory {
         qifWriter.write("N").write(name).newLine();
         qifWriter.write(isIncome ? "I" : "E").newLine();
         qifWriter.end();
+    }
+
+    public void readFrom(QifBufferedReader r) throws IOException {
+        String line;
+        while ((line = r.readLine()) != null) {
+            if (line.startsWith("^")) {
+                break;
+            }
+            if (line.startsWith("N")) {
+                this.name = trimFirstChar(line);
+            } else if (line.startsWith("I")) {
+                this.isIncome = true;
+            }
+        }
     }
 
 }

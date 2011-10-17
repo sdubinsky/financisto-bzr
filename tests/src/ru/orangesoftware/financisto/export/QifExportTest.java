@@ -32,9 +32,9 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
         createFirstAccount();
         assertEquals(
                 "!Account\n" +
-                        "NMy Cash Account\n" +
-                        "TCash\n" +
-                        "^\n",
+                "NMy Cash Account\n" +
+                "TCash\n" +
+                "^\n",
                 exportAsString());
     }
 
@@ -64,25 +64,25 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
         TransactionBuilder.withDb(db).account(a).amount(-210056).payee("Payee 1").dateTime(date(2011, 7, 10)).create();
         assertEquals(
                 "!Account\n" +
-                        "NMy Cash Account\n" +
-                        "TCash\n" +
-                        "^\n" +
-                        "!Type:Cash\n" +
-                        "D10/07/2011\n" +
-                        "T-2,100.56\n" +
-                        "PPayee 1\n" +
-                        "^\n",
+                "NMy Cash Account\n" +
+                "TCash\n" +
+                "^\n" +
+                "!Type:Cash\n" +
+                "D10/07/2011\n" +
+                "T-2,100.56\n" +
+                "PPayee 1\n" +
+                "^\n",
                 exportAsString("dd/MM/yyyy"));
         assertEquals(
                 "!Account\n" +
-                        "NMy Cash Account\n" +
-                        "TCash\n" +
-                        "^\n" +
-                        "!Type:Cash\n" +
-                        "D07/10/2011\n" +
-                        "T-2,100.56\n" +
-                        "PPayee 1\n" +
-                        "^\n",
+                "NMy Cash Account\n" +
+                "TCash\n" +
+                "^\n" +
+                "!Type:Cash\n" +
+                "D07/10/2011\n" +
+                "T-2,100.56\n" +
+                "PPayee 1\n" +
+                "^\n",
                 exportAsString("MM/dd/yyyy"));
         assertEquals(
                 "!Account\n"+
@@ -268,24 +268,24 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
                 .create();
         assertEquals(
                 "!Account\n" +
-                        "NMy Cash Account\n" +
-                        "TCash\n" +
-                        "^\n" +
-                        "!Type:Cash\n" +
-                        "D12/07/2011\n" +
-                        "T-2,600.66\n" +
-                        "S[My Bank Account]\n" +
-                        "$-1,100.56\n" +
-                        "^\n" +
-                        "!Account\n" +
-                        "NMy Bank Account\n" +
-                        "TBank\n" +
-                        "^\n" +
-                        "!Type:Bank\n" +
-                        "D12/07/2011\n" +
-                        "T500.25\n" +
-                        "L[My Cash Account]\n" +
-                        "^\n",
+                "NMy Cash Account\n" +
+                "TCash\n" +
+                "^\n" +
+                "!Type:Cash\n" +
+                "D12/07/2011\n" +
+                "T-2,600.66\n" +
+                "S[My Bank Account]\n" +
+                "$-1,100.56\n" +
+                "^\n" +
+                "!Account\n" +
+                "NMy Bank Account\n" +
+                "TBank\n" +
+                "^\n" +
+                "!Type:Bank\n" +
+                "D12/07/2011\n" +
+                "T500.25\n" +
+                "L[My Cash Account]\n" +
+                "^\n",
                 exportAsString());
     }
 
@@ -343,21 +343,21 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
         createCategories();
         assertEquals(
                 "!Type:Cat\n" +
-                        "NA1\n" +
-                        "I\n" +
-                        "^\n" +
-                        "NA1:aa1\n" +
-                        "I\n" +
-                        "^\n" +
-                        "NA1:aa2\n" +
-                        "I\n" +
-                        "^\n" +
-                        "NB2\n" +
-                        "E\n" +
-                        "^\n" +
-                        "NB2:bb1\n" +
-                        "E\n" +
-                        "^\n",
+                "NA1\n" +
+                "I\n" +
+                "^\n" +
+                "NA1:aa1\n" +
+                "I\n" +
+                "^\n" +
+                "NA1:aa2\n" +
+                "I\n" +
+                "^\n" +
+                "NB2\n" +
+                "E\n" +
+                "^\n" +
+                "NB2:bb1\n" +
+                "E\n" +
+                "^\n",
                 exportAsString());
     }
 

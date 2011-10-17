@@ -1334,7 +1334,7 @@ public class DatabaseAdapter {
      * Re-populates running_balance table for all accounts
      */
     public void rebuildRunningBalance() {
-        ArrayList<Account> accounts = em.getAllAccountsList();
+        List<Account> accounts = em.getAllAccountsList();
         for (Account account : accounts) {
             rebuildRunningBalanceForAccount(account);
         }
