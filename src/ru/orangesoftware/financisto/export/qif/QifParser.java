@@ -10,7 +10,11 @@ package ru.orangesoftware.financisto.export.qif;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,6 +27,7 @@ public class QifParser {
 
     public final List<QifAccount> accounts = new ArrayList<QifAccount>();
     public final List<QifCategory> categories = new ArrayList<QifCategory>();
+    public final Set<String> payees = new HashSet<String>();
 
     public QifParser(QifBufferedReader r) {
         this.r = r;
@@ -61,12 +66,19 @@ public class QifParser {
                 while (true) {
                     QifTransaction t = new QifTransaction();
                     t.readFrom(r);
+                    addPayeeFromTransaction(t);
                     account.transactions.add(t);
                     if (shouldBreakCurrentBlock()) {
                         break;
                     }
                 }
             }
+        }
+    }
+
+    private void addPayeeFromTransaction(QifTransaction t) {
+        if (isNotEmpty(t.payee)) {
+            payees.add(t.payee);
         }
     }
 

@@ -11,6 +11,8 @@ package ru.orangesoftware.financisto.export;
 import android.test.AndroidTestCase;
 import ru.orangesoftware.financisto.test.DateTime;
 
+import java.util.Arrays;
+
 import static ru.orangesoftware.financisto.export.qif.QifUtils.*;
 
 /**
@@ -38,6 +40,13 @@ public class QifUtilsTest extends AndroidTestCase {
         assertEquals(10100, parseMoney("1,01"));
         assertEquals(100250, parseMoney("1,002.5"));
         assertEquals(100250, parseMoney("1.002,5"));
+    }
+
+    public void test_should_split_category_name() {
+        assertEquals("P1", splitCategoryName("P1"));
+        assertEquals("P1:c1", splitCategoryName("P1:c1"));
+        assertEquals("P1", splitCategoryName("P1/C2"));
+        assertEquals("P1:c1", splitCategoryName("P1:c1/C2"));
     }
 
 }

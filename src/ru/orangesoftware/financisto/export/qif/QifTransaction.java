@@ -174,6 +174,9 @@ public class QifTransaction {
     public Transaction toTransaction() {
         Transaction t = new Transaction();
         t.id = -1;
+        t.dateTime = date.getTime();
+        t.fromAmount = amount;
+        t.note = memo;
         return t;
     }
 }

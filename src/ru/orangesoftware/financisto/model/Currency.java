@@ -29,7 +29,7 @@ public class Currency extends MyEntity {
 	public static final Currency EMPTY = new Currency();
 	
 	static {
-        EMPTY.id = -1;
+        EMPTY.id = 0;
         EMPTY.name = "";
         EMPTY.title = "Default";
 		EMPTY.symbol = "";

@@ -460,4 +460,16 @@ public class MyEntityManager extends EntityManager {
         return q.list();
     }
 
+    public List<TransactionInfo> getTransactionsForAccount(long accountId) {
+        Query<TransactionInfo> q = createQuery(TransactionInfo.class);
+        q.where(Expressions.eq("fromAccount.id", accountId));
+        q.desc("dateTime");
+        return q.list();
+    }
+
+    public void insertCategory(Category c) {
+        c.id = -1;
+        saveOrUpdate(c);
+    }
+
 }

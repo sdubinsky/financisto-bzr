@@ -170,7 +170,7 @@ public class CategoryTree<T extends CategoryEntity<T>> implements Iterable<T> {
 		reIndex();
 	}
 
-	private void reIndex() {
+	public void reIndex() {
 		int left = Integer.MAX_VALUE;
 		for (T node : roots) {
 			if (node.left < left) {

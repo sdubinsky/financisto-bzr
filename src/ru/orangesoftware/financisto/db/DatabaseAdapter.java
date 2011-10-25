@@ -275,28 +275,33 @@ public class DatabaseAdapter {
 	public long insertOrUpdate(Transaction transaction, List<TransactionAttribute> attributes) {
 		db.beginTransaction();
 		try {
-			long transactionId;
-			transaction.lastRecurrence = System.currentTimeMillis();
-			if (transaction.id == -1) {
-				transactionId = insertTransaction(transaction);
-			} else {
-				updateTransaction(transaction);
-				transactionId = transaction.id;
-				db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", 
-						new String[]{String.valueOf(transactionId)});
-                deleteSplitsForParentTransaction(transactionId);
-			}
-			if (attributes != null) {
-				insertAttributes(transactionId, attributes);
-			}
-            transaction.id = transactionId;
-            insertSplits(transaction);
-			db.setTransactionSuccessful();
-			return transactionId;
+            long id = insertOrUpdateInTransaction(transaction, attributes);
+            db.setTransactionSuccessful();
+            return id;
 		} finally {
 			db.endTransaction();
 		}
 	}
+
+    public long insertOrUpdateInTransaction(Transaction transaction, List<TransactionAttribute> attributes) {
+        long transactionId;
+        transaction.lastRecurrence = System.currentTimeMillis();
+        if (transaction.id == -1) {
+            transactionId = insertTransaction(transaction);
+        } else {
+            updateTransaction(transaction);
+            transactionId = transaction.id;
+            db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?",
+                    new String[]{String.valueOf(transactionId)});
+            deleteSplitsForParentTransaction(transactionId);
+        }
+        if (attributes != null) {
+            insertAttributes(transactionId, attributes);
+        }
+        transaction.id = transactionId;
+        insertSplits(transaction);
+        return transactionId;
+    }
 
     private void insertAttributes(long transactionId, List<TransactionAttribute> attributes) {
 		for (TransactionAttribute a : attributes) {
@@ -504,6 +509,7 @@ public class DatabaseAdapter {
 				id = category.id;
 			}
 			addAttributes(id, attributes);
+            category.id = id;
 			db.setTransactionSuccessful();
 			return id;
 		} finally {
@@ -848,7 +854,27 @@ public class DatabaseAdapter {
 		db.update(CATEGORY_TABLE, values, CategoryColumns._id+"=?", new String[]{String.valueOf(id)});
 	}
 	
-	public void updateCategoryTree(CategoryTree<Category> tree) {
+    public void insertCategoryTree(CategoryTree<Category> tree) {
+        db.beginTransaction();
+        try {
+            insertCategoryInTransaction(tree);
+            updateCategoryTreeInTransaction(tree);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private void insertCategoryInTransaction(CategoryTree<Category> tree) {
+        for (Category category : tree) {
+            em.insertCategory(category);
+            if (category.hasChildren()) {
+                insertCategoryInTransaction(category.children);
+            }
+        }
+    }
+
+    public void updateCategoryTree(CategoryTree<Category> tree) {
 		db.beginTransaction();
 		try {
 			updateCategoryTreeInTransaction(tree);

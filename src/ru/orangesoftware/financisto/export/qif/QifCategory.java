@@ -18,6 +18,14 @@ public class QifCategory {
     public String name;
     public boolean isIncome = false;
 
+    public QifCategory() {
+    }
+
+    public QifCategory(String name, boolean income) {
+        this.name = name;
+        this.isIncome = income;
+    }
+
     public static QifCategory fromCategory(Category c) {
         QifCategory qifCategory = new QifCategory();
         qifCategory.name = buildName(c);

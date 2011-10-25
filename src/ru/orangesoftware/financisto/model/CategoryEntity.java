@@ -28,7 +28,7 @@ public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
 	public int right;
 	
     @Column(name = "type")
-    public int type;
+    public int type = TYPE_EXPENSE;
 
 	@Transient
 	public CategoryTree<T> children;

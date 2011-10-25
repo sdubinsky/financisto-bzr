@@ -152,4 +152,12 @@ public class QifUtils {
         return bd.multiply(HUNDRED).intValue();
     }
 
+    public static String splitCategoryName(String name) {
+        int i = name.indexOf('/');
+        if (i != -1) {
+            name = name.substring(0, i);
+        }
+        return name;
+    }
+
 }
