@@ -57,6 +57,8 @@ import ru.orangesoftware.financisto.export.csv.CsvExportOptions;
 import ru.orangesoftware.financisto.export.csv.CsvExportTask;
 import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.export.qif.QifExportTask;
+import ru.orangesoftware.financisto.imports.csv.CsvImport;
+import ru.orangesoftware.financisto.imports.csv.CsvImportOptions;
 import ru.orangesoftware.financisto.utils.*;
 
 import java.io.IOException;
@@ -68,7 +70,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	
 	private static final int ACTIVITY_CSV_EXPORT = 2;
     private static final int ACTIVITY_QIF_EXPORT = 3;
-
+    private static final int ACTIVITY_CSV_IMPORT = 4;
+    
 	private static final int MENU_PREFERENCES = Menu.FIRST+1;
 	private static final int MENU_ABOUT = Menu.FIRST+2;
 	private static final int MENU_BACKUP = Menu.FIRST+3;
@@ -81,7 +84,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private static final int MENU_MASS_OP = Menu.FIRST+10;
     private static final int MENU_DONATE = Menu.FIRST+11;
     private static final int MENU_QIF_EXPORT = Menu.FIRST+12;
-
+    private static final int MENU_CSV_IMPORT = Menu.FIRST+13;
+    
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
 	@Override
@@ -139,13 +143,24 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
                 QifExportOptions options = QifExportOptions.fromIntent(data);
                 doQifExport(options);
 			}
-		}
+		} else if (requestCode == ACTIVITY_CSV_IMPORT) {
+			if (resultCode == RESULT_OK) {
+                CsvImportOptions options = CsvImportOptions.fromIntent(data);
+                doCsvImport(options);                
+			}
+		}		
 	}
 	
 	private void doCsvExport(CsvExportOptions options) {
 		ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
 		new CsvExportTask(this, progressDialog, options).execute();
 	}
+	
+	private void doCsvImport(CsvImportOptions options) {
+        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_import_inprogress), true);
+        new CsvImportTask(this, progressDialog, options).execute();
+    }
+
 	
     private void doQifExport(QifExportOptions options) {
         ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.qif_export_inprogress), true);
@@ -246,6 +261,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
 		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
+		menu.addSubMenu(0, MENU_CSV_IMPORT, 0, R.string.csv_import);
         menu.addSubMenu(0, MENU_QIF_EXPORT, 0, R.string.qif_export);
         menu.addSubMenu(0, MENU_DONATE, 0, R.string.donate);
 		menu.addSubMenu(0, MENU_ABOUT, 0, R.string.about);
@@ -305,6 +321,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		case MENU_RESTORE_GDOCS:
 			doImportFromGoogleDocs();
 			break;
+		case MENU_CSV_IMPORT:
+            doCsvImport();
+            break;
 		}
 		return false;
 	}
@@ -392,6 +411,11 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private void doCsvExport() {
 		Intent intent = new Intent(this, CsvExportActivity.class);
 		startActivityForResult(intent, ACTIVITY_CSV_EXPORT);
+	}
+
+	private void doCsvImport() {
+		Intent intent = new Intent(this, CsvImportActivity.class);
+		startActivityForResult(intent, ACTIVITY_CSV_IMPORT);
 	}
 
     private void doQifExport() {
@@ -653,6 +677,52 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 
 	}
 
+	public class CsvImportTask extends ImportExportAsyncTask {
+
+        private final CsvImportOptions options;
+
+    	public CsvImportTask(Context context, ProgressDialog dialog, CsvImportOptions options) {
+    		super(context, dialog, new ImportExportAsyncTaskListener(){
+				public void onCompleted() {
+					onTabChanged(getTabHost().getCurrentTabTag());
+				}
+			});
+    		this.options = options;
+    	}
+
+    	@Override
+    	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
+    		try{
+    			CsvImport csvimport = new CsvImport(db, options);
+        		return csvimport.doImport();	
+    		} catch(Exception e) {
+    			if(e.getMessage().equals("Import file not found"))
+					handler.sendEmptyMessage(R.string.import_file_not_found);
+				else if(e.getMessage().equals("Unknown category in import line"))
+					handler.sendEmptyMessage(R.string.import_unknown_category);
+				else if(e.getMessage().equals("Unknown project in import line"))
+					handler.sendEmptyMessage(R.string.import_unknown_project);
+				else if(e.getMessage().equals("Wrong currency in import line"))
+					handler.sendEmptyMessage(R.string.import_wrong_currency);
+				else if(e.getMessage().equals("IllegalArgumentException"))
+					handler.sendEmptyMessage(R.string.import_illegal_argument_exception);
+				else if(e.getMessage().equals("ParseException"))
+					handler.sendEmptyMessage(R.string.import_parse_error);
+				else
+					handler.sendEmptyMessage(R.string.csv_import_error);
+    			throw e;
+    		}
+    		
+    	}
+
+    	@Override
+    	protected String getSuccessMessage(Object result) {
+    		return String.valueOf(result);
+    	}
+
+    }
+
+	
 	private enum MenuEntities implements EntityEnum {
 		
 		CURRENCIES(R.string.currencies, R.drawable.menu_entities_currencies, CurrencyListActivity.class),

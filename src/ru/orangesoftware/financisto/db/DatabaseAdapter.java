@@ -602,6 +602,37 @@ public class DatabaseAdapter {
 		}
 	}
 
+	public Category getCategory(String title) {
+		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION, 
+				CategoryViewColumns.title+"=?", new String[]{String.valueOf(title)}, null, null, null);
+		try {
+			if (c.moveToNext()) {				
+				Category cat = new Category();
+				cat.id = c.getInt(CategoryViewColumns._id.ordinal());
+				cat.title = title;
+				cat.level = c.getInt(CategoryViewColumns.level.ordinal());
+				cat.left = c.getInt(CategoryViewColumns.left.ordinal());
+				cat.right = c.getInt(CategoryViewColumns.right.ordinal());
+                cat.type = c.getInt(CategoryViewColumns.type.ordinal());
+				String s = String.valueOf(cat.id);
+				Cursor c2 = db.query(GET_PARENT_SQL, new String[]{CategoryColumns._id.name()}, null, new String[]{s,s},
+						null, null, null, "1");
+				try {
+					if (c2.moveToFirst()) {
+						cat.parent = new Category(c2.getLong(0));
+					}
+				} finally {
+					c2.close();
+				}
+				return cat;
+			} else {
+				return null;
+			}
+		} finally {
+			c.close();
+		}
+	}
+	
 	public Category getCategoryByLeft(long left) {
 		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION, 
 				CategoryViewColumns.left+"=?", new String[]{String.valueOf(left)}, null, null, null);
