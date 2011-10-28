@@ -8,64 +8,57 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent" android:layout_height="fill_parent"
               android:orientation="vertical" android:padding="3dp">
-    <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-          android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-          android:layout_marginRight="10dp"/>
-    <TextView android:layout_height="wrap_content"
-              android:layout_width="fill_parent" android:layout_marginLeft="3dp" android:text="@string/file_name"/>
-    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent"
-                  android:layout_height="wrap_content">
-        <EditText android:layout_weight="1" android:layout_width="0dip" android:layout_height="wrap_content"
-                  android:id="@+id/edFilename">
-            <requestFocus/>
-        </EditText>
-        <ImageButton android:layout_width="wrap_content" android:layout_gravity="center_vertical"
-                     android:src="@drawable/ic_launcher_folder_small" android:id="@+id/btn_browse"
-                     android:layout_height="wrap_content"/>
-    </LinearLayout>
-    <TextView android:layout_height="wrap_content"
-              android:layout_width="fill_parent" android:layout_marginLeft="3dp"
-              android:text="@string/accounts"/>
-    <Button android:layout_height="wrap_content" android:id="@+id/bAccounts"
-            android:layout_width="fill_parent" android:text="@string/choose_account"/>
-    <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-          android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-          android:layout_marginRight="10dp"/>
+    <ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+                      android:orientation="vertical">
+            <include layout="@layout/filename"/>
+            <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
+                  android:layout_width="fill_parent" android:layout_marginLeft="10dp"
+                  android:layout_marginRight="10dp"/>
+            <TextView android:layout_height="wrap_content"
+                      android:layout_width="fill_parent" android:layout_marginLeft="3dp"
+                      android:text="@string/accounts"/>
+            <Button android:layout_height="wrap_content" android:id="@+id/bAccounts"
+                    android:layout_width="fill_parent" android:text="@string/choose_account"/>
+            <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
+                  android:layout_width="fill_parent" android:layout_marginLeft="10dp"
+                  android:layout_marginRight="10dp"/>
 
-    <TableLayout android:layout_height="wrap_content"
-                 android:layout_width="fill_parent"
-                 android:stretchColumns="*">
-        <TableRow>
-            <TextView android:layout_marginLeft="3dp"
-                      android:text="@string/decimals"/>
-            <TextView android:layout_marginLeft="3dp"
-                      android:text="@string/decimal_separator"/>
-            <TextView android:layout_marginLeft="3dp"
-                      android:text="@string/group_separator"/>
-        </TableRow>
-        <TableRow>
-            <Spinner android:id="@+id/spinnerDecimals"
-                     android:entries="@array/decimals"/>
-            <Spinner android:id="@+id/spinnerDecimalSeparators"
-                     android:entries="@array/decimal_separators"/>
-            <Spinner android:id="@+id/spinnerGroupSeparators"
-                     android:entries="@array/group_separators"/>
-        </TableRow>
-        <TableRow>
-            <TextView android:layout_marginLeft="3dp" android:text="@string/field_separator"/>
-        </TableRow>
-        <TableRow>
-            <Spinner android:entries="@array/field_separators" android:id="@+id/spinnerFieldSeparator"/>
-        </TableRow>
-        <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-              android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-              android:layout_marginRight="10dp"/>
-    </TableLayout>
-    <TextView android:layout_height="wrap_content"
-              android:layout_width="fill_parent" android:layout_marginLeft="3dp"
-              android:text="@string/date_format"/>
-    <Spinner android:layout_height="wrap_content" android:layout_width="fill_parent"
-             android:id="@+id/spinnerDateFormats" android:entries="@array/date_format_values"/>
-
+            <TableLayout android:layout_height="wrap_content"
+                         android:layout_width="fill_parent"
+                         android:stretchColumns="*">
+                <TableRow>
+                    <TextView android:layout_marginLeft="3dp"
+                              android:text="@string/decimals"/>
+                    <TextView android:layout_marginLeft="3dp"
+                              android:text="@string/decimal_separator"/>
+                    <TextView android:layout_marginLeft="3dp"
+                              android:text="@string/group_separator"/>
+                </TableRow>
+                <TableRow>
+                    <Spinner android:id="@+id/spinnerDecimals"
+                             android:entries="@array/decimals"/>
+                    <Spinner android:id="@+id/spinnerDecimalSeparators"
+                             android:entries="@array/decimal_separators"/>
+                    <Spinner android:id="@+id/spinnerGroupSeparators"
+                             android:entries="@array/group_separators"/>
+                </TableRow>
+                <TableRow>
+                    <TextView android:layout_marginLeft="3dp" android:text="@string/field_separator"/>
+                </TableRow>
+                <TableRow>
+                    <Spinner android:entries="@array/field_separators" android:id="@+id/spinnerFieldSeparator"/>
+                </TableRow>
+                <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
+                      android:layout_width="fill_parent" android:layout_marginLeft="10dp"
+                      android:layout_marginRight="10dp"/>
+            </TableLayout>
+            <TextView android:layout_height="wrap_content"
+                      android:layout_width="fill_parent" android:layout_marginLeft="3dp"
+                      android:text="@string/date_format"/>
+            <Spinner android:layout_height="wrap_content" android:layout_width="fill_parent"
+                     android:id="@+id/spinnerDateFormats" android:entries="@array/date_format_values"/>
+        </LinearLayout>
+    </ScrollView>
     <include layout="@layout/ok_cancel_buttons"/>
 </LinearLayout>
