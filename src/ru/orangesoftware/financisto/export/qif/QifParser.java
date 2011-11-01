@@ -26,7 +26,8 @@ public class QifParser {
     private final QifBufferedReader r;
 
     public final List<QifAccount> accounts = new ArrayList<QifAccount>();
-    public final List<QifCategory> categories = new ArrayList<QifCategory>();
+    public final Set<QifCategory> categories = new HashSet<QifCategory>();
+    public final Set<QifCategory> categoriesFromTransactions = new HashSet<QifCategory>();
     public final Set<String> payees = new HashSet<String>();
 
     public QifParser(QifBufferedReader r) {
@@ -42,6 +43,7 @@ public class QifParser {
                 parseCategories();
             }
         }
+        categories.addAll(categoriesFromTransactions);
     }
 
     private void parseCategories() throws IOException {
@@ -67,6 +69,7 @@ public class QifParser {
                     QifTransaction t = new QifTransaction();
                     t.readFrom(r);
                     addPayeeFromTransaction(t);
+                    addCategoryFromTransaction(t);
                     account.transactions.add(t);
                     if (shouldBreakCurrentBlock()) {
                         break;
@@ -79,6 +82,13 @@ public class QifParser {
     private void addPayeeFromTransaction(QifTransaction t) {
         if (isNotEmpty(t.payee)) {
             payees.add(t.payee);
+        }
+    }
+
+    private void addCategoryFromTransaction(QifTransaction t) {
+        if (isNotEmpty(t.category)) {
+            QifCategory c = new QifCategory(t.category, false);
+            categoriesFromTransactions.add(c);
         }
     }
 

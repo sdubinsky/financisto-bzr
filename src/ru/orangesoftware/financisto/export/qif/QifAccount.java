@@ -20,6 +20,7 @@ public class QifAccount {
     public String type = "";
     public String memo = "";
 
+    public Account dbAccount;
     public final List<QifTransaction> transactions = new ArrayList<QifTransaction>();
 
     public static QifAccount fromAccount(Account account) {

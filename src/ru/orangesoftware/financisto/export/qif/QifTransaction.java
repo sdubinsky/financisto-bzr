@@ -13,9 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
-import static ru.orangesoftware.financisto.export.qif.QifUtils.parseDate;
-import static ru.orangesoftware.financisto.export.qif.QifUtils.parseMoney;
-import static ru.orangesoftware.financisto.export.qif.QifUtils.trimFirstChar;
+import static ru.orangesoftware.financisto.export.qif.QifUtils.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -125,7 +123,12 @@ public class QifTransaction {
             } else if (line.startsWith("M")) {
                 this.memo = trimFirstChar(line);
             } else if (line.startsWith("L")) {
-                this.category = trimFirstChar(line);
+                String category = trimFirstChar(line);
+                if (isTransferCategory(category)) {
+                    this.toAccount = category.substring(1, category.length()-1);
+                } else {
+                    this.category = category;
+                }
             } else if (line.startsWith("S")) {
                 addSplit(split);
                 split = new QifTransaction();
@@ -179,4 +182,9 @@ public class QifTransaction {
         t.note = memo;
         return t;
     }
+
+    public boolean isTransfer() {
+        return toAccount != null;
+    }
+
 }

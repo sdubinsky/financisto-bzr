@@ -112,7 +112,7 @@ public class TransactionInfo {
 		return isTemplate == 2;
 	}
 
-	private boolean isTransfer() {
+	public boolean isTransfer() {
 		return toAccount != null;
 	}
 

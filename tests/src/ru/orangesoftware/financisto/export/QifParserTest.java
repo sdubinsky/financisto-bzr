@@ -10,20 +10,16 @@ package ru.orangesoftware.financisto.export;
 
 import android.test.AndroidTestCase;
 import ru.orangesoftware.financisto.export.qif.*;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.test.CategoryBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
-import ru.orangesoftware.financisto.test.TransactionBuilder;
-import ru.orangesoftware.financisto.test.TransferBuilder;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
-
-import static ru.orangesoftware.financisto.test.DateTime.date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -96,15 +92,59 @@ public class QifParserTest extends AndroidTestCase {
 
         assertEquals(3, p.categories.size());
 
-        QifCategory c = p.categories.get(0);
-        assertEquals("P1", c.name);
-        assertEquals(false, c.isIncome);
-        c = p.categories.get(1);
-        assertEquals("P1:c1", c.name);
-        assertEquals(false, c.isIncome);
-        c = p.categories.get(2);
-        assertEquals("P2", c.name);
-        assertEquals(true, c.isIncome);
+        List<QifCategory> categories = getCategoriesList(p);
+        assertEquals("P1", categories.get(0).name);
+        assertEquals(false, categories.get(0).isIncome);
+        assertEquals("P1:c1", categories.get(1).name);
+        assertEquals(false, categories.get(1).isIncome);
+        assertEquals("P2", categories.get(2).name);
+        assertEquals(true, categories.get(2).isIncome);
+
+        assertEquals(1, p.accounts.size());
+
+        QifAccount a = p.accounts.get(0);
+        assertEquals("My Cash Account", a.memo);
+        assertEquals("Cash", a.type);
+
+        assertEquals(2, a.transactions.size());
+        QifTransaction t = a.transactions.get(0);
+        assertEquals(DateTime.date(2011, 2, 8).atMidnight().asDate(), t.date);
+        assertEquals(1000, t.amount);
+        assertEquals("P1", t.category);
+
+        t = a.transactions.get(1);
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), t.date);
+        assertEquals(-2056, t.amount);
+        assertEquals("P1:c1", t.category);
+        assertEquals("Payee 1", t.payee);
+        assertEquals("Some note here...", t.memo);
+    }
+
+    public void test_should_parse_account_with_a_couple_of_transactions_without_category_list() throws Exception {
+        parseQif(
+                "!Account\n" +
+                "NMy Cash Account\n" +
+                "TCash\n" +
+                "^\n" +
+                "!Type:Cash\n" +
+                "D08/02/2011\n" +
+                "T10.00\n" +
+                "LP1\n" +
+                "^\n" +
+                "D07/02/2011\n" +
+                "T-20.56\n" +
+                "LP1:c1\n" +
+                "PPayee 1\n" +
+                "MSome note here...\n" +
+                "^\n");
+
+        assertEquals(2, p.categories.size());
+
+        List<QifCategory> categories = getCategoriesList(p);
+        assertEquals("P1", categories.get(0).name);
+        assertEquals(false, categories.get(0).isIncome);
+        assertEquals("P1:c1", categories.get(1).name);
+        assertEquals(false, categories.get(1).isIncome);
 
         assertEquals(1, p.accounts.size());
 
@@ -218,8 +258,9 @@ public class QifParserTest extends AndroidTestCase {
 
         QifTransaction t = a.transactions.get(0);
         assertEquals(DateTime.date(2011, 2, 8).atMidnight().asDate(), t.date);
-        assertEquals("[My Bank Account]", t.category);
+        assertEquals("My Bank Account", t.toAccount);
         assertEquals(2000, t.amount);
+        assertNull(t.category);
 
         a = p.accounts.get(1);
         assertEquals("My Bank Account", a.memo);
@@ -229,8 +270,9 @@ public class QifParserTest extends AndroidTestCase {
 
         t = a.transactions.get(0);
         assertEquals(DateTime.date(2011, 2, 8).atMidnight().asDate(), t.date);
-        assertEquals("[My Cash Account]", t.category);
+        assertEquals("My Cash Account", t.toAccount);
         assertEquals(-2000, t.amount);
+        assertNull(t.category);
     }
 
     public void test_should_parse_splits() throws Exception {
@@ -278,6 +320,18 @@ public class QifParserTest extends AndroidTestCase {
         QifBufferedReader r = new QifBufferedReader(new BufferedReader(new InputStreamReader(new ByteArrayInputStream(fileContent.getBytes()), "UTF-8")));
         p = new QifParser(r);
         p.parse();
+    }
+
+    private List<QifCategory> getCategoriesList(QifParser p) {
+        List<QifCategory> categories = new ArrayList<QifCategory>(p.categories.size());
+        categories.addAll(p.categories);
+        Collections.sort(categories, new Comparator<QifCategory>() {
+            @Override
+            public int compare(QifCategory c1, QifCategory c2) {
+                return c1.name.compareTo(c2.name);
+            }
+        });
+        return categories;
     }
 
 

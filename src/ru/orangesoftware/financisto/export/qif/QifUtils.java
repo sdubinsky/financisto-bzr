@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -158,6 +160,10 @@ public class QifUtils {
             name = name.substring(0, i);
         }
         return name;
+    }
+
+    public static boolean isTransferCategory(String category) {
+        return isNotEmpty(category) && category.startsWith("[") && category.endsWith("]");
     }
 
 }
