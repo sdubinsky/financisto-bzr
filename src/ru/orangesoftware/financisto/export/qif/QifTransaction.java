@@ -123,16 +123,11 @@ public class QifTransaction {
             } else if (line.startsWith("M")) {
                 this.memo = trimFirstChar(line);
             } else if (line.startsWith("L")) {
-                String category = trimFirstChar(line);
-                if (isTransferCategory(category)) {
-                    this.toAccount = category.substring(1, category.length()-1);
-                } else {
-                    this.category = category;
-                }
+                parseCategory(this, line);
             } else if (line.startsWith("S")) {
                 addSplit(split);
                 split = new QifTransaction();
-                split.category = trimFirstChar(line);
+                parseCategory(split, line);
             } else if (line.startsWith("$")) {
                 if (split != null) {
                     split.amount = parseMoney(trimFirstChar(line));
@@ -144,6 +139,24 @@ public class QifTransaction {
             }
         }
         addSplit(split);
+        adjustSplitsDatetime();
+    }
+
+    private void adjustSplitsDatetime() {
+        if (splits != null) {
+            for (QifTransaction split : splits) {
+                split.date = this.date;
+            }
+        }
+    }
+
+    private void parseCategory(QifTransaction t, String line) {
+        String category = trimFirstChar(line);
+        if (isTransferCategory(category)) {
+            t.toAccount = category.substring(1, category.length()-1);
+        } else {
+            t.category = category;
+        }
     }
 
     private void addSplit(QifTransaction split) {

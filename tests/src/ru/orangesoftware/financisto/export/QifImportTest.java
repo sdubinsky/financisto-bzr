@@ -10,12 +10,11 @@ package ru.orangesoftware.financisto.export;
 
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.*;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.AccountType;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.CategoryTree;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.test.DateTime;
+import ru.orangesoftware.orb.Expressions;
+import ru.orangesoftware.orb.Query;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -190,6 +189,86 @@ public class QifImportTest extends AbstractDbTest {
 
         transactions = em.getTransactionsForAccount(a.id);
         assertEquals(0, transactions.size());
+    }
+
+    public void test_should_import_splits() throws Exception {
+        qifParserTest.test_should_parse_splits();
+        doImport();
+
+        List<Account> accounts = em.getAllAccountsList();
+        assertEquals(1, accounts.size());
+
+        Account a = accounts.get(0);
+        assertEquals("My Cash Account", a.title);
+        assertEquals(AccountType.CASH.name(), a.type);
+
+        List<TransactionInfo> transactions = em.getTransactionsForAccount(a.id);
+        assertEquals(1, transactions.size());
+
+        TransactionInfo t = transactions.get(0);
+        assertEquals(-260066, t.fromAmount);
+
+        List<TransactionInfo> splits = getSplitsForTransaction(t.id);
+        assertEquals(3, splits.size());
+
+        TransactionInfo s = splits.get(0);
+        assertEquals("A1", s.category.title);
+        assertEquals(-110056, s.fromAmount);
+        assertEquals("Note on first split", s.note);
+
+        s = splits.get(1);
+        assertEquals("A2", s.category.title);
+        assertEquals(-100000, s.fromAmount);
+
+        s = splits.get(2);
+        assertEquals("<NO_CATEGORY>", s.category.title);
+        assertEquals(50010, s.fromAmount);
+        assertEquals("Note on third split", s.note);
+    }
+
+    public void test_should_import_transfer_splits() throws Exception {
+        qifParserTest.test_should_parse_transfer_splits();
+        doImport();
+
+        List<Account> accounts = em.getAllAccountsList();
+        assertEquals(2, accounts.size());
+
+        Account a = accounts.get(0);
+        assertEquals("My Bank Account", a.title);
+        assertEquals(AccountType.BANK.name(), a.type);
+
+        List<TransactionInfo> transactions = em.getTransactionsForAccount(a.id);
+        assertEquals(0, transactions.size());
+
+        a = accounts.get(1);
+        assertEquals("My Cash Account", a.title);
+        assertEquals(AccountType.CASH.name(), a.type);
+
+        transactions = em.getTransactionsForAccount(a.id);
+        assertEquals(1, transactions.size());
+
+        TransactionInfo t = transactions.get(0);
+        assertEquals(-210000, t.fromAmount);
+
+        List<TransactionInfo> splits = getSplitsForTransaction(t.id);
+        assertEquals(2, splits.size());
+
+        TransactionInfo s = splits.get(0);
+        assertEquals("A1", s.category.title);
+        assertEquals(-110000, s.fromAmount);
+        assertEquals("Note on first split", s.note);
+
+        s = splits.get(1);
+        assertTrue(s.isTransfer());
+        assertEquals("My Bank Account", s.toAccount.title);
+        assertEquals(-100000, s.fromAmount);
+        assertEquals(100000, s.toAmount);
+    }
+
+    private List<TransactionInfo> getSplitsForTransaction(long transactionId) {
+        Query<TransactionInfo> q = em.createQuery(TransactionInfo.class);
+        q.where(Expressions.eq("parentId", transactionId));
+        return q.list();
     }
 
     private void sortAccountsById(List<Account> accounts) {

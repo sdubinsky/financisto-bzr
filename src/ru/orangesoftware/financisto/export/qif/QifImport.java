@@ -140,24 +140,31 @@ public class QifImport {
     private void reduceTransfers(List<QifAccount> accounts) {
         for (QifAccount fromAccount : accounts) {
             List<QifTransaction> transactions = fromAccount.transactions;
-            for (QifTransaction fromTransaction : transactions) {
-                if (fromTransaction.isTransfer() && fromTransaction.amount < 0) {
-                    QifAccount toAccount = accountTitleToAccount.get(fromTransaction.toAccount);
-                    if (toAccount != null) {
-                        //TODO: optimize the search
-                        Iterator<QifTransaction> iterator = toAccount.transactions.iterator();
-                        while (iterator.hasNext()) {
-                            QifTransaction toTransaction = iterator.next();
-                            if (twoSidesOfTheSameTransfer(fromAccount, fromTransaction, toAccount, toTransaction)) {
-                                iterator.remove();
-                                break;
-                            }
+            reduceTransfers(fromAccount, transactions);
+        }
+    }
+
+    private void reduceTransfers(QifAccount fromAccount, List<QifTransaction> transactions) {
+        for (QifTransaction fromTransaction : transactions) {
+            if (fromTransaction.isTransfer() && fromTransaction.amount < 0) {
+                QifAccount toAccount = accountTitleToAccount.get(fromTransaction.toAccount);
+                if (toAccount != null) {
+                    //TODO: optimize the search
+                    Iterator<QifTransaction> iterator = toAccount.transactions.iterator();
+                    while (iterator.hasNext()) {
+                        QifTransaction toTransaction = iterator.next();
+                        if (twoSidesOfTheSameTransfer(fromAccount, fromTransaction, toAccount, toTransaction)) {
+                            iterator.remove();
+                            break;
                         }
-                    } else {
-                        //TODO: figure out what to do in this case
-                        throw new IllegalArgumentException("Unable to find "+toAccount);
                     }
+                } else {
+                    //TODO: figure out what to do in this case
+                    throw new IllegalArgumentException("Unable to find "+toAccount);
                 }
+            }
+            if (fromTransaction.splits != null) {
+                reduceTransfers(fromAccount, fromTransaction.splits);
             }
         }
     }
@@ -173,18 +180,48 @@ public class QifImport {
             Transaction t = transaction.toTransaction();
             t.payeeId = findPayee(transaction.payee);
             t.fromAccountId = a.id;
-            if (transaction.isTransfer()) {
-                Account toAccount = findAccount(transaction.toAccount);
-                if (toAccount != null) {
-                    t.toAccountId = toAccount.id;
-                    t.toAmount = -t.fromAmount;
+            findToAccount(transaction, t);
+            findCategory(transaction, t);
+            if (transaction.splits != null) {
+                List<Transaction> splits = new ArrayList<Transaction>(transaction.splits.size());
+                for (QifTransaction split : transaction.splits) {
+                    Transaction s = split.toTransaction();
+                    findToAccount(split, s);
+                    findCategory(split, s);
+                    splits.add(s);
                 }
-            }
-            Category c = findCategory(transaction.category);
-            if (c != null) {
-                t.categoryId = c.id;
+                t.splits = splits;
             }
             db.insertOrUpdateInTransaction(t, Collections.<TransactionAttribute>emptyList());
+        }
+    }
+
+    public long findPayee(String payee) {
+        if (payeeToId.containsKey(payee)) {
+            return payeeToId.get(payee);
+        }
+        return 0;
+    }
+
+    private void findToAccount(QifTransaction transaction, Transaction t) {
+        if (transaction.isTransfer()) {
+            Account toAccount = findAccount(transaction.toAccount);
+            if (toAccount != null) {
+                t.toAccountId = toAccount.id;
+                t.toAmount = -t.fromAmount;
+            }
+        }
+    }
+
+    private Account findAccount(String account) {
+        QifAccount a = accountTitleToAccount.get(account);
+        return a != null ? a.dbAccount : null;
+    }
+
+    private void findCategory(QifTransaction transaction, Transaction t) {
+        Category c = findCategory(transaction.category);
+        if (c != null) {
+            t.categoryId = c.id;
         }
     }
 
@@ -194,18 +231,6 @@ public class QifImport {
         }
         String name = splitCategoryName(category);
         return categoryNameToCategory.get(name);
-    }
-
-    private Account findAccount(String account) {
-        QifAccount a = accountTitleToAccount.get(account);
-        return a != null ? a.dbAccount : null;
-    }
-
-    public long findPayee(String payee) {
-        if (payeeToId.containsKey(payee)) {
-            return payeeToId.get(payee);
-        }
-        return 0;
     }
 
 }

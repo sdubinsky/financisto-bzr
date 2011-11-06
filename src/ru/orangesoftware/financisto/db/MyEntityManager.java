@@ -462,7 +462,10 @@ public class MyEntityManager extends EntityManager {
 
     public List<TransactionInfo> getTransactionsForAccount(long accountId) {
         Query<TransactionInfo> q = createQuery(TransactionInfo.class);
-        q.where(Expressions.eq("fromAccount.id", accountId));
+        q.where(Expressions.and(
+            Expressions.eq("fromAccount.id", accountId),
+            Expressions.eq("parentId", 0)
+        ));
         q.desc("dateTime");
         return q.list();
     }

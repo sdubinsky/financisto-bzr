@@ -230,23 +230,23 @@ public class QifParserTest extends AndroidTestCase {
     public void test_should_parse_transfers() throws Exception {
         parseQif(
                 "!Account\n" +
-                        "NMy Cash Account\n" +
-                        "TCash\n" +
-                        "^\n" +
-                        "!Type:Cash\n" +
-                        "D08/02/2011\n" +
-                        "T20.00\n" +
-                        "L[My Bank Account]\n" +
-                        "^\n" +
-                        "!Account\n" +
-                        "NMy Bank Account\n" +
-                        "TBank\n" +
-                        "^\n" +
-                        "!Type:Bank\n" +
-                        "D08/02/2011\n" +
-                        "T-20.00\n" +
-                        "L[My Cash Account]\n" +
-                        "^\n");
+                "NMy Cash Account\n" +
+                "TCash\n" +
+                "^\n" +
+                "!Type:Cash\n" +
+                "D08/02/2011\n" +
+                "T20.00\n" +
+                "L[My Bank Account]\n" +
+                "^\n" +
+                "!Account\n" +
+                "NMy Bank Account\n" +
+                "TBank\n" +
+                "^\n" +
+                "!Type:Bank\n" +
+                "D08/02/2011\n" +
+                "T-20.00\n" +
+                "L[My Cash Account]\n" +
+                "^\n");
 
         assertEquals(2, p.accounts.size());
 
@@ -300,23 +300,87 @@ public class QifParserTest extends AndroidTestCase {
         assertEquals(1, a.transactions.size());
 
         QifTransaction t = a.transactions.get(0);
+        assertEquals(-260066, t.amount);
+        assertEquals(DateTime.date(2011, 7, 12).atMidnight().asDate(), t.date);
         assertEquals(3, t.splits.size());
 
         QifTransaction s = t.splits.get(0);
         assertEquals("A:A1", s.category);
         assertEquals(-110056, s.amount);
+        assertEquals(DateTime.date(2011, 7, 12).atMidnight().asDate(), s.date);
+        assertEquals("Note on first split", s.memo);
 
         s = t.splits.get(1);
         assertEquals("A:A2", s.category);
         assertEquals(-100000, s.amount);
+        assertEquals(DateTime.date(2011, 7, 12).atMidnight().asDate(), s.date);
 
         s = t.splits.get(2);
         assertEquals("<NO_CATEGORY>", s.category);
         assertEquals(50010, s.amount);
+        assertEquals(DateTime.date(2011, 7, 12).atMidnight().asDate(), s.date);
         assertEquals("Note on third split", s.memo);
     }
 
-    private void parseQif(String fileContent) throws IOException {
+    public void test_should_parse_transfer_splits() throws Exception {
+        parseQif(
+            "!Type:Cat\nNA\nE\n^\nNA:A1\nE\n^\nNA:A1:AA1\nE\n^\nNA:A2\nE\n^\nNB\nE\n^\n"+ // this is not important
+            "!Account\n"+
+            "NMy Cash Account\n"+
+            "TCash\n"+
+            "^\n"+
+            "!Type:Cash\n"+
+            "D12/07/2011\n"+
+            "T-2,100.00\n"+
+            "SA:A1\n"+
+            "$-1,100.00\n"+
+            "ENote on first split\n"+
+            "S[My Bank Account]\n"+
+            "$-1,000.00\n"+
+            "^\n"+
+            "!Account\n" +
+            "NMy Bank Account\n" +
+            "TBank\n" +
+            "^\n" +
+            "!Type:Bank\n" +
+            "D12/07/2011\n" +
+            "T1000.00\n" +
+            "L[My Cash Account]\n" +
+            "^\n"
+        );
+        assertEquals(2, p.accounts.size());
+
+        QifAccount a = p.accounts.get(0);
+        assertEquals("My Cash Account", a.memo);
+        assertEquals("Cash", a.type);
+        assertEquals(1, a.transactions.size());
+
+        QifTransaction t = a.transactions.get(0);
+        assertEquals(-210000, t.amount);
+        assertEquals(2, t.splits.size());
+
+        QifTransaction s = t.splits.get(0);
+        assertEquals("A:A1", s.category);
+        assertEquals(-110000, s.amount);
+        assertEquals("Note on first split", s.memo);
+
+        s = t.splits.get(1);
+        assertTrue(s.isTransfer());
+        assertEquals("My Bank Account", s.toAccount);
+        assertEquals(-100000, s.amount);
+
+        a = p.accounts.get(1);
+        assertEquals("My Bank Account", a.memo);
+        assertEquals("Bank", a.type);
+        assertEquals(1, a.transactions.size());
+
+        t = a.transactions.get(0);
+        assertTrue(t.isTransfer());
+        assertEquals("My Cash Account", t.toAccount);
+        assertEquals(100000, t.amount);
+    }
+
+    public void parseQif(String fileContent) throws IOException {
         QifBufferedReader r = new QifBufferedReader(new BufferedReader(new InputStreamReader(new ByteArrayInputStream(fileContent.getBytes()), "UTF-8")));
         p = new QifParser(r);
         p.parse();

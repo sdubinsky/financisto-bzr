@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ru.orangesoftware.financisto.utils.Utils.isEmpty;
 import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 /**
@@ -64,6 +65,7 @@ public class QifParser {
         String peek = r.peekLine();
         if (peek != null) {
             if (peek.startsWith("!Type:")) {
+                applyAccountType(account, peek);
                 r.readLine();
                 while (true) {
                     QifTransaction t = new QifTransaction();
@@ -76,6 +78,12 @@ public class QifParser {
                     }
                 }
             }
+        }
+    }
+
+    private void applyAccountType(QifAccount account, String peek) {
+        if (isEmpty(account.type)) {
+            account.type = peek.substring(6);
         }
     }
 
