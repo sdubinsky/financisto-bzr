@@ -10,7 +10,7 @@ public class QifExportTask extends ImportExportAsyncTask {
 	private final QifExportOptions options;
 
 	public QifExportTask(Context context, ProgressDialog dialog, QifExportOptions options) {
-		super(context, dialog, null);
+		super(context, dialog);
         this.options = options;
 	}
 	

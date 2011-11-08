@@ -92,14 +92,18 @@ public abstract class AbstractImportActivity extends Activity {
     protected void onPause() {
         super.onPause();
         PinProtection.lock(this);
+        savePreferences();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         PinProtection.unlock(this);
+        restorePreferences();
     }
 
-    abstract void savePreferences();
+    protected abstract void savePreferences();
+
+    protected abstract void restorePreferences();
 
 }

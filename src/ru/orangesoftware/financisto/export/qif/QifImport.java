@@ -8,11 +8,14 @@
 
 package ru.orangesoftware.financisto.export.qif;
 
+import android.util.Log;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.*;
 
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static ru.orangesoftware.financisto.export.qif.QifUtils.splitCategoryName;
 import static ru.orangesoftware.financisto.utils.Utils.isEmpty;
@@ -26,22 +29,45 @@ public class QifImport {
 
     private final DatabaseAdapter db;
     private final MyEntityManager em;
+    private final QifImportOptions options;
 
     private final Map<String, QifAccount> accountTitleToAccount = new HashMap<String, QifAccount>();
     private final Map<String, Long> payeeToId = new HashMap<String, Long>();
     private final Map<String, Category> categoryNameToCategory = new HashMap<String, Category>();
     private final CategoryTree<Category> categoryTree = new CategoryTree<Category>();
 
-    public QifImport(DatabaseAdapter db) {
+    public QifImport(DatabaseAdapter db, QifImportOptions options) {
         this.db = db;
         this.em = db.em();
+        this.options = options;
+    }
+
+    public void doImport() throws IOException {
+        long t0 = System.currentTimeMillis();
+        QifBufferedReader r = new QifBufferedReader(new BufferedReader(new InputStreamReader(new FileInputStream(options.filename), "UTF-8")));
+        QifParser parser = new QifParser(r);
+        parser.parse();
+        long t1 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Parsing done in "+ TimeUnit.MILLISECONDS.toSeconds(t1-t0)+"s");
+        doImport(parser);
+        long t2 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Importing done in "+ TimeUnit.MILLISECONDS.toSeconds(t2-t1)+"s");
     }
 
     public void doImport(QifParser parser) {
+        long t0 = System.currentTimeMillis();
         insertPayees(parser.payees);
+        long t1 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Inserting payees done in "+ TimeUnit.MILLISECONDS.toSeconds(t1-t0)+"s");
         insertCategories(parser.categories);
+        long t2 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Inserting categories done in "+ TimeUnit.MILLISECONDS.toSeconds(t2-t1)+"s");
         insertAccounts(parser.accounts);
+        long t3 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Inserting accounts done in "+ TimeUnit.MILLISECONDS.toSeconds(t3-t2)+"s");
         insertTransactions(parser.accounts);
+        long t4 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Inserting transactions done in "+ TimeUnit.MILLISECONDS.toSeconds(t4-t3)+"s");
     }
 
     private void insertPayees(Set<String> payees) {
@@ -112,7 +138,7 @@ public class QifImport {
         for (QifAccount account : accounts) {
             db.db().beginTransaction();
             try {
-                Account a = account.toAccount();
+                Account a = account.toAccount(options.currency);
                 em.saveAccount(a);
                 account.dbAccount = a;
                 accountTitleToAccount.put(account.memo, account);
@@ -124,16 +150,29 @@ public class QifImport {
     }
 
     private void insertTransactions(List<QifAccount> accounts) {
+        long t0 = System.currentTimeMillis();
         reduceTransfers(accounts);
-        for (QifAccount account : accounts) {
+        long t1 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Reducing transfers done in "+ TimeUnit.MILLISECONDS.toSeconds(t1-t0)+"s");
+        convertUnknownTransfers(accounts);
+        long t2 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Converting transfers done in "+ TimeUnit.MILLISECONDS.toSeconds(t2-t1)+"s");
+        int count = accounts.size();
+        for (int i=0; i<count; i++) {
+            long t3 = System.currentTimeMillis();
+            QifAccount account = accounts.get(i);
             db.db().beginTransaction();
             try {
                 Account a = account.dbAccount;
                 insertTransactions(a, account.transactions);
+                // this might help GC
+                account.transactions.clear();
                 db.db().setTransactionSuccessful();
             } finally {
                 db.db().endTransaction();
             }
+            long t4 = System.currentTimeMillis();
+            Log.i("Financisto", "QIF Import: Inserting transactions for account "+i+"/"+count+" done in "+ TimeUnit.MILLISECONDS.toSeconds(t4-t3)+"s");
         }
     }
 
@@ -147,6 +186,7 @@ public class QifImport {
     private void reduceTransfers(QifAccount fromAccount, List<QifTransaction> transactions) {
         for (QifTransaction fromTransaction : transactions) {
             if (fromTransaction.isTransfer() && fromTransaction.amount < 0) {
+                boolean found = false;
                 QifAccount toAccount = accountTitleToAccount.get(fromTransaction.toAccount);
                 if (toAccount != null) {
                     //TODO: optimize the search
@@ -155,17 +195,49 @@ public class QifImport {
                         QifTransaction toTransaction = iterator.next();
                         if (twoSidesOfTheSameTransfer(fromAccount, fromTransaction, toAccount, toTransaction)) {
                             iterator.remove();
+                            found = true;
                             break;
                         }
                     }
-                } else {
-                    //TODO: figure out what to do in this case
-                    throw new IllegalArgumentException("Unable to find "+toAccount);
+                }
+                if (!found) {
+                    convertIntoRegularTransaction(fromTransaction);
                 }
             }
             if (fromTransaction.splits != null) {
                 reduceTransfers(fromAccount, fromTransaction.splits);
             }
+        }
+    }
+
+    private void convertUnknownTransfers(List<QifAccount> accounts) {
+        for (QifAccount fromAccount : accounts) {
+            List<QifTransaction> transactions = fromAccount.transactions;
+            convertUnknownTransfers(fromAccount, transactions);
+        }
+    }
+
+    private void convertUnknownTransfers(QifAccount fromAccount/*to keep compiler happy*/, List<QifTransaction> transactions) {
+        for (QifTransaction transaction : transactions) {
+            if (transaction.isTransfer() && transaction.amount >= 0) {
+                convertIntoRegularTransaction(transaction);
+            }
+            if (transaction.splits != null) {
+                convertUnknownTransfers(fromAccount, transaction.splits);
+            }
+        }
+    }
+
+    private void convertIntoRegularTransaction(QifTransaction fromTransaction) {
+        fromTransaction.memo = prependMemo("Transfer: " + fromTransaction.toAccount, fromTransaction);
+        fromTransaction.toAccount = null;
+    }
+
+    private String prependMemo(String prefix, QifTransaction fromTransaction) {
+        if (isEmpty(fromTransaction.memo)) {
+            return prefix;
+        } else {
+            return prefix + " | " + fromTransaction.memo;
         }
     }
 

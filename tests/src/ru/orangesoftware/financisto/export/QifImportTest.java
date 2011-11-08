@@ -191,6 +191,83 @@ public class QifImportTest extends AbstractDbTest {
         assertEquals(0, transactions.size());
     }
 
+    public void test_should_import_convert_unknown_transfers_into_regular_transactions_with_a_special_note() throws Exception {
+        qifParserTest.parseQif(
+            "!Account\n" +
+            "NMy Cash Account\n" +
+            "TCash\n" +
+            "^\n" +
+            "!Type:Cash\n" +
+            "D08/02/2011\n" +
+            "T25.00\n" +
+            "L[My Bank Account]\n" +
+            "^\n" +
+            "D07/02/2011\n" +
+            "T55.00\n" +
+            "L[Some Account 1]\n" +
+            "^\n" +
+            "!Account\n" +
+            "NMy Bank Account\n" +
+            "TBank\n" +
+            "^\n" +
+            "!Type:Bank\n" +
+            "D08/02/2011\n" +
+            "T-20.00\n" +
+            "MNote on transfer\n" +
+            "L[Some Account 2]\n" +
+            "^\n"+
+            "D07/02/2011\n" +
+            "T-30.00\n" +
+            "L[My Cash Account]\n" +
+            "^\n");
+        doImport();
+
+        List<Account> accounts = em.getAllAccountsList();
+        assertEquals(2, accounts.size());
+
+        Account a = accounts.get(0);
+        assertEquals("My Bank Account", a.title);
+        assertEquals(AccountType.BANK.name(), a.type);
+
+        List<TransactionInfo> transactions = em.getTransactionsForAccount(a.id);
+        assertEquals(2, transactions.size());
+
+        TransactionInfo t = transactions.get(0);
+        assertFalse("Should not be a transfer", t.isTransfer());
+        assertEquals(DateTime.date(2011, 2, 8).atMidnight().asLong(), t.dateTime);
+        assertEquals("My Bank Account", t.fromAccount.title);
+        assertEquals(-2000, t.fromAmount);
+        assertEquals("Transfer: Some Account 2 | Note on transfer", t.note);
+
+        t = transactions.get(1);
+        assertFalse("Should not be a transfer", t.isTransfer());
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asLong(), t.dateTime);
+        assertEquals("My Bank Account", t.fromAccount.title);
+        assertEquals(-3000, t.fromAmount);
+        assertEquals("Transfer: My Cash Account", t.note);
+
+        a = accounts.get(1);
+        assertEquals("My Cash Account", a.title);
+        assertEquals(AccountType.CASH.name(), a.type);
+
+        transactions = em.getTransactionsForAccount(a.id);
+        assertEquals(2, transactions.size());
+
+        t = transactions.get(0);
+        assertFalse("Should not be a transfer", t.isTransfer());
+        assertEquals(DateTime.date(2011, 2, 8).atMidnight().asLong(), t.dateTime);
+        assertEquals("My Cash Account", t.fromAccount.title);
+        assertEquals(2500, t.fromAmount);
+        assertEquals("Transfer: My Bank Account", t.note);
+
+        t = transactions.get(1);
+        assertFalse("Should not be a transfer", t.isTransfer());
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asLong(), t.dateTime);
+        assertEquals("My Cash Account", t.fromAccount.title);
+        assertEquals(5500, t.fromAmount);
+        assertEquals("Transfer: Some Account 1", t.note);
+    }
+
     public void test_should_import_splits() throws Exception {
         qifParserTest.test_should_parse_splits();
         doImport();
@@ -285,7 +362,8 @@ public class QifImportTest extends AbstractDbTest {
     }
 
     private void doImport(QifParser p) {
-        qifImport = new QifImport(db);
+        QifImportOptions options = new QifImportOptions("", "", Currency.EMPTY);
+        qifImport = new QifImport(db, options);
         qifImport.doImport(p);
     }
 

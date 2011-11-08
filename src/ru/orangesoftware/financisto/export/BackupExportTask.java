@@ -8,14 +8,13 @@ import android.content.Context;
 public class BackupExportTask extends ImportExportAsyncTask {
 	
 	public BackupExportTask(Context context, ProgressDialog dialog) {
-		super(context, dialog, null);
+		super(context, dialog);
 	}
 	
 	@Override
 	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
 		DatabaseExport export = new DatabaseExport(context, db.db());
 		return export.export();
-
 	}
 	
 	@Override

@@ -10,8 +10,10 @@ package ru.orangesoftware.financisto.export;
 
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.QifImport;
+import ru.orangesoftware.financisto.export.qif.QifImportOptions;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.test.DateTime;
 
@@ -123,7 +125,8 @@ public class QifImportTestCases extends AbstractDbTest {
 
     private void doImport(String qif) throws IOException {
         qifParserTest.parseQif(qif);
-        qifImport = new QifImport(db);
+        QifImportOptions options = new QifImportOptions("", "", Currency.EMPTY);
+        qifImport = new QifImport(db, options);
         qifImport.doImport(qifParserTest.p);
     }
 

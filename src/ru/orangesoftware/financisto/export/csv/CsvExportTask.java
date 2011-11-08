@@ -10,7 +10,7 @@ public class CsvExportTask extends ImportExportAsyncTask {
     private final CsvExportOptions options;
 
 	public CsvExportTask(Context context, ProgressDialog dialog, CsvExportOptions options) {
-		super(context, dialog, null);
+		super(context, dialog);
 		this.options = options;
 	}
 	

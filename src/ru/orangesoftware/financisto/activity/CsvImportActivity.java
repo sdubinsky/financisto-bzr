@@ -209,18 +209,7 @@ public class CsvImportActivity extends AbstractImportActivity implements Activit
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        savePreferences();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        restorePreferences();
-    }
-
-    void savePreferences() {
+    protected void savePreferences() {
         SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
 
         currencyPreferences.savePreferences(this, editor);
@@ -247,7 +236,8 @@ public class CsvImportActivity extends AbstractImportActivity implements Activit
         return sb.toString();
     }
 
-    private void restorePreferences() {
+    @Override
+    protected void restorePreferences() {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
         currencyPreferences.restorePreferences(this, preferences);

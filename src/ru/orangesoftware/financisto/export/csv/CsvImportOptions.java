@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
-package ru.orangesoftware.financisto.imports.csv;
+package ru.orangesoftware.financisto.export.csv;
 
 import android.content.Intent;
 import ru.orangesoftware.financisto.activity.CsvImportActivity;

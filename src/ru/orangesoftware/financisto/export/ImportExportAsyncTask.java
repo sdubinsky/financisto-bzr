@@ -20,24 +20,28 @@ import android.util.Log;
 
 public abstract class ImportExportAsyncTask extends AsyncTask<String, Void, Object> {
 	
-	private final Context context;
+	protected final Context context;
 	private final ProgressDialog dialog;
-	private final ImportExportAsyncTaskListener listener;
+
+    private ImportExportAsyncTaskListener listener;
 	
-	public ImportExportAsyncTask(Context context, ProgressDialog dialog, ImportExportAsyncTaskListener listener) {
+	public ImportExportAsyncTask(Context context, ProgressDialog dialog) {
 		this.dialog = dialog;
-		this.listener = listener;
 		this.context = context;
 	}
 
-	@Override
+    public void setListener(ImportExportAsyncTaskListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
 	protected Object doInBackground(String... params) {
 		DatabaseAdapter db = new DatabaseAdapter(context);
 		db.open();
 		try {
 			return work(context, db, params);
 		} catch(Exception ex){
-			Log.e("Financisto", "Unable to import/export database", ex);
+			Log.e("Financisto", "Unable to do import/export", ex);
 			return ex;
 		} finally {
 			db.close();
@@ -51,8 +55,8 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, Void, Obje
 	@Override
 	protected void onPostExecute(Object result) {
 		dialog.dismiss();
-		String message=null;
-		String title=null;
+		String message;
+		String title;
 
 		if (result instanceof Exception) 
 			return;

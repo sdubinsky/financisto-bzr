@@ -30,10 +30,10 @@ public class QifAccount {
         return qifAccount;
     }
 
-    public Account toAccount() {
+    public Account toAccount(Currency currency) {
         Account a = new Account();
         a.id = -1;
-        a.currency = Currency.EMPTY;
+        a.currency = currency;
         a.title = memo;
         a.type = encodeAccountType(type);
         return a;

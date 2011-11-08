@@ -16,7 +16,6 @@ import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,36 +28,32 @@ import android.view.Window;
 import android.widget.ListAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
-import api.wireless.gdata.client.AbstructParserFactory;
-import api.wireless.gdata.client.GDataParserFactory;
-import api.wireless.gdata.client.ServiceDataClient;
 import api.wireless.gdata.data.Feed;
 import api.wireless.gdata.docs.client.DocsClient;
-import api.wireless.gdata.docs.client.DocsGDataClient;
 import api.wireless.gdata.docs.data.DocumentEntry;
 import api.wireless.gdata.docs.data.FolderEntry;
-import api.wireless.gdata.docs.parser.xml.XmlDocsGDataParserFactory;
 import api.wireless.gdata.parser.ParseException;
 import api.wireless.gdata.util.AuthenticationException;
 import api.wireless.gdata.util.ServiceException;
 import com.nullwire.trace.ExceptionHandler;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.backup.Backup;
-import ru.orangesoftware.financisto.backup.DatabaseExport;
-import ru.orangesoftware.financisto.backup.DatabaseImport;
 import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.dialog.WebViewDialog;
 import ru.orangesoftware.financisto.export.BackupExportTask;
-import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
-import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
+import ru.orangesoftware.financisto.export.BackupImportTask;
+import ru.orangesoftware.financisto.export.docs.OnlineBackupExportTask;
+import ru.orangesoftware.financisto.export.docs.OnlineBackupImportTask;
 import ru.orangesoftware.financisto.export.csv.CsvExportOptions;
 import ru.orangesoftware.financisto.export.csv.CsvExportTask;
+import ru.orangesoftware.financisto.export.csv.CsvImportOptions;
+import ru.orangesoftware.financisto.export.csv.CsvImportTask;
 import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.export.qif.QifExportTask;
-import ru.orangesoftware.financisto.imports.csv.CsvImport;
-import ru.orangesoftware.financisto.imports.csv.CsvImportOptions;
+import ru.orangesoftware.financisto.export.qif.QifImportOptions;
+import ru.orangesoftware.financisto.export.qif.QifImportTask;
 import ru.orangesoftware.financisto.utils.*;
 
 import java.io.IOException;
@@ -66,12 +61,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static ru.orangesoftware.financisto.export.docs.GoogleDocsClient.createDocsClient;
+
 public class MainActivity extends TabActivity implements TabHost.OnTabChangeListener {
 	
 	private static final int ACTIVITY_CSV_EXPORT = 2;
     private static final int ACTIVITY_QIF_EXPORT = 3;
     private static final int ACTIVITY_CSV_IMPORT = 4;
-    
+    private static final int ACTIVITY_QIF_IMPORT = 5;
+
 	private static final int MENU_PREFERENCES = Menu.FIRST+1;
 	private static final int MENU_ABOUT = Menu.FIRST+2;
 	private static final int MENU_BACKUP = Menu.FIRST+3;
@@ -85,7 +83,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int MENU_DONATE = Menu.FIRST+11;
     private static final int MENU_QIF_EXPORT = Menu.FIRST+12;
     private static final int MENU_CSV_IMPORT = Menu.FIRST+13;
-    
+    private static final int MENU_QIF_IMPORT = Menu.FIRST+14;
+
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
 	@Override
@@ -148,7 +147,12 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
                 CsvImportOptions options = CsvImportOptions.fromIntent(data);
                 doCsvImport(options);                
 			}
-		}		
+		} else if (requestCode == ACTIVITY_QIF_IMPORT) {
+			if (resultCode == RESULT_OK) {
+                QifImportOptions options = QifImportOptions.fromIntent(data);
+                doQifImport(options);
+			}
+		}
 	}
 	
 	private void doCsvExport(CsvExportOptions options) {
@@ -158,13 +162,17 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	
 	private void doCsvImport(CsvImportOptions options) {
         ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_import_inprogress), true);
-        new CsvImportTask(this, progressDialog, options).execute();
+        new CsvImportTask(this, handler, progressDialog, options).execute();
     }
 
-	
     private void doQifExport(QifExportOptions options) {
         ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.qif_export_inprogress), true);
         new QifExportTask(this, progressDialog, options).execute();
+    }
+
+    private void doQifImport(QifImportOptions options) {
+        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.qif_import_inprogress), true);
+        new QifImportTask(this, handler, progressDialog, options).execute();
     }
 
 	private void initialLoad() {
@@ -263,6 +271,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
 		menu.addSubMenu(0, MENU_CSV_IMPORT, 0, R.string.csv_import);
         menu.addSubMenu(0, MENU_QIF_EXPORT, 0, R.string.qif_export);
+        menu.addSubMenu(0, MENU_QIF_IMPORT, 0, R.string.qif_import);
         menu.addSubMenu(0, MENU_DONATE, 0, R.string.donate);
 		menu.addSubMenu(0, MENU_ABOUT, 0, R.string.about);
 		return true;
@@ -324,6 +333,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		case MENU_CSV_IMPORT:
             doCsvImport();
             break;
+        case MENU_QIF_IMPORT:
+            doQifImport();
+            break;
 		}
 		return false;
 	}
@@ -352,12 +364,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		}
 	};
 	
-	/**
-	 * Display the error message
-	 * @param context 
-	 * @message message The message to display
-	 **/
-	protected void showErrorPopup(Context context, int message) {
+	private void showErrorPopup(Context context, int message) {
 		new AlertDialog.Builder(context)
 		.setMessage(message)
 		.setTitle(R.string.error)
@@ -366,46 +373,14 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		.create().show();
 	}
 	
-	/**
-	 * Connects to Google Docs
-	 * */
-	protected DocsClient createDocsClient(Context context) throws AuthenticationException, SettingsNotConfiguredException
-	{
-		GDataParserFactory dspf = new XmlDocsGDataParserFactory(new AbstructParserFactory());
-		DocsGDataClient dataClient = new DocsGDataClient(
-			"cl",
-			ServiceDataClient.DEFAULT_AUTH_PROTOCOL, 
-			ServiceDataClient.DEFAULT_AUTH_HOST);
-		DocsClient googleDocsClient = new DocsClient(dataClient, dspf);
-
-		/*
-		 * Start authentication
-		 * */
-		// check user login on preferences
-		String login = MyPreferences.getUserLogin(context);
-		if(login==null||login.equals("")) 
-			throw new SettingsNotConfiguredException("login");
-		// check user password on preferences
-		String password = MyPreferences.getUserPassword(context);
-		if(password==null||password.equals("")) 
-			throw new SettingsNotConfiguredException("password");
-
-		googleDocsClient.setUserCredentials(login, password);
-		
-		return googleDocsClient;
-	}
-	
 	private void doBackup() {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_inprogress), true);
 		new BackupExportTask(this, d).execute((String[])null);
 	}
 	
-	/**
-	 * Backup to Google Docs using the Google account parameters registered on preferences.
-	 * */
 	private void doBackupOnline() {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_gdocs_inprogress), true);
-		new OnlineBackupExportTask(d).execute((String[])null);
+		new OnlineBackupExportTask(this, handler, d).execute((String[])null);
 	}
 
 	private void doCsvExport() {
@@ -423,6 +398,11 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         startActivityForResult(intent, ACTIVITY_QIF_EXPORT);
     }
 
+    private void doQifImport() {
+        Intent intent = new Intent(this, QifImportActivity.class);
+        startActivityForResult(intent, ACTIVITY_QIF_IMPORT);
+    }
+
 	private String selectedBackupFile;
     private DocumentEntry selectedOnlineBackupFile;
 	private List<DocumentEntry> backupFiles;
@@ -436,7 +416,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 				public void onClick(DialogInterface dialog, int which) {
 					if (selectedBackupFile != null) {
 						ProgressDialog d = ProgressDialog.show(MainActivity.this, null, getString(R.string.restore_database_inprogress), true);
-						new BackupImportTask(d).execute(selectedBackupFile);
+						new BackupImportTask(MainActivity.this, d).execute(selectedBackupFile);
 					}
 				}
 			})
@@ -512,7 +492,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 				public void onClick(DialogInterface dialog, int which) {
 					if (selectedOnlineBackupFile != null) {
 						ProgressDialog d = ProgressDialog.show(MainActivity.this, null, getString(R.string.restore_database_inprogress_gdocs), true);
-						new OnlineBackupImportTask(d, selectedOnlineBackupFile).execute();
+						new OnlineBackupImportTask(MainActivity.this, handler, d, selectedOnlineBackupFile).execute();
 					}
 				}
 			})
@@ -548,181 +528,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         return titles;
     }
 
-    /**
-	 * Task that calls backup to google docs functions
-	 * */
-	private class OnlineBackupExportTask extends ImportExportAsyncTask {
-		
-		public OnlineBackupExportTask(ProgressDialog dialog) {
-			super(MainActivity.this, dialog, null);
-		}
-		
-		@Override
-		protected Object work(Context context, DatabaseAdapter db, String...params)  throws AuthenticationException, Exception{
-			DatabaseExport export = new DatabaseExport(context, db.db());
-			try {
-				String folder = MyPreferences.getBackupFolder(context);
-				// check the backup folder registered on preferences
-				if(folder==null||folder.equals("")) {
-					throw new SettingsNotConfiguredException("folder-is-null");
-				}
-				return export.exportOnline(createDocsClient(context), folder);
-			}  catch (AuthenticationException e) { // connection error
-				handler.sendEmptyMessage(R.string.gdocs_login_failed);
-				throw e;
-			}  catch (SettingsNotConfiguredException e) { // missing login or password
-				if(e.getMessage().equals("login"))
-					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
-				else if(e.getMessage().equals("password"))
-					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
-				else if(e.getMessage().equals("folder-is-null"))
-					handler.sendEmptyMessage(R.string.gdocs_folder_not_configured);
-				else if(e.getMessage().equals("folder-not-found"))
-					handler.sendEmptyMessage(R.string.gdocs_folder_not_found);
-				throw e;
-			} catch (ParseException e) {
-				handler.sendEmptyMessage(R.string.gdocs_folder_error);
-				throw e;
-			} catch (NameNotFoundException e) {
-				handler.sendEmptyMessage(R.string.package_info_error);
-				throw e;
-			} catch (ServiceException e) {
-				handler.sendEmptyMessage(R.string.gdocs_service_error);
-				throw e;
-			} catch (IOException e) {
-				handler.sendEmptyMessage(R.string.gdocs_io_error);
-				throw e;
-			}
-		}
-		
-		@Override
-		protected String getSuccessMessage(Object result) {
-			return String.valueOf(result);
-		}
-
-	}
-
-	private class BackupImportTask extends ImportExportAsyncTask {
-		
-		public BackupImportTask(ProgressDialog dialog) {
-			super(MainActivity.this, dialog, new ImportExportAsyncTaskListener(){
-				@Override
-				public void onCompleted() {
-					onTabChanged(getTabHost().getCurrentTabTag());
-				}
-			});
-		}
-
-		@Override
-		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-			new DatabaseImport(MainActivity.this, db, params[0]).importDatabase();
-			return true;
-		}
-		
-		@Override
-		protected String getSuccessMessage(Object result) {
-			return MainActivity.this.getString(R.string.restore_database_success);
-		}
-
-	}
-	
-	/**
-	 * Task that calls backup from google docs functions
-	 * */
-	private class OnlineBackupImportTask extends ImportExportAsyncTask {
-
-        private final DocumentEntry entry;
-
-		public OnlineBackupImportTask(ProgressDialog dialog, DocumentEntry entry) {
-			super(MainActivity.this, dialog, new ImportExportAsyncTaskListener(){
-				@Override
-				public void onCompleted() {
-					onTabChanged(getTabHost().getCurrentTabTag());
-				}
-			});
-            this.entry = entry;
-		}
-
-		@Override
-		protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception, SettingsNotConfiguredException {
-			try {
-				new DatabaseImport(MainActivity.this, db, null).
-					importOnlineDatabase(createDocsClient(context), entry);
-			}  catch (SettingsNotConfiguredException e) { // error configuring connection parameters
-				if(e.getMessage().equals("login"))
-					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
-				else if(e.getMessage().equals("password"))
-					handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
-				throw e;
-			}catch (AuthenticationException e) { // authentication error
-				handler.sendEmptyMessage(R.string.gdocs_login_failed);
-				throw e;
-			} catch (ParseException e) {
-				handler.sendEmptyMessage(R.string.gdocs_folder_error);
-				throw e;
-			} catch (IOException e) {
-				handler.sendEmptyMessage(R.string.gdocs_io_error);
-				throw e;
-			} catch (ServiceException e) {
-				handler.sendEmptyMessage(R.string.gdocs_service_error);
-				throw e;
-			} 
-			return true;
-		}
-
-		@Override
-		protected String getSuccessMessage(Object result) {
-			return MainActivity.this.getString(R.string.restore_database_success);
-		}
-
-	}
-
-	public class CsvImportTask extends ImportExportAsyncTask {
-
-        private final CsvImportOptions options;
-
-    	public CsvImportTask(Context context, ProgressDialog dialog, CsvImportOptions options) {
-    		super(context, dialog, new ImportExportAsyncTaskListener(){
-				public void onCompleted() {
-					onTabChanged(getTabHost().getCurrentTabTag());
-				}
-			});
-    		this.options = options;
-    	}
-
-    	@Override
-    	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-    		try{
-    			CsvImport csvimport = new CsvImport(db, options);
-        		return csvimport.doImport();	
-    		} catch(Exception e) {
-    			if(e.getMessage().equals("Import file not found"))
-					handler.sendEmptyMessage(R.string.import_file_not_found);
-				else if(e.getMessage().equals("Unknown category in import line"))
-					handler.sendEmptyMessage(R.string.import_unknown_category);
-				else if(e.getMessage().equals("Unknown project in import line"))
-					handler.sendEmptyMessage(R.string.import_unknown_project);
-				else if(e.getMessage().equals("Wrong currency in import line"))
-					handler.sendEmptyMessage(R.string.import_wrong_currency);
-				else if(e.getMessage().equals("IllegalArgumentException"))
-					handler.sendEmptyMessage(R.string.import_illegal_argument_exception);
-				else if(e.getMessage().equals("ParseException"))
-					handler.sendEmptyMessage(R.string.import_parse_error);
-				else
-					handler.sendEmptyMessage(R.string.csv_import_error);
-    			throw e;
-    		}
-    		
-    	}
-
-    	@Override
-    	protected String getSuccessMessage(Object result) {
-    		return String.valueOf(result);
-    	}
-
-    }
-
-	
 	private enum MenuEntities implements EntityEnum {
 		
 		CURRENCIES(R.string.currencies, R.drawable.menu_entities_currencies, CurrencyListActivity.class),

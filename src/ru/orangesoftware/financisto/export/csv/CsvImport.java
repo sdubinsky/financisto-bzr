@@ -1,8 +1,7 @@
-package ru.orangesoftware.financisto.imports.csv;
+package ru.orangesoftware.financisto.export.csv;
 
 import android.util.Log;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.export.csv.Csv;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Project;
