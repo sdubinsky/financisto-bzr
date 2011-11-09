@@ -678,5 +678,6 @@
     <string name="qif_import_inprogress">Importing data from QIF...</string>
     <string name="qif_import_error">QIF import error</string>
     <string name="qif_import_success">QIF file has been successfully imported</string>
+    <string name="import_export">Import/Export</string>
 
 </resources>

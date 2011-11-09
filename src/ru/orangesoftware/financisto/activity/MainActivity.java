@@ -74,16 +74,13 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private static final int MENU_ABOUT = Menu.FIRST+2;
 	private static final int MENU_BACKUP = Menu.FIRST+3;
 	private static final int MENU_RESTORE = Menu.FIRST+4;
-	private static final int MENU_CSV_EXPORT = Menu.FIRST+5;
-	private static final int MENU_SCHEDULED_TRANSACTIONS = Menu.FIRST+6;
-	private static final int MENU_BACKUP_GDOCS = Menu.FIRST+7;
-	private static final int MENU_RESTORE_GDOCS = Menu.FIRST+8;
-	private static final int MENU_ENTITIES = Menu.FIRST+9;
-	private static final int MENU_MASS_OP = Menu.FIRST+10;
-    private static final int MENU_DONATE = Menu.FIRST+11;
-    private static final int MENU_QIF_EXPORT = Menu.FIRST+12;
-    private static final int MENU_CSV_IMPORT = Menu.FIRST+13;
-    private static final int MENU_QIF_IMPORT = Menu.FIRST+14;
+	private static final int MENU_SCHEDULED_TRANSACTIONS = Menu.FIRST+5;
+	private static final int MENU_BACKUP_GDOCS = Menu.FIRST+6;
+	private static final int MENU_RESTORE_GDOCS = Menu.FIRST+7;
+	private static final int MENU_ENTITIES = Menu.FIRST+8;
+	private static final int MENU_MASS_OP = Menu.FIRST+9;
+    private static final int MENU_DONATE = Menu.FIRST+10;
+    private static final int MENU_IMPORT_EXPORT = Menu.FIRST+11;
 
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
@@ -155,26 +152,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		}
 	}
 	
-	private void doCsvExport(CsvExportOptions options) {
-		ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
-		new CsvExportTask(this, progressDialog, options).execute();
-	}
-	
-	private void doCsvImport(CsvImportOptions options) {
-        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_import_inprogress), true);
-        new CsvImportTask(this, handler, progressDialog, options).execute();
-    }
-
-    private void doQifExport(QifExportOptions options) {
-        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.qif_export_inprogress), true);
-        new QifExportTask(this, progressDialog, options).execute();
-    }
-
-    private void doQifImport(QifImportOptions options) {
-        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.qif_import_inprogress), true);
-        new QifImportTask(this, handler, progressDialog, options).execute();
-    }
-
 	private void initialLoad() {
 		long t3, t2, t1, t0 = System.currentTimeMillis();
 		DatabaseAdapter db = new DatabaseAdapter(this);
@@ -268,10 +245,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menu.addSubMenu(0, MENU_RESTORE, 0, R.string.restore_database);
 		menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
-		menu.addSubMenu(0, MENU_CSV_EXPORT, 0, R.string.csv_export);
-		menu.addSubMenu(0, MENU_CSV_IMPORT, 0, R.string.csv_import);
-        menu.addSubMenu(0, MENU_QIF_EXPORT, 0, R.string.qif_export);
-        menu.addSubMenu(0, MENU_QIF_IMPORT, 0, R.string.qif_import);
+		menu.addSubMenu(0, MENU_IMPORT_EXPORT, 0, R.string.import_export);
         menu.addSubMenu(0, MENU_DONATE, 0, R.string.donate);
 		menu.addSubMenu(0, MENU_ABOUT, 0, R.string.about);
 		return true;
@@ -312,11 +286,21 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         case MENU_DONATE:
             openBrowser("market://search?q=pname:ru.orangesoftware.financisto.support");
             break;
-		case MENU_CSV_EXPORT:
-			doCsvExport();
-			break;
-        case MENU_QIF_EXPORT:
-            doQifExport();
+        case MENU_IMPORT_EXPORT:
+            final ImportExportEntities[] importExportEntities = ImportExportEntities.values();
+            ListAdapter importExportAdapter = EnumUtils.createEntityEnumAdapter(this, importExportEntities);
+            final AlertDialog importExportDialog = new AlertDialog.Builder(this)
+                    .setAdapter(importExportAdapter, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            ImportExportEntities e = importExportEntities[which];
+                            e.execute(MainActivity.this);
+                        }
+                    })
+                    .create();
+            importExportDialog.setTitle(R.string.import_export);
+            importExportDialog.show();
             break;
 		case MENU_BACKUP:
 			doBackup();
@@ -330,12 +314,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		case MENU_RESTORE_GDOCS:
 			doImportFromGoogleDocs();
 			break;
-		case MENU_CSV_IMPORT:
-            doCsvImport();
-            break;
-        case MENU_QIF_IMPORT:
-            doQifImport();
-            break;
 		}
 		return false;
 	}
@@ -382,6 +360,26 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_gdocs_inprogress), true);
 		new OnlineBackupExportTask(this, handler, d).execute((String[])null);
 	}
+
+    private void doCsvExport(CsvExportOptions options) {
+        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
+        new CsvExportTask(this, progressDialog, options).execute();
+    }
+
+    private void doCsvImport(CsvImportOptions options) {
+        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_import_inprogress), true);
+        new CsvImportTask(this, handler, progressDialog, options).execute();
+    }
+
+    private void doQifExport(QifExportOptions options) {
+        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.qif_export_inprogress), true);
+        new QifExportTask(this, progressDialog, options).execute();
+    }
+
+    private void doQifImport(QifImportOptions options) {
+        ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.qif_import_inprogress), true);
+        new QifImportTask(this, handler, progressDialog, options).execute();
+    }
 
 	private void doCsvExport() {
 		Intent intent = new Intent(this, CsvExportActivity.class);
@@ -561,5 +559,54 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		}
 		
 	}
-	
+
+    private enum ImportExportEntities implements EntityEnum {
+
+        CSV_EXPORT(R.string.csv_export, R.drawable.ic_menu_back){
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doCsvExport();
+            }
+        },
+        QIF_EXPORT(R.string.qif_export, R.drawable.ic_menu_back) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doQifExport();
+            }
+        },
+        CSV_IMPORT(R.string.csv_import, R.drawable.ic_menu_forward) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doCsvImport();
+            }
+        },
+        QIF_IMPORT(R.string.qif_import, R.drawable.ic_menu_forward) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doQifImport();
+            }
+        };
+
+        private final int titleId;
+        private final int iconId;
+
+        private ImportExportEntities(int titleId, int iconId) {
+            this.titleId = titleId;
+            this.iconId = iconId;
+        }
+
+        @Override
+        public int getTitleId() {
+            return titleId;
+        }
+
+        @Override
+        public int getIconId() {
+            return iconId;
+        }
+
+        public abstract void execute(MainActivity mainActivity);
+
+    }
+
 }
