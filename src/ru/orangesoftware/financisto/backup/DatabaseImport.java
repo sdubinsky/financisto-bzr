@@ -12,9 +12,6 @@ package ru.orangesoftware.financisto.backup;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import api.wireless.gdata.docs.client.DocsClient;
 import api.wireless.gdata.docs.data.DocumentEntry;
 import api.wireless.gdata.parser.ParseException;
@@ -22,128 +19,87 @@ import api.wireless.gdata.util.ContentType;
 import api.wireless.gdata.util.ServiceException;
 import ru.orangesoftware.financisto.db.Database;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
-import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 import ru.orangesoftware.financisto.db.DatabaseSchemaEvolution;
-import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.Export;
-import ru.orangesoftware.financisto.service.RecurrenceScheduler;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.ACCOUNT_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT;
 import static ru.orangesoftware.financisto.backup.Backup.RESTORE_SCRIPTS;
 
-public class DatabaseImport {
+public class DatabaseImport extends FullDatabaseImport {
 
-	private final Context context;
-	private final DatabaseAdapter dbAdapter;
-    private final MyEntityManager em;
-	private final SQLiteDatabase db;
-	private final String backupFile;
 	private final DatabaseSchemaEvolution schemaEvolution;
-	
-	public DatabaseImport(Context context, DatabaseAdapter dbAdapter, String backupFile) {
-		this.context = context;
-		this.dbAdapter = dbAdapter;
-		this.db = dbAdapter.db();
-        this.em = dbAdapter.em();
-		this.backupFile = backupFile;
-		this.schemaEvolution = new DatabaseSchemaEvolution(context, Database.DATABASE_NAME, null, Database.DATABASE_VERSION);
-	}
-	
-	public void importDatabase() throws IOException {
-		File file = new File(Export.EXPORT_PATH, backupFile);
-		FileInputStream inputStream = new FileInputStream(file);
-		recoverDatabase(inputStream);
-	}
-	
-	/**
-	 * Get backup file from Google docs
-	 * 
-	 * @param docsClient The Google Docs connection
-	 * @param resourceId the key of the recovery document on google docs
-	 * @throws ServiceException 
-	 * @throws IOException 
-	 * @throws ParseException 
-	 **/
-	public void importOnlineDatabase(DocsClient docsClient, DocumentEntry entry) throws ParseException, IOException, ServiceException {
-		InputStream inputStream = docsClient.getFileContent(entry, ContentType.ZIP);
-        InputStream in = new BufferedInputStream(new GZIPInputStream(inputStream));
-        try {
-		    recoverDatabase(in);
-        } finally {
-		    inputStream.close();
-        }
-	}
-	
-	/**
-	 * Recover database from a inputStream
-	 * 
-	 * @param inputStream stream with the backup data
-	 **/
-	protected void recoverDatabase(InputStream inputStream) throws IOException
-	{
-		InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
-		BufferedReader br = new BufferedReader(isr, 65535);
-		try {
-			db.beginTransaction();
-			try {
-				for (String tableName : Backup.BACKUP_TABLES) {
-					db.execSQL("delete from "+tableName);
-				}
-				//printCurrentSchema();
-				boolean insideEntity = false;
-				ContentValues values = new ContentValues();
-				String line;
-				String tableName = null;
-				while ((line = br.readLine()) != null) {
-					if (line.startsWith("$")) {
-						if ("$$".equals(line)) {
-							if (tableName != null && values.size() > 0) {
-								db.insert(tableName, null, values);
-								tableName = null;								
-								insideEntity = false;
-							}
-						} else {
-							int i = line.indexOf(":");
-							if (i > 0) {
-								tableName = line.substring(i+1);
-								insideEntity = true;
-								values.clear();
-							}
-						}						
-					} else {
-						if (insideEntity) {
-							int i = line.indexOf(":");
-							if (i > 0) {
-								String columnName = line.substring(0, i);
-								String value = line.substring(i+1);
-								values.put(columnName, value);
-							}							
-						}
-					}
-				}
-				runRestoreAlterscripts();
-				db.setTransactionSuccessful();
-			} finally {
-				db.endTransaction();
-			}
-            CurrencyCache.initialize(em);
-            dbAdapter.recalculateAccountsBalances();
-            dbAdapter.rebuildRunningBalance();
-			scheduleAll();
-		} finally {
-			br.close();
-		}
+    private final InputStream backupStream;
+
+    public static DatabaseImport createFromFileBackup(Context context, DatabaseAdapter dbAdapter, String backupFile) throws FileNotFoundException {
+        File file = new File(Export.EXPORT_PATH, backupFile);
+        FileInputStream inputStream = new FileInputStream(file);
+        return new DatabaseImport(context, dbAdapter, inputStream);
+    }
+
+    public static DatabaseImport createFromGDocsBackup(Context context, DatabaseAdapter dbAdapter, DocsClient docsClient, DocumentEntry entry)
+            throws IOException, ParseException, ServiceException {
+        InputStream inputStream = docsClient.getFileContent(entry, ContentType.ZIP);
+        InputStream in = new GZIPInputStream(inputStream);
+        return new DatabaseImport(context, dbAdapter, in);
+    }
+
+	private DatabaseImport(Context context, DatabaseAdapter dbAdapter, InputStream backupStream) {
+        super(context, dbAdapter);
+        this.schemaEvolution = new DatabaseSchemaEvolution(context, Database.DATABASE_NAME, null, Database.DATABASE_VERSION);
+        this.backupStream = backupStream;
 	}
 
-	private void scheduleAll() {
-        RecurrenceScheduler scheduler = new RecurrenceScheduler(dbAdapter);
-        scheduler.scheduleAll(context);
+    @Override
+    protected String[] tablesToClean() {
+        return Backup.BACKUP_TABLES;
+    }
+
+    @Override
+    protected void restoreDatabase() throws IOException {
+        InputStreamReader isr = new InputStreamReader(backupStream, "UTF-8");
+        BufferedReader br = new BufferedReader(isr, 65535);
+        try {
+            recoverDatabase(br);
+            runRestoreAlterscripts();
+        } finally {
+            br.close();
+        }
+    }
+
+	private void recoverDatabase(BufferedReader br) throws IOException {
+        boolean insideEntity = false;
+        ContentValues values = new ContentValues();
+        String line;
+        String tableName = null;
+        while ((line = br.readLine()) != null) {
+            if (line.startsWith("$")) {
+                if ("$$".equals(line)) {
+                    if (tableName != null && values.size() > 0) {
+                        db.insert(tableName, null, values);
+                        tableName = null;
+                        insideEntity = false;
+                    }
+                } else {
+                    int i = line.indexOf(":");
+                    if (i > 0) {
+                        tableName = line.substring(i+1);
+                        insideEntity = true;
+                        values.clear();
+                    }
+                }
+            } else {
+                if (insideEntity) {
+                    int i = line.indexOf(":");
+                    if (i > 0) {
+                        String columnName = line.substring(0, i);
+                        String value = line.substring(i+1);
+                        values.put(columnName, value);
+                    }
+                }
+            }
+        }
 	}
 
 	private void runRestoreAlterscripts() throws IOException {

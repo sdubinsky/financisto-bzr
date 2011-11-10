@@ -8,6 +8,7 @@
 
 package ru.orangesoftware.financisto.export;
 
+import android.util.Log;
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.QifImport;
 import ru.orangesoftware.financisto.export.qif.QifImportOptions;
@@ -17,6 +18,8 @@ import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.test.DateTime;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,7 +32,6 @@ import java.util.List;
  */
 public class QifImportTestCases extends AbstractDbTest {
 
-    QifParserTest qifParserTest = new QifParserTest();
     QifImport qifImport;
 
     @Override
@@ -82,6 +84,8 @@ public class QifImportTestCases extends AbstractDbTest {
         Account a = accounts.get(0);
         assertEquals("My Bank Account", a.title);
         assertEquals(AccountType.BANK.name(), a.type);
+        assertAccountTotal(a, -2140);
+        assertFinalBalanceForAccount(a, -2140);
 
         List<TransactionInfo> transactions = em.getTransactionsForAccount(a.id);
         assertEquals(2, transactions.size());
@@ -103,6 +107,8 @@ public class QifImportTestCases extends AbstractDbTest {
         a = accounts.get(1);
         assertEquals("My Cash Account", a.title);
         assertEquals(AccountType.CASH.name(), a.type);
+        assertAccountTotal(a, 5490);
+        assertFinalBalanceForAccount(a, 5490);
 
         transactions = em.getTransactionsForAccount(a.id);
         assertEquals(1, transactions.size());
@@ -112,6 +118,85 @@ public class QifImportTestCases extends AbstractDbTest {
         assertEquals(1950, t.fromAmount);
         assertEquals("P1", t.payee.title);
         assertEquals("c1", t.category.title);
+    }
+
+    public void test_should_import_financisto_qif_export_case_1() throws IOException {
+        doImport(
+            "!Type:Cat\n" +
+            "NA1\n" +
+            "E\n" +
+            "^\n" +
+            "NA1:aa1\n" +
+            "E\n" +
+            "^\n" +
+            "NA1:aa1:aaa1\n" +
+            "E\n" +
+            "^\n" +
+            "NA1:aa2\n" +
+            "E\n" +
+            "^\n" +
+            "NB1\n" +
+            "I\n" +
+            "^\n" +
+            "NB1:bb1\n" +
+            "I\n" +
+            "^\n" +
+            "NC1\n" +
+            "E\n" +
+            "^\n" +
+            "ND1\n" +
+            "E\n" +
+            "^\n" +
+            "!Account\n" +
+            "NAAA\n" +
+            "TCash\n" +
+            "^\n" +
+            "!Type:Cash\n" +
+            "D17/02/2011\n" +
+            "T15.00\n" +
+            "L[BBB]\n" +
+            "^\n" +
+            "D17/02/2011\n" +
+            "T-10.00\n" +
+            "LA1\n" +
+            "Pp1\n" +
+            "^\n" +
+            "D17/02/2011\n" +
+            "T100.00\n" +
+            "MOpening amount (AAA)\n" +
+            "^\n" +
+            "!Account\n" +
+            "NBBB\n" +
+            "TCash\n" +
+            "^\n" +
+            "!Type:Cash\n" +
+            "D17/02/2011\n" +
+            "T-14.00\n" +
+            "LB1:bb1\n" +
+            "^\n" +
+            "D17/02/2011\n" +
+            "T-15.00\n" +
+            "L[AAA]\n" +
+            "^\n" +
+            "D17/02/2011\n" +
+            "T-16.50\n" +
+            "Pp2\n" +
+            "^\n" +
+            "D17/02/2011\n" +
+            "T40.00\n" +
+            "MOpening amount (BBB)\n" +
+            "^");
+
+        List<Account> accounts = em.getAllAccountsList();
+        assertEquals(2, accounts.size());
+
+        Account a = accounts.get(0);
+        assertEquals("AAA", a.title);
+        assertAccountTotal(a, 10500);
+
+        a = accounts.get(1);
+        assertEquals("BBB", a.title);
+        assertAccountTotal(a, -550);
     }
 
     private void sortAccountsById(List<Account> accounts) {
@@ -124,10 +209,14 @@ public class QifImportTestCases extends AbstractDbTest {
     }
 
     private void doImport(String qif) throws IOException {
-        qifParserTest.parseQif(qif);
-        QifImportOptions options = new QifImportOptions("", "", Currency.EMPTY);
-        qifImport = new QifImport(db, options);
-        qifImport.doImport(qifParserTest.p);
+        File tmp = File.createTempFile("backup", ".qif");
+        FileWriter w = new FileWriter(tmp);
+        w.write(qif);
+        w.close();
+        Log.d("Financisto", "Created a temporary backup file: "+tmp.getAbsolutePath());
+        QifImportOptions options = new QifImportOptions(tmp.getAbsolutePath(), "", Currency.EMPTY);
+        qifImport = new QifImport(getContext(), db, options);
+        qifImport.importDatabase();
     }
 
 }

@@ -12,18 +12,13 @@
         <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
                       android:orientation="vertical">
             <include layout="@layout/filename"/>
-            <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-                  android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-                  android:layout_marginRight="10dp"/>
+            <include layout="@layout/list_divider"/>
             <TextView android:layout_height="wrap_content"
                       android:layout_width="fill_parent" android:layout_marginLeft="3dp"
                       android:text="@string/accounts"/>
             <Button android:layout_height="wrap_content" android:id="@+id/bAccounts"
                     android:layout_width="fill_parent" android:text="@string/choose_account"/>
-            <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-                  android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-                  android:layout_marginRight="10dp"/>
-
+            <include layout="@layout/list_divider"/>
             <TableLayout android:layout_height="wrap_content"
                          android:layout_width="fill_parent"
                          android:stretchColumns="*">
@@ -49,10 +44,8 @@
                 <TableRow>
                     <Spinner android:entries="@array/field_separators" android:id="@+id/spinnerFieldSeparator"/>
                 </TableRow>
-                <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-                      android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-                      android:layout_marginRight="10dp"/>
             </TableLayout>
+            <include layout="@layout/list_divider"/>
             <TextView android:layout_height="wrap_content"
                       android:layout_width="fill_parent" android:layout_marginLeft="3dp"
                       android:text="@string/date_format"/>

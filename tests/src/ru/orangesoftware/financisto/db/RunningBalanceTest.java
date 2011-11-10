@@ -591,35 +591,5 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertFinalBalanceForAccount(a3, 200);
     }
 
-    private void assertFinalBalanceForAccount(Account a, long expectedBalance) {
-        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
-                new String[]{String.valueOf(a.id)});
-        try {
-            if (c.moveToFirst()) {
-                long balance = c.getLong(0);
-                assertEquals(expectedBalance, balance);
-            } else {
-                fail();
-            }
-        } finally {
-            c.close();
-        }
-    }
-
-    private void assertAccountBalanceForTransaction(Transaction t, Account a, long expectedBalance) {
-        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? and transaction_id=?",
-                new String[]{String.valueOf(a.id), String.valueOf(t.id)});
-        try {
-            if (c.moveToFirst()) {
-                long balance = c.getLong(0);
-                assertEquals(expectedBalance, balance);
-            } else {
-                fail();
-            }
-        } finally {
-            c.close();
-        }
-    }
-
 
 }

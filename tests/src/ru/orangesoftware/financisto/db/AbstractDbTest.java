@@ -1,8 +1,11 @@
 package ru.orangesoftware.financisto.db;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
+import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Transaction;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,6 +28,41 @@ public abstract class AbstractDbTest extends AndroidTestCase {
     @Override
     public void tearDown() throws Exception {
         db.close();
+    }
+
+    public void assertAccountTotal(Account account, long total) {
+        Account a = db.em().getAccount(account.id);
+        assertEquals(total, a.totalAmount);
+    }
+
+    public void assertFinalBalanceForAccount(Account a, long expectedBalance) {
+        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
+                new String[]{String.valueOf(a.id)});
+        try {
+            if (c.moveToFirst()) {
+                long balance = c.getLong(0);
+                assertEquals(expectedBalance, balance);
+            } else {
+                fail();
+            }
+        } finally {
+            c.close();
+        }
+    }
+
+    public void assertAccountBalanceForTransaction(Transaction t, Account a, long expectedBalance) {
+        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? and transaction_id=?",
+                new String[]{String.valueOf(a.id), String.valueOf(t.id)});
+        try {
+            if (c.moveToFirst()) {
+                long balance = c.getLong(0);
+                assertEquals(expectedBalance, balance);
+            } else {
+                fail();
+            }
+        } finally {
+            c.close();
+        }
     }
 
 }

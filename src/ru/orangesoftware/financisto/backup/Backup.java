@@ -58,4 +58,13 @@ public final class Backup {
 		}
 	}
 
+    public static boolean tableHasSystemIds(String tableName) {
+        for (String table : BACKUP_TABLES_WITH_SYSTEM_IDS) {
+            if (table.equalsIgnoreCase(tableName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

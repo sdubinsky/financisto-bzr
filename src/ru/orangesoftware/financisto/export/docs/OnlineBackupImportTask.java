@@ -50,10 +50,9 @@ public class OnlineBackupImportTask extends ImportExportAsyncTask {
     }
 
     @Override
-    protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception, SettingsNotConfiguredException {
+    protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
         try {
-            new DatabaseImport(context, db, null).
-                    importOnlineDatabase(createDocsClient(context), entry);
+            DatabaseImport.createFromGDocsBackup(context, db, createDocsClient(context), entry).importDatabase();
         } catch (SettingsNotConfiguredException e) { // error configuring connection parameters
             if (e.getMessage().equals("login"))
                 handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);

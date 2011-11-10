@@ -885,15 +885,9 @@ public class DatabaseAdapter {
 		db.update(CATEGORY_TABLE, values, CategoryColumns._id+"=?", new String[]{String.valueOf(id)});
 	}
 	
-    public void insertCategoryTree(CategoryTree<Category> tree) {
-        db.beginTransaction();
-        try {
-            insertCategoryInTransaction(tree);
-            updateCategoryTreeInTransaction(tree);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+    public void insertCategoryTreeInTransaction(CategoryTree<Category> tree) {
+        insertCategoryInTransaction(tree);
+        updateCategoryTreeInTransaction(tree);
     }
 
     private void insertCategoryInTransaction(CategoryTree<Category> tree) {

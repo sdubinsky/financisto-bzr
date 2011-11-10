@@ -11,7 +11,7 @@
 package ru.orangesoftware.financisto.backup;
 
 import static ru.orangesoftware.financisto.backup.Backup.BACKUP_TABLES;
-import static ru.orangesoftware.financisto.backup.Backup.BACKUP_TABLES_WITH_SYSTEM_IDS;
+import static ru.orangesoftware.financisto.backup.Backup.tableHasSystemIds;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -85,7 +85,7 @@ public class DatabaseExport extends Export {
 	}
 
 	private void exportTable(BufferedWriter bw, String tableName) throws IOException {
-		String sql = "select * from " + tableName + (shouldIgnoreSystemIds(tableName) ? " WHERE _id>=0" : "");
+		String sql = "select * from " + tableName + (tableHasSystemIds(tableName) ? " WHERE _id>=0" : "");
 		Cursor c = db.rawQuery(sql, null);
 		try {
 			String[] columnNames = c.getColumnNames();
@@ -105,15 +105,6 @@ public class DatabaseExport extends Export {
 		} finally {
 			c.close();
 		}
-	}
-
-	private boolean shouldIgnoreSystemIds(String tableName) {
-		for (String table : BACKUP_TABLES_WITH_SYSTEM_IDS) {
-			if (table.equalsIgnoreCase(tableName)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

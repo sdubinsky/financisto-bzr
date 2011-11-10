@@ -8,9 +8,11 @@
 
 package ru.orangesoftware.financisto.export.qif;
 
+import android.content.Context;
 import android.util.Log;
+import ru.orangesoftware.financisto.backup.Backup;
+import ru.orangesoftware.financisto.backup.FullDatabaseImport;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.*;
 
 import java.io.*;
@@ -25,10 +27,8 @@ import static ru.orangesoftware.financisto.utils.Utils.isEmpty;
  * User: Denis Solonenko
  * Date: 9/25/11 9:54 PM
  */
-public class QifImport {
+public class QifImport extends FullDatabaseImport {
 
-    private final DatabaseAdapter db;
-    private final MyEntityManager em;
     private final QifImportOptions options;
 
     private final Map<String, QifAccount> accountTitleToAccount = new HashMap<String, QifAccount>();
@@ -36,10 +36,26 @@ public class QifImport {
     private final Map<String, Category> categoryNameToCategory = new HashMap<String, Category>();
     private final CategoryTree<Category> categoryTree = new CategoryTree<Category>();
 
-    public QifImport(DatabaseAdapter db, QifImportOptions options) {
-        this.db = db;
-        this.em = db.em();
+    public QifImport(Context context, DatabaseAdapter db, QifImportOptions options) {
+        super(context, db);
         this.options = options;
+    }
+
+    @Override
+    protected String[] tablesToClean() {
+        List<String> backupTables = new ArrayList<String>(Arrays.asList(Backup.BACKUP_TABLES));
+        backupTables.remove("currency");
+        return backupTables.toArray(new String[backupTables.size()]);
+    }
+
+    @Override
+    protected boolean shouldKeepSystemEntries() {
+        return true;
+    }
+
+    @Override
+    protected void restoreDatabase() throws IOException {
+        doImport();
     }
 
     public void doImport() throws IOException {
@@ -71,15 +87,9 @@ public class QifImport {
     }
 
     private void insertPayees(Set<String> payees) {
-        db.db().beginTransaction();
-        try {
-            for (String payee : payees) {
-                long id = db.insertPayee(payee);
-                payeeToId.put(payee, id);
-            }
-            db.db().setTransactionSuccessful();
-        } finally {
-            db.db().endTransaction();
+        for (String payee : payees) {
+            long id = dbAdapter.insertPayee(payee);
+            payeeToId.put(payee, id);
         }
     }
 
@@ -88,8 +98,8 @@ public class QifImport {
             String name = splitCategoryName(category.name);
             insertCategory(name, category.isIncome);
         }
-        categoryTree.reIndex();
-        db.insertCategoryTree(categoryTree);
+        categoryTree.sortByTitle();
+        dbAdapter.insertCategoryTreeInTransaction(categoryTree);
     }
 
     private Category insertCategory(String name, boolean isIncome) {
@@ -136,16 +146,10 @@ public class QifImport {
 
     private void insertAccounts(List<QifAccount> accounts) {
         for (QifAccount account : accounts) {
-            db.db().beginTransaction();
-            try {
-                Account a = account.toAccount(options.currency);
-                em.saveAccount(a);
-                account.dbAccount = a;
-                accountTitleToAccount.put(account.memo, account);
-                db.db().setTransactionSuccessful();
-            } finally {
-                db.db().endTransaction();
-            }
+            Account a = account.toAccount(options.currency);
+            em.saveAccount(a);
+            account.dbAccount = a;
+            accountTitleToAccount.put(account.memo, account);
         }
     }
 
@@ -161,16 +165,10 @@ public class QifImport {
         for (int i=0; i<count; i++) {
             long t3 = System.currentTimeMillis();
             QifAccount account = accounts.get(i);
-            db.db().beginTransaction();
-            try {
-                Account a = account.dbAccount;
-                insertTransactions(a, account.transactions);
-                // this might help GC
-                account.transactions.clear();
-                db.db().setTransactionSuccessful();
-            } finally {
-                db.db().endTransaction();
-            }
+            Account a = account.dbAccount;
+            insertTransactions(a, account.transactions);
+            // this might help GC
+            account.transactions.clear();
             long t4 = System.currentTimeMillis();
             Log.i("Financisto", "QIF Import: Inserting transactions for account "+i+"/"+count+" done in "+ TimeUnit.MILLISECONDS.toSeconds(t4-t3)+"s");
         }
@@ -189,7 +187,6 @@ public class QifImport {
                 boolean found = false;
                 QifAccount toAccount = accountTitleToAccount.get(fromTransaction.toAccount);
                 if (toAccount != null) {
-                    //TODO: optimize the search
                     Iterator<QifTransaction> iterator = toAccount.transactions.iterator();
                     while (iterator.hasNext()) {
                         QifTransaction toTransaction = iterator.next();
@@ -264,7 +261,7 @@ public class QifImport {
                 }
                 t.splits = splits;
             }
-            db.insertOrUpdateInTransaction(t, Collections.<TransactionAttribute>emptyList());
+            dbAdapter.insertOrUpdateInTransaction(t, Collections.<TransactionAttribute>emptyList());
         }
     }
 

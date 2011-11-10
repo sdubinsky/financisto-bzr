@@ -15,18 +15,12 @@
         <LinearLayout
                 android:layout_width="fill_parent" android:layout_height="fill_parent"
                 android:orientation="vertical">
-            <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-                  android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-                  android:layout_marginRight="10dp"/>
             <TextView android:layout_height="wrap_content"
                       android:layout_width="fill_parent" android:layout_marginLeft="3dp"
                       android:text="@string/period"/>
             <Button android:layout_height="wrap_content" android:id="@+id/bPeriod"
                     android:layout_width="fill_parent"/>
-            <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-                  android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-                  android:layout_marginRight="10dp"/>
-
+            <include layout="@layout/list_divider"/>
             <TableLayout android:layout_height="wrap_content"
                          android:layout_width="fill_parent"
                          android:stretchColumns="*">
@@ -46,9 +40,7 @@
                     <Spinner android:id="@+id/spinnerGroupSeparators"
                              android:entries="@array/group_separators"/>
                 </TableRow>
-                <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-                      android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-                      android:layout_marginRight="10dp"/>
+                <include layout="@layout/list_divider"/>
                 <TableRow>
                     <TextView android:layout_marginLeft="3dp"
                               android:text="@string/field_separator"/>

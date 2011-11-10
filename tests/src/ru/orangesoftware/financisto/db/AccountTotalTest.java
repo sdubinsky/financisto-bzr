@@ -371,9 +371,4 @@ public class AccountTotalTest extends AbstractDbTest {
         assertAccountTotal(a3, 4000);
     }
 
-    private void assertAccountTotal(Account account, long total) {
-        Account a = db.em().getAccount(account.id);
-        assertEquals(total, a.totalAmount);
-    }
-
 }

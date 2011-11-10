@@ -13,22 +13,21 @@
         <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
                       android:orientation="vertical">
             <include layout="@layout/filename"/>
-            <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-                  android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-                  android:layout_marginRight="10dp"/>
+            <include layout="@layout/list_divider"/>
             <TextView android:layout_height="wrap_content"
                       android:layout_width="fill_parent" android:layout_marginLeft="3dp"
                       android:text="@string/date_format"/>
             <Spinner android:layout_height="wrap_content" android:layout_width="fill_parent"
                      android:id="@+id/spinnerDateFormats" android:entries="@array/date_format_values"/>
-            <View android:layout_height="1dp" android:background="@drawable/divider_horizontal_dark"
-                  android:layout_width="fill_parent" android:layout_marginLeft="10dp"
-                  android:layout_marginRight="10dp"/>
+            <include layout="@layout/list_divider"/>
             <TextView android:layout_height="wrap_content"
                       android:layout_width="fill_parent" android:layout_marginLeft="3dp"
                       android:text="@string/currency"/>
             <Spinner android:layout_height="wrap_content" android:layout_width="fill_parent"
                      android:id="@+id/spinnerCurrency"/>
+            <include layout="@layout/list_divider"/>
+            <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1"
+                      android:gravity="center" android:text="@string/qif_import_disclaimer"/>
         </LinearLayout>
     </ScrollView>
     <include layout="@layout/ok_cancel_buttons"/>

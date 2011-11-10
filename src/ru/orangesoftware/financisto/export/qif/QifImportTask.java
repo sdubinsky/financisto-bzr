@@ -42,8 +42,8 @@ public class QifImportTask extends ImportExportAsyncTask {
     @Override
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
         try {
-            QifImport qifImport = new QifImport(db, options);
-            qifImport.doImport();
+            QifImport qifImport = new QifImport(context, db, options);
+            qifImport.importDatabase();
             return null;
         } catch (Exception e) {
             handler.sendEmptyMessage(R.string.qif_import_error);

@@ -34,7 +34,7 @@ public class BackupImportTask extends ImportExportAsyncTask {
 
     @Override
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
-        new DatabaseImport(context, db, params[0]).importDatabase();
+        DatabaseImport.createFromFileBackup(context, db, params[0]).importDatabase();
         return true;
     }
 
