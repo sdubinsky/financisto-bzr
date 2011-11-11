@@ -11,9 +11,9 @@ package ru.orangesoftware.financisto.export;
 import android.test.AndroidTestCase;
 import ru.orangesoftware.financisto.test.DateTime;
 
-import java.util.Arrays;
-
 import static ru.orangesoftware.financisto.export.qif.QifUtils.*;
+import static ru.orangesoftware.financisto.export.qif.QifDateFormat.*;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,10 +28,12 @@ public class QifUtilsTest extends AndroidTestCase {
     }
 
     public void test_should_parse_dates() {
-        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), parseDate("07/02/2011"));
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), parseDate("07/02/2011", EU_FORMAT));
         assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), parseDate("07/02/2011", EU_FORMAT));
         assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), parseDate("02/07/2011", US_FORMAT));
-        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), parseDate("07.02.11"));
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), parseDate("07.02.11", EU_FORMAT));
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), parseDate("07.02'11", EU_FORMAT));
+        assertEquals(DateTime.date(2011, 1, 23).atMidnight().asDate(), parseDate("1.23'11", US_FORMAT));
     }
 
     public void test_should_parse_money() {

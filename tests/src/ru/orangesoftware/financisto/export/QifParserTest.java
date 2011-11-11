@@ -21,6 +21,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static ru.orangesoftware.financisto.export.qif.QifDateFormat.EU_FORMAT;
+import static ru.orangesoftware.financisto.export.qif.QifDateFormat.US_FORMAT;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -118,6 +121,46 @@ public class QifParserTest extends AndroidTestCase {
         assertEquals("P1:c1", t.category);
         assertEquals("Payee 1", t.payee);
         assertEquals("Some note here...", t.memo);
+    }
+
+    public void test_should_parse_date_according_to_format() throws Exception {
+        parseQif(
+                "!Type:Cat\n" +
+                        "NP1\n" +
+                        "E\n" +
+                        "^\n" +
+                        "NP1:c1\n" +
+                        "E\n" +
+                        "^\n" +
+                        "NP2\n" +
+                        "I\n" +
+                        "^\n" +
+                        "!Account\n" +
+                        "NMy Cash Account\n" +
+                        "TCash\n" +
+                        "^\n" +
+                        "!Type:Cash\n" +
+                        "D2.8'11\n" +
+                        "T10.00\n" +
+                        "LP1\n" +
+                        "^\n" +
+                        "D02/07/2011\n" +
+                        "T-20.56\n" +
+                        "LP1:c1\n" +
+                        "PPayee 1\n" +
+                        "MSome note here...\n" +
+                        "^\n", US_FORMAT);
+
+        assertEquals(1, p.accounts.size());
+
+        QifAccount a = p.accounts.get(0);
+        assertEquals(2, a.transactions.size());
+
+        QifTransaction t = a.transactions.get(0);
+        assertEquals(DateTime.date(2011, 2, 8).atMidnight().asDate(), t.date);
+
+        t = a.transactions.get(1);
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), t.date);
     }
 
     public void test_should_parse_account_with_a_couple_of_transactions_without_category_list() throws Exception {
@@ -381,8 +424,12 @@ public class QifParserTest extends AndroidTestCase {
     }
 
     public void parseQif(String fileContent) throws IOException {
+        parseQif(fileContent, EU_FORMAT);
+    }
+
+    public void parseQif(String fileContent, QifDateFormat dateFormat) throws IOException {
         QifBufferedReader r = new QifBufferedReader(new BufferedReader(new InputStreamReader(new ByteArrayInputStream(fileContent.getBytes()), "UTF-8")));
-        p = new QifParser(r);
+        p = new QifParser(r, dateFormat);
         p.parse();
     }
 

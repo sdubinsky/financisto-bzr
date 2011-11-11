@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static ru.orangesoftware.financisto.export.qif.QifDateFormat.EU_FORMAT;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -214,7 +216,7 @@ public class QifImportTestCases extends AbstractDbTest {
         w.write(qif);
         w.close();
         Log.d("Financisto", "Created a temporary backup file: "+tmp.getAbsolutePath());
-        QifImportOptions options = new QifImportOptions(tmp.getAbsolutePath(), "", Currency.EMPTY);
+        QifImportOptions options = new QifImportOptions(tmp.getAbsolutePath(), EU_FORMAT, Currency.EMPTY);
         qifImport = new QifImport(getContext(), db, options);
         qifImport.importDatabase();
     }

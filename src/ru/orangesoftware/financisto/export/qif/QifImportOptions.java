@@ -13,7 +13,7 @@ import ru.orangesoftware.financisto.activity.QifImportActivity;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
-import java.text.SimpleDateFormat;
+import static ru.orangesoftware.financisto.export.qif.QifDateFormat.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,22 +22,22 @@ import java.text.SimpleDateFormat;
  */
 public class QifImportOptions {
 
-    public final SimpleDateFormat dateFormat;
+    public final QifDateFormat dateFormat;
     public final String filename;
     public final Currency currency;
 
-    public QifImportOptions(String filename, String dateFormat, Currency currency) {
+    public QifImportOptions(String filename, QifDateFormat dateFormat, Currency currency) {
         this.filename = filename;
-        this.dateFormat = new SimpleDateFormat(dateFormat);
+        this.dateFormat = dateFormat;
         this.currency = currency;
     }
 
     public static QifImportOptions fromIntent(Intent data) {
         String filename = data.getStringExtra(QifImportActivity.QIF_IMPORT_FILENAME);
-        String dateFormat = data.getStringExtra(QifImportActivity.QIF_IMPORT_DATE_FORMAT);
+        int f = data.getIntExtra(QifImportActivity.QIF_IMPORT_DATE_FORMAT, 0);
         long currencyId = data.getLongExtra(QifImportActivity.QIF_IMPORT_CURRENCY, 1);
         Currency currency = CurrencyCache.getCurrencyOrEmpty(currencyId);
-        return new QifImportOptions(filename, dateFormat, currency);
+        return new QifImportOptions(filename, f == 0 ? EU_FORMAT : US_FORMAT, currency);
     }
 
 }

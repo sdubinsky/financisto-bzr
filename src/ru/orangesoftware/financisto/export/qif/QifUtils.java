@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import static ru.orangesoftware.financisto.export.qif.QifDateFormat.*;
 import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 /**
@@ -26,19 +27,12 @@ import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
  */
 public class QifUtils {
 
-    public static final String US_FORMAT = "mm/dd/yyyy";
-    public static final String EU_FORMAT = "dd/mm/yyyy";
-
     private static final Pattern DATE_DELIMITER_PATTERN = Pattern.compile("/|'|\\.|-");
     private static final Pattern MONEY_PREFIX_PATTERN = Pattern.compile("\\D");
     private static final BigDecimal HUNDRED = new BigDecimal(100);
 
     public static String trimFirstChar(String s) {
         return s.length() > 1 ? s.substring(1) : "";
-    }
-
-    public static Date parseDate(String s) {
-        return parseDate(s, EU_FORMAT);
     }
 
     /**
@@ -57,7 +51,7 @@ public class QifUtils {
      * @param format String identifier of format to parse
      * @return Returns parsed date and current date if an error occurs
      */
-    public static Date parseDate(String sDate, String format) {
+    public static Date parseDate(String sDate, QifDateFormat format) {
         Calendar cal = Calendar.getInstance();
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -65,7 +59,7 @@ public class QifUtils {
 
         String[] chunks = DATE_DELIMITER_PATTERN.split(sDate);
 
-        if (US_FORMAT.equals(format)) {
+        if (format == US_FORMAT) {
             try {
                 month = Integer.parseInt(chunks[0].trim());
                 day = Integer.parseInt(chunks[1].trim());
@@ -74,7 +68,7 @@ public class QifUtils {
                 //eat it
                 Log.e("QifUtils", "Unable to parse US date", e);
             }
-        } else if (EU_FORMAT.equals(format)) {
+        } else if (format == EU_FORMAT) {
             try {
                 day = Integer.parseInt(chunks[0].trim());
                 month = Integer.parseInt(chunks[1].trim());

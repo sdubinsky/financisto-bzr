@@ -25,14 +25,16 @@ import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 public class QifParser {
 
     private final QifBufferedReader r;
+    private final QifDateFormat dateFormat;
 
     public final List<QifAccount> accounts = new ArrayList<QifAccount>();
     public final Set<QifCategory> categories = new HashSet<QifCategory>();
     public final Set<QifCategory> categoriesFromTransactions = new HashSet<QifCategory>();
     public final Set<String> payees = new HashSet<String>();
 
-    public QifParser(QifBufferedReader r) {
+    public QifParser(QifBufferedReader r, QifDateFormat dateFormat) {
         this.r = r;
+        this.dateFormat = dateFormat;
     }
 
     public void parse() throws IOException {
@@ -69,7 +71,7 @@ public class QifParser {
                 r.readLine();
                 while (true) {
                     QifTransaction t = new QifTransaction();
-                    t.readFrom(r);
+                    t.readFrom(r, dateFormat);
                     addPayeeFromTransaction(t);
                     addCategoryFromTransaction(t);
                     account.transactions.add(t);

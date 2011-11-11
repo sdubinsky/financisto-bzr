@@ -61,7 +61,7 @@ public class QifImport extends FullDatabaseImport {
     public void doImport() throws IOException {
         long t0 = System.currentTimeMillis();
         QifBufferedReader r = new QifBufferedReader(new BufferedReader(new InputStreamReader(new FileInputStream(options.filename), "UTF-8")));
-        QifParser parser = new QifParser(r);
+        QifParser parser = new QifParser(r, options.dateFormat);
         parser.parse();
         long t1 = System.currentTimeMillis();
         Log.i("Financisto", "QIF Import: Parsing done in "+ TimeUnit.MILLISECONDS.toSeconds(t1-t0)+"s");

@@ -107,7 +107,7 @@ public class QifTransaction {
         this.splits = splits;
     }
 
-    public void readFrom(QifBufferedReader r) throws IOException {
+    public void readFrom(QifBufferedReader r, QifDateFormat dateFormat) throws IOException {
         QifTransaction split = null;
         String line;
         while ((line = r.readLine()) != null) {
@@ -115,7 +115,7 @@ public class QifTransaction {
                 break;
             }
             if (line.startsWith("D")) {
-                this.date = parseDate(trimFirstChar(line));
+                this.date = parseDate(trimFirstChar(line), dateFormat);
             } else if (line.startsWith("T")) {
                 this.amount = parseMoney(trimFirstChar(line));
             } else if (line.startsWith("P")) {

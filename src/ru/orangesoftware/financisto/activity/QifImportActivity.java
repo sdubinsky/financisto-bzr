@@ -92,7 +92,7 @@ public class QifImportActivity extends AbstractImportActivity implements Activit
     protected void updateResultIntentFromUi(Intent data) {
         Spinner currencySpinner = (Spinner)findViewById(R.id.spinnerCurrency);
         Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
-        data.putExtra(QIF_IMPORT_DATE_FORMAT, dateFormats.getSelectedItem().toString());
+        data.putExtra(QIF_IMPORT_DATE_FORMAT, dateFormats.getSelectedItemPosition());
         data.putExtra(QIF_IMPORT_FILENAME, edFilename.getText().toString());
         data.putExtra(QIF_IMPORT_CURRENCY, currencySpinner.getSelectedItemId());
     }

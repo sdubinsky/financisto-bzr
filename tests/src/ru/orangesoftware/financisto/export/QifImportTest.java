@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static ru.orangesoftware.financisto.export.qif.QifDateFormat.EU_FORMAT;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -62,7 +64,7 @@ public class QifImportTest extends AbstractDbTest {
     }
 
     public void test_should_import_categories() throws Exception {
-        QifParser p = new QifParser(null);
+        QifParser p = new QifParser(null, QifDateFormat.EU_FORMAT);
         p.categories.add(new QifCategory("P1:c1", true));
         p.categories.add(new QifCategory("P1:c2", true));
         p.categories.add(new QifCategory("P2", false));
@@ -362,7 +364,7 @@ public class QifImportTest extends AbstractDbTest {
     }
 
     private void doImport(QifParser p) {
-        QifImportOptions options = new QifImportOptions("", "", Currency.EMPTY);
+        QifImportOptions options = new QifImportOptions("", EU_FORMAT, Currency.EMPTY);
         qifImport = new QifImport(getContext(), db, options);
         qifImport.doImport(p);
     }
