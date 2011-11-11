@@ -34,6 +34,8 @@ public class DatabaseAdapter {
 	
 	private SQLiteDatabase db;
 	private MyEntityManager em;
+
+    private boolean updateAccountBalance = true;
 	
 	public DatabaseAdapter(Context context) {
 		this.context = context;
@@ -303,6 +305,16 @@ public class DatabaseAdapter {
         return transactionId;
     }
 
+    public void insertWithoutUpdatingBalance(Transaction transaction) {
+        updateAccountBalance = false;
+        try {
+            transaction.id = insertTransaction(transaction);
+            insertSplits(transaction);
+        } finally {
+            updateAccountBalance = true;
+        }
+    }
+
     private void insertAttributes(long transactionId, List<TransactionAttribute> attributes) {
 		for (TransactionAttribute a : attributes) {
 			a.transactionId = transactionId;
@@ -337,16 +349,18 @@ public class DatabaseAdapter {
 
     private long insertTransaction(Transaction t) {
         long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
-        if (!t.isTemplateLike()) {
-            if (t.isSplitChild()) {
-                if (t.isTransfer()) {
+        if (updateAccountBalance) {
+            if (!t.isTemplateLike()) {
+                if (t.isSplitChild()) {
+                    if (t.isTransfer()) {
+                        updateToAccountBalance(t, id);
+                    }
+                } else {
+                    updateFromAccountBalance(t, id);
                     updateToAccountBalance(t, id);
+                    updateLocationCount(t.locationId, 1);
+                    updateLastUsed(t);
                 }
-            } else {
-                updateFromAccountBalance(t, id);
-                updateToAccountBalance(t, id);
-                updateLocationCount(t.locationId, 1);
-                updateLastUsed(t);
             }
         }
         return id;

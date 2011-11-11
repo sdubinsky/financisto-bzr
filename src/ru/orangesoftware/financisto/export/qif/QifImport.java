@@ -261,7 +261,7 @@ public class QifImport extends FullDatabaseImport {
                 }
                 t.splits = splits;
             }
-            dbAdapter.insertOrUpdateInTransaction(t, Collections.<TransactionAttribute>emptyList());
+            dbAdapter.insertWithoutUpdatingBalance(t);
         }
     }
 
