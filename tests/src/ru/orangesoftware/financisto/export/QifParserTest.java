@@ -16,10 +16,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static ru.orangesoftware.financisto.export.qif.QifDateFormat.EU_FORMAT;
 import static ru.orangesoftware.financisto.export.qif.QifDateFormat.US_FORMAT;
@@ -268,6 +265,46 @@ public class QifParserTest extends AndroidTestCase {
         t = a.transactions.get(1);
         assertEquals(DateTime.date(2011, 1, 2).atMidnight().asDate(), t.date);
         assertEquals(5400, t.amount);
+    }
+
+    public void test_should_parse_categories_directly_from_transactions() throws Exception {
+        parseQif(
+                "!Account\n" +
+                "NMy Cash Account\n" +
+                "TCash\n" +
+                "^\n" +
+                "!Type:Cash\n" +
+                "D08/02/2011\n" +
+                "T10.00\n" +
+                "LP1:к1\n" +
+                "^\n" +
+                "D07/02/2011\n" +
+                "T11.00\n" +
+                "LP1\n" +
+                "^\n" +
+                "D06/02/2011\n" +
+                "T12.00\n" +
+                "LP1:к1\n" +
+                "^\n" +
+                "D05/02/2011\n" +
+                "T-13.80\n" +
+                "LP1:c2\n" +
+                "^\n" +
+                "D04/02/2011\n" +
+                "T-14.80\n" +
+                "LP2:c1\n" +
+                "^\n" +
+                "D03/02/2011\n" +
+                "T-15.80\n" +
+                "LP2:c1\n" +
+                "^\n" +
+                "D02/02/2011\n" +
+                "T-16.80\n" +
+                "LP2\n" +
+                "^\n");
+
+        Set<QifCategory> categories = p.categories;
+        assertEquals(5, categories.size());
     }
 
     public void test_should_parse_transfers() throws Exception {

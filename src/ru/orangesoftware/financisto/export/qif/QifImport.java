@@ -124,8 +124,7 @@ public class QifImport extends FullDatabaseImport {
     }
 
     private Category createCategoryInCache(String fullName, String name, boolean income) {
-        Category c;
-        c = new Category();
+        Category c = new Category();
         c.title = name;
         if (income) {
             c.makeThisCategoryIncome();
@@ -139,8 +138,11 @@ public class QifImport extends FullDatabaseImport {
         String parentCategoryName = name.substring(0, i);
         String childCategoryName = name.substring(i+1);
         Category parent = insertCategory(parentCategoryName, income);
-        Category child = createCategoryInCache(name, childCategoryName, income);
-        parent.addChild(child);
+        Category child = categoryNameToCategory.get(name);
+        if (child == null) {
+            child = createCategoryInCache(name, childCategoryName, income);
+            parent.addChild(child);
+        }
         return child;
     }
 

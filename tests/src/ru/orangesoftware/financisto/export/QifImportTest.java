@@ -65,12 +65,26 @@ public class QifImportTest extends AbstractDbTest {
 
     public void test_should_import_categories() throws Exception {
         QifParser p = new QifParser(null, QifDateFormat.EU_FORMAT);
-        p.categories.add(new QifCategory("P1:c1", true));
-        p.categories.add(new QifCategory("P1:c2", true));
+        //P1
+        // - cc1
+        // -- c1
+        // -- c2
+        // - cc2
+        //P2
+        // - x1
+        p.categories.add(new QifCategory("P1:cc1:c1", true));
+        p.categories.add(new QifCategory("P1:cc1", true));
+        p.categories.add(new QifCategory("P1:cc1:c2", true));
         p.categories.add(new QifCategory("P2", false));
-        p.categories.add(new QifCategory("P2:c1", false));
+        p.categories.add(new QifCategory("P2:x1", false));
         p.categories.add(new QifCategory("P1", false));
+        p.categories.add(new QifCategory("P1:cc2", true));
         doImport(p);
+
+        assertNotNull(qifImport.findCategory("P1"));
+        assertNotNull(qifImport.findCategory("P1:cc1"));
+        assertNotNull(qifImport.findCategory("P1:cc1:c2"));
+        assertNotNull(qifImport.findCategory("P2:x1"));
 
         CategoryTree<Category> categories = db.getCategoriesTree(false);
         assertNotNull(categories);
@@ -79,17 +93,18 @@ public class QifImportTest extends AbstractDbTest {
         Category c = categories.getAt(0);
         assertCategory("P1", true, c);
         assertEquals(2, c.children.size());
-        assertCategory("c1", true, c.children.getAt(0));
-        assertCategory("c2", true, c.children.getAt(1));
-        assertNotNull(qifImport.findCategory("P1"));
-        assertNotNull(qifImport.findCategory("P1:c1"));
-        assertNotNull(qifImport.findCategory("P1:c2"));
+
+        assertCategory("cc1", true, c.children.getAt(0));
+        assertEquals(2, c.children.getAt(0).children.size());
+
+        assertCategory("cc2", true, c.children.getAt(1));
+        assertFalse(c.children.getAt(1).hasChildren());
 
         c = categories.getAt(1);
         assertCategory("P2", false, c);
         assertEquals(1, c.children.size());
-        assertCategory("c1", false, c.children.getAt(0));
-        assertNotNull(qifImport.findCategory("P2:c1"));
+
+        assertCategory("x1", false, c.children.getAt(0));
     }
 
     private void assertCategory(String name, boolean isIncome, Category c) {

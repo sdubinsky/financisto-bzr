@@ -148,6 +148,7 @@ public class QifUtils {
         return bd.multiply(HUNDRED).intValue();
     }
 
+    //TODO: change name
     public static String splitCategoryName(String name) {
         int i = name.indexOf('/');
         if (i != -1) {
