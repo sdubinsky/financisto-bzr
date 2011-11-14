@@ -31,6 +31,7 @@ public class QifParser {
     public final Set<QifCategory> categories = new HashSet<QifCategory>();
     public final Set<QifCategory> categoriesFromTransactions = new HashSet<QifCategory>();
     public final Set<String> payees = new HashSet<String>();
+    public final Set<String> classes = new HashSet<String>();
 
     public QifParser(QifBufferedReader r, QifDateFormat dateFormat) {
         this.r = r;
@@ -99,6 +100,9 @@ public class QifParser {
         if (isNotEmpty(t.category)) {
             QifCategory c = new QifCategory(t.category, false);
             categoriesFromTransactions.add(c);
+        }
+        if (isNotEmpty(t.categoryClass)) {
+            classes.add(t.categoryClass);
         }
     }
 

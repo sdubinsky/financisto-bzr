@@ -307,6 +307,52 @@ public class QifParserTest extends AndroidTestCase {
         assertEquals(5, categories.size());
     }
 
+    public void test_should_parse_classes() throws Exception {
+        parseQif(
+                "!Account\n" +
+                "NMy Cash Account\n" +
+                "TCash\n" +
+                "^\n" +
+                "!Type:Cash\n" +
+                "D08/02/2011\n" +
+                "T10.00\n" +
+                "LP1/Class1\n" +
+                "^\n" +
+                "D07/02/2011\n" +
+                "T-23.45\n" +
+                "LP1:c1/Class1\n" +
+                "^\n" +
+                "D01/01/2011\n" +
+                "T-67.80\n" +
+                "LP1:c1/Class1:Subclass1\n" +
+                "^\n");
+
+        assertEquals(1, p.accounts.size());
+
+        QifAccount a = p.accounts.get(0);
+        assertEquals(3, a.transactions.size());
+
+        QifTransaction t = a.transactions.get(0);
+        assertEquals(DateTime.date(2011, 2, 8).atMidnight().asDate(), t.date);
+        assertEquals(1000, t.amount);
+        assertEquals("P1", t.category);
+        assertEquals("Class1", t.categoryClass);
+
+        t = a.transactions.get(1);
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asDate(), t.date);
+        assertEquals(-2345, t.amount);
+        assertEquals("P1:c1", t.category);
+        assertEquals("Class1", t.categoryClass);
+
+        t = a.transactions.get(2);
+        assertEquals(DateTime.date(2011, 1, 1).atMidnight().asDate(), t.date);
+        assertEquals(-6780, t.amount);
+        assertEquals("P1:c1", t.category);
+        assertEquals("Class1:Subclass1", t.categoryClass);
+
+        assertEquals(2, p.classes.size());
+    }
+
     public void test_should_parse_transfers() throws Exception {
         parseQif(
                 "!Account\n" +
@@ -325,7 +371,7 @@ public class QifParserTest extends AndroidTestCase {
                 "!Type:Bank\n" +
                 "D08/02/2011\n" +
                 "T-20.00\n" +
-                "L[My Cash Account]\n" +
+                "L[My Cash Account]/Vacation\n" +
                 "^\n");
 
         assertEquals(2, p.accounts.size());
@@ -351,8 +397,12 @@ public class QifParserTest extends AndroidTestCase {
         t = a.transactions.get(0);
         assertEquals(DateTime.date(2011, 2, 8).atMidnight().asDate(), t.date);
         assertEquals("My Cash Account", t.toAccount);
+        assertEquals("Vacation", t.categoryClass);
         assertEquals(-2000, t.amount);
         assertNull(t.category);
+
+        assertEquals(1, p.classes.size());
+        assertEquals("Vacation", p.classes.iterator().next());
     }
 
     public void test_should_parse_splits() throws Exception {

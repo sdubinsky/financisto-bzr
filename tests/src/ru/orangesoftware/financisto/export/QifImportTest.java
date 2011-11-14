@@ -107,6 +107,38 @@ public class QifImportTest extends AbstractDbTest {
         assertCategory("x1", false, c.children.getAt(0));
     }
 
+    public void test_should_import_classes_as_projects() throws Exception {
+        qifParserTest.test_should_parse_classes();
+        doImport();
+
+        List<Project> projects = em.getAllProjectsList(false);
+        assertEquals(2, projects.size());
+
+        List<Account> accounts = em.getAllAccountsList();
+        assertEquals(1, accounts.size());
+
+        List<TransactionInfo> transactions = em.getTransactionsForAccount(accounts.get(0).id);
+        assertEquals(3, transactions.size());
+
+        TransactionInfo t = transactions.get(0);
+        assertEquals(DateTime.date(2011, 2, 8).atMidnight().asLong(), t.dateTime);
+        assertEquals(1000, t.fromAmount);
+        assertEquals("P1", t.category.title);
+        assertEquals("Class1", t.project.title);
+
+        t = transactions.get(1);
+        assertEquals(DateTime.date(2011, 2, 7).atMidnight().asLong(), t.dateTime);
+        assertEquals(-2345, t.fromAmount);
+        assertEquals("c1", t.category.title);
+        assertEquals("Class1", t.project.title);
+
+        t = transactions.get(2);
+        assertEquals(DateTime.date(2011, 1, 1).atMidnight().asLong(), t.dateTime);
+        assertEquals(-6780, t.fromAmount);
+        assertEquals("c1", t.category.title);
+        assertEquals("Class1:Subclass1", t.project.title);
+    }
+
     private void assertCategory(String name, boolean isIncome, Category c) {
         assertEquals(name, c.title);
         assertEquals(isIncome, c.isIncome());
@@ -199,6 +231,7 @@ public class QifImportTest extends AbstractDbTest {
         assertEquals(-2000, t.fromAmount);
         assertEquals("My Cash Account", t.toAccount.title);
         assertEquals(2000, t.toAmount);
+        assertEquals("Vacation", t.project.title);
 
         a = accounts.get(1);
         assertEquals("My Cash Account", a.title);

@@ -26,7 +26,7 @@ public final class Backup {
         "payee","ccard_closing_date","split"};
 	
 	public static final String[] BACKUP_TABLES_WITH_SYSTEM_IDS = {
-		"attributes", "category"};
+		"attributes", "category", "project", "locations"};
 
     public static final String[] RESTORE_SCRIPTS = {
             "20100114_1158_alter_accounts_types.sql",

@@ -33,6 +33,7 @@ public class QifImport extends FullDatabaseImport {
 
     private final Map<String, QifAccount> accountTitleToAccount = new HashMap<String, QifAccount>();
     private final Map<String, Long> payeeToId = new HashMap<String, Long>();
+    private final Map<String, Long> projectToId = new HashMap<String, Long>();
     private final Map<String, Category> categoryNameToCategory = new HashMap<String, Category>();
     private final CategoryTree<Category> categoryTree = new CategoryTree<Category>();
 
@@ -74,22 +75,34 @@ public class QifImport extends FullDatabaseImport {
         long t0 = System.currentTimeMillis();
         insertPayees(parser.payees);
         long t1 = System.currentTimeMillis();
-        Log.i("Financisto", "QIF Import: Inserting payees done in "+ TimeUnit.MILLISECONDS.toSeconds(t1-t0)+"s");
-        insertCategories(parser.categories);
+        Log.i("Financisto", "QIF Import: Inserting payees done in " + TimeUnit.MILLISECONDS.toSeconds(t1 - t0) + "s");
+        insertProjects(parser.classes);
         long t2 = System.currentTimeMillis();
-        Log.i("Financisto", "QIF Import: Inserting categories done in "+ TimeUnit.MILLISECONDS.toSeconds(t2-t1)+"s");
-        insertAccounts(parser.accounts);
+        Log.i("Financisto", "QIF Import: Inserting projects done in "+ TimeUnit.MILLISECONDS.toSeconds(t2-t1)+"s");
+        insertCategories(parser.categories);
         long t3 = System.currentTimeMillis();
-        Log.i("Financisto", "QIF Import: Inserting accounts done in "+ TimeUnit.MILLISECONDS.toSeconds(t3-t2)+"s");
-        insertTransactions(parser.accounts);
+        Log.i("Financisto", "QIF Import: Inserting categories done in "+ TimeUnit.MILLISECONDS.toSeconds(t3-t2)+"s");
+        insertAccounts(parser.accounts);
         long t4 = System.currentTimeMillis();
-        Log.i("Financisto", "QIF Import: Inserting transactions done in "+ TimeUnit.MILLISECONDS.toSeconds(t4-t3)+"s");
+        Log.i("Financisto", "QIF Import: Inserting accounts done in "+ TimeUnit.MILLISECONDS.toSeconds(t4-t3)+"s");
+        insertTransactions(parser.accounts);
+        long t5 = System.currentTimeMillis();
+        Log.i("Financisto", "QIF Import: Inserting transactions done in "+ TimeUnit.MILLISECONDS.toSeconds(t5-t4)+"s");
     }
 
     private void insertPayees(Set<String> payees) {
         for (String payee : payees) {
             long id = dbAdapter.insertPayee(payee);
             payeeToId.put(payee, id);
+        }
+    }
+
+    private void insertProjects(Set<String> projects) {
+        for (String project : projects) {
+            Project p = new Project();
+            p.title = project;
+            long id = em.saveOrUpdate(p);
+            projectToId.put(project, id);
         }
     }
 
@@ -250,6 +263,7 @@ public class QifImport extends FullDatabaseImport {
         for (QifTransaction transaction : transactions) {
             Transaction t = transaction.toTransaction();
             t.payeeId = findPayee(transaction.payee);
+            t.projectId = findProject(transaction.categoryClass);
             t.fromAccountId = a.id;
             findToAccount(transaction, t);
             findCategory(transaction, t);
@@ -268,8 +282,16 @@ public class QifImport extends FullDatabaseImport {
     }
 
     public long findPayee(String payee) {
-        if (payeeToId.containsKey(payee)) {
-            return payeeToId.get(payee);
+        return findIdInAMap(payee, payeeToId);
+    }
+
+    private long findProject(String project) {
+        return findIdInAMap(project, projectToId);
+    }
+
+    private long findIdInAMap(String project, Map<String, Long> map) {
+        if (map.containsKey(project)) {
+            return map.get(project);
         }
         return 0;
     }

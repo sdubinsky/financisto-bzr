@@ -28,6 +28,7 @@ public class QifTransaction {
     public String payee;
     public String memo;
     public String category;
+    public String categoryClass;
     public String toAccount;
 
     public boolean isSplit = false;
@@ -152,6 +153,11 @@ public class QifTransaction {
 
     private void parseCategory(QifTransaction t, String line) {
         String category = trimFirstChar(line);
+        int i = category.indexOf('/');
+        if (i != -1) {
+            t.categoryClass = category.substring(i+1);
+            category = category.substring(0, i);
+        }
         if (isTransferCategory(category)) {
             t.toAccount = category.substring(1, category.length()-1);
         } else {
