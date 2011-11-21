@@ -20,7 +20,7 @@
     <string name="budgets">Rozpočty</string>
     <string name="projects">Projekty</string>
     <string name="ok">OK</string>
-    <string name="clear">Vymazat</string>
+    <string name="clear">Zůčtovat</string>
     <string name="save">Uložit</string>
     <string name="cancel">Zrušit</string>
     <string name="close">Zavřít</string>
@@ -660,5 +660,25 @@
     <string name="unsplit_adjust_last_summary">Upravit poslední</string>
 
     <string name="add_transfer">Přidat převod</string>
+    <string name="file_name">Jméno souboru</string>
+    <string name="choose_account">Vybrat účet</string>
+    <string name="no_filemanager_installed">Není nainstalován žádný souborový manažer</string>
+    <string name="csv_import">Import CSV</string>
+    <string name="csv_import_inprogress">Probíhá import ze souboru CSV...</string>
+    <string name="select_filename">Vyberte soubor k importu</string>
+    <string name="import_file_not_found">Imporovaný soubor nenalezen</string>
+    <string name="import_unknown_category">Neznámá kategorie v importovaném souboru</string>
+    <string name="import_unknown_project">Neznámý projekt v importovaném souboru</string>
+    <string name="import_wrong_currency">Chybná měna v importovaném souboru</string>
+    <string name="import_illegal_argument_exception">Výjimka v importu nepovoleného parametru</string>
+    <string name="import_parse_error">Chyba převodu importovaného souboru</string>
+    <string name="csv_import_error">Chyba importu CSV</string>
+
+    <string name="qif_import">Import QIF</string>
+    <string name="qif_import_inprogress">Probíhá import ze souboru QIF...</string>
+    <string name="qif_import_error">Chyba importu QIF</string>
+    <string name="qif_import_success">soubor QIF se nepovedlo importovat</string>
+    <string name="import_export">Import/Export</string>
+    <string name="qif_import_disclaimer">*VAROVÁNÍ* Všechna současná data budou odstraněna!</string>
 
 </resources>
