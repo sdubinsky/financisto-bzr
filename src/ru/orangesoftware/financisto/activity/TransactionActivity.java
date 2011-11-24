@@ -176,6 +176,14 @@ public class TransactionActivity extends AbstractTransactionActivity {
             payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
             payeeText = new AutoCompleteTextView(this);
             payeeText.setThreshold(1);
+            payeeText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
+                    if (isRememberLastCategory) {
+                        selectLastCategoryForPayee(id);
+                    }
+                }
+            });
             payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean hasFocus) {
@@ -219,6 +227,13 @@ public class TransactionActivity extends AbstractTransactionActivity {
             });
         }
 	}
+
+    private void selectLastCategoryForPayee(long id) {
+        Payee p = em.get(Payee.class, id);
+        if (p != null) {
+            selectCategory(p.lastCategoryId, true);
+        }
+    }
 
     private void createSplitsLayout(LinearLayout layout) {
         splitsLayout = new LinearLayout(this);
@@ -339,8 +354,8 @@ public class TransactionActivity extends AbstractTransactionActivity {
         }
     }
 
-    protected void selectPayee(Payee p) {
-        if (isShowPayee && p != null) {
+    private void selectPayee(Payee p) {
+        if (p != null) {
             payeeText.setText(p.title);
             transaction.payeeId = p.id;
         }

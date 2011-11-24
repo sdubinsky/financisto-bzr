@@ -163,9 +163,6 @@ public class TransferActivity extends AbstractTransactionActivity {
         if (selectLast && isRememberLastAccount) {
             selectToAccount(account.lastAccountId);
         }
-        if (selectLast && isRememberLastCategory) {
-            selectCategory(account.lastCategoryId, true);
-        }
 	}
 
 	@Override

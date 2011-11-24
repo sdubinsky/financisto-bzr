@@ -68,7 +68,7 @@ public class TransactionUtils {
                 new String[]{"e_title"}, new int[]{android.R.id.text1}){
             @Override
             public CharSequence convertToString(Cursor cursor) {
-                return cursor.getString(1);
+                return cursor.getString(cursor.getColumnIndex("e_title"));
             }
 
             @Override

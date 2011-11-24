@@ -324,9 +324,7 @@
 	<string name="remember_selection">Remember the selection</string>
 	<string name="remember_last_account">Last account</string>	
 	<string name="remember_last_account_summary">Remember the last selected account</string>
-	<string name="remember_last_category">Last category</string>	
-	<string name="remember_last_category_summary">Remember the last category for the selected account</string>
-	<string name="remember_last_location">Last location</string>	
+	<string name="remember_last_location">Last location</string>
 	<string name="remember_last_location_summary">Remember the last location for the selected category</string>
 	<string name="remember_last_project">Last project</string>	
 	<string name="remember_last_project_summary">Remember the last project for the selected category</string>
@@ -680,5 +678,8 @@
     <string name="qif_import_success">QIF file has been successfully imported</string>
     <string name="import_export">Import/Export</string>
     <string name="qif_import_disclaimer">*WARNING* Please note that all existing data will be removed!</string>
+
+    <string name="remember_last_category_for_payee">Last category</string>
+    <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee</string>
 
 </resources>

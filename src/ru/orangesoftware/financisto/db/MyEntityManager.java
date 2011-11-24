@@ -428,15 +428,19 @@ public class MyEntityManager extends EntityManager {
 	}
 
     public Payee insertPayee(String payee) {
-        Query<Payee> q = createQuery(Payee.class);
-        q.where(Expressions.eq("title", payee));
-        Payee p = q.uniqueResult();
+        Payee p = getPayee(payee);
         if (p == null) {
             p = new Payee();
             p.title = payee;
             p.id = saveOrUpdate(p);
         }
         return p;
+    }
+
+    public Payee getPayee(String payee) {
+        Query<Payee> q = createQuery(Payee.class);
+        q.where(Expressions.eq("title", payee));
+        return q.uniqueResult();
     }
 
     public Cursor getAllPayees() {

@@ -1,9 +1,6 @@
 package ru.orangesoftware.financisto.db;
 
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.RestoredTransaction;
-import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
@@ -44,6 +41,14 @@ public class DatabaseAdapterTest extends AbstractDbTest {
         List<Transaction> splits = em.getSplitsForTransaction(restoredIds[0]);
         assertNotNull(splits);
         assertEquals(2, splits.size());
+    }
+
+    public void test_should_remember_last_used_transaction_for_the_payee() {
+        //when
+        TransactionBuilder.withDb(db).account(a1).amount(1000).payee("Payee1").category(categoriesMap.get("A1")).create();
+        //then
+        Payee p = em.getPayee("Payee1");
+        assertEquals(categoriesMap.get("A1").id, p.lastCategoryId);
     }
 
 }

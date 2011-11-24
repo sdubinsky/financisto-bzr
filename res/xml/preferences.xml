@@ -32,9 +32,9 @@
                                     android:summary="@string/remember_last_account_summary"
                                     android:defaultValue="true"/>
                 <CheckBoxPreference android:key="remember_last_category"
-                                    android:title="@string/remember_last_category"
-                                    android:summary="@string/remember_last_category_summary"
-                                    android:defaultValue="false" android:dependency="remember_last_account"/>
+                                    android:title="@string/remember_last_category_for_payee"
+                                    android:summary="@string/remember_last_category_for_payee_summary"
+                                    android:defaultValue="false"/>
                 <CheckBoxPreference android:key="remember_last_location"
                                     android:title="@string/remember_last_location"
                                     android:summary="@string/remember_last_location_summary"

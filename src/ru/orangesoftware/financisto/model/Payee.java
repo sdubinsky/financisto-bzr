@@ -10,12 +10,15 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "payee")
 public class Payee extends MyEntity {
-	
-	
+
+    @Column(name = "last_category_id")
+    public long lastCategoryId;
+
 }

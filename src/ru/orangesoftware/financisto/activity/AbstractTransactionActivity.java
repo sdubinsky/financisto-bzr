@@ -34,7 +34,6 @@ import android.widget.LinearLayout.LayoutParams;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper.*;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.financisto.recur.Recurrence;
 import ru.orangesoftware.financisto.utils.*;
@@ -100,7 +99,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private CheckBox ccardPayment;
 	
 	protected long selectedAccountId = -1;
-	protected long selectedCategoryId = 0;
+	protected long selectedCategoryId = -1;
 	protected long selectedProjectId = 0;
 	protected long selectedLocationId = 0;
 	protected String recurrence;
@@ -306,9 +305,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 					selectAccount(lastAccountId);
 				}				
 			}
-			if (!isRememberLastCategory) {
-				selectCategory(0);
-			}
+			selectCategory(0);
 			if (!isRememberLastProject) {
 				selectProject(0);
 			}
@@ -644,12 +641,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			accountText.setText(a.title);
 			amountInput.setCurrency(a.currency);
 			selectedAccountId = accountId;
-			if (selectLast && isRememberLastCategory) {
-				selectCategory(a.lastCategoryId, true);
-			}
 		}
 	}
-	
+
 	protected void selectCategory(long categoryId) {
 		selectCategory(categoryId, true);
 	}
@@ -899,7 +893,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 
 	protected void updateTransactionFromUI(Transaction transaction) {
-		transaction.categoryId = selectedCategoryId;
+		transaction.categoryId = selectedCategoryId > 0 ? selectedCategoryId : 0;
 		transaction.projectId = selectedProjectId;
 		if (transaction.isScheduled()) {
 			DateUtils.zeroSeconds(dateTime);
