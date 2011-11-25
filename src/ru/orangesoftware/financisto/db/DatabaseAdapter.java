@@ -332,6 +332,7 @@ public class DatabaseAdapter {
                 split.fromAccountId = parent.fromAccountId;
                 split.payeeId = parent.payeeId;
                 split.isTemplate = parent.isTemplate;
+                split.status = parent.status;
                 insertTransaction(split);
             }
         }

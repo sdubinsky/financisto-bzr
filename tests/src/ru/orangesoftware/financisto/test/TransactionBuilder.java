@@ -58,6 +58,11 @@ public class TransactionBuilder {
         return this;
     }
 
+    public TransactionBuilder withStatus(TransactionStatus status) {
+        t.status = status;
+        return this;
+    }
+
     public TransactionBuilder category(Category c) {
         t.categoryId = c.id;
         return this;
@@ -118,5 +123,4 @@ public class TransactionBuilder {
         t.id = db.insertOrUpdate(t);
         return t;
     }
-
 }
