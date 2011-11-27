@@ -24,6 +24,7 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.SymbolFormat;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.PinProtection;
 
@@ -42,11 +43,13 @@ public class CurrencyActivity extends Activity {
 	
 	private String[] decimalSeparatorsItems;
 	private String[] groupSeparatorsItems;
+    private SymbolFormat[] symbolFormats;
 	
 	private Spinner decimals;
-	private Spinner decimalSeparators;
-	private Spinner groupSeparators;
-	
+    private Spinner decimalSeparators;
+    private Spinner groupSeparators;
+    private Spinner symbolFormat;
+
 	private int maxDecimals; 
 
 	private Currency currency = new Currency();
@@ -66,11 +69,14 @@ public class CurrencyActivity extends Activity {
 		decimalSeparators = (Spinner)findViewById(R.id.spinnerDecimalSeparators);
 		groupSeparators = (Spinner)findViewById(R.id.spinnerGroupSeparators);
 		groupSeparators.setSelection(1);
-		
+        symbolFormat = (Spinner)findViewById(R.id.spinnerSymbolFormat);
+        symbolFormat.setSelection(0);
+
 		maxDecimals = decimals.getCount()-1;
 		
 		decimalSeparatorsItems = getResources().getStringArray(R.array.decimal_separators);
 		groupSeparatorsItems = getResources().getStringArray(R.array.group_separators);
+        symbolFormats = SymbolFormat.values();
 
 		Button bOk = (Button)findViewById(R.id.bOK);
 		bOk.setOnClickListener(new OnClickListener(){
@@ -90,6 +96,7 @@ public class CurrencyActivity extends Activity {
 					currency.decimals = maxDecimals-decimals.getSelectedItemPosition();
 					currency.decimalSeparator = decimalSeparators.getSelectedItem().toString();
 					currency.groupSeparator = groupSeparators.getSelectedItem().toString();
+                    currency.symbolFormat = symbolFormats[symbolFormat.getSelectedItemPosition()];
 					long id = em.saveOrUpdate(currency);
 					CurrencyCache.initialize(em);
 					Intent data = new Intent();
@@ -132,6 +139,7 @@ public class CurrencyActivity extends Activity {
 		decimals.setSelection(maxDecimals-currency.decimals);
 		decimalSeparators.setSelection(indexOf(decimalSeparatorsItems, currency.decimalSeparator, s.getDecimalSeparator()));
 		groupSeparators.setSelection(indexOf(groupSeparatorsItems, currency.groupSeparator, s.getGroupingSeparator()));
+        symbolFormat.setSelection(currency.symbolFormat.ordinal());
 	}
 
 	private int indexOf(String[] a, String v, char c) {

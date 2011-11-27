@@ -16,7 +16,6 @@ import java.text.NumberFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -33,6 +32,7 @@ public class Currency extends MyEntity {
         EMPTY.name = "";
         EMPTY.title = "Default";
 		EMPTY.symbol = "";
+        EMPTY.symbolFormat = SymbolFormat.RS;
 		EMPTY.decimals = 2;
         EMPTY.decimalSeparator = "'.'";
         EMPTY.groupSeparator = "','";
@@ -40,26 +40,29 @@ public class Currency extends MyEntity {
 
 	@Column(name = "name")
 	public String name;
-	
+
 	@Column(name = "symbol")
 	public String symbol;
-	
+
+    @Column(name = "symbol_format")
+    public SymbolFormat symbolFormat = SymbolFormat.RS;
+
 	@Column(name = "is_default")
 	public boolean isDefault;
-	
+
 	@Column(name = "decimals")
 	public int decimals = 2;
-	
-	@Column(name = "decimal_separator")	
+
+	@Column(name = "decimal_separator")
 	public String decimalSeparator;
-	
+
 	@Column(name = "group_separator")
 	public String groupSeparator;
 
-	@Transient
+    @Transient
 	private volatile DecimalFormat format;
-	
-	public NumberFormat getFormat() {
+
+    public NumberFormat getFormat() {
 		DecimalFormat f = format;
 		if (f == null) {
 			f = CurrencyCache.createCurrencyFormat(this);

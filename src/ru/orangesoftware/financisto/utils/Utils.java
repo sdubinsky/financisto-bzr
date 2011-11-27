@@ -89,7 +89,11 @@ public class Utils {
 		}
 		sb.append(s);
         if (isNotEmpty(c.symbol)) {
-		    sb.append(" ").append(c.symbol);
+            if (c.symbolFormat != null) {
+                c.symbolFormat.appendSymbol(sb, c.symbol);
+            } else {
+		        sb.append(" ").append(c.symbol);
+            }
         }
 		return sb;		
 	}

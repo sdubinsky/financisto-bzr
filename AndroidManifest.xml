@@ -121,7 +121,7 @@
 			android:configChanges="orientation|keyboardHidden"/>
 
 		<activity android:name=".activity.CurrencyActivity" android:label="@string/currency"
-			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
+                  android:configChanges="orientation|keyboardHidden"/>
 		
 		<activity android:name=".activity.AttributeActivity" android:label="@string/attribute"
 			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>

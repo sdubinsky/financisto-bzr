@@ -682,4 +682,6 @@
     <string name="remember_last_category_for_payee">Last category</string>
     <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee</string>
 
+    <string name="currency_symbol_format">Symbol format</string>
+
 </resources>
