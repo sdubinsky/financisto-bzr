@@ -20,7 +20,7 @@
 	<string name="budgets">Dotaciones</string>
 	<string name="projects">Proyectos</string>
 	<string name="ok">OK</string>
-	<string name="clear">Borrar</string>
+	<string name="clear">Compensar</string>
 	<string name="save">Guardar</string>
 	<string name="cancel">Cancelar</string>
 	<string name="close">Cerrar</string>
@@ -152,13 +152,13 @@
 	<string name="report_by_project">Por Proyecto</string>
 	<string name="report_by_project_summary">Informe de transacciones por proyecto</string>
 
-	<string name="report_by_account_by_period">Por Cuenta / Periodo</string>
+	<string name="report_by_account_by_period">Por Cuenta/Periodo</string>
 	<string name="report_by_account_by_period_summary">Informe de transacciones por cuenta y periodo</string>
-	<string name="report_by_category_by_period">Por Categoría / Periodo</string>
+	<string name="report_by_category_by_period">Por Categoría/Periodo</string>
 	<string name="report_by_category_by_period_summary">Informe de transacciones por categoría y periodo</string>
-	<string name="report_by_location_by_period">Por Ubicación / Periodo</string>
+	<string name="report_by_location_by_period">Por Ubicación/Periodo</string>
 	<string name="report_by_location_by_period_summary">Informe de transacciones por ubicación y periodo</string>
-	<string name="report_by_project_by_period">Por Proyecto / Periodo</string>
+	<string name="report_by_project_by_period">Por Proyecto/Periodo</string>
 	<string name="report_by_project_by_period_summary">Informe de transacciones por proyecto y periodo</string>
 	<string name="max_result_label">Max:</string>
 	<string name="min_result_label">Min:</string>
@@ -323,13 +323,11 @@
 	<string name="show_project_order_summary">Posición relativa en el formulario para el campo Proyecto</string>
 	<string name="remember_selection">Recordar esta selección</string>
 	<string name="remember_last_account">Recordar Cuenta</string>	
-	<string name="remember_last_account_summary">Recordar en los formularios la última cuenta seleccionada</string>
-	<string name="remember_last_category">Recordar Categoría</string>	
-	<string name="remember_last_category_summary">Recordar también la última categoría para la ulterior cuenta seleccionada</string>
+	<string name="remember_last_account_summary">Recordar la última cuenta seleccionada</string>
 	<string name="remember_last_location">Recordar Ubicación</string>	
-	<string name="remember_last_location_summary">Recordar también la última ubicación para la ulterior categoría seleccionada</string>
+	<string name="remember_last_location_summary">Recordar la última ubicación para la categoría seleccionada</string>
 	<string name="remember_last_project">Recordar Proyecto</string>	
-	<string name="remember_last_project_summary">Recordar también el último proyecto para la ulterior categoría seleccionada</string>
+	<string name="remember_last_project_summary">Recordar el último proyecto para la categoría seleccionada</string>
 	<string name="position_move_top">Mover al principio</string>
 	<string name="position_move_up">Subir</string>
 	<string name="position_move_down">Bajar</string>
@@ -394,7 +392,7 @@
 
 	<string name="report_preferences">Preferencias de Informe</string>
 	<string name="all_reports_preferences">Propiedades Generales</string>
-	<string name="category_by_period_preferences">Propiedades por Categoría / Periodo</string>
+	<string name="category_by_period_preferences">Propiedades por Categoría/Periodo</string>
 	<string name="report_include_sub_categories">Incluir Subcategorías en el listado</string>
 	<string name="report_include_sub_categories_summary">Incluir subcategorías en el listado de informes de categorías por periodo</string>
 	<string name="report_add_sub_categories_result">Añadir subtotales al principal</string>
@@ -610,19 +608,21 @@
 	<string name="payees">Beneficiarios</string>
 	<string name="report_by_payee">Por Beneficiarios</string>
 	<string name="report_by_payee_summary">Informe de transacciones por beneficiario</string>
-	<string name="report_by_payee_by_period">Por Beneficiario / Periodo</string>
+	<string name="report_by_payee_by_period">Por Beneficiario/Periodo</string>
 	<string name="report_by_payee_by_period_summary">Informe de transacciones por beneficiario y periodo</string>
 	<string name="no_payee">Sin beneficiarios</string>
 	<string name="report_no_payee">No hay disponible ningún beneficiario para filtrar en el informe.</string>
 	<string name="donate">Hacer una donación</string>
 	<string name="donate_error">Android Market no está disponible en su dispositivo</string>
 	<string name="type">Modalidad</string>
+
 	<string name="qif_export">Exportar como QIF</string>
 	<string name="qif_export_inprogress">Exportando datos en formato QIF...</string>
 	<string name="all_accounts">Todas las Cuentas</string>
 	<string name="filter_value_not_found">Sin datos que procesar...</string>
 	<string name="empty_report">Informe sin datos que procesar</string>
 	<string name="day_of_month">Día del mes</string>
+
 	<string name="show_running_balance">Mostrar saldo corriente</string>
 	<string name="show_running_balance_summary">Se muestra en cada registro el saldo previsto tras contabilizar dicha transacción (requiere reinicio)</string>
 
@@ -639,5 +639,49 @@
 	</string-array>
 
 	<string name="date_format">Formato de fecha</string>
+    <string name="pin_protection_lock_transaction">Bloquear Nueva Transacción\\Traspaso</string>
+    <string name="pin_protection_lock_transaction_summary">Bloquear las pantallas de \'Nueva transacción\' y \'Nuevo traspaso\' con PIN</string>
+
+    <string name="split">[Desglosar...]</string>
+    <string name="split_transaction">[Desglosar-Transacción]</string>
+    <string name="split_transfer">[Desglosar-Traspaso]</string>
+    <string name="unsplit_amount">Reunificar desglose</string>
+    <string name="unsplit_amount_greater_than_zero">Todavía queda pendiente cierta cantidad sin desglosar...</string>
+    <string name="delete_transaction_parent_confirm">Esta transacción es parte de un desglose. ¿Quieres eliminar la transacción principal con todos sus desgloses?</string>
+    <string name="downloading_rate" formatted="false">Obteniendo %s/%s de ratio de conversión...</string>
+
+    <string name="unsplit_adjust_amount">Importe</string>
+    <string name="unsplit_adjust_amount_summary">Ajustar el importe</string>
+    <string name="unsplit_adjust_evenly">Proporcional</string>
+    <string name="unsplit_adjust_evenly_summary">Ajustar la proporcionalidad</string>
+    <string name="unsplit_adjust_last">Siguiente</string>
+    <string name="unsplit_adjust_last_summary">Ajustar siguiente</string>
+
+    <string name="add_transfer">Añadir Traspaso</string>
+    <string name="file_name">Nombre de Archivo</string>
+    <string name="choose_account">Elegir cuenta</string>
+    <string name="no_filemanager_installed">No hay instalado ningún administrador de archivos</string>
+    <string name="csv_import">Importar CSV</string>
+    <string name="csv_import_inprogress">Importando datos desde CSV...</string>
+    <string name="select_filename">Seleccionar archivo a importar</string>
+    <string name="import_file_not_found">No se ha hallado el archivo de importación</string>
+    <string name="import_unknown_category">Categoría desconocida en el archivo de importación</string>
+    <string name="import_unknown_project">Proyecto desconocido en el archivo de importación</string>
+    <string name="import_wrong_currency">Moneda incorrecta en el archivo de importación</string>
+    <string name="import_illegal_argument_exception">Excepción de argumento ilegal</string>
+    <string name="import_parse_error">Error de análisis en el archivo de importación</string>
+    <string name="csv_import_error">Error importando CSV</string>
+
+    <string name="qif_import">Importar QIF</string>
+    <string name="qif_import_inprogress">Importando datos desde QIF...</string>
+    <string name="qif_import_error">Error importando QIF</string>
+    <string name="qif_import_success">El archivo QIF se ha importado con éxito</string>
+    <string name="import_export">Importar/Exportar</string>
+    <string name="qif_import_disclaimer">*ADVERTENCIA* ¡Tenga en cuenta que todos los datos existentes serán eliminados!</string>
+
+    <string name="remember_last_category_for_payee">Recordar Categoría</string>
+    <string name="remember_last_category_for_payee_summary">Recordar la última categoría para el beneficiario seleccionado</string>
+
+    <string name="currency_symbol_format">Formato de Símbolo</string>
 
 </resources>
