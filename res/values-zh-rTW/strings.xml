@@ -143,7 +143,7 @@
 	<string name="report_by_period">以期間統計</string>
 	<string name="report_by_period_summary">以期間分別統計的交易報告</string>
 	<string name="report_by_category">以分類統計</string>
-	<string name="report_by_category_summary">以分類分別統計的交易報告</string>
+	<string name="report_by_category_summary">在同一層列出所有分類的交易報告</string>
 	<string name="report_by_location">以地點統計</string>
 	<string name="report_by_location_summary">以地點分別統計的交易報告</string>
 	<string name="report_by_project">以專案統計</string>
@@ -543,8 +543,8 @@
 	<string name="enable_widget_summary">在小工具顯示帳戶總額</string>
 	<string name="attach_picture">附加照片</string>		
 	<string name="new_picture">拍攝照片</string>		
-	<string name="report_by_sub_category">以子分類統計</string>
-	<string name="report_by_sub_category_summary">以子分類分別統計的交易報告</string>
+	<string name="report_by_sub_category">以樹狀分類統計</string>
+	<string name="report_by_sub_category_summary">將各分類依階層顯示的交易報告</string>
 
 	<string name="credits">信用額度</string>
 	<string name="sort_by_title">根據標題排序</string>
@@ -621,5 +621,65 @@
 	<string name="filter_value_not_found">找不到...</string>
 	<string name="empty_report">空報告</string>
 	<string name="day_of_month">日期</string>
+    <string name="show_running_balance">逐筆顯示餘額</string>
+    <string name="show_running_balance_summary">每筆交易都顯示交易後的餘額 (需要重新啟動)</string>
+
+    <string name="new_currency">新幣值 ...</string>
+    <string name="lock_time">鎖定時間</string>
+    <string name="lock_time_summary">主畫面在自動鎖定前的顯示時間</string>
+    <string-array name="lock_time_entities">
+        <item>關閉</item>
+        <item>1 分鐘</item>
+        <item>3 分鐘</item>
+        <item>5 分鐘</item>
+        <item>10 分鐘</item>
+        <item>15 分鐘</item>
+    </string-array>
+
+    <string name="date_format">日期格式</string>
+    <string name="pin_protection_lock_transaction">鎖定新交易\\轉帳</string>
+    <string name="pin_protection_lock_transaction_summary">以密碼鎖定「新交易」與「轉帳」畫面</string>
+
+    <string name="split">[分割...]</string>
+    <string name="split_transaction">[分割交易]</string>
+    <string name="split_transfer">[分割轉帳]</string>
+    <string name="unsplit_amount">未分割額度</string>
+    <string name="unsplit_amount_greater_than_zero">還有額度尚未分割...</string>
+    <string name="delete_transaction_parent_confirm">此交易是分割交易的一部分。您要刪除它所屬的整筆交易嗎？</string>
+    <string name="downloading_rate" formatted="false">正在取得 %s/%s 匯率...</string>
+
+    <string name="unsplit_adjust_amount">額度</string>
+    <string name="unsplit_adjust_amount_summary">調整額度</string>
+    <string name="unsplit_adjust_evenly">平均</string>
+    <string name="unsplit_adjust_evenly_summary">平均調整</string>
+    <string name="unsplit_adjust_last">最後</string>
+    <string name="unsplit_adjust_last_summary">調整最後一筆交易</string>
+
+    <string name="add_transfer">新增轉帳</string>
+    <string name="file_name">檔名</string>
+    <string name="choose_account">選擇帳戶</string>
+    <string name="no_filemanager_installed">未安裝檔案管理程式</string>
+    <string name="csv_import">CSV 匯入</string>
+    <string name="csv_import_inprogress">正在從 CSV 匯入資料...</string>
+    <string name="select_filename">選擇匯入檔名</string>
+    <string name="import_file_not_found">找不到要匯入的檔案</string>
+    <string name="import_unknown_category">匯入檔案裡有未知分類</string>
+    <string name="import_unknown_project">匯入檔案裡有未知專案</string>
+    <string name="import_wrong_currency">匯入檔案裡有錯誤幣值</string>
+    <string name="import_illegal_argument_exception">不合法引數例外</string>
+    <string name="import_parse_error">匯入檔解析錯誤</string>
+    <string name="csv_import_error">CSV 匯入錯誤</string>
+
+    <string name="qif_import">QIF 匯入</string>
+    <string name="qif_import_inprogress">正在從 QIF 匯入資料...</string>
+    <string name="qif_import_error">QIF 匯入錯誤</string>
+    <string name="qif_import_success">QIF 檔案匯入成功</string>
+    <string name="import_export">匯入/匯出</string>
+    <string name="qif_import_disclaimer">*警告* 請注意這會刪除目前所有資料！</string>
+
+    <string name="remember_last_category_for_payee">上次分類</string>
+    <string name="remember_last_category_for_payee_summary">記得選定付款對象上次使用的分類</string>
+
+    <string name="currency_symbol_format">符號格式</string>
 
 </resources>
