@@ -683,5 +683,6 @@
     <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee</string>
 
     <string name="currency_symbol_format">Symbol format</string>
+    <string name="use_header_from_file">Use header from file</string>
 
 </resources>

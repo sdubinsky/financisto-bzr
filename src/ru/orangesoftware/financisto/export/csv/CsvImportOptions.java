@@ -25,20 +25,22 @@ public class CsvImportOptions {
 
     public static final String DEFAULT_DATE_FORMAT = "dd.MM.yyyy";
 
-    public final Currency currency;
-    public final SimpleDateFormat dateFormat;
-    public final char fieldSeparator;
-    public final WhereFilter filter;
-    public final long[] selectedAccounts;
-    public final String filename;
+    public Currency currency;
+    public SimpleDateFormat dateFormat;
+    public char fieldSeparator;
+    public WhereFilter filter;
+    public long selectedAccountId;
+    public String filename;
+    public boolean useHeaderFromFile;
 
-    public CsvImportOptions(Currency currency, String dateFormat, long[] selectedAccounts, WhereFilter filter, String filename, char fieldSeparator) {
+    public CsvImportOptions(Currency currency, String dateFormat, long selectedAccountId, WhereFilter filter, String filename, char fieldSeparator, boolean useHeaderFromFile) {
         this.currency = currency;
         this.dateFormat = new SimpleDateFormat(dateFormat);
-        this.selectedAccounts = selectedAccounts;
+        this.selectedAccountId = selectedAccountId;
         this.filter = filter;
         this.filename = filename;
         this.fieldSeparator = fieldSeparator;
+        this.useHeaderFromFile = useHeaderFromFile;
     }
 
     public static CsvImportOptions fromIntent(Intent data) {
@@ -46,9 +48,10 @@ public class CsvImportOptions {
         Currency currency = CurrencyExportPreferences.fromIntent(data, "csv");
         char fieldSeparator = data.getCharExtra(CsvImportActivity.CSV_IMPORT_FIELD_SEPARATOR, ',');
         String dateFormat = data.getStringExtra(CsvImportActivity.CSV_IMPORT_DATE_FORMAT);
-        long[] selectedAccounts = data.getLongArrayExtra(CsvImportActivity.CSV_IMPORT_SELECTED_ACCOUNT);
+        long selectedAccountId = data.getLongExtra(CsvImportActivity.CSV_IMPORT_SELECTED_ACCOUNT_2, -1);
         String filename = data.getStringExtra(CsvImportActivity.CSV_IMPORT_FILENAME);
-        return new CsvImportOptions(currency, dateFormat, selectedAccounts, filter, filename, fieldSeparator);
+        boolean useHeaderFromFile = data.getBooleanExtra(CsvImportActivity.CSV_IMPORT_FILENAME, true);
+        return new CsvImportOptions(currency, dateFormat, selectedAccountId, filter, filename, fieldSeparator, useHeaderFromFile);
     }
 
 }

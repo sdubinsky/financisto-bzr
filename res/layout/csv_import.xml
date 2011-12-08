@@ -15,9 +15,9 @@
             <include layout="@layout/list_divider"/>
             <TextView android:layout_height="wrap_content"
                       android:layout_width="fill_parent" android:layout_marginLeft="3dp"
-                      android:text="@string/accounts"/>
-            <Button android:layout_height="wrap_content" android:id="@+id/bAccounts"
-                    android:layout_width="fill_parent" android:text="@string/choose_account"/>
+                      android:text="@string/account"/>
+            <Spinner android:layout_height="wrap_content" android:layout_width="fill_parent"
+                     android:id="@+id/spinnerAccount" android:prompt="@string/account" />
             <include layout="@layout/list_divider"/>
             <TableLayout android:layout_height="wrap_content"
                          android:layout_width="fill_parent"
@@ -43,6 +43,7 @@
                 </TableRow>
                 <TableRow>
                     <Spinner android:entries="@array/field_separators" android:id="@+id/spinnerFieldSeparator"/>
+                    <CheckBox android:layout_span="2" android:id="@+id/cbUseHeaderFromFile" android:text="@string/use_header_from_file"/>
                 </TableRow>
             </TableLayout>
             <include layout="@layout/list_divider"/>

@@ -74,7 +74,7 @@ public class CurrencyExportPreferences {
         Spinner groupSeparators = (Spinner)activity.findViewById(R.id.spinnerGroupSeparators);
 		decimals.setSelection(preferences.getInt(prefix(EXPORT_DECIMALS), 0));
 		decimalSeparators.setSelection(preferences.getInt(prefix(EXPORT_DECIMAL_SEPARATOR), 0));
-		groupSeparators.setSelection(preferences.getInt(prefix(EXPORT_GROUP_SEPARATOR), 1));
+		groupSeparators.setSelection(preferences.getInt(prefix(EXPORT_GROUP_SEPARATOR), 3));
     }
 
 }

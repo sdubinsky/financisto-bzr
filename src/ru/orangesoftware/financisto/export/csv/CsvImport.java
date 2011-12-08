@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 
 public class CsvImport {
@@ -25,7 +26,7 @@ public class CsvImport {
     public CsvImport(DatabaseAdapter db, CsvImportOptions options) {
         this.db = db;
         this.options = options;
-        this.account = db.em().getAccount(options.selectedAccounts[0]);
+        this.account = db.em().getAccount(options.selectedAccountId);
         this.decimalSeparator = options.currency.decimalSeparator.charAt(1);
         this.groupSeparator = options.currency.groupSeparator.charAt(1);
     }
@@ -33,8 +34,12 @@ public class CsvImport {
     public Object doImport() throws Exception {
         String csvFilename = options.filename;
         Csv.Reader reader;
-        Boolean isTableHeadLine = false;
-        List<String> tableHeadLine = null;
+        boolean parseLine = false;
+        List<String> header = null;
+        if (!options.useHeaderFromFile) {
+            parseLine = true;
+            header = Arrays.asList(CsvExport.HEADER);
+        }
         List<Project> projectList = db.em().list(Project.class);
         try {
             reader = new Csv.Reader(new FileReader(csvFilename)).delimiter(
@@ -44,7 +49,7 @@ public class CsvImport {
             while ((line = reader.readLine()) != null) {
                 // get table head line
                 countLine = countLine++;
-                if (isTableHeadLine) {
+                if (parseLine) {
                     Transaction transaction = new Transaction();
                     transaction.dateTime = 0;
                     transaction.fromAccountId = this.account.id;
@@ -52,7 +57,7 @@ public class CsvImport {
 
                     int countOfColumns = line.size();
                     for (int i = 0; i < countOfColumns; i++) {
-                        String transactionField = tableHeadLine.get(i);
+                        String transactionField = header.get(i);
                         /*
                                * ToDo:workaround needed for reimport of files from CsvExport function - first column (date) in header shows nonprintable
                                * Character which is not replaceable by "trim" function. Have to look in CsvExport function
@@ -121,8 +126,8 @@ public class CsvImport {
                     Log.d("CsvImport", "Insert transactionId:" + id);
                 } else {
                     // first line of csv-file is table headline
-                    isTableHeadLine = true;
-                    tableHeadLine = line;
+                    parseLine = true;
+                    header = line;
                 }
             }
         } catch (FileNotFoundException e) {

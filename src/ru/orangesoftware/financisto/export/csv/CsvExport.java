@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.export.csv;
 
 import android.database.Cursor;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 import ru.orangesoftware.financisto.export.Export;
@@ -23,7 +22,6 @@ import ru.orangesoftware.financisto.utils.Utils;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -31,6 +29,8 @@ import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_DATE_ISO_8601;
 import static ru.orangesoftware.financisto.utils.DateUtils.FORMAT_TIME_ISO_8601;
 
 public class CsvExport extends Export {
+
+    public static final String[] HEADER = "date,time,account,amount,currency,category,parent,payee,location,project,note".split(",");
 
 	private final DatabaseAdapter db;
     private final CsvExportOptions options;
@@ -56,8 +56,9 @@ public class CsvExport extends Export {
         }
 		if (options.includeHeader) {
 			Csv.Writer w = new Csv.Writer(bw).delimiter(options.fieldSeparator);
-			w.value("date").value("time").value("account").value("amount").value("currency");
-			w.value("category").value("parent").value("payee").value("location").value("project").value("note");
+            for (String h : HEADER) {
+                w.value(h);
+            }
 			w.newLine();
 		}
 	}
