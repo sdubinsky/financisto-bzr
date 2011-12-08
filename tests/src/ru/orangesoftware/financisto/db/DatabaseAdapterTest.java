@@ -1,10 +1,12 @@
 package ru.orangesoftware.financisto.db;
 
+import android.database.Cursor;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
+import ru.orangesoftware.orb.EntityManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,31 @@ public class DatabaseAdapterTest extends AbstractDbTest {
         //then
         Payee p = em.getPayee("Payee1");
         assertEquals(categoriesMap.get("A1").id, p.lastCategoryId);
+    }
+
+    public void test_should_search_payee_with_or_without_first_letter_capitalized() {
+        // given
+        em.insertPayee("Парковка");
+        em.insertPayee("parking");
+
+        //then
+        assertEquals("parking", fetchFirstPayee("P"));
+        assertEquals("parking", fetchFirstPayee("p"));
+        assertEquals("parking", fetchFirstPayee("Pa"));
+        assertEquals("parking", fetchFirstPayee("par"));
+        assertEquals("Парковка", fetchFirstPayee("П"));
+        assertEquals("Парковка", fetchFirstPayee("п"));
+        assertEquals("Парковка", fetchFirstPayee("Па"));
+        assertEquals("Парковка", fetchFirstPayee("пар"));
+    }
+
+    private String fetchFirstPayee(String s) {
+        Cursor c = em.getAllPayeesLike(s);
+        if (c.moveToFirst()) {
+            Payee p =  EntityManager.loadFromCursor(c, Payee.class);
+            return p.title;
+        }
+        return null;
     }
 
 }

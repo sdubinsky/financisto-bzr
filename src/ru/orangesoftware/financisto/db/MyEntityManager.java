@@ -33,6 +33,7 @@ import ru.orangesoftware.orb.Query;
 
 import java.util.*;
 
+import static api.wireless.gdata.util.common.base.StringUtil.capitalize;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 
 public class MyEntityManager extends EntityManager {
@@ -454,7 +455,10 @@ public class MyEntityManager extends EntityManager {
 
     public Cursor getAllPayeesLike(CharSequence constraint) {
         Query<Payee> q = createQuery(Payee.class);
-        q.where(Expressions.like("title", "%"+constraint+"%"));
+        q.where(Expressions.or(
+                Expressions.like("title", "%" + constraint + "%"),
+                Expressions.like("title", "%" + capitalize(constraint.toString()) + "%")
+        ));
         return q.asc("title").execute();
     }
 
