@@ -19,6 +19,8 @@ import android.widget.Toast;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.utils.PinProtection;
 
+import java.io.File;
+
 public abstract class AbstractImportActivity extends Activity {
 
     public static final int IMPORT_FILENAME_REQUESTCODE = 0xff;
@@ -49,12 +51,13 @@ public abstract class AbstractImportActivity extends Activity {
     }
 
     protected void openFile() {
-        String filename = edFilename.getText().toString();
+        String filePath = edFilename.getText().toString();
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-        intent.setData(Uri.parse("file://" + filename));
+        File file = new File(filePath);
+        intent.setData(Uri.fromFile(file));
         intent.setType("*/*");
 
         try {
@@ -74,14 +77,13 @@ public abstract class AbstractImportActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == IMPORT_FILENAME_REQUESTCODE) {
             if (resultCode == RESULT_OK && data != null) {
-                String filename = data.getDataString();
-                if (filename != null) {
-                    if (filename.startsWith("file://")) {
-                        filename = filename.substring(7);
+                Uri fileUri = data.getData();
+                if (fileUri != null) {
+                    String filePath = fileUri.getPath();
+                    if (filePath != null) {
+                        edFilename.setText(filePath);
+                        savePreferences();
                     }
-                    filename = Uri.decode(filename);
-                    edFilename.setText(filename);
-                    savePreferences();
                 }
             }
         }
