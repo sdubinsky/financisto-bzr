@@ -197,6 +197,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
         }
 		//category
 		categoryText = x.addListNodeCategory(layout);
+        categoryText.setText(R.string.no_category);
 		//amount
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);

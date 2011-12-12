@@ -99,7 +99,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private CheckBox ccardPayment;
 	
 	protected long selectedAccountId = -1;
-	protected long selectedCategoryId = -1;
+	protected long selectedCategoryId = 0;
 	protected long selectedProjectId = 0;
 	protected long selectedLocationId = 0;
 	protected String recurrence;
@@ -647,7 +647,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected void selectCategory(long categoryId) {
 		selectCategory(categoryId, true);
 	}
-	
+
 	protected void selectCategory(long categoryId, boolean selectLast) {
         if (selectedCategoryId == categoryId) {
             return;
@@ -893,7 +893,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 
 	protected void updateTransactionFromUI(Transaction transaction) {
-		transaction.categoryId = selectedCategoryId > 0 ? selectedCategoryId : 0;
+		transaction.categoryId = selectedCategoryId;
 		transaction.projectId = selectedProjectId;
 		if (transaction.isScheduled()) {
 			DateUtils.zeroSeconds(dateTime);

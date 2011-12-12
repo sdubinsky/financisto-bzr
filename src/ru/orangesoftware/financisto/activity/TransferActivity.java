@@ -64,6 +64,7 @@ public class TransferActivity extends AbstractTransactionActivity {
         rateView.createUI();
 		//category
 		categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
+        categoryText.setText(R.string.no_category);
 	}
 	
     @Override
