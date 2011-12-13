@@ -82,7 +82,7 @@ public class SubCategoryReport extends AbstractReport {
 				lastId = a.id;
 			}
             Currency c = CurrencyCache.getCurrency(em, a.currencyId);
-			u.addAmount(c, a.amount);
+			u.addAmount(c, a.amount, skipTransfers && a.isTransfer != 0);
 			if (a.hasChildren()) {
 				u.setChildren(createTree(em, a.children, level+1));
 				u = null;				
@@ -123,15 +123,17 @@ public class SubCategoryReport extends AbstractReport {
 	private static class CategoryAmount extends CategoryEntity<CategoryAmount> {
 		
 		private final long currencyId;
-		private final long amount;	
+		private final long amount;
+        private final long isTransfer;
 
-		public CategoryAmount(Cursor c) {
+        public CategoryAmount(Cursor c) {
 			id = c.getLong(0);
 			title = c.getString(1);
 			currencyId = c.getLong(2);
 			amount = c.getLong(3);	
 			left = c.getInt(4);	
-			right = c.getInt(5);	
+			right = c.getInt(5);
+            isTransfer = c.getInt(6);
 		}
 
 	}

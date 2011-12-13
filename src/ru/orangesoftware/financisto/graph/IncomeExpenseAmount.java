@@ -10,8 +10,8 @@ public class IncomeExpenseAmount {
     public long income;
     public long expense;
 
-    public void add(long amount) {
-        if (amount > 0) {
+    public void add(long amount, boolean forceIncome) {
+        if (forceIncome || amount > 0) {
             income += amount;
         } else {
             expense += amount;

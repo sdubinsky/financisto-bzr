@@ -8,6 +8,7 @@ import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
+import ru.orangesoftware.financisto.test.CurrencyBuilder;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Map;
  */
 public abstract class AbstractReportTest extends AbstractDbTest {
 
+    Currency currency;
     Account a1;
     Account a2;
     Report report;
@@ -29,8 +31,9 @@ public abstract class AbstractReportTest extends AbstractDbTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        a1 = AccountBuilder.createDefault(db);
-        a2 = AccountBuilder.createDefault(db);
+        currency = CurrencyBuilder.createDefault(db);
+        a1 = AccountBuilder.createDefault(db, currency);
+        a2 = AccountBuilder.createDefault(db, currency);
         categories = CategoryBuilder.createDefaultHierarchy(db);
         report = createReport();
         CurrencyCache.initialize(em);

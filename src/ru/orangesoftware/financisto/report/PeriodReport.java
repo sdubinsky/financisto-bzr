@@ -17,11 +17,8 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
-import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.graph.GraphUnit;
-import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.DateUtils.*;
 
 import java.util.ArrayList;
@@ -34,6 +31,8 @@ public class PeriodReport extends AbstractReport {
 	private final Period[] periods = new Period[]{
 			today(), yesterday(), thisWeek(), lastWeek(), thisMonth(), lastMonth()
 	};	
+    
+    private Period currentPeriod;
 	
 	public PeriodReport(Context context) {
 		super(context);		
@@ -49,36 +48,27 @@ public class PeriodReport extends AbstractReport {
 		filterTransfers(newFilter);
 		ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
         for (Period p : periods) {
+            currentPeriod = p;
             newFilter.put(Criteria.btw(ReportColumns.DATETIME, String.valueOf(p.start), String.valueOf(p.end)));
             Cursor c = db.db().query(V_REPORT_PERIOD, ReportColumns.NORMAL_PROJECTION,
                     newFilter.getSelection(), newFilter.getSelectionArgs(), null, null, null);
-            GraphUnit u = getUnitFromCursor(db.em(), c, p);
-            if (u.size() > 0) {
-                units.add(u);
+            ArrayList<GraphUnit> u = getUnitsFromCursor(db.em(), c);
+            if (u.size() > 0 && u.get(0).size() > 0) {
+                units.add(u.get(0));
             }
         }
         Total[] totals = calculateTotals(units);
 		return new ReportData(units, totals);
 	}
 
-    private GraphUnit getUnitFromCursor(MyEntityManager em, Cursor c, Period p) {
-        try {
-            GraphUnit u = createGraphUnit(p);
-            while (c.moveToNext()) {
-                long currencyId = c.getLong(2);
-                long amount = c.getLong(3);
-                Currency currency = CurrencyCache.getCurrency(em, currencyId);
-                u.addAmount(currency, amount);
-            }
-            u.flatten();
-            return u;
-        } finally {
-            c.close();
-        }
+    @Override
+    protected long getId(Cursor c) {
+        return currentPeriod.type.ordinal();
     }
 
-    private GraphUnit createGraphUnit(Period p) {
-        return new GraphUnit(p.type.ordinal(), context.getString(p.type.titleId), style);
+    @Override
+    protected String alterName(long id, String name) {
+        return context.getString(currentPeriod.type.titleId);
     }
 
     @Override

@@ -31,12 +31,12 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
 		this.style = style;
 	}
 	
-	public void addAmount(Currency currency, long amount) {
+	public void addAmount(Currency currency, long amount, boolean forceIncome) {
         if (amount == 0) {
             return;
         }
         IncomeExpenseAmount incomeExpenseAmount = getIncomeExpense(currency);
-        incomeExpenseAmount.add(amount);
+        incomeExpenseAmount.add(amount, forceIncome);
 	}
 
     public IncomeExpenseAmount getIncomeExpense(Currency currency) {

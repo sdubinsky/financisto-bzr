@@ -2,6 +2,7 @@ package ru.orangesoftware.financisto.report;
 
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.graph.GraphUnit;
+import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
 
@@ -48,6 +49,7 @@ public class SubCategoryReportTest extends AbstractReportTest {
     }
 
     public void test_should_calculate_correct_report_with_multiple_currencies_1() {
+        givenAccountsWithDifferentCurrencies();
         // A  -120$
         //    -100$$
         TransactionBuilder.withDb(db).account(a1).category(categories.get("A")).dateTime(DateTime.today()).amount(-120).create();
@@ -59,6 +61,7 @@ public class SubCategoryReportTest extends AbstractReportTest {
     }
 
     public void test_should_calculate_correct_report_with_multiple_currencies_2() {
+        givenAccountsWithDifferentCurrencies();
         // A  -3200$$
         //    +250$$
         //
@@ -90,6 +93,11 @@ public class SubCategoryReportTest extends AbstractReportTest {
         assertExpense(units.get(3), a1.currency, -200);
         assertName(units.get(4), "A1");
         assertExpense(units.get(4), a1.currency, -100);
+    }
+
+    private void givenAccountsWithDifferentCurrencies() {
+        a1 = AccountBuilder.createDefault(db);
+        a2 = AccountBuilder.createDefault(db);
     }
 
     @Override

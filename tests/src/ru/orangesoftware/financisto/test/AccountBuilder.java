@@ -4,8 +4,6 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Currency;
 
-import static junit.framework.Assert.assertNotNull;
-
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -18,6 +16,10 @@ public class AccountBuilder {
 
     public static Account createDefault(DatabaseAdapter db) {
         Currency c = CurrencyBuilder.createDefault(db);
+        return createDefault(db, c);
+    }
+
+    public static Account createDefault(DatabaseAdapter db, Currency c) {
         return withDb(db).title("Cash").currency(c).create();
     }
 

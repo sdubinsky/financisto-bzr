@@ -38,11 +38,11 @@ public abstract class AbstractReport implements Report {
 	public final GraphStyle style;
 	
 	protected final Context context;
-	protected final boolean includeTransfers;
+    protected final boolean skipTransfers;
 	
 	public AbstractReport(Context context) {
 		this.context = context;
-		this.includeTransfers = MyPreferences.isIncludeTransfersIntoReports(context);
+		this.skipTransfers = !MyPreferences.isIncludeTransfersIntoReports(context);
         this.style = new GraphStyle.Builder(context).build();
 	}
 	
@@ -60,12 +60,12 @@ public abstract class AbstractReport implements Report {
 	}
 
     protected void filterTransfers(WhereFilter filter) {
-		if (!includeTransfers) {
+		if (skipTransfers) {
 			filter.put(Criteria.eq(ReportColumns.IS_TRANSFER, "0"));
 		}
 	}
 
-	private ArrayList<GraphUnit> getUnitsFromCursor(MyEntityManager em, Cursor c) {
+	protected ArrayList<GraphUnit> getUnitsFromCursor(MyEntityManager em, Cursor c) {
 		try {
 			ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
 			GraphUnit u = null;
@@ -74,8 +74,9 @@ public abstract class AbstractReport implements Report {
 				long id = getId(c);
 				String name = c.getString(ReportColumns.Indicies.NAME);
 				long currencyId = c.getLong(ReportColumns.Indicies.CURRENCY_ID);
-				long amount = c.getLong(ReportColumns.Indicies.AMOUNT);	
-				if (id != lastId) {
+				long amount = c.getLong(ReportColumns.Indicies.AMOUNT);
+                long isTransfer = c.getLong(ReportColumns.Indicies.IS_TRANSFER);
+                if (id != lastId) {
 					if (u != null) {
 						units.add(u);
 					}
@@ -83,7 +84,7 @@ public abstract class AbstractReport implements Report {
 					lastId = id;
 				}
 				Currency currency = CurrencyCache.getCurrency(em, currencyId);
-				u.addAmount(currency, amount);
+				u.addAmount(currency, amount, skipTransfers && isTransfer != 0);
 			}
 			if (u != null) {
 				units.add(u);
