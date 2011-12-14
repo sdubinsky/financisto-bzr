@@ -30,35 +30,23 @@ import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 public class DatabaseAdapter {
 
 	private final Context context;
-	private final DatabaseHelper dbHelper;
-	
-	private SQLiteDatabase db;
-	private MyEntityManager em;
+	private final MyEntityManager em;
 
     private boolean updateAccountBalance = true;
 	
 	public DatabaseAdapter(Context context) {
 		this.context = context;
-		this.dbHelper = new DatabaseHelper(context);
+        this.em = new MyEntityManager(context, DatabaseHelper.getHelper(context));
 	}
 	
-	public void open() throws SQLiteException {
-		try {
-			db = dbHelper.getWritableDatabase();
-		} catch (SQLiteException ex) {
-			db = dbHelper.getReadableDatabase();
-		}
-		em = new MyEntityManager(context, db);
+	public void open() {
 	}
 
 	public void close() {
-		db.close();
-		db = null;
-		em = null;
 	}
 	
 	public SQLiteDatabase db() {
-		return db;
+		return getDatabase(context);
 	}
 
 	public MyEntityManager em() {
@@ -82,6 +70,7 @@ public class DatabaseAdapter {
 										 TransactionColumns.to_account_id +">0";
 	
 	public int deleteAccount(long id) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			String[] sid = new String[]{String.valueOf(id)};
@@ -138,7 +127,7 @@ public class DatabaseAdapter {
         long t0 = System.currentTimeMillis();
         try {
             String sortOrder = getBlotterSortOrder(filter);
-            return db.query(view, BlotterColumns.NORMAL_PROJECTION,
+            return db().query(view, BlotterColumns.NORMAL_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(), null, null,
                 sortOrder);
         } finally {
@@ -156,7 +145,7 @@ public class DatabaseAdapter {
 	}
 
     public Cursor getAllScheduledTransactions() {
-        return db.query(V_ALL_TRANSACTIONS, BlotterColumns.NORMAL_PROJECTION,
+        return db().query(V_ALL_TRANSACTIONS, BlotterColumns.NORMAL_PROJECTION,
                 BlotterColumns.is_template+"=? AND "+BlotterColumns.parent_id+"=?", new String[]{"2","0"},
                 null, null, BlotterFilter.SORT_OLDER_TO_NEWER);
     }
@@ -164,7 +153,7 @@ public class DatabaseAdapter {
 	public Cursor getAllTemplates(WhereFilter filter) {
 		long t0 = System.currentTimeMillis();
 		try {
-			return db.query(V_ALL_TRANSACTIONS, BlotterColumns.NORMAL_PROJECTION,
+			return db().query(V_ALL_TRANSACTIONS, BlotterColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null, 
 				BlotterFilter.SORT_NEWER_TO_OLDER);
 		} finally {
@@ -174,7 +163,7 @@ public class DatabaseAdapter {
 	}
 
     public Cursor getBlotterWithSplits(String where) {
-        return db.query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, BlotterColumns.NORMAL_PROJECTION, where, null, null, null,
+        return db().query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, BlotterColumns.NORMAL_PROJECTION, where, null, null, null,
                 BlotterColumns.datetime+" DESC");
     }
 
@@ -182,7 +171,7 @@ public class DatabaseAdapter {
 	+" SET count=count+(?) WHERE _id=?";
 
 	private void updateLocationCount(long locationId, int count) {
-		db.execSQL(LOCATION_COUNT_UPDATE, new Object[]{count, locationId});
+		db().execSQL(LOCATION_COUNT_UPDATE, new Object[]{count, locationId});
 	}
 
 	private static final String ACCOUNT_LAST_ACCOUNT_UPDATE = "UPDATE "+ACCOUNT_TABLE
@@ -199,6 +188,7 @@ public class DatabaseAdapter {
 	+" SET last_project_id=(?) WHERE _id=?";
 
 	private void updateLastUsed(Transaction t) {
+        SQLiteDatabase db = db();
 		if (t.isTransfer()) {
 			db.execSQL(ACCOUNT_LAST_ACCOUNT_UPDATE, new Object[]{t.toAccountId, t.fromAccountId});
 		}
@@ -220,6 +210,7 @@ public class DatabaseAdapter {
 	}
 
 	private long duplicateTransaction(long id, int isTemplate, int multiplier) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			long now = System.currentTimeMillis();
@@ -274,6 +265,7 @@ public class DatabaseAdapter {
     }
 
 	public long insertOrUpdate(Transaction transaction, List<TransactionAttribute> attributes) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
             long id = insertOrUpdateInTransaction(transaction, attributes);
@@ -292,7 +284,7 @@ public class DatabaseAdapter {
         } else {
             updateTransaction(transaction);
             transactionId = transaction.id;
-            db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?",
+            db().delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?",
                     new String[]{String.valueOf(transactionId)});
             deleteSplitsForParentTransaction(transactionId);
         }
@@ -318,7 +310,7 @@ public class DatabaseAdapter {
 		for (TransactionAttribute a : attributes) {
 			a.transactionId = transactionId;
 			ContentValues values = a.toValues();
-			db.insert(TRANSACTION_ATTRIBUTE_TABLE, null, values);
+			db().insert(TRANSACTION_ATTRIBUTE_TABLE, null, values);
 		}
 	}
 
@@ -348,7 +340,7 @@ public class DatabaseAdapter {
     }
 
     private long insertTransaction(Transaction t) {
-        long id = db.insert(TRANSACTION_TABLE, null, t.toValues());
+        long id = db().insert(TRANSACTION_TABLE, null, t.toValues());
         if (updateAccountBalance) {
             if (!t.isTemplateLike()) {
                 if (t.isSplitChild()) {
@@ -387,7 +379,7 @@ public class DatabaseAdapter {
 				updateLocationCount(t.locationId, 1);
 			}
 		}
-		db.update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
+		db().update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
 				new String[]{String.valueOf(t.id)});		
 	}
 
@@ -398,6 +390,7 @@ public class DatabaseAdapter {
     }
 
     public void deleteTransaction(long id) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
             deleteTransactionNoDbTransaction(id);
@@ -415,6 +408,7 @@ public class DatabaseAdapter {
             updateLocationCount(t.locationId, -1);
         }
         String[] sid = new String[]{String.valueOf(id)};
+        SQLiteDatabase db = db();
         db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
         db.delete(TRANSACTION_TABLE, TransactionColumns._id+"=?", sid);
         deleteSplitsForParentTransaction(id);
@@ -427,7 +421,7 @@ public class DatabaseAdapter {
                 revertToAccountBalance(split);
             }
         }
-        db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?", new String[]{String.valueOf(parentId)});
+        db().delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?", new String[]{String.valueOf(parentId)});
     }
 
     private void revertFromAccountBalance(Transaction t) {
@@ -457,7 +451,7 @@ public class DatabaseAdapter {
         if (accountId <= 0) {
             return;
         }
-        db.execSQL(ACCOUNT_TOTAL_AMOUNT_UPDATE, new Object[]{deltaAmount, accountId});
+        db().execSQL(ACCOUNT_TOTAL_AMOUNT_UPDATE, new Object[]{deltaAmount, accountId});
     }
 
     private static final String INSERT_RUNNING_BALANCE =
@@ -474,6 +468,7 @@ public class DatabaseAdapter {
             return;
         }
         long previousTransactionBalance = fetchAccountBalanceAtTheTime(accountId, datetime);
+        SQLiteDatabase db = db();
         db.execSQL(INSERT_RUNNING_BALANCE, new Object[]{accountId, transactionId, datetime, previousTransactionBalance+amount});
         db.execSQL(UPDATE_RUNNING_BALANCE, new Object[]{deltaAmount, accountId, datetime});
     }
@@ -491,12 +486,13 @@ public class DatabaseAdapter {
         if (accountId <= 0) {
             return;
         }
+        SQLiteDatabase db = db();
         db.execSQL(DELETE_RUNNING_BALANCE, new Object[]{accountId, transactionId});
         db.execSQL(UPDATE_RUNNING_BALANCE, new Object[]{-amount, accountId, dateTime});
     }
 
     private long fetchAccountBalanceAtTheTime(long accountId, long datetime) {
-        Cursor c = db.rawQuery("select balance from running_balance where account_id = ? and datetime <= ? order by datetime desc, transaction_id desc limit 1",
+        Cursor c = db().rawQuery("select balance from running_balance where account_id = ? and datetime <= ? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(accountId), String.valueOf(datetime)});
         try {
             if (c.moveToFirst()) {
@@ -513,6 +509,7 @@ public class DatabaseAdapter {
 	// ===================================================================
 
 	public long insertOrUpdate(Category category, List<Attribute> attributes) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			long id;
@@ -532,6 +529,7 @@ public class DatabaseAdapter {
 	}
 	
 	private void addAttributes(long categoryId, List<Attribute> attributes) {
+        SQLiteDatabase db = db();
 		db.delete(CATEGORY_ATTRIBUTE_TABLE, CategoryAttributeColumns.CATEGORY_ID+"=?", new String[]{String.valueOf(categoryId)});
 		ContentValues values = new ContentValues();
 		values.put(CategoryAttributeColumns.CATEGORY_ID, categoryId);
@@ -586,7 +584,8 @@ public class DatabaseAdapter {
 		+" ORDER BY parent."+CategoryColumns.left+" DESC)";
 	
 	public Category getCategory(long id) {
-		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION, 
+        SQLiteDatabase db = db();
+		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
 				CategoryViewColumns._id+"=?", new String[]{String.valueOf(id)}, null, null, null);
 		try {
 			if (c.moveToNext()) {				
@@ -617,7 +616,8 @@ public class DatabaseAdapter {
 	}
 
 	public Category getCategory(String title) {
-		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION, 
+        SQLiteDatabase db = db();
+		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
 				CategoryViewColumns.title+"=?", new String[]{String.valueOf(title)}, null, null, null);
 		try {
 			if (c.moveToNext()) {				
@@ -648,7 +648,8 @@ public class DatabaseAdapter {
 	}
 	
 	public Category getCategoryByLeft(long left) {
-		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION, 
+        SQLiteDatabase db = db();
+		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
 				CategoryViewColumns.left+"=?", new String[]{String.valueOf(left)}, null, null, null);
 		try {
 			if (c.moveToNext()) {				
@@ -685,7 +686,7 @@ public class DatabaseAdapter {
 	}
 
     public Cursor getAllCategories() {
-        return db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
+        return db().query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
                 null, null, null, null, null);
     }
 
@@ -708,11 +709,12 @@ public class DatabaseAdapter {
     }
 
 	public Cursor getCategories(boolean includeNoCategory) {
-		return db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
+		return db().query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
 				includeNoCategory ? CategoryViewColumns._id+">=0" : CategoryViewColumns._id+">0", null, null, null, null);
 	}
 
 	public Cursor getCategoriesWithoutSubtree(long id) {
+        SQLiteDatabase db = db();
 		long left = 0, right = 0;
 		Cursor c = db.query(CATEGORY_TABLE, new String[]{CategoryColumns.left.name(), CategoryColumns.right.name()},
 				CategoryColumns._id+"=?", new String[]{String.valueOf(id)}, null, null, null);
@@ -764,6 +766,7 @@ public class DatabaseAdapter {
 
 	private long insertCategory(String field, long categoryId, String title, int type) {
 		int num = 0;
+        SQLiteDatabase db = db();
 		Cursor c = db.query(CATEGORY_TABLE, new String[]{field},
 				CategoryColumns._id+"=?", new String[]{String.valueOf(categoryId)}, null, null, null);
 		try {
@@ -791,7 +794,7 @@ public class DatabaseAdapter {
     private static final String CATEGORY_UPDATE_CHILDREN_TYPES = "UPDATE "+CATEGORY_TABLE+" SET "+CategoryColumns.type+"=? WHERE "+CategoryColumns.left+">? AND "+CategoryColumns.right+"<?";
 
     private void updateChildCategoriesType(int type, int left, int right) {
-        db.execSQL(CATEGORY_UPDATE_CHILDREN_TYPES, new Object[]{type, left, right});
+        db().execSQL(CATEGORY_UPDATE_CHILDREN_TYPES, new Object[]{type, left, right});
     }
 
     private static final String V_SUBORDINATES = "(SELECT "
@@ -823,7 +826,7 @@ public class DatabaseAdapter {
 	
 	public List<Category> getSubordinates(long parentId) {
 		List<Category> list = new LinkedList<Category>();
-		Cursor c = db.query(V_SUBORDINATES, new String[]{CategoryViewColumns._id.name(), CategoryViewColumns.title.name(), CategoryViewColumns.level.name()}, null,
+		Cursor c = db().query(V_SUBORDINATES, new String[]{CategoryViewColumns._id.name(), CategoryViewColumns.title.name(), CategoryViewColumns.level.name()}, null,
 				new String[]{String.valueOf(parentId)}, null, null, null);
 		try {
 			while (c.moveToNext()) {
@@ -868,6 +871,7 @@ public class DatabaseAdapter {
 		//	`r` = `r` - v_width
 		//WHERE
 		//	`r` > v_rightkey;
+        SQLiteDatabase db = db();
 		int left = 0, right = 0;
 		Cursor c = db.query(CATEGORY_TABLE, new String[]{CategoryColumns.left.name(), CategoryColumns.right.name()},
 				CategoryColumns._id+"=?", new String[]{String.valueOf(categoryId)}, null, null, null);
@@ -896,7 +900,7 @@ public class DatabaseAdapter {
 		ContentValues values = new ContentValues();
 		values.put(CategoryColumns.title.name(), title);
         values.put(CategoryColumns.type.name(), type);
-		db.update(CATEGORY_TABLE, values, CategoryColumns._id+"=?", new String[]{String.valueOf(id)});
+		db().update(CATEGORY_TABLE, values, CategoryColumns._id+"=?", new String[]{String.valueOf(id)});
 	}
 	
     public void insertCategoryTreeInTransaction(CategoryTree<Category> tree) {
@@ -914,6 +918,7 @@ public class DatabaseAdapter {
     }
 
     public void updateCategoryTree(CategoryTree<Category> tree) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			updateCategoryTreeInTransaction(tree);
@@ -932,7 +937,7 @@ public class DatabaseAdapter {
 			values.put(CategoryColumns.left.name(), c.left);
 			values.put(CategoryColumns.right.name(), c.right);
 			sid[0] = String.valueOf(c.id);
-			db.update(CATEGORY_TABLE, values, WHERE_CATEGORY_ID, sid);
+			db().update(CATEGORY_TABLE, values, WHERE_CATEGORY_ID, sid);
 			if (c.hasChildren()) {
 				updateCategoryTreeInTransaction(c.children);
 			}
@@ -942,6 +947,7 @@ public class DatabaseAdapter {
 	public void moveCategory(long id, long newParentId, String title, int type) {
         updateCategory(id, title, type);
 
+        SQLiteDatabase db = db();
         long originLft, originRgt;
         Cursor c = db.query(CATEGORY_TABLE, new String[]{CategoryColumns.left.name(), CategoryColumns.right.name()},
                 CategoryColumns._id+"=?", new String[]{String.valueOf(id)}, null, null, null);
@@ -1030,6 +1036,7 @@ public class DatabaseAdapter {
     private static final String UPDATE_CATEGORY_TYPE = "UPDATE "+CATEGORY_TABLE+" SET "+CategoryColumns.type+"=? WHERE "+CategoryColumns._id+"=?";
 
     private void updateCategoryType(long id, int type) {
+        SQLiteDatabase db = db();
         db.execSQL(UPDATE_CATEGORY_TYPE, new Object[]{type, id});
     }
 
@@ -1038,7 +1045,7 @@ public class DatabaseAdapter {
 	// ===================================================================
 
 	public ArrayList<Attribute> getAttributesForCategory(long categoryId) {
-		Cursor c = db.query(V_ATTRIBUTES, AttributeColumns.NORMAL_PROJECTION, 
+		Cursor c = db().query(V_ATTRIBUTES, AttributeColumns.NORMAL_PROJECTION,
 				CategoryAttributeColumns.CATEGORY_ID+"=?", new String[]{String.valueOf(categoryId)}, 
 				null, null, AttributeColumns.NAME);
 		try {
@@ -1055,7 +1062,7 @@ public class DatabaseAdapter {
 
 	public ArrayList<Attribute> getAllAttributesForCategory(long categoryId) {
 		Category category = getCategory(categoryId);
-		Cursor c = db.query(V_ATTRIBUTES, AttributeColumns.NORMAL_PROJECTION, 
+		Cursor c = db().query(V_ATTRIBUTES, AttributeColumns.NORMAL_PROJECTION,
 				AttributeViewColumns.CATEGORY_LEFT+"<= ? AND "+AttributeViewColumns.CATEGORY_RIGHT+" >= ?", 
 				new String[]{String.valueOf(category.left), String.valueOf(category.right)}, 
 				null, null, AttributeColumns.NAME);
@@ -1078,7 +1085,7 @@ public class DatabaseAdapter {
 	}
 
 	public Attribute getAttribute(long id) {
-		Cursor c = db.query(ATTRIBUTES_TABLE, AttributeColumns.NORMAL_PROJECTION, 
+		Cursor c = db().query(ATTRIBUTES_TABLE, AttributeColumns.NORMAL_PROJECTION,
 				AttributeColumns.ID+"=?", new String[]{String.valueOf(id)}, 
 				null, null, null);
 		try {
@@ -1101,6 +1108,7 @@ public class DatabaseAdapter {
 	}
 
 	public void deleteAttribute(long id) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			String[] p = new String[]{String.valueOf(id)};
@@ -1115,21 +1123,21 @@ public class DatabaseAdapter {
 
 	private long insertAttribute(Attribute attribute) {
 		ContentValues values = attribute.toValues();
-		return db.insert(ATTRIBUTES_TABLE, null, values);
+		return db().insert(ATTRIBUTES_TABLE, null, values);
 	}
 
 	private void updateAttribute(Attribute attribute) {
 		ContentValues values = attribute.toValues();
-		db.update(ATTRIBUTES_TABLE, values, AttributeColumns.ID+"=?", new String[]{String.valueOf(attribute.id)});
+		db().update(ATTRIBUTES_TABLE, values, AttributeColumns.ID+"=?", new String[]{String.valueOf(attribute.id)});
 	}
 
 	public Cursor getAllAttributes() {
-		return db.query(ATTRIBUTES_TABLE, AttributeColumns.NORMAL_PROJECTION, 
+		return db().query(ATTRIBUTES_TABLE, AttributeColumns.NORMAL_PROJECTION,
 				AttributeColumns.ID+">0", null, null, null, AttributeColumns.NAME);
 	}
 
 	public HashMap<Long, String> getAllAttributesMap() {
-		Cursor c = db.query(V_ATTRIBUTES, AttributeViewColumns.NORMAL_PROJECTION, null, null, null, null, 
+		Cursor c = db().query(V_ATTRIBUTES, AttributeViewColumns.NORMAL_PROJECTION, null, null, null, null,
 				AttributeViewColumns.CATEGORY_ID+", "+AttributeViewColumns.NAME);
 		try {
 			HashMap<Long, String> attributes = new HashMap<Long, String>();
@@ -1163,7 +1171,7 @@ public class DatabaseAdapter {
 	}
 
 	public HashMap<Long, String> getAllAttributesForTransaction(long transactionId) {
-		Cursor c = db.query(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.NORMAL_PROJECTION, 
+		Cursor c = db().query(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.NORMAL_PROJECTION,
 				TransactionAttributeColumns.TRANSACTION_ID+"=? AND "+TransactionAttributeColumns.ATTRIBUTE_ID+">=0", 
 				new String[]{String.valueOf(transactionId)}, 
 				null, null, null);
@@ -1181,7 +1189,7 @@ public class DatabaseAdapter {
 	}
 
 	public EnumMap<SystemAttribute, String> getSystemAttributesForTransaction(long transactionId) {
-		Cursor c = db.query(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.NORMAL_PROJECTION, 
+		Cursor c = db().query(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.NORMAL_PROJECTION,
 				TransactionAttributeColumns.TRANSACTION_ID+"=? AND "+TransactionAttributeColumns.ATTRIBUTE_ID+"<0", 
 				new String[]{String.valueOf(transactionId)}, 
 				null, null, null);
@@ -1205,7 +1213,7 @@ public class DatabaseAdapter {
 	 * @return
 	 */
 	public String getLocationName(long id) {
-		Cursor c = db.query(LOCATIONS_TABLE, new String[]{LocationColumns.NAME}, 
+		Cursor c = db().query(LOCATIONS_TABLE, new String[]{LocationColumns.NAME},
 				LocationColumns.ID+"=?", new String[]{String.valueOf(id)}, null, null, null);
 		try {
 			if (c.moveToNext()) {
@@ -1241,6 +1249,7 @@ public class DatabaseAdapter {
      * @param ids selected transactions' ids
      */
 	public void deleteSelectedTransactions(long[] ids) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			for (long id : ids) {
@@ -1253,6 +1262,7 @@ public class DatabaseAdapter {
 	}
 
 	private void runInTransaction(String sql, long[] ids) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			int count = ids.length;
@@ -1293,6 +1303,7 @@ public class DatabaseAdapter {
 		"UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.last_recurrence +"=? WHERE "+TransactionColumns._id +"=?";
 
 	public long[] storeMissedSchedules(List<RestoredTransaction> restored, long now) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
             int count = restored.size();
@@ -1332,7 +1343,7 @@ public class DatabaseAdapter {
 		String where = CreditCardClosingDateColumns.ACCOUNT_ID+"=? AND "+
 					   CreditCardClosingDateColumns.PERIOD+"=?";
 		
-		Cursor c = db.query(CCARD_CLOSING_DATE_TABLE, new String[] {CreditCardClosingDateColumns.CLOSING_DAY}, 
+		Cursor c = db().query(CCARD_CLOSING_DATE_TABLE, new String[] {CreditCardClosingDateColumns.CLOSING_DAY},
 			    where, new String[]{Long.toString(accountId), Integer.toString(period)}, null, null, null);
 		
 		int res = 0;
@@ -1357,36 +1368,21 @@ public class DatabaseAdapter {
 	}
 	
 
-	/**
-	 * @param accountId
-	 * @param period
-	 * @param closingDay
-	 */
 	public void setCustomClosingDay(long accountId, int period, int closingDay) {
 		ContentValues values = new ContentValues();
         values.put(CreditCardClosingDateColumns.ACCOUNT_ID, Long.toString(accountId));
         values.put(CreditCardClosingDateColumns.PERIOD, Integer.toString(period));
         values.put(CreditCardClosingDateColumns.CLOSING_DAY, Integer.toString(closingDay));
-		db.insert(CCARD_CLOSING_DATE_TABLE, null, values);
+		db().insert(CCARD_CLOSING_DATE_TABLE, null, values);
 	}
 	
-	/**
-	 * 
-	 * @param accountId
-	 * @param period
-	 */
 	public void deleteCustomClosingDay(long accountId, int period) {
 		String where = CreditCardClosingDateColumns.ACCOUNT_ID+"=? AND "+
 		   			   CreditCardClosingDateColumns.PERIOD+"=?";
 		String[] args = new String[] {Long.toString(accountId), Integer.toString(period)};
-		db.delete(CCARD_CLOSING_DATE_TABLE, where, args);
+		db().delete(CCARD_CLOSING_DATE_TABLE, where, args);
 	}
 	
-	/**
-	 * @param accountId
-	 * @param period
-	 * @param closingDay
-	 */
 	public void updateCustomClosingDay(long accountId, int period, int closingDay) {
 		// delete previous content
 		deleteCustomClosingDay(accountId, period);
@@ -1410,6 +1406,7 @@ public class DatabaseAdapter {
      * @param account selected account
      */
     public void rebuildRunningBalanceForAccount(Account account) {
+        SQLiteDatabase db = db();
         db.beginTransaction();
         try {
             String accountId = String.valueOf(account.getId());
@@ -1464,6 +1461,7 @@ public class DatabaseAdapter {
     }
 
     public void recalculateAccountsBalances() {
+        SQLiteDatabase db = db();
         db.beginTransaction();
         try {
             Cursor accountsCursor = db.query(ACCOUNT_TABLE, new String[]{AccountColumns.ID}, null, null, null, null, null);
@@ -1485,12 +1483,12 @@ public class DatabaseAdapter {
         long amount = fetchAccountBalance(accountId);
         ContentValues values = new ContentValues();
         values.put(AccountColumns.TOTAL_AMOUNT, amount);
-        db.update(ACCOUNT_TABLE, values, AccountColumns.ID+"=?", new String[]{String.valueOf(accountId)});
+        db().update(ACCOUNT_TABLE, values, AccountColumns.ID+"=?", new String[]{String.valueOf(accountId)});
         Log.i("DatabaseImport", "Recalculating amount for "+accountId);
     }
 
     private long fetchAccountBalance(long accountId) {
-        Cursor c = db.query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, new String[]{"SUM("+BlotterColumns.from_amount+")"},
+        Cursor c = db().query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, new String[]{"SUM("+BlotterColumns.from_amount+")"},
                 BlotterColumns.from_account_id+"=? and ("+BlotterColumns.parent_id+"=0 or "+BlotterColumns.is_transfer+"=-1)",
                 new String[]{String.valueOf(accountId)}, null, null, null);
         try {

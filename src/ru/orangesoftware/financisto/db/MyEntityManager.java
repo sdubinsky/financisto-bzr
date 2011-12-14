@@ -14,6 +14,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
@@ -40,8 +41,8 @@ public class MyEntityManager extends EntityManager {
 	
 	private final Context context;
 	
-	public MyEntityManager(Context context, SQLiteDatabase db) {
-		super(db);		
+	public MyEntityManager(Context context, SQLiteOpenHelper dbHelper) {
+		super(dbHelper);
 		this.context = context;
 	}
 	
@@ -115,6 +116,7 @@ public class MyEntityManager extends EntityManager {
 	}
 
 	public void deleteLocation(long id) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			delete(MyLocation.class, id);
@@ -255,6 +257,7 @@ public class MyEntityManager extends EntityManager {
 	private static final String UPDATE_DEFAULT_FLAG = "update currency set is_default=0";
 	
 	public long saveOrUpdate(Currency currency) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			if (currency.isDefault) {
@@ -270,7 +273,7 @@ public class MyEntityManager extends EntityManager {
 
 	public int deleteCurrency(long id) {
 		String sid = String.valueOf(id);
-		return db.delete(CURRENCY_TABLE, "_id=? AND NOT EXISTS (SELECT 1 FROM "+ACCOUNT_TABLE+" WHERE "+AccountColumns.CURRENCY_ID+"=?)", 
+		return db().delete(CURRENCY_TABLE, "_id=? AND NOT EXISTS (SELECT 1 FROM "+ACCOUNT_TABLE+" WHERE "+AccountColumns.CURRENCY_ID+"=?)",
 				new String[]{sid, sid});
 	}
 	
@@ -342,6 +345,7 @@ public class MyEntityManager extends EntityManager {
 //	}
 
 	public long insertBudget(Budget budget) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			if (budget.id > 0) {
@@ -370,11 +374,13 @@ public class MyEntityManager extends EntityManager {
 	}
 
 	public void deleteBudget(long id) {
-		db.delete(BUDGET_TABLE, "_id=?", new String[]{String.valueOf(id)});
-		db.delete(BUDGET_TABLE, "parent_budget_id=?", new String[]{String.valueOf(id)});
+        SQLiteDatabase db = db();
+        db.delete(BUDGET_TABLE, "_id=?", new String[]{String.valueOf(id)});
+        db.delete(BUDGET_TABLE, "parent_budget_id=?", new String[]{String.valueOf(id)});
 	}
 
 	public void deleteBudgetOneEntry(long id) {
+        SQLiteDatabase db = db();
 		db.delete(BUDGET_TABLE, "_id=?", new String[]{String.valueOf(id)});
 	}
 
@@ -400,6 +406,7 @@ public class MyEntityManager extends EntityManager {
 	}
 
 	public void deleteProject(long id) {
+        SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
 			delete(Project.class, id);

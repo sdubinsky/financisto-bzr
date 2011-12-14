@@ -18,8 +18,20 @@ import java.io.IOException;
 import static ru.orangesoftware.financisto.utils.EnumUtils.asStringArray;
 
 public class DatabaseHelper extends DatabaseSchemaEvolution {
-	
-	public DatabaseHelper(Context context) {
+
+    private static DatabaseHelper instance;
+
+    public static synchronized DatabaseHelper getHelper(Context context) {
+        if (instance == null)
+            instance = new DatabaseHelper(context);
+        return instance;
+    }
+
+    public static SQLiteDatabase getDatabase(Context context) {
+        return getHelper(context).getWritableDatabase();
+    }
+
+	private DatabaseHelper(Context context) {
 		super(context, Database.DATABASE_NAME, null, Database.DATABASE_VERSION);
 		setAutoDropViews(true);
 	}

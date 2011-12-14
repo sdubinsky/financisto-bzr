@@ -13,6 +13,7 @@ package ru.orangesoftware.orb;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import javax.persistence.*;
 import java.lang.reflect.Constructor;
@@ -27,23 +28,14 @@ public abstract class EntityManager {
 	
 	private static final ConcurrentMap<Class<?>, EntityDefinition> definitions = new ConcurrentHashMap<Class<?>, EntityDefinition>();
 	
-//	public static void register(Class<?>...classes) {
-//		for (Class<?> clazz : classes) {
-//			if (!definitions.containsKey(clazz)) {
-//				EntityDefinition definition = parseDefinition(clazz);
-//				definitions.putIfAbsent(clazz,	definition);
-//			}
-//		}
-//	}
+	protected final SQLiteOpenHelper databaseHelper;
 	
-	protected final SQLiteDatabase db;
-	
-	public EntityManager(SQLiteDatabase db) {
-		this.db = db;
+	public EntityManager(SQLiteOpenHelper databaseHelper) {
+		this.databaseHelper = databaseHelper;
 	}
 	
 	public SQLiteDatabase db() {
-		return db;
+		return databaseHelper.getWritableDatabase();
 	}
 
 	private static EntityDefinition parseDefinition(Class<?> clazz) {
@@ -110,6 +102,7 @@ public abstract class EntityManager {
 		if (entity == null) {
 			throw new IllegalArgumentException("Entity is null");
 		}
+        SQLiteDatabase db = db();
 		EntityDefinition ed = getEntityDefinitionOrThrow(entity.getClass());
 		ContentValues values = getContentValues(ed, entity);
 		long id = ed.getId(entity);
@@ -167,7 +160,7 @@ public abstract class EntityManager {
 		StringBuilder sb = new StringBuilder(ed.sqlQuery);
 		sb.append(" where e_").append(ed.idField.columnName).append("=?");
 		String sql = sb.toString();
-		Cursor c = db.rawQuery(sql, new String[]{id.toString()});
+		Cursor c = db().rawQuery(sql, new String[]{id.toString()});
 		try {
 			if (c.moveToFirst()) {
 				try {
@@ -184,7 +177,7 @@ public abstract class EntityManager {
 
 	public <T> List<T> list(Class<T> clazz) {
 		EntityDefinition ed = getEntityDefinitionOrThrow(clazz);
-		Cursor c = db.rawQuery(ed.sqlQuery, null);
+		Cursor c = db().rawQuery(ed.sqlQuery, null);
 		try {
 			List<T> list = new LinkedList<T>();
 			while (c.moveToNext()) {
@@ -238,7 +231,7 @@ public abstract class EntityManager {
 			throw new IllegalArgumentException("Id can't be null");
 		}
 		EntityDefinition ed = getEntityDefinitionOrThrow(clazz);
-		return db.delete(ed.tableName, ed.idField.columnName+"=?", new String[]{id.toString()});
+		return db().delete(ed.tableName, ed.idField.columnName+"=?", new String[]{id.toString()});
 	}
 
 	public <T> Query<T> createQuery(Class<T> clazz) {
