@@ -1,6 +1,5 @@
 package ru.orangesoftware.financisto.export.csv;
 
-import android.util.Log;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
@@ -45,10 +44,7 @@ public class CsvImport {
             reader = new Csv.Reader(new FileReader(csvFilename)).delimiter(
                     options.fieldSeparator).ignoreComments(true);
             List<String> line;
-            int countLine = 0;
             while ((line = reader.readLine()) != null) {
-                // get table head line
-                countLine = countLine++;
                 if (parseLine) {
                     Transaction transaction = new Transaction();
                     transaction.dateTime = 0;
@@ -64,19 +60,15 @@ public class CsvImport {
                                */
                         transactionField = myTrim(transactionField);
                         if (!transactionField.equals("")) {
-                            Log.d("CsvImport", transactionField + ":" + line.get(i) + " ");
                             try {
                                 String fieldValue = line.get(i);
                                 if (!fieldValue.equals("")) {
                                     if (transactionField.equals("date")) {
                                         transaction.dateTime = options.dateFormat.parse(fieldValue).getTime();
-                                        Log.d("CsvImport", "date:" + transaction.dateTime);
                                     } else if (transactionField.equals("time")) {
                                         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
                                         ParsePosition p = new ParsePosition(0);
                                         time = format.parse(fieldValue, p).getTime();
-                                        Log.d("CsvImport", "time:" + time);
-
                                     } else if (transactionField.equals("amount")) {
                                         fieldValue = fieldValue.replace(groupSeparator + "", "");
                                         fieldValue = fieldValue.replace(decimalSeparator, '.');
@@ -107,7 +99,6 @@ public class CsvImport {
                                                 throw new Exception("Unknown project in import line");
                                             }
                                         }
-
                                     } else if (transactionField.equals("currency")) {
                                         if (!account.currency.name.equals(fieldValue)) {
                                             throw new Exception("Wrong currency in import line");
@@ -122,8 +113,7 @@ public class CsvImport {
                         }
                     }
                     transaction.dateTime = transaction.dateTime + time;
-                    long id = db.insertOrUpdate(transaction);
-                    Log.d("CsvImport", "Insert transactionId:" + id);
+                    db.insertOrUpdate(transaction);
                 } else {
                     // first line of csv-file is table headline
                     parseLine = true;

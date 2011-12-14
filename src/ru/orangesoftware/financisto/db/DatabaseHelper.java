@@ -13,8 +13,6 @@ package ru.orangesoftware.financisto.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.io.IOException;
-
 import static ru.orangesoftware.financisto.utils.EnumUtils.asStringArray;
 
 public class DatabaseHelper extends DatabaseSchemaEvolution {
@@ -34,11 +32,6 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	private DatabaseHelper(Context context) {
 		super(context, Database.DATABASE_NAME, null, Database.DATABASE_VERSION);
 		setAutoDropViews(true);
-	}
-	
-	public void forceRunAlterScript(SQLiteDatabase db, String name) 
-		throws IOException {
-		runAlterScript(db, name);
 	}
 	
 	@Override
