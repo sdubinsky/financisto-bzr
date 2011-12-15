@@ -164,10 +164,14 @@ public abstract class AbstractListActivity extends ListActivity implements Recre
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		viewItem(v, position, id);
+		onItemClick(v, position, id);
 	}
-	
-	protected void addItem() {
+
+    protected void onItemClick(View v, int position, long id) {
+        viewItem(v, position, id);
+    }
+
+    protected void addItem() {
 	}
 
 	protected abstract void deleteItem(View v, int position, long id);

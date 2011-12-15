@@ -19,6 +19,8 @@ import android.text.InputType;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
+import greendroid.widget.QuickActionGrid;
+import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.EntityEnumAdapter;
 import ru.orangesoftware.financisto.model.*;
@@ -27,6 +29,7 @@ import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.orb.EntityManager;
 
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public class AccountActivity extends AbstractActivity {
@@ -51,18 +54,15 @@ public class AccountActivity extends AbstractActivity {
 	private EditText sortOrderText;
 	private CheckBox isIncludedIntoTotals;
     private EditText noteText;
+    private EditText closingDayText;
+    private EditText paymentDayText;
+    private View closingDayNode;
+    private View paymentDayNode;
 
 	private EntityEnumAdapter<AccountType> accountTypeAdapter;
 	private EntityEnumAdapter<CardIssuer> cardIssuerAdapter;
 	private ListAdapter currencyAdapter;	
-	
-	/** for bill filtering */
-	private EditText closingDayText;
-	private EditText paymentDayText;
-	private View closingDayNode;
-	private View paymentDayNode;
-	/***********************/
-	
+
 	private Account account = new Account();
 
 	@Override
@@ -85,7 +85,6 @@ public class AccountActivity extends AbstractActivity {
         sortOrderText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
 		sortOrderText.setSingleLine();
 		
-		/********** bill filtering **********/
 		closingDayText = new EditText(this);
 		closingDayText.setInputType(InputType.TYPE_CLASS_NUMBER);
 		closingDayText.setHint(R.string.closing_day_hint);
@@ -95,8 +94,7 @@ public class AccountActivity extends AbstractActivity {
 		paymentDayText.setInputType(InputType.TYPE_CLASS_NUMBER);
 		paymentDayText.setHint(R.string.payment_day_hint);
 		paymentDayText.setSingleLine();
-		/************************************/
-		
+
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
 
@@ -118,13 +116,11 @@ public class AccountActivity extends AbstractActivity {
 		numberNode = x.addEditNode(layout, R.string.card_number, numberText);
 		setVisibility(numberNode, View.GONE);
 		
-		/********** bill filtering **********/
 		closingDayNode = x.addEditNode(layout, R.string.closing_day, closingDayText);
 		setVisibility(closingDayNode, View.GONE);
 		
 		paymentDayNode = x.addEditNode(layout, R.string.payment_day, paymentDayText);
 		setVisibility(paymentDayNode, View.GONE);		
-		/************************************/
 
 		currencyCursor = em.getAllCurrencies("name");
 		startManagingCursor(currencyCursor);		
@@ -209,8 +205,7 @@ public class AccountActivity extends AbstractActivity {
 						}
 					}
 				}	
-				/************* validate closing and payment days *************/
-				
+
 				account.title = text(accountTitle);
 				account.creationDate = System.currentTimeMillis();
 				String sortOrder = text(sortOrderText);
@@ -246,8 +241,8 @@ public class AccountActivity extends AbstractActivity {
 			}			
 		});
 		
-	}	
-	
+	}
+
 	@Override
 	protected void onClick(View v, int id) {
 		switch(id) {
@@ -314,22 +309,13 @@ public class AccountActivity extends AbstractActivity {
 		icon.setImageResource(type.iconId);
 		TextView label = (TextView)accountTypeNode.findViewById(R.id.label);
 		label.setText(type.titleId);
-//		TextView data = (TextView)accountTypeNode.findViewById(R.id.data);
-//		if (type.subTitleId > 0) {
-//			data.setText(type.subTitleId);
-//			data.setVisibility(View.VISIBLE);
-//		} else {
-//			data.setVisibility(View.GONE);
-//		}
+
 		setVisibility(cardIssuerNode, type.isCard ? View.VISIBLE : View.GONE);
 		setVisibility(issuerNode, type.hasIssuer ? View.VISIBLE : View.GONE);
 		setVisibility(numberNode, type.hasNumber ? View.VISIBLE : View.GONE);
-		
-		/******* bill filtering ********/
 		setVisibility(closingDayNode, type.isCreditCard ? View.VISIBLE : View.GONE);
 		setVisibility(paymentDayNode, type.isCreditCard ? View.VISIBLE : View.GONE);
-		/*******************************/
-		
+
 		setVisibility(limitAmountView, type == AccountType.CREDIT_CARD ? View.VISIBLE : View.GONE);
 		account.type = type.name();
 		selectCardIssuer(account.cardIssuer != null 

@@ -167,7 +167,7 @@ public class BlotterActivity extends AbstractListActivity {
     protected void prepareTransactionActionGrid() {
         if (isSupportedApiLevel()) {
             transactionActionGrid = new QuickActionGrid(this);
-            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.view));
+            transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.info));
             transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_edit, R.string.edit));
             transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_trashcan, R.string.delete));
             transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_share, R.string.duplicate));
@@ -381,14 +381,19 @@ public class BlotterActivity extends AbstractListActivity {
 	private NodeInflater inflater;
     private long selectedId = -1;
 
-	@Override
-	protected void viewItem(View v, int position, long id) {
+    @Override
+    protected void onItemClick(View v, int position, long id) {
         if (isSupportedApiLevel()) {
             selectedId = id;
             transactionActionGrid.show(v);
         } else {
             showTransactionInfo(id);
         }
+    }
+
+    @Override
+	protected void viewItem(View v, int position, long id) {
+        showTransactionInfo(id);
 	}
 
     private void showTransactionInfo(long id) {

@@ -14,15 +14,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import greendroid.widget.QuickActionGrid;
+import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.AccountListAdapter2;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.dialog.AccountInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
+import ru.orangesoftware.financisto.view.NodeInflater;
 import ru.orangesoftware.orb.EntityManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -38,25 +44,65 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+
 public class AccountListActivity extends AbstractListActivity {
 	
-	public AccountListActivity() {
-		super(R.layout.account_list);
-	}
-
 	private static final int NEW_ACCOUNT_REQUEST = 1;
-	private static final int EDIT_ACCOUNT_REQUEST = 2;
-	private static final int VIEW_ACCOUNT_REQUEST = 3;
-	
+
+    public static final int EDIT_ACCOUNT_REQUEST = 2;
+    private static final int VIEW_ACCOUNT_REQUEST = 3;
 	private static final int MENU_UPDATE_BALANCE = MENU_ADD+1;
-	private static final int MENU_CLOSE_OPEN_ACCOUNT = MENU_ADD+2;
+
+    private static final int MENU_CLOSE_OPEN_ACCOUNT = MENU_ADD+2;
+    private QuickActionWidget accountActionGrid;
+
+    public AccountListActivity() {
+        super(R.layout.account_list);
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		calculateTotals();
+        prepareAccountActionGrid();
 	}
-	
+
+    protected void prepareAccountActionGrid() {
+        if (isSupportedApiLevel()) {
+            accountActionGrid = new QuickActionGrid(this);
+            accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.info));
+            accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_list, R.string.blotter));
+            accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_edit, R.string.edit));
+            accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_action_bar_mark, R.string.balance));
+            accountActionGrid.setOnQuickActionClickListener(accountActionListener);
+        }
+    }
+
+    private QuickActionWidget.OnQuickActionClickListener accountActionListener = new QuickActionWidget.OnQuickActionClickListener() {
+        public void onQuickActionClicked(QuickActionWidget widget, int position) {
+            switch (position) {
+                case 0:
+                    showAccountInfo(selectedId);
+                    break;
+                case 1:
+                    showAccountTransactions(selectedId);
+                    break;
+                case 2:
+                    editAccount(selectedId);
+                    break;
+                case 3:
+                    updateAccountBalance(selectedId);
+                    break;
+                case 4:
+                    //clearTransaction(selectedId);
+                    break;
+            }
+        }
+
+    };
+
+
     @Override
     public void recreateCursor() {
         super.recreateCursor();
@@ -139,8 +185,7 @@ public class AccountListActivity extends AbstractListActivity {
 
 	@Override
 	protected Cursor createCursor() {
-		Cursor c = em.getAllAccounts();
-		return c;
+        return em.getAllAccounts();
 	}
 
 	protected List<MenuItemInfo> createContextMenus(long id) {
@@ -161,15 +206,9 @@ public class AccountListActivity extends AbstractListActivity {
 		switch (item.getItemId()) {
 			case MENU_UPDATE_BALANCE: {
 				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-				Account a = em.getAccount(mi.id);
-				if (a != null) {
-					Intent intent = new Intent(this, TransactionActivity.class);
-					intent.putExtra(TransactionActivity.ACCOUNT_ID_EXTRA, a.id);
-					intent.putExtra(TransactionActivity.CURRENT_BALANCE_EXTRA, a.totalAmount);
-					startActivityForResult(intent, 0);			
-					return true;
-				}
-			} 			
+                updateAccountBalance(mi.id);
+                return true;
+            }
 			case MENU_CLOSE_OPEN_ACCOUNT: {
 				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 				Account a = em.getAccount(mi.id);
@@ -181,8 +220,20 @@ public class AccountListActivity extends AbstractListActivity {
 		}
 		return false;
 	}
-	
-	@Override
+
+    private boolean updateAccountBalance(long id) {
+        Account a = em.getAccount(id);
+        if (a != null) {
+            Intent intent = new Intent(this, TransactionActivity.class);
+            intent.putExtra(TransactionActivity.ACCOUNT_ID_EXTRA, a.id);
+            intent.putExtra(TransactionActivity.CURRENT_BALANCE_EXTRA, a.totalAmount);
+            startActivityForResult(intent, 0);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
 	protected void addItem() {		
 		Intent intent = new Intent(AccountListActivity.this, AccountActivity.class);
 		startActivityForResult(intent, NEW_ACCOUNT_REQUEST);
@@ -205,24 +256,51 @@ public class AccountListActivity extends AbstractListActivity {
 
 	@Override
 	public void editItem(View v, int position, long id) {
-		Intent intent = new Intent(AccountListActivity.this, AccountActivity.class);
-		intent.putExtra(AccountActivity.ACCOUNT_ID_EXTRA, id);
-		startActivityForResult(intent, EDIT_ACCOUNT_REQUEST);
+        editAccount(id);
 	}
 
-	@Override
+    private void editAccount(long id) {
+        Intent intent = new Intent(AccountListActivity.this, AccountActivity.class);
+        intent.putExtra(AccountActivity.ACCOUNT_ID_EXTRA, id);
+        startActivityForResult(intent, EDIT_ACCOUNT_REQUEST);
+    }
+
+    private long selectedId = -1;
+
+    private void showAccountInfo(long id) {
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        NodeInflater inflater = new NodeInflater(layoutInflater);
+        AccountInfoDialog accountInfoDialog = new AccountInfoDialog(this, id, db, inflater);
+        accountInfoDialog.show();
+    }
+
+    @Override
+    protected void onItemClick(View v, int position, long id) {
+        if (isSupportedApiLevel()) {
+            selectedId = id;
+            accountActionGrid.show(v);
+        } else {
+            showAccountTransactions(id);
+        }
+    }
+
+    @Override
 	protected void viewItem(View v, int position, long id) {
-		Account account = em.getAccount(id);
-		if (account != null) {
-			Intent intent = new Intent(AccountListActivity.this, BlotterActivity.class);
-			WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(id))
-				.toIntent(account.title, intent);
-            intent.putExtra(BlotterFilterActivity.IS_ACCOUNT_FILTER, true);
-			startActivityForResult(intent, VIEW_ACCOUNT_REQUEST);
-		}
+        showAccountTransactions(id);
 	}
-	
-	@Override
+
+    private void showAccountTransactions(long id) {
+        Account account = em.getAccount(id);
+        if (account != null) {
+            Intent intent = new Intent(AccountListActivity.this, BlotterActivity.class);
+            WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(id))
+                .toIntent(account.title, intent);
+            intent.putExtra(BlotterFilterActivity.IS_ACCOUNT_FILTER, true);
+            startActivityForResult(intent, VIEW_ACCOUNT_REQUEST);
+        }
+    }
+
+    @Override
 	protected String getContextMenuHeaderTitle(int position) {
 		return getString(R.string.account);
 	}

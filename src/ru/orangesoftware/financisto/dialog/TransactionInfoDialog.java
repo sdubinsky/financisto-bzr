@@ -68,7 +68,7 @@ public class TransactionInfoDialog {
         if (ti.parentId > 0) {
             ti = em.getTransactionInfo(ti.parentId);
         }
-        View v = layoutInflater.inflate(R.layout.transaction_info, null);
+        View v = layoutInflater.inflate(R.layout.info_dialog, null);
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.list);
 
         View titleView = createTitleView(ti, layout);
@@ -167,7 +167,7 @@ public class TransactionInfoDialog {
     }
 
     private View createTitleView(TransactionInfo ti, LinearLayout layout) {
-        View titleView = layoutInflater.inflate(R.layout.transaction_info_title, null);
+        View titleView = layoutInflater.inflate(R.layout.info_dialog_title, null);
         TextView titleLabel = (TextView) titleView.findViewById(R.id.label);
         TextView titleData = (TextView) titleView.findViewById(R.id.data);
         ImageView titleIcon = (ImageView) titleView.findViewById(R.id.icon);
