@@ -19,6 +19,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import ru.orangesoftware.financisto.activity.TransferActivity;
 import ru.orangesoftware.financisto.model.Currency;
 
 import java.lang.reflect.Method;
@@ -146,6 +147,11 @@ public class MyPreferences {
     public static boolean isShowTakePicture(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return isCameraSupported(context) && sharedPreferences.getBoolean("ntsl_show_picture", true);
+    }
+
+    public static boolean isShowCategoryInTransferScreen(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("ntsl_show_category_in_transfer", true);
     }
 
     public static boolean isShowPayee(Context context) {

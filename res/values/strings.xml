@@ -687,5 +687,7 @@
 
     <string name="info">Info</string>
     <string name="balance">Balance</string>
+    <string name="show_category_in_transfer">Transfer Category</string>
+    <string name="show_category_in_transfer_summary">Show category select in New Transfer screen</string>
 
 </resources>

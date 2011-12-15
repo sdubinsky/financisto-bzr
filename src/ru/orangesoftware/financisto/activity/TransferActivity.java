@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,8 +64,12 @@ public class TransferActivity extends AbstractTransactionActivity {
         rateView = new RateLayoutView(this, x, layout);
         rateView.createUI();
 		//category
-		categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
-        categoryText.setText(R.string.no_category);
+        if (MyPreferences.isShowCategoryInTransferScreen(this)) {
+		    categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
+            categoryText.setText(R.string.no_category);
+        } else {
+            categoryText = new EditText(this);
+        }
 	}
 	
     @Override
