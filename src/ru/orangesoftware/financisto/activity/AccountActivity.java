@@ -27,6 +27,8 @@ import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.orb.EntityManager;
 
+import static ru.orangesoftware.financisto.utils.Utils.text;
+
 public class AccountActivity extends AbstractActivity {
 	
 	public static final String ACCOUNT_ID_EXTRA = "accountId";
@@ -48,6 +50,7 @@ public class AccountActivity extends AbstractActivity {
 	private EditText issuerName;
 	private EditText sortOrderText;
 	private CheckBox isIncludedIntoTotals;
+    private EditText noteText;
 
 	private EntityEnumAdapter<AccountType> accountTypeAdapter;
 	private EntityEnumAdapter<CardIssuer> cardIssuerAdapter;
@@ -152,7 +155,11 @@ public class AccountActivity extends AbstractActivity {
 			x.addEditNode(layout, R.string.opening_amount, amountInput);
             amountInput.setIncome();
 		}
-		
+
+        noteText = new EditText(this);
+        noteText.setLines(2);
+        x.addEditNode(layout, R.string.note, noteText);
+
 		x.addEditNode(layout, R.string.sort_order, sortOrderText);
 		isIncludedIntoTotals = x.addCheckboxNode(layout,
 				R.id.is_included_into_totals, R.string.is_included_into_totals,
@@ -204,12 +211,13 @@ public class AccountActivity extends AbstractActivity {
 				}	
 				/************* validate closing and payment days *************/
 				
-				account.title = accountTitle.getText().toString();
+				account.title = text(accountTitle);
 				account.creationDate = System.currentTimeMillis();
-				String sortOrder = Utils.text(sortOrderText);
+				String sortOrder = text(sortOrderText);
 				account.sortOrder = sortOrder == null ? 0 : Integer.parseInt(sortOrder);
 				account.isIncludeIntoTotals  = isIncludedIntoTotals.isChecked();
 				account.limitAmount = -Math.abs(limitInput.getAmount());
+                account.note = text(noteText);
 				
 				long accountId = em.saveAccount(account);
 				long amount = amountInput.getAmount();
@@ -375,6 +383,7 @@ public class AccountActivity extends AbstractActivity {
 		if (account.limitAmount != 0) {
 			limitInput.setAmount(-Math.abs(account.limitAmount));
 		}
+        noteText.setText(account.note);
 	}
 
 	@Override

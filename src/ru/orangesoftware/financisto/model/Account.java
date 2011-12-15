@@ -13,7 +13,6 @@ package ru.orangesoftware.financisto.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
@@ -65,5 +64,8 @@ public class Account extends MyEntity {
 	
 	@Column(name = "payment_day")
 	public int paymentDay;
+
+    @Column(name = "note")
+    public String note;
 
 }
