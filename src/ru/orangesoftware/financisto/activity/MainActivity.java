@@ -62,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static ru.orangesoftware.financisto.export.docs.GoogleDocsClient.createDocsClient;
+import static ru.orangesoftware.financisto.service.DailyAutoBackupScheduler.scheduleNextAutoBackup;
 
 public class MainActivity extends TabActivity implements TabHost.OnTabChangeListener {
 	
@@ -69,6 +70,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int ACTIVITY_QIF_EXPORT = 3;
     private static final int ACTIVITY_CSV_IMPORT = 4;
     private static final int ACTIVITY_QIF_IMPORT = 5;
+    private static final int CHANGE_PREFERENCES = 6;
 
 	private static final int MENU_PREFERENCES = Menu.FIRST+1;
 	private static final int MENU_ABOUT = Menu.FIRST+2;
@@ -149,7 +151,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
                 QifImportOptions options = QifImportOptions.fromIntent(data);
                 doQifImport(options);
 			}
-		}
+		} else if (requestCode == CHANGE_PREFERENCES) {
+            scheduleNextAutoBackup(this);
+        }
 	}
 	
 	private void initialLoad() {
@@ -272,7 +276,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			d.show();
 			break;
 		case MENU_PREFERENCES:
-			startActivity(new Intent(this, PreferencesActivity.class));
+			startActivityForResult(new Intent(this, PreferencesActivity.class), CHANGE_PREFERENCES);
 			break;
 		case MENU_SCHEDULED_TRANSACTIONS:
 			startActivity(new Intent(this, ScheduledListActivity.class));

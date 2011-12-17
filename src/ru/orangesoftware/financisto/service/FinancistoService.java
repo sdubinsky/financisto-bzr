@@ -22,6 +22,7 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.AbstractTransactionActivity;
 import ru.orangesoftware.financisto.activity.AccountWidget;
 import ru.orangesoftware.financisto.activity.MassOpActivity;
+import ru.orangesoftware.financisto.backup.DatabaseExport;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -29,11 +30,16 @@ import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
 
+import java.util.Date;
+
+import static ru.orangesoftware.financisto.service.DailyAutoBackupScheduler.scheduleNextAutoBackup;
+
 public class FinancistoService extends WakefulIntentService {
 
 	private static final String TAG = "FinancistoService";
     public static final String ACTION_SCHEDULE_ALL = "ru.orangesoftware.financisto.SCHEDULE_ALL";
     public static final String ACTION_SCHEDULE_ONE = "ru.orangesoftware.financisto.SCHEDULE_ONE";
+    public static final String ACTION_AUTO_BACKUP = "ru.orangesoftware.financisto.ACTION_AUTO_BACKUP";
 
 	private static final int RESTORED_NOTIFICATION_ID = 0;
 
@@ -69,6 +75,8 @@ public class FinancistoService extends WakefulIntentService {
             scheduleAll();
         } else if (ACTION_SCHEDULE_ONE.equals(action)) {
             scheduleOne(intent);
+        } else if (ACTION_AUTO_BACKUP.equals(action)) {
+            doAutoBackup();
         }
     }
 
@@ -90,7 +98,23 @@ public class FinancistoService extends WakefulIntentService {
         }
     }
 
-	private void notifyUser(TransactionInfo transaction) {
+    private void doAutoBackup() {
+        try {
+            try {
+                long t0 = System.currentTimeMillis();
+                Log.e(TAG, "Auto-backup started at " + new Date());
+                DatabaseExport export = new DatabaseExport(this, db.db());
+                export.export();
+                Log.e(TAG, "Auto-backup completed in " +(System.currentTimeMillis()-t0)+"ms");
+            } catch (Exception e) {
+                Log.e(TAG, "Auto-backup unsuccessful", e);
+            }
+        } finally {
+            scheduleNextAutoBackup(this);
+        }
+    }
+
+    private void notifyUser(TransactionInfo transaction) {
 		Notification notification = createNotification(transaction);
 		notifyUser(notification, (int)transaction.id);
 	}

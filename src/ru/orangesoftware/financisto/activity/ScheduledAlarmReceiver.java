@@ -19,6 +19,7 @@ import ru.orangesoftware.financisto.service.RecurrenceScheduler;
 public class ScheduledAlarmReceiver extends PackageReplaceReceiver {
 
 	private static final String BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
+    private static final String SCHEDULED_BACKUP = "ru.orangesoftware.financisto.SCHEDULED_BACKUP";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -26,7 +27,10 @@ public class ScheduledAlarmReceiver extends PackageReplaceReceiver {
         String action = intent.getAction();
 		if (BOOT_COMPLETED.equals(action)) {
             scheduleAll(context);
-		} else {
+		} else if (SCHEDULED_BACKUP.equals(action)) {
+            Intent serviceIntent = new Intent(FinancistoService.ACTION_AUTO_BACKUP);
+            FinancistoService.sendWakefulWork(context, serviceIntent);
+        } else {
             Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ONE);
 			serviceIntent.putExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, intent.getLongExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, -1));
             FinancistoService.sendWakefulWork(context, serviceIntent);

@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.preference.PreferenceScreen;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.PinProtection;
@@ -27,26 +28,28 @@ public class PreferencesActivity extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);   
-		addPreferencesFromResource(R.xml.preferences);	
-		final Preference pLocale = getPreferenceScreen().findPreference("ui_language");
-		pLocale.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				String locale = (String)newValue;
-				MyPreferences.switchLocale(PreferencesActivity.this, locale);
+		addPreferencesFromResource(R.xml.preferences);
+
+        PreferenceScreen preferenceScreen = getPreferenceScreen();
+        Preference pLocale = preferenceScreen.findPreference("ui_language");
+        pLocale.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String locale = (String) newValue;
+                MyPreferences.switchLocale(PreferencesActivity.this, locale);
 				return true;
 			}
 		});
-		final Preference pNewTransactionShortcut = getPreferenceScreen().findPreference("shortcut_new_transaction");
-		pNewTransactionShortcut.setOnPreferenceClickListener(new OnPreferenceClickListener(){
-			@Override
-			public boolean onPreferenceClick(Preference arg0) {
-				addShortcut(".activity.TransactionActivity", R.string.transaction, R.drawable.icon_transaction);
-				return true;
-			}
-			
-		});
-		final Preference pNewTransferShortcut = getPreferenceScreen().findPreference("shortcut_new_transfer");
+		Preference pNewTransactionShortcut = preferenceScreen.findPreference("shortcut_new_transaction");
+		pNewTransactionShortcut.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference arg0) {
+                addShortcut(".activity.TransactionActivity", R.string.transaction, R.drawable.icon_transaction);
+                return true;
+            }
+
+        });
+		Preference pNewTransferShortcut = preferenceScreen.findPreference("shortcut_new_transfer");
 		pNewTransferShortcut.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
 			public boolean onPreferenceClick(Preference arg0) {
@@ -68,7 +71,7 @@ public class PreferencesActivity extends PreferenceActivity {
 		shortcutIntent.setComponent(new ComponentName(this.getPackageName(), activity));
 		shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		final Intent intent = new Intent();
+		Intent intent = new Intent();
 		intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
 		intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, shortcutName);
 		intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, shortcutIcon);

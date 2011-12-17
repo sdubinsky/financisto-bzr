@@ -19,7 +19,6 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import ru.orangesoftware.financisto.activity.TransferActivity;
 import ru.orangesoftware.financisto.model.Currency;
 
 import java.lang.reflect.Method;
@@ -380,6 +379,16 @@ public class MyPreferences {
 
     public static boolean isLocationGPSSupported(Context context) {
         return isFeatureSupported(context, PackageManager.FEATURE_LOCATION_GPS);
+    }
+
+    public static boolean isAutoBackupEnabled(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("auto_backup_enabled", false);
+    }
+    
+    public static int getAutoBackupTime(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getInt("auto_backup_time", 600);
     }
 
     private static boolean isFeatureSupported(Context context, String feature) {
