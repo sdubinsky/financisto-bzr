@@ -410,7 +410,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private List<DocumentEntry> backupFiles;
 	
 	private void doImport() {
-		final String[] backupFiles = Backup.listBackups();
+		final String[] backupFiles = Backup.listBackups(this);
 		new AlertDialog.Builder(this)
 			.setTitle(R.string.restore_database)
 			.setPositiveButton(R.string.restore, new DialogInterface.OnClickListener(){

@@ -33,7 +33,8 @@ public class DatabaseImport extends FullDatabaseImport {
     private final InputStream backupStream;
 
     public static DatabaseImport createFromFileBackup(Context context, DatabaseAdapter dbAdapter, String backupFile) throws FileNotFoundException {
-        File file = new File(Export.EXPORT_PATH, backupFile);
+        File backupPath = Export.getBackupFolder(context);
+        File file = new File(backupPath, backupFile);
         FileInputStream inputStream = new FileInputStream(file);
         return new DatabaseImport(context, dbAdapter, inputStream);
     }

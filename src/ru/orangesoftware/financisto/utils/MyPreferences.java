@@ -19,6 +19,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Currency;
 
 import java.lang.reflect.Method;
@@ -412,6 +413,16 @@ public class MyPreferences {
             sharedPreferences.edit().putBoolean("should_rebuild_running_balance", false).commit();
         }
         return result;
+    }
+
+    public static String getDatabaseBackupFolder(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString("database_backup_folder", Export.DEFAULT_EXPORT_PATH.getAbsolutePath());
+    }
+
+    public static void setDatabaseBackupFolder(Context context, String databaseBackupFolder) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putString("database_backup_folder", databaseBackupFolder).commit();
     }
 
 	public static String[] getReportPreferences(Context context) {

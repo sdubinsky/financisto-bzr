@@ -12,6 +12,8 @@ package ru.orangesoftware.financisto.activity;
 
 import android.preference.PreferenceScreen;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.dialog.FolderBrowser;
+import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.PinProtection;
 import android.content.ComponentName;
@@ -24,6 +26,8 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 
 public class PreferencesActivity extends PreferenceActivity {	
+    
+    private static final int SELECT_DATABASE_FOLDER = 100;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +60,45 @@ public class PreferencesActivity extends PreferenceActivity {
 				addShortcut(".activity.TransferActivity", R.string.transfer, R.drawable.icon_transfer);
 				return true;
 			}
-			
 		});
+        Preference pDatabaseBackupFolder = preferenceScreen.findPreference("database_backup_folder");
+        pDatabaseBackupFolder.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+            @Override
+            public boolean onPreferenceClick(Preference arg0) {
+                selectDatabaseBackupFolder();
+                return true;
+            }
+        });
+        setCurrentDatabaseBackupFolder();
 	}
-	
-	private void addShortcut(String activity, int nameId, int iconId) {
+
+    private void selectDatabaseBackupFolder() {
+        Intent intent = new Intent(this, FolderBrowser.class);
+        intent.putExtra(FolderBrowser.PATH, getDatabaseBackupFolder());
+        startActivityForResult(intent, SELECT_DATABASE_FOLDER);
+    }
+
+    private String getDatabaseBackupFolder() {
+        return Export.getBackupFolder(this).getAbsolutePath();
+    }
+
+    private void setCurrentDatabaseBackupFolder() {
+        Preference pDatabaseBackupFolder = getPreferenceScreen().findPreference("database_backup_folder");
+        String summary = getString(R.string.database_backup_folder_summary, getDatabaseBackupFolder());
+        pDatabaseBackupFolder.setSummary(summary);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECT_DATABASE_FOLDER && resultCode == RESULT_OK) {
+            String databaseBackupFolder = data.getStringExtra(FolderBrowser.PATH);
+            MyPreferences.setDatabaseBackupFolder(this, databaseBackupFolder);
+            setCurrentDatabaseBackupFolder();
+        }
+    }
+
+    private void addShortcut(String activity, int nameId, int iconId) {
 		Intent intent = createShortcutIntent(activity, getString(nameId), Intent.ShortcutIconResource.fromContext(this, iconId), 
 				"com.android.launcher.action.INSTALL_SHORTCUT");
 		sendBroadcast(intent);

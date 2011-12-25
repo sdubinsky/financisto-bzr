@@ -128,6 +128,19 @@
                             android:title="@string/use_my_location" android:summary="@string/use_my_location_summary"
                             android:defaultValue="true"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/database_backup">
+        <Preference android:key="database_backup_folder"
+                    android:title="@string/database_backup_folder"
+                    android:summary="@string/database_backup_folder_summary" />
+        <CheckBoxPreference android:key="auto_backup_enabled"
+                            android:title="@string/auto_backup_enabled"
+                            android:summary="@string/auto_backup_enabled_summary"
+                            android:defaultValue="false"/>
+        <ru.orangesoftware.financisto.dialog.TimePreference android:key="auto_backup_time"
+                                                            android:title="@string/auto_backup_time"
+                                                            android:summary="@string/auto_backup_time_summary"
+                                                            android:dependency="auto_backup_enabled"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/gdocs_backup">
         <EditTextPreference android:key="user_login"
                             android:title="@string/user_login"
@@ -140,14 +153,6 @@
                 android:summary="@string/user_password_summary"/>
         <EditTextPreference android:key="backup_folder"
                             android:title="@string/backup_folder" android:summary="@string/backup_folder_summary"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/auto_backup">
-        <CheckBoxPreference android:key="auto_backup_enabled"
-                            android:title="@string/auto_backup_enabled" android:summary="@string/auto_backup_enabled_summary"
-                            android:defaultValue="false"/>
-        <ru.orangesoftware.financisto.dialog.TimePreference android:key="auto_backup_time"
-                                                            android:title="@string/auto_backup_time" android:summary="@string/auto_backup_time_summary"
-                                                            android:dependency="auto_backup_enabled"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/other">
         <CheckBoxPreference android:key="include_transfers_into_reports"

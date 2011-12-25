@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.backup;
 
+import android.content.Context;
 import ru.orangesoftware.financisto.export.Export;
 
 import java.io.File;
@@ -37,8 +38,8 @@ public final class Backup {
 
 	private Backup() {}
 	
-	public static String[] listBackups() {
-		File backupPath = Export.EXPORT_PATH;
+	public static String[] listBackups(Context context) {
+		File backupPath = Export.getBackupFolder(context);
 		String[] files = backupPath.list(new FilenameFilter(){
 			@Override
 			public boolean accept(File dir, String filename) {

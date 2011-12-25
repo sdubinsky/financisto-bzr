@@ -694,5 +694,14 @@
     <string name="auto_backup_enabled_summary">Backup database daily at the specified time</string>
     <string name="auto_backup_time">Auto-backup time</string>
     <string name="auto_backup_time_summary" formatted="false">Do daily backup at %02d:%02d</string>
+    <string name="select_folder">Select current folder</string>
+    <string name="create">Create</string>
+    <string name="create_new_folder">New</string>
+    <string name="create_new_folder_title">Create new folder</string>
+    <string name="create_new_folder_fail">Failed to create the folder</string>
+
+    <string name="database_backup">Database Backup</string>
+    <string name="database_backup_folder">Backup Folder</string>
+    <string name="database_backup_folder_summary">Current database backup folder: %s</string>
 
 </resources>
