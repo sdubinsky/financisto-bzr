@@ -44,6 +44,8 @@ import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.dialog.WebViewDialog;
 import ru.orangesoftware.financisto.export.BackupExportTask;
 import ru.orangesoftware.financisto.export.BackupImportTask;
+import ru.orangesoftware.financisto.export.Export;
+import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
 import ru.orangesoftware.financisto.export.docs.OnlineBackupExportTask;
 import ru.orangesoftware.financisto.export.docs.OnlineBackupImportTask;
 import ru.orangesoftware.financisto.export.csv.CsvExportOptions;
@@ -56,6 +58,7 @@ import ru.orangesoftware.financisto.export.qif.QifImportOptions;
 import ru.orangesoftware.financisto.export.qif.QifImportTask;
 import ru.orangesoftware.financisto.utils.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,6 +86,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private static final int MENU_MASS_OP = Menu.FIRST+9;
     private static final int MENU_DONATE = Menu.FIRST+10;
     private static final int MENU_IMPORT_EXPORT = Menu.FIRST+11;
+    private static final int MENU_BACKUP_TO = Menu.FIRST+12;
 
 	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
@@ -249,6 +253,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menu.addSubMenu(0, MENU_RESTORE, 0, R.string.restore_database);
 		menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
+        menu.addSubMenu(0, MENU_BACKUP_TO, 0, R.string.backup_database_to);
 		menu.addSubMenu(0, MENU_IMPORT_EXPORT, 0, R.string.import_export);
         menu.addSubMenu(0, MENU_DONATE, 0, R.string.donate);
 		menu.addSubMenu(0, MENU_ABOUT, 0, R.string.about);
@@ -309,6 +314,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		case MENU_BACKUP:
 			doBackup();
 			break;
+        case MENU_BACKUP_TO:
+            doBackupTo();
+            break;
 		case MENU_BACKUP_GDOCS:
 			doBackupOnline();
 			break;
@@ -345,7 +353,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			showErrorPopup(MainActivity.this, msg.what);
 		}
 	};
-	
+
 	private void showErrorPopup(Context context, int message) {
 		new AlertDialog.Builder(context)
 		.setMessage(message)
@@ -354,13 +362,36 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		.setCancelable(true)
 		.create().show();
 	}
-	
+
 	private void doBackup() {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_inprogress), true);
 		new BackupExportTask(this, d).execute((String[])null);
 	}
-	
-	private void doBackupOnline() {
+
+    private void doBackupTo() {
+        ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_inprogress), true);
+        final BackupExportTask t = new BackupExportTask(this, d);
+        t.setShowResultDialog(false);
+        t.setListener(new ImportExportAsyncTaskListener() {
+            @Override
+            public void onCompleted() {
+                String backupFileName = t.backupFileName;
+                startBackupToChooser(backupFileName);
+            }
+        });
+        t.execute((String[]) null);
+    }
+
+    private void startBackupToChooser(String backupFileName) {
+        File path = Export.getBackupFolder(this);
+        File file = new File(path, backupFileName);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        intent.setType("text/plain");
+        startActivity(Intent.createChooser(intent, getString(R.string.backup_database_to_title)));
+    }
+
+    private void doBackupOnline() {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_gdocs_inprogress), true);
 		new OnlineBackupExportTask(this, handler, d).execute((String[])null);
 	}

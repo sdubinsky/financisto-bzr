@@ -22,6 +22,7 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, Void, Obje
 	
 	protected final Context context;
 	private final ProgressDialog dialog;
+    private boolean showResultDialog = true;
 
     private ImportExportAsyncTaskListener listener;
 	
@@ -32,6 +33,10 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, Void, Obje
 
     public void setListener(ImportExportAsyncTaskListener listener) {
         this.listener = listener;
+    }
+
+    public void setShowResultDialog(boolean showResultDialog) {
+        this.showResultDialog = showResultDialog;
     }
 
     @Override
@@ -55,24 +60,23 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, Void, Obje
 	@Override
 	protected void onPostExecute(Object result) {
 		dialog.dismiss();
-		String message;
-		String title;
 
 		if (result instanceof Exception) 
 			return;
 
-		title = context.getString(R.string.success);
-		message = getSuccessMessage(result);
-		
-		if (listener != null) {
-			listener.onCompleted();
-		}
-		
-		new AlertDialog.Builder(context)
-			.setTitle(title)
-			.setMessage(message)
-			.setPositiveButton(R.string.ok, null)
-			.show();
+		String message = getSuccessMessage(result);
+
+        if (listener != null) {
+            listener.onCompleted();
+        }
+
+        if (showResultDialog) {
+            new AlertDialog.Builder(context)
+                .setTitle(R.string.success)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, null)
+                .show();
+        }
 	}
 	
 }

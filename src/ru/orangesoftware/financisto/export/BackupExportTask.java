@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 
 public class BackupExportTask extends ImportExportAsyncTask {
+    
+    public String backupFileName;
 	
 	public BackupExportTask(Context context, ProgressDialog dialog) {
 		super(context, dialog);
@@ -14,7 +16,8 @@ public class BackupExportTask extends ImportExportAsyncTask {
 	@Override
 	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
 		DatabaseExport export = new DatabaseExport(context, db.db());
-		return export.export(context);
+        backupFileName = export.export(context);
+        return backupFileName;
 	}
 	
 	@Override

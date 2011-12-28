@@ -704,4 +704,7 @@
     <string name="database_backup_folder">Backup Folder</string>
     <string name="database_backup_folder_summary">Current database backup folder: %s</string>
 
+    <string name="backup_database_to">Backup Database To...</string>
+    <string name="backup_database_to_title">Send Database Backup to...</string>
+
 </resources>
