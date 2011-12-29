@@ -39,6 +39,7 @@ public class FinancistoService extends WakefulIntentService {
 	private static final String TAG = "FinancistoService";
     public static final String ACTION_SCHEDULE_ALL = "ru.orangesoftware.financisto.SCHEDULE_ALL";
     public static final String ACTION_SCHEDULE_ONE = "ru.orangesoftware.financisto.SCHEDULE_ONE";
+    public static final String ACTION_SCHEDULE_AUTO_BACKUP = "ru.orangesoftware.financisto.ACTION_SCHEDULE_AUTO_BACKUP";
     public static final String ACTION_AUTO_BACKUP = "ru.orangesoftware.financisto.ACTION_AUTO_BACKUP";
 
 	private static final int RESTORED_NOTIFICATION_ID = 0;
@@ -75,6 +76,8 @@ public class FinancistoService extends WakefulIntentService {
             scheduleAll();
         } else if (ACTION_SCHEDULE_ONE.equals(action)) {
             scheduleOne(intent);
+        } else if (ACTION_SCHEDULE_AUTO_BACKUP.equals(action)) {
+            scheduleNextAutoBackup(this);
         } else if (ACTION_AUTO_BACKUP.equals(action)) {
             doAutoBackup();
         }

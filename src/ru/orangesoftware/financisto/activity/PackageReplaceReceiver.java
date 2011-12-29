@@ -28,13 +28,19 @@ public class PackageReplaceReceiver extends BroadcastReceiver {
             Log.d("PackageReplaceReceiver", "Received " + dataString);
             if ("package:ru.orangesoftware.financisto".equals(dataString)) {
                 Log.d("PackageReplaceReceiver", "Re-scheduling all transactions");
-                scheduleAll(context);
+                requestScheduleAll(context);
+                requestScheduleAutoBackup(context);
             }
 		}
 	}
 
-    protected void scheduleAll(Context context) {
+    protected void requestScheduleAll(Context context) {
         Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ALL);
+        FinancistoService.sendWakefulWork(context, serviceIntent);
+    }
+
+    protected void requestScheduleAutoBackup(Context context) {
+        Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_AUTO_BACKUP);
         FinancistoService.sendWakefulWork(context, serviceIntent);
     }
 

@@ -26,15 +26,24 @@ public class ScheduledAlarmReceiver extends PackageReplaceReceiver {
 		Log.i("ScheduledAlarmReceiver", "Received " + intent);
         String action = intent.getAction();
 		if (BOOT_COMPLETED.equals(action)) {
-            scheduleAll(context);
+            requestScheduleAll(context);
+            requestScheduleAutoBackup(context);
 		} else if (SCHEDULED_BACKUP.equals(action)) {
-            Intent serviceIntent = new Intent(FinancistoService.ACTION_AUTO_BACKUP);
-            FinancistoService.sendWakefulWork(context, serviceIntent);
+            requestAutoBackup(context);
         } else {
-            Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ONE);
-			serviceIntent.putExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, intent.getLongExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, -1));
-            FinancistoService.sendWakefulWork(context, serviceIntent);
+            requestScheduleOne(context, intent);
 		}
 	}
+
+    private void requestScheduleOne(Context context, Intent intent) {
+        Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_ONE);
+        serviceIntent.putExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, intent.getLongExtra(RecurrenceScheduler.SCHEDULED_TRANSACTION_ID, -1));
+        FinancistoService.sendWakefulWork(context, serviceIntent);
+    }
+
+    private void requestAutoBackup(Context context) {
+        Intent serviceIntent = new Intent(FinancistoService.ACTION_AUTO_BACKUP);
+        FinancistoService.sendWakefulWork(context, serviceIntent);
+    }
 
 }
