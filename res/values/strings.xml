@@ -32,7 +32,6 @@
 	<string name="add_currency">Add Currency</string>
 	<string name="opening_amount">Opening amount</string>
 	<string name="limit_amount">Limit amount</string>
-	<string name="amount_in" formatted="false">Amount in &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">View</string>
 	<string name="edit">Edit</string>
 	<string name="delete">Delete</string>
