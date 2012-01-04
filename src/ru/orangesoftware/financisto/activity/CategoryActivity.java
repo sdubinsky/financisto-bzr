@@ -24,7 +24,6 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.AttributeColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -262,10 +261,10 @@ public class CategoryActivity extends AbstractActivity {
 	}
 
 	private void selectParentCategory(long parentId) {
-		if (Utils.moveCursor(categoryCursor, CategoryColumns._id.name(), parentId) != -1) {
-			String title = categoryCursor.getString(CategoryColumns.title.ordinal());
-			parentCategoryText.setText(title);						
-			category.parent = Category.formCursor(categoryCursor);
+        Category c = em.getCategory(parentId);
+		if (c != null) {
+            category.parent = c;
+            parentCategoryText.setText(c.title);
 		}
         updateIncomeExpenseType();
 	}

@@ -40,7 +40,6 @@ import ru.orangesoftware.financisto.utils.*;
 import ru.orangesoftware.financisto.view.AttributeView;
 import ru.orangesoftware.financisto.view.AttributeViewFactory;
 import ru.orangesoftware.financisto.widget.AmountInput;
-import ru.orangesoftware.orb.EntityManager;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -653,8 +652,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
         if (selectedCategoryId == categoryId) {
             return;
         }
-		if (Utils.moveCursor(categoryCursor, CategoryViewColumns._id.name(), categoryId) != -1) {
-            Category category = Category.formCursor(categoryCursor);
+        Category category = em.getCategory(categoryId);
+		if (category != null) {
 			categoryText.setText(Category.getTitle(category.title, category.level));
 			selectedCategoryId = categoryId;
             addOrRemoveSplits();
@@ -715,8 +714,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			selectCurrentLocation(false);
 		} else {
 			if (isShowLocation) {
-				if (Utils.moveCursor(locationCursor, "_id", locationId) != -1) {
-					MyLocation location = EntityManager.loadFromCursor(locationCursor,MyLocation.class);
+                MyLocation location = em.get(MyLocation.class, locationId);
+				if (location != null) {
 					locationText.setText(location.toString());
 					selectedLocationId = locationId;
 					setCurrentLocation = false;

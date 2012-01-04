@@ -23,7 +23,6 @@ import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
-import ru.orangesoftware.orb.EntityManager;
 
 import java.util.Iterator;
 import java.util.List;
@@ -252,8 +251,8 @@ public class BudgetActivity extends AbstractActivity {
 	}
 
 	private void selectCurrency(long currencyId) {
-		if (Utils.moveCursor(currencyCursor, "_id", currencyId) != -1) {
-			Currency currency = EntityManager.loadFromCursor(currencyCursor, Currency.class);
+        Currency currency = em.get(Currency.class, currencyId);
+		if (currency != null) {
 			selectCurrency(currency);
 		}
 	}

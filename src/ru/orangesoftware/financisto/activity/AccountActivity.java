@@ -19,17 +19,13 @@ import android.text.InputType;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
-import greendroid.widget.QuickActionGrid;
-import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.EntityEnumAdapter;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
-import ru.orangesoftware.orb.EntityManager;
 
-import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 import static ru.orangesoftware.financisto.utils.Utils.text;
 
 public class AccountActivity extends AbstractActivity {
@@ -332,8 +328,8 @@ public class AccountActivity extends AbstractActivity {
 	}
 
 	private void selectCurrency(long currencyId) {
-		if (Utils.moveCursor(currencyCursor, "_id", currencyId) != -1) {
-			Currency c = EntityManager.loadFromCursor(currencyCursor, Currency.class);
+        Currency c = em.get(Currency.class, currencyId);
+		if (c != null) {
 			selectCurrency(c);
 		}
 	}

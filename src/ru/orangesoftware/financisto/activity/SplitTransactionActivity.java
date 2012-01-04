@@ -10,7 +10,6 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
-import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 
 /**
@@ -66,8 +65,8 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
     }
 
     private void selectCategory(long categoryId) {
-        if (Utils.moveCursor(categoryCursor, DatabaseHelper.CategoryViewColumns._id.name(), categoryId) != -1) {
-            Category category = Category.formCursor(categoryCursor);
+        Category category = em.getCategory(categoryId);
+        if (category != null) {
             categoryText.setText(Category.getTitle(category.title, category.level));
             if (category.isIncome()) {
                 amountInput.setIncome();
