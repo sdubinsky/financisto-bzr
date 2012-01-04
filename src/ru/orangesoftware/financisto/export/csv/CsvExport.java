@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.export.csv;
 
+import android.content.Context;
 import android.database.Cursor;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
@@ -35,7 +36,8 @@ public class CsvExport extends Export {
 	private final DatabaseAdapter db;
     private final CsvExportOptions options;
 
-	public CsvExport(DatabaseAdapter db, CsvExportOptions options) {
+	public CsvExport(Context context, DatabaseAdapter db, CsvExportOptions options) {
+        super(context, false);
 		this.db = db;
 		this.options = options;
 	}

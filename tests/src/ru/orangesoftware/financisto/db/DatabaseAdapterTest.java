@@ -71,11 +71,15 @@ public class DatabaseAdapterTest extends AbstractDbTest {
 
     private String fetchFirstPayee(String s) {
         Cursor c = em.getAllPayeesLike(s);
-        if (c.moveToFirst()) {
-            Payee p =  EntityManager.loadFromCursor(c, Payee.class);
-            return p.title;
+        try {
+            if (c.moveToFirst()) {
+                Payee p =  EntityManager.loadFromCursor(c, Payee.class);
+                return p.title;
+            }
+            return null;
+        } finally {
+            c.close();
         }
-        return null;
     }
 
 }

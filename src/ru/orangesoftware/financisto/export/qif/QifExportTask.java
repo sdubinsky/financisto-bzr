@@ -16,8 +16,8 @@ public class QifExportTask extends ImportExportAsyncTask {
 	
 	@Override
 	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-        QifExport qifExport = new QifExport(db, options);
-        return qifExport.export(context);
+        QifExport qifExport = new QifExport(context, db, options);
+        return qifExport.export();
 	}
 
 	@Override

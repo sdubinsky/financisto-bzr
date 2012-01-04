@@ -28,14 +28,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 public class DatabaseExport extends Export {
 	
 	private final Context context;
 	private final SQLiteDatabase db;
-	
-	public DatabaseExport(Context context, SQLiteDatabase db) {
+
+    public DatabaseExport(Context context, SQLiteDatabase db, boolean useGZip) {
+        super(context, useGZip);
 		this.context = context;
 		this.db = db;
 	}
@@ -51,7 +51,7 @@ public class DatabaseExport extends Export {
 		bw.write("PACKAGE:");bw.write(pi.packageName);bw.write("\n");
 		bw.write("VERSION_CODE:");bw.write(String.valueOf(pi.versionCode));bw.write("\n");
 		bw.write("VERSION_NAME:");bw.write(pi.versionName);bw.write("\n");
-		bw.write("DATABASE_VERSION:");bw.write(db.getVersion());bw.write("\n");
+		bw.write("DATABASE_VERSION:");bw.write(String.valueOf(db.getVersion()));bw.write("\n");
 		bw.write("#START\n");
 	}
 

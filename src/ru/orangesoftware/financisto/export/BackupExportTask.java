@@ -15,8 +15,8 @@ public class BackupExportTask extends ImportExportAsyncTask {
 	
 	@Override
 	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
-		DatabaseExport export = new DatabaseExport(context, db.db());
-        backupFileName = export.export(context);
+		DatabaseExport export = new DatabaseExport(context, db.db(), true);
+        backupFileName = export.export();
         return backupFileName;
 	}
 	

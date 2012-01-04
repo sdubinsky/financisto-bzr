@@ -106,8 +106,8 @@ public class FinancistoService extends WakefulIntentService {
             try {
                 long t0 = System.currentTimeMillis();
                 Log.e(TAG, "Auto-backup started at " + new Date());
-                DatabaseExport export = new DatabaseExport(this, db.db());
-                export.export(this);
+                DatabaseExport export = new DatabaseExport(this, db.db(), true);
+                export.export();
                 Log.e(TAG, "Auto-backup completed in " +(System.currentTimeMillis()-t0)+"ms");
             } catch (Exception e) {
                 Log.e(TAG, "Auto-backup unsuccessful", e);

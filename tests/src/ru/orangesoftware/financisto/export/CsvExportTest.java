@@ -74,7 +74,7 @@ public class CsvExportTest extends AbstractExportTest<CsvExport, CsvExportOption
 
     @Override
     protected CsvExport createExport(CsvExportOptions options) {
-        return new CsvExport(db, options);
+        return new CsvExport(getContext(), db, options);
     }
 
 }

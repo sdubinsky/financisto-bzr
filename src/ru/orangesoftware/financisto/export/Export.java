@@ -28,13 +28,25 @@ public abstract class Export {
 	
 	public static final File DEFAULT_EXPORT_PATH =  new File(Environment.getExternalStorageDirectory(), "financisto");
 
-	public String export(Context context) throws Exception {
+    private final Context context;
+    private final boolean useGzip;
+
+    protected Export(Context context, boolean useGzip) {
+        this.context = context;
+        this.useGzip = useGzip;
+    }
+
+    public String export() throws Exception {
 		File path = getBackupFolder(context);
         String fileName = generateFilename();
         File file = new File(path, fileName);
         FileOutputStream outputStream = new FileOutputStream(file);
         try {
-            export(outputStream);
+            if (useGzip) {
+                export(new GZIPOutputStream(outputStream));
+            } else {
+                export(outputStream);
+            }
         } finally {
             outputStream.flush();
             outputStream.close();

@@ -59,7 +59,8 @@ public class DatabaseImport extends FullDatabaseImport {
 
     @Override
     protected void restoreDatabase() throws IOException {
-        InputStreamReader isr = new InputStreamReader(backupStream, "UTF-8");
+        InputStream s = decompressStream(backupStream);
+        InputStreamReader isr = new InputStreamReader(s, "UTF-8");
         BufferedReader br = new BufferedReader(isr, 65535);
         try {
             recoverDatabase(br);
@@ -69,7 +70,19 @@ public class DatabaseImport extends FullDatabaseImport {
         }
     }
 
-	private void recoverDatabase(BufferedReader br) throws IOException {
+    private InputStream decompressStream(InputStream input) throws IOException {
+        PushbackInputStream pb = new PushbackInputStream(input, 2);
+        byte[] bytes = new byte[2];
+        pb.read(bytes);
+        pb.unread(bytes);
+        int head = ((int) bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00);
+        if (GZIPInputStream.GZIP_MAGIC == head)
+            return new GZIPInputStream(pb);
+        else
+            return pb;
+    }
+
+    private void recoverDatabase(BufferedReader br) throws IOException {
         boolean insideEntity = false;
         ContentValues values = new ContentValues();
         String line;

@@ -25,11 +25,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         return instance;
     }
 
-    public static SQLiteDatabase getDatabase(Context context) {
-        return getHelper(context).getWritableDatabase();
-    }
-
-	private DatabaseHelper(Context context) {
+	public DatabaseHelper(Context context) {
 		super(context, Database.DATABASE_NAME, null, Database.DATABASE_VERSION);
 		setAutoDropViews(true);
 	}

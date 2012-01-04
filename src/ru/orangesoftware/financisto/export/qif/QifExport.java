@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.export.qif;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
@@ -37,7 +38,8 @@ public class QifExport extends Export {
     private final Map<Long, Category> categoriesMap;
     private final Map<Long, Account> accountsMap;
 
-    public QifExport(DatabaseAdapter db, QifExportOptions options) {
+    public QifExport(Context context, DatabaseAdapter db, QifExportOptions options) {
+        super(context, false);
         this.db = db;
         this.em = db.em();
         this.options = options;

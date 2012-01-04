@@ -42,8 +42,8 @@ public class OnlineBackupExportTask extends ImportExportAsyncTask {
     }
 
     @Override
-    protected Object work(Context context, DatabaseAdapter db, String... params) throws AuthenticationException, Exception {
-        DatabaseExport export = new DatabaseExport(context, db.db());
+    protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
+        DatabaseExport export = new DatabaseExport(context, db.db(), true);
         try {
             String folder = MyPreferences.getBackupFolder(context);
             // check the backup folder registered on preferences

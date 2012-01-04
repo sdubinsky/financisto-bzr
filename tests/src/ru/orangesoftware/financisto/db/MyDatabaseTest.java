@@ -1,12 +1,25 @@
 package ru.orangesoftware.financisto.db;
 
 import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.test.AccountBuilder;
+import ru.orangesoftware.financisto.test.CategoryBuilder;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class MyDatabaseTest extends DatabaseAdapterTest {
+public class MyDatabaseTest extends AbstractDbTest {
+
+    Account a1;
+    Map<String, Category> categoriesMap;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        a1 = AccountBuilder.createDefault(db);
+        categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
+    }
 
     public void testShouldSavePayeeOnlyOnce() {
         // given

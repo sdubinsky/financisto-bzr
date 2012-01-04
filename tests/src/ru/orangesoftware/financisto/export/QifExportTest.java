@@ -436,7 +436,7 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
 
     @Override
     protected QifExport createExport(QifExportOptions options) {
-        return new QifExport(db, options);
+        return new QifExport(getContext(), db, options);
     }
 
 }

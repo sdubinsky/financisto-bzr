@@ -30,13 +30,19 @@ import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 public class DatabaseAdapter {
 
 	private final Context context;
+    private final DatabaseHelper dbHelper;
 	private final MyEntityManager em;
 
     private boolean updateAccountBalance = true;
-	
-	public DatabaseAdapter(Context context) {
+
+    public DatabaseAdapter(Context context) {
+        this(context, DatabaseHelper.getHelper(context));
+    }
+
+	public DatabaseAdapter(Context context, DatabaseHelper dbHelper) {
 		this.context = context;
-        this.em = new MyEntityManager(context, DatabaseHelper.getHelper(context));
+        this.dbHelper = dbHelper;
+        this.em = new MyEntityManager(context, dbHelper);
 	}
 	
 	public void open() {
@@ -46,7 +52,7 @@ public class DatabaseAdapter {
 	}
 	
 	public SQLiteDatabase db() {
-		return getDatabase(context);
+		return dbHelper.getWritableDatabase();
 	}
 
 	public MyEntityManager em() {

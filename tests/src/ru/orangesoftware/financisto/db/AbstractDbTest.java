@@ -14,20 +14,22 @@ import ru.orangesoftware.financisto.model.Transaction;
  */
 public abstract class AbstractDbTest extends AndroidTestCase {
 
+    private DatabaseHelper dbHelper;
     protected DatabaseAdapter db;
     protected MyEntityManager em;
 
     @Override
     public void setUp() throws Exception {
         Context context = new RenamingDelegatingContext(getContext(), "test-");
-        db = new DatabaseAdapter(context);
+        dbHelper = new DatabaseHelper(context);
+        db = new DatabaseAdapter(context, dbHelper);
         db.open();
         em = db.em();
     }
 
     @Override
     public void tearDown() throws Exception {
-        db.close();
+        dbHelper.close();
     }
 
     public void assertAccountTotal(Account account, long total) {
