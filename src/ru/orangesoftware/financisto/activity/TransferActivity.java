@@ -155,13 +155,14 @@ public class TransferActivity extends AbstractTransactionActivity {
 	}
 
 	@Override
-	protected void selectAccount(long accountId, boolean selectLast) {
+	protected Account selectAccount(long accountId, boolean selectLast) {
         Account account = em.getAccount(accountId);
         if (account != null) {
             selectAccount(account, accountFromText, selectLast);
             selectedAccountFromId = accountId;
             rateView.selectFromAccount(account);
         }
+        return account;
 	}
 
 	protected void selectAccount(Account account, TextView accountText, boolean selectLast) {

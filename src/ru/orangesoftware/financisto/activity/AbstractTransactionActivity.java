@@ -297,15 +297,15 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		if (transactionId != -1) {
 			editTransaction(transaction);
 		} else {
-			if (accountId != -1) {
-				selectAccount(accountId);
-			} else {
-				long lastAccountId = MyPreferences.getLastAccount(this); 
-				if (isRememberLastAccount && lastAccountId != -1) {
-					selectAccount(lastAccountId);
-				}				
-			}
-			selectCategory(0);
+            selectCategory(0);
+            if (accountId != -1) {
+                selectAccount(accountId);
+            } else {
+                long lastAccountId = MyPreferences.getLastAccount(this);
+                if (isRememberLastAccount && lastAccountId != -1) {
+                    selectAccount(lastAccountId);
+                }
+            }
 			if (!isRememberLastProject) {
 				selectProject(0);
 			}
@@ -631,17 +631,18 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		status.setImageResource(transactionStatus.iconId);
 	}
 
-	protected void selectAccount(long accountId) {
-		selectAccount(accountId, true);
+	protected Account selectAccount(long accountId) {
+		return selectAccount(accountId, true);
 	}
 	
-	protected void selectAccount(long accountId, boolean selectLast) {
-		if (Utils.moveCursor(accountCursor, AccountColumns.ID, accountId) != -1) {
-			Account a = EntityManager.loadFromCursor(accountCursor, Account.class);
-			accountText.setText(a.title);
-			amountInput.setCurrency(a.currency);
-			selectedAccountId = accountId;
-		}
+	protected Account selectAccount(long accountId, boolean selectLast) {
+        Account a = em.getAccount(accountId);
+        if (a != null) {
+            accountText.setText(a.title);
+            amountInput.setCurrency(a.currency);
+            selectedAccountId = accountId;
+        }
+        return a;
 	}
 
 	protected void selectCategory(long categoryId) {

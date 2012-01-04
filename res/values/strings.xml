@@ -679,7 +679,7 @@
     <string name="qif_import_disclaimer">*WARNING* Please note that all existing data will be removed!</string>
 
     <string name="remember_last_category_for_payee">Last category</string>
-    <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee</string>
+    <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee (or account if payee is disabled)</string>
 
     <string name="currency_symbol_format">Symbol format</string>
     <string name="use_header_from_file">Use header from file</string>

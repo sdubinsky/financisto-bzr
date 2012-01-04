@@ -174,7 +174,11 @@ public class DatabaseAdapter {
 		db().execSQL(LOCATION_COUNT_UPDATE, new Object[]{count, locationId});
 	}
 
-	private static final String ACCOUNT_LAST_ACCOUNT_UPDATE = "UPDATE "+ACCOUNT_TABLE
+    private static final String ACCOUNT_LAST_CATEGORY_UPDATE = "UPDATE " + ACCOUNT_TABLE
+            + " SET " + AccountColumns.LAST_CATEGORY_ID + "=? "
+            + " WHERE " + AccountColumns.ID + "=?";
+
+    private static final String ACCOUNT_LAST_ACCOUNT_UPDATE = "UPDATE "+ACCOUNT_TABLE
 	+" SET "+AccountColumns.LAST_ACCOUNT_ID+"=? "
 	+" WHERE "+AccountColumns.ID+"=?";
 
@@ -192,6 +196,7 @@ public class DatabaseAdapter {
 		if (t.isTransfer()) {
 			db.execSQL(ACCOUNT_LAST_ACCOUNT_UPDATE, new Object[]{t.toAccountId, t.fromAccountId});
 		}
+        db.execSQL(ACCOUNT_LAST_CATEGORY_UPDATE, new Object[]{t.categoryId, t.fromAccountId});
 		db.execSQL(PAYEE_LAST_CATEGORY_UPDATE, new Object[]{t.categoryId, t.payeeId});
 		db.execSQL(CATEGORY_LAST_LOCATION_UPDATE, new Object[]{t.locationId, t.categoryId});
 		db.execSQL(CATEGORY_LAST_PROJECT_UPDATE, new Object[]{t.projectId, t.categoryId});

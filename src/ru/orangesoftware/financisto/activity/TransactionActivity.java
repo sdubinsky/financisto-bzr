@@ -348,6 +348,17 @@ public class TransactionActivity extends AbstractTransactionActivity {
         }
 	}
 
+    @Override
+    protected Account selectAccount(long accountId, boolean selectLast) {
+        Account a = super.selectAccount(accountId, selectLast);
+        if (a != null) {
+            if (selectLast && !isShowPayee && isRememberLastCategory) {
+                selectCategory(a.lastCategoryId, true);
+            }
+        }
+        return a;
+    }
+
     private void selectPayee(long payeeId) {
         if (isShowPayee) {
             Payee p = db.em().get(Payee.class, payeeId);
