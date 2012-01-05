@@ -706,4 +706,6 @@
     <string name="backup_database_to">Backup Database To...</string>
     <string name="backup_database_to_title">Send Database Backup to...</string>
 
+    <string name="license">License</string>
+
 </resources>

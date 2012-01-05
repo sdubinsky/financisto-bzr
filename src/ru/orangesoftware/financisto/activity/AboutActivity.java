@@ -32,7 +32,7 @@ public class AboutActivity extends TabActivity {
 
         addTab("about", R.string.about);
         addTab("whatsnew", R.string.whats_new);
-        addTab("credits", R.string.credits);
+        addTab("gpl-2.0-standalone", R.string.license);
     }
 
     private void addTab(String name, int titleId) {

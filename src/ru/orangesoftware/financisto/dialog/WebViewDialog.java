@@ -41,10 +41,6 @@ public class WebViewDialog {
 		showHTMDialog(context, "whatsnew.htm", R.string.whats_new);
 	}
 
-	public static void showCredits(Context context) {
-		showHTMDialog(context, "credits.htm", R.string.credits);
-	}
-
 	private static void showHTMDialog(Context context, String fileName, int dialogTitleResId) {
 		WebView webView = new WebView(context);
 		webView.loadUrl("file:///android_asset/"+fileName);
