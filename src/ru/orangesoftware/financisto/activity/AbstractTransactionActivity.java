@@ -660,12 +660,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			addAttributes();
             switchIncomeExpenseButton(category);
 			if (selectLast && isRememberLastLocation) {
-				long locationId = categoryCursor.getLong(CategoryViewColumns.last_location_id.ordinal());
-				selectLocation(locationId);
+				selectLocation(category.lastLocationId);
 			}
 			if (selectLast && isRememberLastProject) {
-				long projectId = categoryCursor.getLong(CategoryViewColumns.last_project_id.ordinal());
-				selectProject(projectId);
+				selectProject(category.lastProjectId);
 			}
 		}
 	}
