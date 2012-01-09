@@ -24,6 +24,14 @@
                         android:entries="@array/sort_locations_entities"
                         android:entryValues="@array/sort_locations_values"
                         android:defaultValue="NAME"/>
+        <CheckBoxPreference android:key="quick_menu_account_enabled"
+                            android:title="@string/quick_menu_account_enabled"
+                            android:summary="@string/quick_menu_account_enabled_summary"
+                            android:defaultValue="true"/>
+        <CheckBoxPreference android:key="quick_menu_transaction_enabled"
+                            android:title="@string/quick_menu_transaction_enabled"
+                            android:summary="@string/quick_menu_transaction_enabled_summary"
+                            android:defaultValue="true"/>
         <PreferenceScreen android:title="@string/transaction_screen"
                           android:summary="@string/transaction_screen_summary">
             <PreferenceCategory android:title="@string/remember_selection">

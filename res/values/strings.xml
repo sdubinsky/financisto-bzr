@@ -708,4 +708,10 @@
 
     <string name="license">License</string>
 
+    <string name="quick_menu_account_enabled">Accounts quick-menu</string>
+    <string name="quick_menu_account_enabled_summary">Enable one-tap menu in the Accounts</string>
+    <string name="quick_menu_transaction_enabled">Blotter quick-menu</string>
+    <string name="quick_menu_transaction_enabled_summary">Enable one-tap menu in the Blotter</string>
+
+
 </resources>

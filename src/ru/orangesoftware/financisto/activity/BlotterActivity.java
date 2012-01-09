@@ -37,6 +37,7 @@ import ru.orangesoftware.financisto.view.NodeInflater;
 import java.util.List;
 
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+import static ru.orangesoftware.financisto.utils.MyPreferences.isQuickMenuEnabledForTransaction;
 
 public class BlotterActivity extends AbstractListActivity {
 	
@@ -383,7 +384,7 @@ public class BlotterActivity extends AbstractListActivity {
 
     @Override
     protected void onItemClick(View v, int position, long id) {
-        if (isSupportedApiLevel()) {
+        if (isQuickMenuEnabledForTransaction(this)) {
             selectedId = id;
             transactionActionGrid.show(v);
         } else {

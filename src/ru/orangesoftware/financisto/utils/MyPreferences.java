@@ -26,6 +26,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+
 public class MyPreferences {
 
     public static enum AccountSortOrder {
@@ -436,5 +438,18 @@ public class MyPreferences {
 		preferences[6] = Boolean.toString(addSubCategoriesToSum(context));
 		return preferences;
 	}
+
+    public static boolean isQuickMenuEnabledForAccount(Context context) {
+        return getBoolean(context, "quick_menu_account_enabled", true) && isSupportedApiLevel();
+    }
+
+    public static boolean isQuickMenuEnabledForTransaction(Context context) {
+        return getBoolean(context, "quick_menu_transaction_enabled", true) && isSupportedApiLevel();
+    }
+
+    private static boolean getBoolean(Context context, String name, boolean defaultValue) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(name, defaultValue);
+    }
 
 }

@@ -45,6 +45,7 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+import static ru.orangesoftware.financisto.utils.MyPreferences.isQuickMenuEnabledForAccount;
 
 public class AccountListActivity extends AbstractListActivity {
 	
@@ -74,6 +75,8 @@ public class AccountListActivity extends AbstractListActivity {
             accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.info));
             accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_list, R.string.blotter));
             accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_edit, R.string.edit));
+            accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_add, R.string.transaction));
+            accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_transfer, R.string.transfer));
             accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_action_bar_mark, R.string.balance));
             accountActionGrid.setOnQuickActionClickListener(accountActionListener);
         }
@@ -92,16 +95,24 @@ public class AccountListActivity extends AbstractListActivity {
                     editAccount(selectedId);
                     break;
                 case 3:
-                    updateAccountBalance(selectedId);
+                    addTransaction(selectedId, TransactionActivity.class);
                     break;
                 case 4:
-                    //clearTransaction(selectedId);
+                    addTransaction(selectedId, TransferActivity.class);
+                    break;
+                case 5:
+                    updateAccountBalance(selectedId);
                     break;
             }
         }
 
     };
 
+    private void addTransaction(long accountId, Class<? extends AbstractTransactionActivity> clazz) {
+        Intent intent = new Intent(this, clazz);
+        intent.putExtra(TransactionActivity.ACCOUNT_ID_EXTRA, accountId);
+        startActivityForResult(intent, VIEW_ACCOUNT_REQUEST);
+    }
 
     @Override
     public void recreateCursor() {
@@ -276,7 +287,7 @@ public class AccountListActivity extends AbstractListActivity {
 
     @Override
     protected void onItemClick(View v, int position, long id) {
-        if (isSupportedApiLevel()) {
+        if (isQuickMenuEnabledForAccount(this)) {
             selectedId = id;
             accountActionGrid.show(v);
         } else {
