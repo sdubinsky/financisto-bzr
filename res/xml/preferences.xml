@@ -14,6 +14,14 @@
                         android:title="@string/ui_language" android:summary="@string/ui_language_summary"
                         android:entries="@array/ui_language_entities" android:entryValues="@array/ui_language_values"
                         android:defaultValue="SORT_ORDER_DESC"/>
+        <CheckBoxPreference android:key="quick_menu_account_enabled"
+                            android:title="@string/quick_menu_account_enabled"
+                            android:summary="@string/quick_menu_account_enabled_summary"
+                            android:defaultValue="true"/>
+        <CheckBoxPreference android:key="quick_menu_transaction_enabled"
+                            android:title="@string/quick_menu_transaction_enabled"
+                            android:summary="@string/quick_menu_transaction_enabled_summary"
+                            android:defaultValue="true"/>
         <ListPreference android:key="sort_accounts"
                         android:title="@string/sort_accounts" android:summary="@string/sort_accounts_summary"
                         android:entries="@array/sort_accounts_entities"
@@ -24,14 +32,6 @@
                         android:entries="@array/sort_locations_entities"
                         android:entryValues="@array/sort_locations_values"
                         android:defaultValue="NAME"/>
-        <CheckBoxPreference android:key="quick_menu_account_enabled"
-                            android:title="@string/quick_menu_account_enabled"
-                            android:summary="@string/quick_menu_account_enabled_summary"
-                            android:defaultValue="true"/>
-        <CheckBoxPreference android:key="quick_menu_transaction_enabled"
-                            android:title="@string/quick_menu_transaction_enabled"
-                            android:summary="@string/quick_menu_transaction_enabled_summary"
-                            android:defaultValue="true"/>
         <PreferenceScreen android:title="@string/transaction_screen"
                           android:summary="@string/transaction_screen_summary">
             <PreferenceCategory android:title="@string/remember_selection">
@@ -128,14 +128,6 @@
         <Preference android:title="@string/shortcut_new_transfer"
                     android:key="shortcut_new_transfer" android:summary="@string/shortcut_summary"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/location">
-        <CheckBoxPreference android:key="use_gps"
-                            android:title="@string/use_gps" android:summary="@string/use_gps_summary"
-                            android:defaultValue="true"/>
-        <CheckBoxPreference android:key="use_my_location"
-                            android:title="@string/use_my_location" android:summary="@string/use_my_location_summary"
-                            android:defaultValue="true"/>
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/database_backup">
         <Preference android:key="database_backup_folder"
                     android:title="@string/database_backup_folder"
@@ -148,6 +140,26 @@
                                                             android:title="@string/auto_backup_time"
                                                             android:summary="@string/auto_backup_time_summary"
                                                             android:dependency="auto_backup_enabled"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/dropbox">
+        <Preference android:title="@string/dropbox_authorize"
+                    android:key="dropbox_authorize" android:summary="@string/dropbox_authorize_summary"/>
+        <Preference android:title="@string/dropbox_unlink"
+                    android:key="dropbox_unlink" android:summary="@string/dropbox_unlink_summary"/>
+        <CheckBoxPreference android:key="dropbox_upload_backup"
+                            android:title="@string/dropbox_upload_backup" android:summary="@string/dropbox_upload_backup_summary"
+                            android:defaultValue="false"/>
+        <CheckBoxPreference android:key="dropbox_upload_autobackup"
+                            android:title="@string/dropbox_upload_autobackup" android:summary="@string/dropbox_upload_autobackup_summary"
+                            android:defaultValue="false"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/location">
+        <CheckBoxPreference android:key="use_gps"
+                            android:title="@string/use_gps" android:summary="@string/use_gps_summary"
+                            android:defaultValue="true"/>
+        <CheckBoxPreference android:key="use_my_location"
+                            android:title="@string/use_my_location" android:summary="@string/use_my_location_summary"
+                            android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/gdocs_backup">
         <EditTextPreference android:key="user_login"

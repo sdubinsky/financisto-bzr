@@ -713,5 +713,15 @@
     <string name="quick_menu_transaction_enabled">Blotter quick-menu</string>
     <string name="quick_menu_transaction_enabled_summary">Enable one-tap menu in the Blotter</string>
 
+    <string name="dropbox">Dropbox</string>
+    <string name="dropbox_authorize">Authorize</string>
+    <string name="dropbox_authorize_summary">Allow Financisto to upload files to your Dropbox</string>
+    <string name="dropbox_unlink">Unlink</string>
+    <string name="dropbox_unlink_summary">Prevent Financisto from uploading files to your Dropbox</string>
+    <string name="dropbox_upload_backup">Upload Backups</string>
+    <string name="dropbox_upload_backup_summary">Upload database backups to Dropbox</string>
+    <string name="dropbox_upload_autobackup">Upload Auto-backups</string>
+    <string name="dropbox_upload_autobackup_summary">Upload database auto-backups to Dropbox</string>
+    <string name="dropbox_uploading_file">Uploading file to Dropbox...</string>
 
 </resources>

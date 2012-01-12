@@ -26,9 +26,11 @@ import ru.orangesoftware.financisto.backup.DatabaseExport;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.util.Date;
 
@@ -107,7 +109,10 @@ public class FinancistoService extends WakefulIntentService {
                 long t0 = System.currentTimeMillis();
                 Log.e(TAG, "Auto-backup started at " + new Date());
                 DatabaseExport export = new DatabaseExport(this, db.db(), true);
-                export.export();
+                String fileName = export.export();
+                if (MyPreferences.isDropboxUploadAutoBackups(this)) {
+                    Export.uploadBackupFileToDropbox(this, fileName);
+                }
                 Log.e(TAG, "Auto-backup completed in " +(System.currentTimeMillis()-t0)+"ms");
             } catch (Exception e) {
                 Log.e(TAG, "Auto-backup unsuccessful", e);

@@ -17,6 +17,7 @@ import api.wireless.gdata.docs.client.DocsClient;
 import api.wireless.gdata.docs.data.DocumentEntry;
 import api.wireless.gdata.docs.data.FolderEntry;
 import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
+import ru.orangesoftware.financisto.export.dropbox.Dropbox;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.io.*;
@@ -124,5 +125,16 @@ public abstract class Export {
         file.mkdirs();
         return file;
 	}
+
+    public static File getBackupFile(Context context, String backupFileName) {
+        File path = getBackupFolder(context);
+        return new File(path, backupFileName);
+    }
+
+    public static void uploadBackupFileToDropbox(Context context, String backupFileName) {
+        File file = getBackupFile(context, backupFileName);
+        Dropbox dropbox = new Dropbox(context);
+        dropbox.uploadFile(file);
+    }
 
 }

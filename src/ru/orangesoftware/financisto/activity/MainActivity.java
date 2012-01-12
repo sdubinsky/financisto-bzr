@@ -365,12 +365,12 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 
 	private void doBackup() {
 		ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_inprogress), true);
-		new BackupExportTask(this, d).execute((String[])null);
+		new BackupExportTask(this, d, true).execute((String[])null);
 	}
 
     private void doBackupTo() {
         ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_inprogress), true);
-        final BackupExportTask t = new BackupExportTask(this, d);
+        final BackupExportTask t = new BackupExportTask(this, d, false);
         t.setShowResultDialog(false);
         t.setListener(new ImportExportAsyncTaskListener() {
             @Override
@@ -383,8 +383,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     }
 
     private void startBackupToChooser(String backupFileName) {
-        File path = Export.getBackupFolder(this);
-        File file = new File(path, backupFileName);
+        File file = Export.getBackupFile(this, backupFileName);
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
         intent.setType("text/plain");

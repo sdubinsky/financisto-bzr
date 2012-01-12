@@ -34,6 +34,8 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import static ru.orangesoftware.financisto.utils.DateUtils.is24HourFormat;
+
 public class DateFilterActivity extends Activity {
 	
 	public static final String EXTRA_FILTER_PERIOD_TYPE = "filter_period_type";
@@ -214,6 +216,7 @@ public class DateFilterActivity extends Activity {
 		TimePicker tp = (TimePicker)dialog.findViewById(R.id.time);
 		tp.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
 		tp.setCurrentMinute(c.get(Calendar.MINUTE));
+        tp.setIs24HourView(is24HourFormat(this));
 		tp.setIs24HourView(true);
 	}
 

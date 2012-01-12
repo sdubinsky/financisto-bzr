@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.TimePicker;
 import ru.orangesoftware.financisto.R;
 
+import static ru.orangesoftware.financisto.utils.DateUtils.is24HourFormat;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -39,7 +41,9 @@ public class TimePreference extends DialogPreference implements TimePicker.OnTim
 
     @Override
     protected View onCreateDialogView() {
-        TimePicker timePicker = new TimePicker(getContext());
+        Context context = getContext();
+        TimePicker timePicker = new TimePicker(context);
+        timePicker.setIs24HourView(is24HourFormat(context));
         timePicker.setOnTimeChangedListener(this);
         timePicker.setCurrentHour(getHour());
         timePicker.setCurrentMinute(getMinute());

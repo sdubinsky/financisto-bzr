@@ -14,6 +14,7 @@ import android.preference.PreferenceScreen;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.dialog.FolderBrowser;
 import ru.orangesoftware.financisto.export.Export;
+import ru.orangesoftware.financisto.export.dropbox.Dropbox;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.PinProtection;
 import android.content.ComponentName;
@@ -69,8 +70,33 @@ public class PreferencesActivity extends PreferenceActivity {
                 return true;
             }
         });
+        Preference pAuthDropbox = preferenceScreen.findPreference("dropbox_authorize");
+        pAuthDropbox.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+            @Override
+            public boolean onPreferenceClick(Preference arg0) {
+                authDropbox();
+                return true;
+            }
+        });
+        Preference pDeauthDropbox = preferenceScreen.findPreference("dropbox_unlink");
+        pDeauthDropbox.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+            @Override
+            public boolean onPreferenceClick(Preference arg0) {
+                deAuthDropbox();
+                return true;
+            }
+        });
+        linkToDropbox();
         setCurrentDatabaseBackupFolder();
 	}
+
+    private void linkToDropbox() {
+        boolean dropboxAuthorized = MyPreferences.isDropboxAuthorized(this);
+        PreferenceScreen preferenceScreen = getPreferenceScreen();
+        preferenceScreen.findPreference("dropbox_unlink").setEnabled(dropboxAuthorized);
+        preferenceScreen.findPreference("dropbox_upload_backup").setEnabled(dropboxAuthorized);
+        preferenceScreen.findPreference("dropbox_upload_autobackup").setEnabled(dropboxAuthorized);
+    }
 
     private void selectDatabaseBackupFolder() {
         Intent intent = new Intent(this, FolderBrowser.class);
@@ -117,7 +143,18 @@ public class PreferencesActivity extends PreferenceActivity {
 		return intent;
 	}
 
-	@Override
+    Dropbox dropbox = new Dropbox(this);
+
+    private void authDropbox() {
+        dropbox.startAuth();
+    }
+
+    private void deAuthDropbox() {
+        dropbox.deAuth();
+        linkToDropbox();
+    }
+
+    @Override
 	protected void onPause() {
 		super.onPause();
 		PinProtection.lock(this);
@@ -127,6 +164,8 @@ public class PreferencesActivity extends PreferenceActivity {
 	protected void onResume() {
 		super.onResume();
 		PinProtection.unlock(this);
-	}
+        dropbox.completeAuth();
+        linkToDropbox();
+    }
 
 }

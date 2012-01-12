@@ -19,6 +19,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import com.dropbox.client2.session.AccessTokenPair;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Currency;
 
@@ -29,6 +30,10 @@ import java.util.Locale;
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 
 public class MyPreferences {
+
+    public static final String DROPBOX_AUTH_KEY = "dropbox_auth_key";
+    public static final String DROPBOX_AUTH_SECRET = "dropbox_auth_secret";
+    public static final String DROPBOX_AUTHORIZE = "dropbox_authorize";
 
     public static enum AccountSortOrder {
 		SORT_ORDER_ASC("sortOrder", true),
@@ -445,6 +450,46 @@ public class MyPreferences {
 
     public static boolean isQuickMenuEnabledForTransaction(Context context) {
         return getBoolean(context, "quick_menu_transaction_enabled", true) && isSupportedApiLevel();
+    }
+
+    public static void storeDropboxKeys(Context context, String key, String secret) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor e = sharedPreferences.edit();
+        e.putString(DROPBOX_AUTH_KEY, key);
+        e.putString(DROPBOX_AUTH_SECRET, secret);
+        e.putBoolean(DROPBOX_AUTHORIZE, true);
+        e.commit();
+    }
+    
+    public static void removeDropboxKeys(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor e = sharedPreferences.edit();
+        e.remove(DROPBOX_AUTH_KEY);
+        e.remove(DROPBOX_AUTH_SECRET);
+        e.remove(DROPBOX_AUTHORIZE);
+        e.commit();
+    }
+
+    public static boolean isDropboxAuthorized(Context context) {
+        return getBoolean(context, DROPBOX_AUTHORIZE, false);
+    }
+
+    public static boolean isDropboxUploadBackups(Context context) {
+        return isDropboxAuthorized(context) && getBoolean(context, "dropbox_upload_backup", false);
+    }
+
+    public static boolean isDropboxUploadAutoBackups(Context context) {
+        return isDropboxAuthorized(context) && getBoolean(context, "dropbox_upload_autobackup", false);
+    }
+
+    public static AccessTokenPair getDropboxKeys(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String authKey = sharedPreferences.getString(DROPBOX_AUTH_KEY, null);
+        String authSecret = sharedPreferences.getString(DROPBOX_AUTH_SECRET, null);
+        if (authKey != null && authSecret != null) {
+            return new AccessTokenPair(authKey, authSecret);
+        }
+        return null;
     }
 
     private static boolean getBoolean(Context context, String name, boolean defaultValue) {

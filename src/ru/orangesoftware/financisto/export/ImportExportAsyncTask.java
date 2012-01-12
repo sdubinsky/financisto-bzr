@@ -18,10 +18,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public abstract class ImportExportAsyncTask extends AsyncTask<String, Void, Object> {
+public abstract class ImportExportAsyncTask extends AsyncTask<String, String, Object> {
 	
 	protected final Context context;
-	private final ProgressDialog dialog;
+	protected final ProgressDialog dialog;
     private boolean showResultDialog = true;
 
     private ImportExportAsyncTaskListener listener;

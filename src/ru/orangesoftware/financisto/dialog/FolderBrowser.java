@@ -20,6 +20,7 @@ import ru.orangesoftware.financisto.R;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ru.orangesoftware.financisto.utils.Utils.text;
@@ -147,6 +148,7 @@ public class FolderBrowser extends ListActivity {
 
     private void browse(File current) {
         File[] files = current.listFiles();
+        Arrays.sort(files);
         for (File file : files) {
             if (isWritableDirectory(file)) {
                 this.files.add(new FileItem(file));
