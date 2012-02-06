@@ -63,14 +63,14 @@ public class ReportPreferencesActivity extends PreferenceActivity {
 	 */
 	private void getCurrenciesList() {
 		String selectedCurrenceTitle = MyPreferences.getReferenceCurrencyTitle(this);
-		ArrayList<Currency> currenciesList = CurrencyCache.getAllCurrencies();
+		Currency[] currenciesList = CurrencyCache.getAllCurrencies();
 		
-		int count = currenciesList.size();
+		int count = currenciesList.length;
 
 		selectedCurrenceIndex = -1;		
 		currencies = new String[count];
 		for (int i=0; i<count; i++) {
-			Currency c = currenciesList.get(i);
+			Currency c = currenciesList[i];
 			if (c.title.equals(selectedCurrenceTitle)) {
 				selectedCurrenceIndex = i;
 			}

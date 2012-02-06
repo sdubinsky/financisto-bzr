@@ -333,14 +333,14 @@ public class Report2DChartActivity extends Activity {
 		Currency c = MyPreferences.getReferenceCurrency(this);
 		if (c == null) {
 			prefCurNotSet = true;
-			List<Currency> currencies = CurrencyCache.getAllCurrencies();
-			if (currencies!=null && currencies.size()>0) {
-				for (int i=0; i<currencies.size(); i++) {
-					if (currencies.get(i).isDefault) {
-						c = currencies.get(i);
-						break;
-					}
-				}
+			Currency[] currencies = CurrencyCache.getAllCurrencies();
+			if (currencies != null && currencies.length > 0) {
+                for (Currency currency : currencies) {
+                    if (currency.isDefault) {
+                        c = currency;
+                        break;
+                    }
+                }
 				if (c == null) {
 					c = getNewDefaultCurrency();
 				}

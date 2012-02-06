@@ -45,6 +45,11 @@ public class CurrencyBuilder {
         c.decimalSeparator = decimalSeparator;
         return this;
     }
+    
+    public CurrencyBuilder makeDefault() {
+        c.isDefault = true;
+        return this;
+    }
 
     public Currency create() {
         db.em().saveOrUpdate(c);

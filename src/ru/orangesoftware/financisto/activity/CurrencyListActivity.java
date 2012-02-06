@@ -13,10 +13,15 @@ package ru.orangesoftware.financisto.activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CurrencyListAdapter;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 
 import java.util.List;
@@ -25,10 +30,24 @@ public class CurrencyListActivity extends AbstractListActivity {
 	
 	private static final int NEW_CURRENCY_REQUEST = 1;
 	private static final int EDIT_CURRENCY_REQUEST = 2;
+    private static final int MENU_MAKE_DEFAULT = MENU_ADD + 1;
 
     public CurrencyListActivity() {
 		super(R.layout.currency_list);
 	}
+
+    @Override
+    protected void internalOnCreate(Bundle savedInstanceState) {
+        super.internalOnCreate(savedInstanceState);
+        ImageButton bRates = (ImageButton) findViewById(R.id.bRates);
+        bRates.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CurrencyListActivity.this, ExchangeRatesListActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 
     @Override
 	protected List<MenuItemInfo> createContextMenus(long id) {
@@ -39,10 +58,31 @@ public class CurrencyListActivity extends AbstractListActivity {
 				break;
 			}
 		}
+        menus.add(new MenuItemInfo(MENU_MAKE_DEFAULT, R.string.currency_make_default));
 		return menus;
 	}
 
-	@Override
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        super.onContextItemSelected(item);
+        switch (item.getItemId()) {
+            case MENU_MAKE_DEFAULT: {
+                AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+                makeCurrencyDefault(mi.id);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void makeCurrencyDefault(long id) {
+        Currency c = em.get(Currency.class, id);
+        c.isDefault = true;
+        em.saveOrUpdate(c);
+        recreateCursor();
+    }
+
+    @Override
 	protected void addItem() {
         new CurrencySelector(this, em, new CurrencySelector.OnCurrencyCreatedListener() {
             @Override

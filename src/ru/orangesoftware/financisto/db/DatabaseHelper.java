@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.db;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import static ru.orangesoftware.financisto.utils.EnumUtils.asStringArray;
 
@@ -52,6 +51,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	public static final String LOCATIONS_TABLE = "locations";
     public static final String PAYEE_TABLE = "payee";
     public static final String CCARD_CLOSING_DATE_TABLE = "ccard_closing_date";
+    public static final String EXCHANGE_RATES_TABLE = "currency_exchange_rate";
 
 	public static final String V_ALL_TRANSACTIONS = "v_all_transactions";
 	public static final String V_BLOTTER = "v_blotter";
@@ -158,7 +158,9 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String LAST_ACCOUNT_ID = "last_account_id";
 		public static final String CLOSING_DAY = "closing_day";
 		public static final String PAYMENT_DAY = "payment_day";
-		
+        public static final String IS_INCLUDE_INTO_TOTALS = "is_include_into_totals";
+        public static final String IS_ACTIVE = "is_active";
+
 		private AccountColumns() {}
 
 	}
@@ -187,6 +189,23 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 
 		public static String[] NORMAL_PROJECTION = asStringArray(CategoryViewColumns.values());
 	}
+
+    public static enum ExchangeRateColumns {
+        from_currency_id,
+        to_currency_id,
+        rate_date,
+        rate;
+
+        public static String[] NORMAL_PROJECTION = asStringArray(ExchangeRateColumns.values());
+        public static String[] LATEST_RATE_PROJECTION = new String[]{
+                from_currency_id.name(),
+                to_currency_id.name(),
+                "max("+rate_date+")",
+                rate.name()
+        };
+        public static String LATEST_RATE_GROUP_BY = from_currency_id+","+to_currency_id;
+        public static String NORMAL_PROJECTION_WHERE = from_currency_id+"=? and "+to_currency_id+"=? and "+rate_date+"=?";
+    }
 
 	public static class EntityColumns {
 		

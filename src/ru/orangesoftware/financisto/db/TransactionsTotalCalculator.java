@@ -10,13 +10,16 @@ package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
+import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS;
 
 /**
@@ -31,6 +34,14 @@ public class TransactionsTotalCalculator {
         "SUM(from_amount)"};
 
     public static final String BALANCE_GROUPBY = "from_account_currency_id";
+
+    public static final String[] HOME_CURRENCY_PROJECTION = {
+            "datetime",
+            "from_account_currency_id",
+            "from_amount",
+            "to_account_currency_id",
+            "to_amount"
+    };
 
     private final DatabaseAdapter db;
     private final WhereFilter filter;
@@ -59,6 +70,55 @@ public class TransactionsTotalCalculator {
         } finally {
             c.close();
         }
+    }
+
+    public long getTransactionsBalance(Currency toCurrency) {
+        WhereFilter filter = excludeTransfers(this.filter);
+        return getBalanceInHomeCurrency(V_BLOTTER, toCurrency, filter);
+    }
+
+    public long getTransactionsBalance(Account account, Currency toCurrency) {
+        WhereFilter filter = selectedAccountOnly(this.filter, account);
+        return getBalanceInHomeCurrency(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, toCurrency, filter);
+    }
+
+    private WhereFilter selectedAccountOnly(WhereFilter filter, Account account) {
+        WhereFilter copy = WhereFilter.copyOf(filter);
+        copy.put(WhereFilter.Criteria.eq("From_account_id", String.valueOf(account.id)));
+        return copy;
+    }
+
+    private long getBalanceInHomeCurrency(String view, Currency toCurrency, WhereFilter filter) {
+        Cursor c = db.db().query(view, HOME_CURRENCY_PROJECTION,
+                filter.getSelection(), filter.getSelectionArgs(),
+                null, null, null);
+        try {
+            ExchangeRateProvider rates = db.getHistoryRates();
+            float balance = 0;
+            while (c.moveToNext()) {
+                long datetime = c.getLong(0);
+                long fromCurrencyId = c.getLong(1);
+                long fromAmount = c.getLong(2);
+                long toCurrencyId = c.getLong(3);
+                long toAmount = c.getLong(4);
+                if (toCurrencyId > 0 && toCurrencyId == toCurrency.id) {
+                    balance += -toAmount;
+                } else {
+                    Currency fromCurrency = CurrencyCache.getCurrency(db.em(), fromCurrencyId);
+                    float rate = rates.getRate(fromCurrency, toCurrency, datetime).rate;
+                    balance += rate*fromAmount;
+                }
+            }
+            return (long)balance;
+        } finally {
+            c.close();
+        }
+    }
+
+    private WhereFilter excludeTransfers(WhereFilter filter) {
+        WhereFilter copy = WhereFilter.copyOf(filter);
+        copy.put(WhereFilter.Criteria.eq("is_transfer", "0"));
+        return copy;
     }
 
 }

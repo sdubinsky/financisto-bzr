@@ -68,4 +68,7 @@ public class Account extends MyEntity {
     @Column(name = "note")
     public String note;
 
+    public boolean shouldIncludeIntoTotals() {
+        return isActive && isIncludeIntoTotals;
+    }
 }

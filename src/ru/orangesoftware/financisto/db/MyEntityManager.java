@@ -89,8 +89,7 @@ public class MyEntityManager extends EntityManager {
 		if (sortOrder != LocationsSortOrder.NAME) {
 			q.asc(LocationsSortOrder.NAME.property);
 		}
-		Cursor c = q.execute();
-		return c;
+        return q.execute();
 	}
 
 	public ArrayList<MyLocation> getAllLocationsList(boolean includeNoLocation) {
@@ -281,6 +280,11 @@ public class MyEntityManager extends EntityManager {
 		Query<Currency> q = createQuery(Currency.class);
 		return q.desc("isDefault").asc(sortBy).execute();
 	}
+
+    public List<Currency> getAllCurrenciesList(String sortBy) {
+        Query<Currency> q = createQuery(Currency.class);
+        return q.desc("isDefault").asc(sortBy).list();
+    }
 
 	/* ===============================================
 	 * TRANSACTIONS
@@ -478,8 +482,8 @@ public class MyEntityManager extends EntityManager {
     public List<TransactionInfo> getTransactionsForAccount(long accountId) {
         Query<TransactionInfo> q = createQuery(TransactionInfo.class);
         q.where(Expressions.and(
-            Expressions.eq("fromAccount.id", accountId),
-            Expressions.eq("parentId", 0)
+                Expressions.eq("fromAccount.id", accountId),
+                Expressions.eq("parentId", 0)
         ));
         q.desc("dateTime");
         return q.list();
@@ -490,4 +494,13 @@ public class MyEntityManager extends EntityManager {
         saveOrUpdate(c);
     }
 
+    public Currency getHomeCurrency() {
+        Query<Currency> q = createQuery(Currency.class);
+        q.where(Expressions.eq("isDefault", "1")); //uh-oh
+        Currency homeCurrency = q.uniqueResult();
+        if (homeCurrency == null) {
+            homeCurrency = Currency.EMPTY;
+        }
+        return homeCurrency;
+    }
 }

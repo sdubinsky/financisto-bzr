@@ -223,11 +223,11 @@ public class MyPreferences {
 	public static Currency getReferenceCurrency(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		
-		List<Currency> currencies = CurrencyCache.getAllCurrencies();
+		Currency[] currencies = CurrencyCache.getAllCurrencies();
 		Currency cur = null;
 		try { 
 			String refCurrency = sharedPreferences.getString("report_reference_currency", null);
-			if (currencies!=null && currencies.size()>0) {
+			if (currencies != null && currencies.length > 0) {
 				for (Currency currency : currencies) {
 					if (currency.title.equals(refCurrency)) cur = currency; 
 				}

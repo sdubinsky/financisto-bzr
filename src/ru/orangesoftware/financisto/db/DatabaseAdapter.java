@@ -21,6 +21,9 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.rates.*;
+import ru.orangesoftware.financisto.utils.DateUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.util.*;
@@ -1499,8 +1502,8 @@ public class DatabaseAdapter {
     }
 
     private long fetchAccountBalance(long accountId) {
-        Cursor c = db().query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, new String[]{"SUM("+BlotterColumns.from_amount+")"},
-                BlotterColumns.from_account_id+"=? and ("+BlotterColumns.parent_id+"=0 or "+BlotterColumns.is_transfer+"=-1)",
+        Cursor c = db().query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, new String[]{"SUM(" + BlotterColumns.from_amount + ")"},
+                BlotterColumns.from_account_id + "=? and (" + BlotterColumns.parent_id + "=0 or " + BlotterColumns.is_transfer + "=-1)",
                 new String[]{String.valueOf(accountId)}, null, null, null);
         try {
             if (c.moveToFirst()) {
@@ -1512,5 +1515,122 @@ public class DatabaseAdapter {
         }
     }
 
+    public void saveRate(ExchangeRate r) {
+        SQLiteDatabase db = db();
+        db.beginTransaction();
+        try {
+            r.date = DateUtils.atMidnight(r.date);
+            saveRateInTransaction(db, r);
+            saveRateInTransaction(db, r.flip());
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private void saveRateInTransaction(SQLiteDatabase db, ExchangeRate r) {
+        ContentValues values = r.toValues();
+        db.insertWithOnConflict(EXCHANGE_RATES_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public ExchangeRate findRate(Currency fromCurrency, Currency toCurrency, long date) {
+        long day = DateUtils.atMidnight(date);
+        Cursor c = db().query(EXCHANGE_RATES_TABLE, ExchangeRateColumns.NORMAL_PROJECTION, ExchangeRateColumns.NORMAL_PROJECTION_WHERE,
+                new String[]{String.valueOf(fromCurrency.id), String.valueOf(toCurrency.id), String.valueOf(day)}, null, null, null);
+        try {
+            if (c.moveToFirst()) {
+                return ExchangeRate.fromCursor(c);
+            }
+        } finally {
+            c.close();
+        }
+        return null;
+    }
+
+    public List<ExchangeRate> findRates(Currency fromCurrency) {
+        List<ExchangeRate> rates = new ArrayList<ExchangeRate>();
+        Cursor c = db().query(EXCHANGE_RATES_TABLE, ExchangeRateColumns.NORMAL_PROJECTION, ExchangeRateColumns.from_currency_id+"=?",
+                new String[]{String.valueOf(fromCurrency.id)}, null, null, ExchangeRateColumns.rate_date+" desc");
+        try {
+            while (c.moveToNext()) {
+                rates.add(ExchangeRate.fromCursor(c));
+            }
+        } finally {
+            c.close();
+        }
+        return rates;
+    }
+
+    public List<ExchangeRate> findRates(Currency fromCurrency, Currency toCurrency) {
+        List<ExchangeRate> rates = new ArrayList<ExchangeRate>();
+        Cursor c = db().query(EXCHANGE_RATES_TABLE, ExchangeRateColumns.NORMAL_PROJECTION,
+                ExchangeRateColumns.from_currency_id+"=? and "+ExchangeRateColumns.to_currency_id+"=?",
+                new String[]{String.valueOf(fromCurrency.id), String.valueOf(toCurrency.id)},
+                null, null, ExchangeRateColumns.rate_date+" desc");
+        try {
+            while (c.moveToNext()) {
+                rates.add(ExchangeRate.fromCursor(c));
+            }
+        } finally {
+            c.close();
+        }
+        return rates;
+    }
+
+    public ExchangeRateProvider getLatestRates() {
+        LatestExchangeRates m = new LatestExchangeRates();
+        Cursor c = db().query(EXCHANGE_RATES_TABLE, ExchangeRateColumns.LATEST_RATE_PROJECTION, null, null, ExchangeRateColumns.LATEST_RATE_GROUP_BY, null, null);
+        fillRatesCollection(m, c);
+        return m;
+    }
+
+    public ExchangeRateProvider getHistoryRates() {
+        HistoryExchangeRates m = new HistoryExchangeRates();
+        Cursor c = db().query(EXCHANGE_RATES_TABLE, ExchangeRateColumns.NORMAL_PROJECTION, null, null, null, null, null);
+        fillRatesCollection(m, c);
+        return m;
+    }
+
+    private void fillRatesCollection(ExchangeRatesCollection m, Cursor c) {
+        try {
+            while (c.moveToNext()) {
+                ExchangeRate r = ExchangeRate.fromCursor(c);
+                m.addRate(r);
+            }
+        } finally {
+            c.close();
+        }
+    }
+
+
+    public long getAccountsTotal(Currency c1) {
+        ExchangeRateProvider rates = getLatestRates();
+        List<Account> accounts = em.getAllAccountsList();
+        long total = 0;
+        for (Account account : accounts) {
+            if (account.shouldIncludeIntoTotals()) {
+                if (account.currency.id == c1.id) {
+                    total += account.totalAmount;
+                } else {
+                    ExchangeRate rate = rates.getRate(account.currency, c1);
+                    total += (long)(rate.rate*account.totalAmount);
+                }
+            }
+        }
+        return total;
+    }
+
+    public boolean singleCurrencyOnly() {
+        Cursor c = db().rawQuery("select count(distinct "+AccountColumns.CURRENCY_ID+") from "+ACCOUNT_TABLE+
+                " where "+AccountColumns.IS_INCLUDE_INTO_TOTALS+"=1 and "+AccountColumns.IS_ACTIVE+"=1", null);
+        try {
+            if (c.moveToFirst()) {
+                return c.getInt(0) == 1;
+            }
+        } finally {
+            c.close();
+        }
+        return false;
+    }
 }
 

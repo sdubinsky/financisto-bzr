@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import gnu.trove.map.hash.TLongObjectHashMap;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.orb.EntityManager;
@@ -26,7 +27,7 @@ import android.database.Cursor;
 
 public class CurrencyCache {
 
-	private static HashMap<Long, Currency> CURRENCIES = new HashMap<Long, Currency>();
+	private static TLongObjectHashMap<Currency> CURRENCIES = new TLongObjectHashMap<Currency>();
 	
 	public static synchronized Currency getCurrency(EntityManager em, long currencyId) {
 		Currency cachedCurrency = CURRENCIES.get(currencyId);
@@ -46,7 +47,7 @@ public class CurrencyCache {
 	}
 
 	public static synchronized void initialize(EntityManager em) {
-		HashMap<Long, Currency> currencies = new HashMap<Long, Currency>();
+        TLongObjectHashMap<Currency> currencies = new TLongObjectHashMap<Currency>();
 		Query<Currency> q = em.createQuery(Currency.class);
 		Cursor c = q.execute();
 		try {
@@ -79,9 +80,8 @@ public class CurrencyCache {
 		return s != null ? (s.length() > 2 ? s.charAt(1) : 0): c;
 	}
 
-	public static synchronized ArrayList<Currency> getAllCurrencies() {
-		Collection<Currency> currencies = CURRENCIES.values();
-		return new ArrayList<Currency>(currencies);
+	public static synchronized Currency[] getAllCurrencies() {
+		return CURRENCIES.values();
 	}
 
 

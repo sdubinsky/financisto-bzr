@@ -10,39 +10,36 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 import greendroid.widget.QuickActionGrid;
 import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.AccountListAdapter2;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.dialog.AccountInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
+import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.view.NodeInflater;
-import ru.orangesoftware.orb.EntityManager;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.DialogInterface.OnClickListener;
-import android.database.Cursor;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-import android.widget.ViewFlipper;
+
+import java.util.List;
 
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 import static ru.orangesoftware.financisto.utils.MyPreferences.isQuickMenuEnabledForAccount;
@@ -127,59 +124,38 @@ public class AccountListActivity extends AbstractListActivity {
 			totalCalculationTask.stop();
 			totalCalculationTask.cancel(true);
 		}		
-		ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
 		TextView totalText = (TextView)findViewById(R.id.total);
-		totalCalculationTask = new AccountTotalsCalculationTask(totalTextFlipper, totalText);
-		totalCalculationTask.execute((Void[])null);
+        totalCalculationTask = new AccountTotalsCalculationTask(totalText);
+		totalCalculationTask.execute(null);
 	}
 	
-	public class AccountTotalsCalculationTask extends AsyncTask<Void, Total, Total[]> {
+	public class AccountTotalsCalculationTask extends AsyncTask<Void, Void, Total> {
 		
 		private volatile boolean isRunning = true;
 		
-		private final ViewFlipper totalTextFlipper;
 		private final TextView totalText;
-		
-		public AccountTotalsCalculationTask(ViewFlipper totalTextFlipper, TextView totalText) {
-			this.totalTextFlipper = totalTextFlipper;
+
+		public AccountTotalsCalculationTask(TextView totalText) {
 			this.totalText = totalText;
 		}
 
 		@Override
-		protected Total[] doInBackground(Void... params) {
-			long t0 = System.currentTimeMillis();
-			try {
-				Cursor c = createCursor();
-				try {
-					Map<String, Total> map = new HashMap<String, Total>();
-					while (c.moveToNext()) {
-						Account a = EntityManager.loadFromCursor(c, Account.class);
-						if (a.isActive && a.isIncludeIntoTotals) {
-							String s = a.currency.symbol;
-							Total t = map.get(s);
-							if (t == null) {
-								t = new Total(a.currency);
-								map.put(s, t);
-							}
-							t.balance += a.totalAmount;
-						}
-					}
-					return map.values().toArray(new Total[map.size()]);
-				} finally {
-					c.close();
-					long t1 = System.currentTimeMillis();
-					Log.d("ACCOUNT TOTALS", (t1-t0)+"ms");
-				}
-			} catch (Exception ex) {
-				Log.e("AccountTotals", "Unexpected error", ex);
-				return new Total[0];
-			}
-		}
+		protected Total doInBackground(Void... params) {
+            return calculateAccountsTotal();
+        }
 
-		@Override
-		protected void onPostExecute(Total[] result) {
+        private Total calculateAccountsTotal() {
+            Currency homeCurrency = em.getHomeCurrency();
+            Total total = new Total(homeCurrency);
+            total.amount = db.getAccountsTotal(homeCurrency);
+            return total;
+        }
+
+        @Override
+		protected void onPostExecute(Total result) {
 			if (isRunning) {
-				BlotterTotalsCalculationTask.setTotals(AccountListActivity.this, totalTextFlipper, totalText, result);
+                Utils u = new Utils(AccountListActivity.this);
+                u.setAmountText(totalText, result.currency, result.amount, false);
 			}
 		}
 		

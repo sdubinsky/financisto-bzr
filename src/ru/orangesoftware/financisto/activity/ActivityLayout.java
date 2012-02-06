@@ -275,4 +275,12 @@ public class ActivityLayout {
     public void addDivider(LinearLayout layout) {
         inflater.addDivider(layout);
     }
+
+    public View addRateNode(LinearLayout layout) {
+        return inflater.new Builder(layout, R.layout.select_entry_rate)
+                .withLabel(R.string.rate)
+                .withData(R.string.no_rate)
+                .create();
+    }
+
 }

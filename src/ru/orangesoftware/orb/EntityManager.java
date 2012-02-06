@@ -40,7 +40,7 @@ public abstract class EntityManager {
 
 	private static EntityDefinition parseDefinition(Class<?> clazz) {
 		if (!clazz.isAnnotationPresent(Entity.class)) {
-			throw new IllegalArgumentException("Class "+clazz+" is not market with @Entity");
+			throw new IllegalArgumentException("Class "+clazz+" is not an @Entity");
 		}
 		EntityDefinition.Builder edb = new EntityDefinition.Builder(clazz);
 		try {

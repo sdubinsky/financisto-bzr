@@ -62,6 +62,11 @@ public class Currency extends MyEntity {
     @Transient
 	private volatile DecimalFormat format;
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     public NumberFormat getFormat() {
 		DecimalFormat f = format;
 		if (f == null) {

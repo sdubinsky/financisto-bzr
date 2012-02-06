@@ -563,10 +563,11 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	private enum MenuEntities implements EntityEnum {
 		
 		CURRENCIES(R.string.currencies, R.drawable.menu_entities_currencies, CurrencyListActivity.class),
+        EXCHANGE_RATES(R.string.exchange_rates, R.drawable.menu_entities_exchange_rates, ExchangeRatesListActivity.class),
 		CATEGORIES(R.string.categories, R.drawable.menu_entities_categories, CategoryListActivity2.class),
-		LOCATIONS(R.string.locations, R.drawable.menu_entities_locations, LocationsListActivity.class),
-		PROJECTS(R.string.projects, R.drawable.menu_entities_projects, ProjectListActivity.class),
-        PAYEES(R.string.payees, R.drawable.menu_entities_payees, PayeeListActivity.class);
+        PAYEES(R.string.payees, R.drawable.menu_entities_payees, PayeeListActivity.class),
+        PROJECTS(R.string.projects, R.drawable.menu_entities_projects, ProjectListActivity.class),
+		LOCATIONS(R.string.locations, R.drawable.menu_entities_locations, LocationsListActivity.class);
 
 		private final int titleId;
 		private final int iconId;

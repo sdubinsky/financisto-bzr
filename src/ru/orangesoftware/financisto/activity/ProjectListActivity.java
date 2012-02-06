@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.view.View;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
@@ -41,6 +42,12 @@ public class ProjectListActivity extends MyEntityListActivity<Project> {
     @Override
     protected WhereFilter.Criteria createBlotterCriteria(Project p) {
         return WhereFilter.Criteria.eq(BlotterFilter.PROJECT_ID, String.valueOf(p.id));
+    }
+
+    @Override
+    protected void deleteItem(View v, int position, long id) {
+        em.deleteProject(id);
+        recreateCursor();
     }
 
 }

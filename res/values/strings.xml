@@ -724,4 +724,11 @@
     <string name="dropbox_upload_autobackup_summary">Upload database auto-backups to Dropbox</string>
     <string name="dropbox_uploading_file">Uploading file to Dropbox...</string>
 
+    <string name="exchange_rates">Exchange rates</string>
+    <string name="no_exchange_rates">No exchange rates</string>
+    <string name="exchange_rate">Exchange rate</string>
+    <string name="rate_from_currency">From currency</string>
+    <string name="rate_to_currency">To currency</string>
+    <string name="currency_make_default">Make default</string>
+
 </resources>

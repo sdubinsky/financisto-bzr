@@ -40,10 +40,24 @@ public class AccountBuilder {
         a.currency = c;
         return this;
     }
+    
+    public AccountBuilder total(long amount) {
+        a.totalAmount = amount;
+        return this;
+    }
+
+    public AccountBuilder doNotIncludeIntoTotals() {
+        a.isIncludeIntoTotals = false;
+        return this;
+    }
+
+    public AccountBuilder inactive() {
+        a.isActive = false;
+        return this;
+    }
 
     public Account create() {
         db.em().saveAccount(a);
         return a;
     }
-
 }

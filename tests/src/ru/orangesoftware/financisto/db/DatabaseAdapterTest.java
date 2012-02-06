@@ -2,10 +2,7 @@ package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.test.AccountBuilder;
-import ru.orangesoftware.financisto.test.CategoryBuilder;
-import ru.orangesoftware.financisto.test.DateTime;
-import ru.orangesoftware.financisto.test.TransactionBuilder;
+import ru.orangesoftware.financisto.test.*;
 import ru.orangesoftware.orb.EntityManager;
 
 import java.util.ArrayList;
