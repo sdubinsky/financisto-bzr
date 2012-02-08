@@ -36,7 +36,7 @@ public class SplitsBlotterActivity extends BlotterActivity {
 		return new TransactionsListAdapter(this, db, cursor);
 	}
 
-    @Override
+    /*@Override
     protected BlotterTotalsCalculationTask createTotalCalculationTask() {
         return new BlotterTotalsCalculationTask(this, db, blotterFilter, totalTextFlipper, totalText){
             @Override
@@ -44,6 +44,6 @@ public class SplitsBlotterActivity extends BlotterActivity {
                 return WhereFilter.copyOf(blotterFilter);
             }
         };
-    }
+    }*/
 
 }

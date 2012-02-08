@@ -41,11 +41,11 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
 
         Map<String, Category> categories = CategoryBuilder.createDefaultHierarchy(db);
 
-        c1 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").create();
+        c1 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").makeDefault().create();
         c2 = CurrencyBuilder.withDb(db).name("EUR").title("Euro").symbol("€").create();
         c3 = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").create();
 
-        c = new TransactionsTotalCalculator(db, enhanceFilterForAccountBlotter(WhereFilter.empty()));
+        c = new TransactionsTotalCalculator(db, enhanceFilterForAccountBlotter(WhereFilter.copyOf(WhereFilter.empty())));
 
         a1 = AccountBuilder.withDb(db).title("Cash").currency(c1).create();
         a2 = AccountBuilder.withDb(db).title("Bank").currency(c2).create();
@@ -78,48 +78,27 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
     }
 
     public void test_should_calculate_blotter_total_in_home_currency() {
-        assertEquals((long)(1f +100f -450f -200f -(1f/0.78635f)*250f -(1f/0.78592f)*100f), c.getTransactionsBalance(c1));
-        assertEquals((long)(1f +0.78592f*100f -0.78635f*450f -0.78635f*200f -250f -100f), c.getTransactionsBalance(c2));
+        assertEquals((long)(1f +100f -450f -200f -(1f/0.78635f)*250f -(1f/0.78592f)*100f), c.getBlotterBalance(c1));
+        assertEquals((long)(1f +0.78592f*100f -0.78635f*450f -0.78635f*200f -250f -100f), c.getBlotterBalance(c2));
+        assertEquals(c.getBlotterBalance(c1), c.getBlotterBalanceInHomeCurrency().balance);
     }
 
     public void test_should_calculate_account_total_in_home_currency() {
         //no conversion
-        assertEquals((long)(1f +100f -450f -200f -50f), c.getTransactionsBalance(a1, c1));
+        assertEquals((long) (1f + 100f - 450f - 200f - 50f), c.getAccountBalance(c1, a1.id));
 
         //note that the last amount is taken from the transfer without conversion
-        assertEquals((long)(1f +0.78592f*100f -0.78635f*450f -0.78635f*200f -20f), c.getTransactionsBalance(a1, c2));
+        assertEquals((long) (1f + 0.78592f * 100f - 0.78635f * 450f - 0.78635f * 200f - 20f), c.getAccountBalance(c2, a1.id));
 
         //no conversion
-        assertEquals((long)(-250f -100f +20f +100f), c.getTransactionsBalance(a2, c2));
+        assertEquals((long)(-250f -100f +20f +100f), c.getAccountBalance(c2, a2.id));
 
         //conversion+transfers
-        assertEquals((long)(-(1f/0.78635f)*250f -(1f/0.78592f)*100f +50f +150f), c.getTransactionsBalance(a2, c1));
+        assertEquals((long) (-(1f / 0.78635f) * 250f - (1f / 0.78592f) * 100f + 50f + 150f), c.getAccountBalance(c1, a2.id));
 
         //conversions
-        assertEquals((long)(0.62510f*(1f +100f -450f -200f -50f)), c.getTransactionsBalance(a1, c3));
-        assertEquals((long)(0.12453f*(-250f -100f +20f +100f)), c.getTransactionsBalance(a2, c3));
-    }
-
-    public void test_should_detect_multiple_account_currencies() {
-        // one account only
-        assertTrue(db.singleCurrencyOnly());
-
-        // two accounts with the same currency
-        AccountBuilder.withDb(db).currency(a1.currency).title("Account2").create();
-        assertTrue(db.singleCurrencyOnly());
-
-        //another account with a different currency, but not included into totals
-        Currency c2 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").create();
-        AccountBuilder.withDb(db).currency(c2).title("Account3").doNotIncludeIntoTotals().create();
-        assertTrue(db.singleCurrencyOnly());
-
-        //this account is not active
-        AccountBuilder.withDb(db).currency(c2).title("Account4").inactive().create();
-        assertTrue(db.singleCurrencyOnly());
-
-        //now it's two currencies
-        AccountBuilder.withDb(db).currency(c2).title("Account5").create();
-        assertFalse(db.singleCurrencyOnly());
+        assertEquals((long) (0.62510f * (1f + 100f - 450f - 200f - 50f)), c.getAccountBalance(c3, a1.id));
+        assertEquals((long) (0.12453f * (-250f - 100f + 20f + 100f)), c.getAccountBalance(c3, a2.id));
     }
 
 }

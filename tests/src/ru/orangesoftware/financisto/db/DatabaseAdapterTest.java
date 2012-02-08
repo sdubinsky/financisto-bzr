@@ -66,6 +66,28 @@ public class DatabaseAdapterTest extends AbstractDbTest {
         assertEquals("Парковка", fetchFirstPayee("пар"));
     }
 
+    public void test_should_detect_multiple_account_currencies() {
+        // one account only
+        assertTrue(db.singleCurrencyOnly());
+
+        // two accounts with the same currency
+        AccountBuilder.withDb(db).currency(a1.currency).title("Account2").create();
+        assertTrue(db.singleCurrencyOnly());
+
+        //another account with a different currency, but not included into totals
+        Currency c2 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").create();
+        AccountBuilder.withDb(db).currency(c2).title("Account3").doNotIncludeIntoTotals().create();
+        assertTrue(db.singleCurrencyOnly());
+
+        //this account is not active
+        AccountBuilder.withDb(db).currency(c2).title("Account4").inactive().create();
+        assertTrue(db.singleCurrencyOnly());
+
+        //now it's two currencies
+        AccountBuilder.withDb(db).currency(c2).title("Account5").create();
+        assertFalse(db.singleCurrencyOnly());
+    }
+
     private String fetchFirstPayee(String s) {
         Cursor c = em.getAllPayeesLike(s);
         try {

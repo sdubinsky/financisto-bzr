@@ -30,6 +30,7 @@ import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.AccountListAdapter2;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
+import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.dialog.AccountInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
@@ -125,44 +126,24 @@ public class AccountListActivity extends AbstractListActivity {
 			totalCalculationTask.cancel(true);
 		}		
 		TextView totalText = (TextView)findViewById(R.id.total);
-        totalCalculationTask = new AccountTotalsCalculationTask(totalText);
+        totalCalculationTask = new AccountTotalsCalculationTask(this, totalText);
 		totalCalculationTask.execute(null);
 	}
 	
-	public class AccountTotalsCalculationTask extends AsyncTask<Void, Void, Total> {
-		
-		private volatile boolean isRunning = true;
-		
-		private final TextView totalText;
+	public class AccountTotalsCalculationTask extends TotalCalculationTask {
 
-		public AccountTotalsCalculationTask(TextView totalText) {
-			this.totalText = totalText;
-		}
-
-		@Override
-		protected Total doInBackground(Void... params) {
-            return calculateAccountsTotal();
-        }
-
-        private Total calculateAccountsTotal() {
-            Currency homeCurrency = em.getHomeCurrency();
-            Total total = new Total(homeCurrency);
-            total.amount = db.getAccountsTotal(homeCurrency);
-            return total;
+        public AccountTotalsCalculationTask(Context context, TextView totalText) {
+            super(context, totalText);
         }
 
         @Override
-		protected void onPostExecute(Total result) {
-			if (isRunning) {
-                Utils u = new Utils(AccountListActivity.this);
-                u.setAmountText(totalText, result.currency, result.amount, false);
-			}
-		}
-		
-		public void stop() {
-			isRunning = false;
-		}
-		
+        protected Total getTotal() {
+            Currency homeCurrency = em.getHomeCurrency();
+            Total total = new Total(homeCurrency);
+            total.balance = db.getAccountsTotal(homeCurrency);
+            return total;
+        }
+
 	}
 
 	@Override

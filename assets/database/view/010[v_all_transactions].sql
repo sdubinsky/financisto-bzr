@@ -4,6 +4,7 @@ SELECT
 	t.parent_id as parent_id,
 	a1._id as from_account_id,		
 	a1.title as from_account_title,
+	a1.is_include_into_totals as from_account_is_include_into_totals,
 	c1._id as from_account_currency_id,
 	a2._id as to_account_id,		
 	a2.title as to_account_title,

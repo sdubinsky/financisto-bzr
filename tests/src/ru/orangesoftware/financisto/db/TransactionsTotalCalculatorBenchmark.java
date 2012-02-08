@@ -11,14 +11,10 @@ package ru.orangesoftware.financisto.db;
 import android.util.Log;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.test.*;
 
 import java.util.Calendar;
-import java.util.Map;
-import java.util.Random;
 
 import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
 
@@ -61,7 +57,7 @@ public class TransactionsTotalCalculatorBenchmark extends AbstractDbTest {
         }
         long t1 = System.currentTimeMillis();
         Log.d("TransactionsTotalCalculatorBenchmark", "Time to create a year amount of data: " + (t1 - t0) + "ms");
-        c.getTransactionsBalance(a1, c2);
+        c.getAccountBalance(c2, a1.id);
         long t2 = System.currentTimeMillis();
         Log.d("TransactionsTotalCalculatorBenchmark", "Time to get account total: " + (t2 - t1) + "ms");
     }

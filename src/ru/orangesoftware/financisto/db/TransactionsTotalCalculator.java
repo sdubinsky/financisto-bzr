@@ -10,7 +10,6 @@ package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
@@ -72,19 +71,31 @@ public class TransactionsTotalCalculator {
         }
     }
 
-    public long getTransactionsBalance(Currency toCurrency) {
+    public Total getAccountTotal() {
+        Total[] totals = getTransactionsBalance();
+        return totals.length > 0 ? totals[0] : Total.ZERO;
+    }
+
+    public Total getBlotterBalanceInHomeCurrency() {
+        Currency homeCurrency = db.em().getHomeCurrency();
+        Total total = new Total(homeCurrency);
+        total.balance = getBlotterBalance(homeCurrency);
+        return total;
+    }
+
+    public long getBlotterBalance(Currency toCurrency) {
         WhereFilter filter = excludeTransfers(this.filter);
         return getBalanceInHomeCurrency(V_BLOTTER, toCurrency, filter);
     }
 
-    public long getTransactionsBalance(Account account, Currency toCurrency) {
-        WhereFilter filter = selectedAccountOnly(this.filter, account);
+    public long getAccountBalance(Currency toCurrency, long accountId) {
+        WhereFilter filter = selectedAccountOnly(this.filter, accountId);
         return getBalanceInHomeCurrency(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, toCurrency, filter);
     }
 
-    private WhereFilter selectedAccountOnly(WhereFilter filter, Account account) {
+    private WhereFilter selectedAccountOnly(WhereFilter filter, long accountId) {
         WhereFilter copy = WhereFilter.copyOf(filter);
-        copy.put(WhereFilter.Criteria.eq("From_account_id", String.valueOf(account.id)));
+        copy.put(WhereFilter.Criteria.eq("from_account_id", String.valueOf(accountId)));
         return copy;
     }
 

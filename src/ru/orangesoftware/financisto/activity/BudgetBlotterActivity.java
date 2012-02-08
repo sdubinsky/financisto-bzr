@@ -56,7 +56,7 @@ public class BudgetBlotterActivity extends BlotterActivity {
 		return db.getBlotterWithSplits(where);
 	}
 	
-    @Override
+    /*@Override
     protected BlotterTotalsCalculationTask createTotalCalculationTask() {
         return new BlotterTotalsCalculationTask(this, db, blotterFilter, totalTextFlipper, totalText){
             @Override
@@ -80,6 +80,6 @@ public class BudgetBlotterActivity extends BlotterActivity {
                 }
             }
         };
-    }
+    }*/
 
 }

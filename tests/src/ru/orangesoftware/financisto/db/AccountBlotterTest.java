@@ -19,6 +19,7 @@ import ru.orangesoftware.financisto.test.*;
 import java.util.Map;
 
 import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
+import static ru.orangesoftware.financisto.test.DateTime.date;
 
 public class AccountBlotterTest extends AbstractDbTest {
 
@@ -36,31 +37,41 @@ public class AccountBlotterTest extends AbstractDbTest {
 
     public void test_should_include_transfer_splits_into_blotter_for_account() {
         // regular transactions and transfers
-        TransactionBuilder.withDb(db).account(a1).amount(1000).create();
-        TransactionBuilder.withDb(db).account(a2).amount(200).create();
+        TransactionBuilder.withDb(db).dateTime(date(2012, 2, 8)).account(a1).amount(1000).create();
+        TransactionBuilder.withDb(db).dateTime(date(2012, 2, 8)).account(a2).amount(200).create();
         assertAccountBlotter(a1, 1000);
         assertAccountBlotter(a2, 200);
+        assertAccountBlotterTotal(a1, date(2012, 2, 1), date(2012, 2, 7), 0);
+        assertAccountBlotterTotal(a1, date(2012, 2, 1), date(2012, 2, 8), 1000);
+        assertAccountBlotterTotal(a2, date(2012, 2, 8), date(2012, 2, 9), 200);
 
         // regular transfer
-        TransferBuilder.withDb(db).fromAccount(a1).fromAmount(-100).toAccount(a2).toAmount(50).create();
+        TransferBuilder.withDb(db).dateTime(date(2012, 2, 9)).fromAccount(a1).fromAmount(-100).toAccount(a2).toAmount(50).create();
         assertAccountBlotter(a1, -100, 1000);
         assertAccountBlotter(a2, 50, 200);
+        assertAccountBlotterTotal(a1, date(2012, 2, 1), date(2012, 2, 9), 900);
+        assertAccountBlotterTotal(a2, date(2012, 2, 8), date(2012, 2, 9), 250);
 
         // regular split
-        TransactionBuilder.withDb(db).account(a1).amount(-500)
+        TransactionBuilder.withDb(db).dateTime(date(2012, 2, 10)).account(a1).amount(-500)
                 .withSplit(categoriesMap.get("A1"), -200)
                 .withSplit(categoriesMap.get("A1"), -300)
                 .create();
         assertAccountBlotter(a1, -500, -100, 1000);
         assertAccountBlotter(a2, 50, 200);
+        assertAccountBlotterTotal(a1, date(2012, 2, 1), date(2012, 2, 10), 400);
+        assertAccountBlotterTotal(a1, date(2012, 2, 9), date(2012, 2, 10), -600);
+        assertAccountBlotterTotal(a2, date(2012, 2, 1), date(2012, 2, 9), 250);
 
         // transfer split
-        TransactionBuilder.withDb(db).account(a2).amount(-120)
+        TransactionBuilder.withDb(db).dateTime(date(2012, 2, 11)).account(a2).amount(-120)
                 .withSplit(categoriesMap.get("B"), -20)
                 .withTransferSplit(a1, -100, 200)
                 .create();
         assertAccountBlotter(a1, 200, -500, -100, 1000);
         assertAccountBlotter(a2, -120, 50, 200);
+        assertAccountBlotterTotal(a1, date(2012, 2, 1), date(2012, 2, 12), 600);
+        assertAccountBlotterTotal(a2, date(2012, 2, 1), date(2012, 2, 12), 130);
     }
 
     public void test_should_verify_running_balance_on_blotter_for_account() {
@@ -130,6 +141,14 @@ public class AccountBlotterTest extends AbstractDbTest {
         WhereFilter filter = WhereFilter.empty();
         filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
         return filter;
+    }
+
+    private void assertAccountBlotterTotal(Account a1, DateTime start, DateTime end, int total) {
+        WhereFilter filter = enhanceFilterForAccountBlotter(WhereFilter.empty());
+        filter.btw(BlotterFilter.DATETIME, String.valueOf(start.atMidnight().asLong()), String.valueOf(end.atDayEnd().asLong()));
+        filter.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(a1.id));
+        TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
+        assertEquals(total, calculator.getAccountTotal().balance);
     }
 
     private void assertTotals(long...totalAmounts) {

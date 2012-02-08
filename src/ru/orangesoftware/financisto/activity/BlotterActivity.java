@@ -25,7 +25,9 @@ import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.BlotterListAdapter;
 import ru.orangesoftware.financisto.adapter.TransactionsListAdapter;
-import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
+import ru.orangesoftware.financisto.blotter.AccountTotalCalculationTask;
+import ru.orangesoftware.financisto.blotter.BlotterTotalCalculationTask;
+import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
@@ -54,7 +56,6 @@ public class BlotterActivity extends AbstractListActivity {
 	private static final int MENU_DUPLICATE = MENU_ADD+1;
 	private static final int MENU_SAVE_AS_TEMPLATE = MENU_ADD+2;
 	
-	protected ViewFlipper totalTextFlipper;	
 	protected TextView totalText;
 	protected ImageButton bTransfer;
 	protected ImageButton bFilter;	
@@ -62,7 +63,7 @@ public class BlotterActivity extends AbstractListActivity {
 	
     private QuickActionWidget transactionActionGrid;
 
-	private BlotterTotalsCalculationTask calculationTask;
+	private TotalCalculationTask calculationTask;
 
 	protected boolean saveFilter;
 	protected WhereFilter blotterFilter;
@@ -86,13 +87,17 @@ public class BlotterActivity extends AbstractListActivity {
 		calculationTask.execute();
 	}
 
-    protected BlotterTotalsCalculationTask createTotalCalculationTask() {
+    protected TotalCalculationTask createTotalCalculationTask() {
         WhereFilter filter = getFilterForTotals();
-        return new BlotterTotalsCalculationTask(this, db, filter, totalTextFlipper, totalText);
+        if (filter.getAccountId() > 0) {
+            return new AccountTotalCalculationTask(this, db, filter, totalText);
+        } else {
+            return new BlotterTotalCalculationTask(this, db, filter, totalText);
+        }
     }
 
     private WhereFilter getFilterForTotals() {
-        WhereFilter filter = blotterFilter;
+        WhereFilter filter = WhereFilter.copyOf(blotterFilter);
         if (filterAccounts) {
             filter = WhereFilter.copyOf(filter);
             filter.put(WhereFilter.Criteria.eq("from_account_is_include_into_totals", "1"));
@@ -144,7 +149,6 @@ public class BlotterActivity extends AbstractListActivity {
 			}
 		});
 
-		totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
 		totalText = (TextView)findViewById(R.id.total);
 
 		Intent intent = getIntent();
