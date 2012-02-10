@@ -21,11 +21,12 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import android.content.Context;
+import ru.orangesoftware.financisto.model.Currency;
 
 public class LocationsReport extends AbstractReport {
 
-	public LocationsReport(Context context) {
-		super(context);		
+	public LocationsReport(Context context, Currency currency) {
+		super(context, currency);
 	}
 
 	@Override

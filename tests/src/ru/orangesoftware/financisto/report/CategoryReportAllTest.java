@@ -46,7 +46,7 @@ public class CategoryReportAllTest extends AbstractReportTest {
 
     @Override
     protected Report createReport() {
-        return new CategoryReportAll(getContext());
+        return new CategoryReportAll(getContext(), c1);
     }
 
 }

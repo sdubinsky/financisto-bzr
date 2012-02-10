@@ -19,51 +19,40 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
 	public final long id;
 	public final String name;
 	public final GraphStyle style;
+    public final Currency currency;
 
-    private final Map<Currency, IncomeExpenseAmount> currencyToAmountMap = new LinkedHashMap<Currency, IncomeExpenseAmount>(2);
+    private final IncomeExpenseAmount incomeExpenseAmount = new IncomeExpenseAmount();
     private final List<Amount> amounts = new LinkedList<Amount>();
 
     private long maxAmount;
 	
-	public GraphUnit(long id, String name, GraphStyle style) {
+	public GraphUnit(long id, String name, Currency currency, GraphStyle style) {
 		this.id = id;
 		this.name = name != null ? name : "";
 		this.style = style;
+        this.currency = currency;
 	}
 	
-	public void addAmount(Currency currency, long amount, boolean forceIncome) {
-        if (amount == 0) {
-            return;
-        }
-        IncomeExpenseAmount incomeExpenseAmount = getIncomeExpense(currency);
+	public void addAmount(float amount, boolean forceIncome) {
         incomeExpenseAmount.add(amount, forceIncome);
 	}
 
-    public IncomeExpenseAmount getIncomeExpense(Currency currency) {
-        IncomeExpenseAmount amount = currencyToAmountMap.get(currency);
-        if (amount == null) {
-            amount = new IncomeExpenseAmount();
-            currencyToAmountMap.put(currency, amount);
-        }
-        return amount;
+    public IncomeExpenseAmount getIncomeExpense() {
+        return incomeExpenseAmount;
     }
 
     public void flatten() {
         if (amounts.isEmpty()) {
-            long maxAmount = 0;
-            for (Map.Entry<Currency, IncomeExpenseAmount> entry : currencyToAmountMap.entrySet()) {
-                Currency currency = entry.getKey();
-                IncomeExpenseAmount amount = entry.getValue();
-                addToAmounts(currency, amount.income);
-                addToAmounts(currency, amount.expense);
-                maxAmount = Math.max(maxAmount, Math.max(Math.abs(amount.income), Math.abs(amount.expense)));
-            }
+            long income = (long)incomeExpenseAmount.income;
+            long expense = (long)incomeExpenseAmount.expense;
+            addToAmounts(income);
+            addToAmounts(expense);
             Collections.sort(amounts);
-            this.maxAmount = maxAmount;
+            this.maxAmount = incomeExpenseAmount.max();
         }
     }
 
-    private void addToAmounts(Currency currency, long amount) {
+    private void addToAmounts(long amount) {
         if (amount != 0) {
             amounts.add(new Amount(currency, amount));
         }

@@ -18,7 +18,7 @@ public class SubCategoryReportTest extends AbstractReportTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        CategoryReportTopDown r = new CategoryReportTopDown(getContext());
+        CategoryReportTopDown r = new CategoryReportTopDown(getContext(), c1);
         filter = r.createFilterForSubCategory(db, WhereFilter.empty(), categories.get("A").id);
     }
 
@@ -56,8 +56,8 @@ public class SubCategoryReportTest extends AbstractReportTest {
         TransactionBuilder.withDb(db).account(a2).category(categories.get("A")).dateTime(DateTime.today()).amount(-100).create();
         List<GraphUnit> units = assertReportReturnsData();
         assertName(units.get(0), "A");
-        assertExpense(units.get(0), a1.currency, -120);
-        assertExpense(units.get(0), a2.currency, -100);
+        assertExpense(units.get(0), -120);
+        assertExpense(units.get(0), -100);
     }
 
     public void test_should_calculate_correct_report_with_multiple_currencies_2() {
@@ -82,17 +82,17 @@ public class SubCategoryReportTest extends AbstractReportTest {
                 .create();
         List<GraphUnit> units = assertReportReturnsData();
         assertName(units.get(0), "A");
-        assertExpense(units.get(0), a2.currency, -3200);
-        assertIncome(units.get(0), a2.currency, 250);
+        assertExpense(units.get(0), -3200);
+        assertIncome(units.get(0), 250);
         assertName(units.get(1), "A2");
-        assertExpense(units.get(1), a2.currency, -2200);
-        assertIncome(units.get(1), a2.currency, 250);
+        assertExpense(units.get(1), -2200);
+        assertIncome(units.get(1), 250);
         assertName(units.get(2), "A1");
-        assertExpense(units.get(2), a2.currency, -1000);
+        assertExpense(units.get(2), -1000);
         assertName(units.get(3), "A");
-        assertExpense(units.get(3), a1.currency, -200);
+        assertExpense(units.get(3), -200);
         assertName(units.get(4), "A1");
-        assertExpense(units.get(4), a1.currency, -100);
+        assertExpense(units.get(4), -100);
     }
 
     private void givenAccountsWithDifferentCurrencies() {
@@ -102,7 +102,7 @@ public class SubCategoryReportTest extends AbstractReportTest {
 
     @Override
     protected Report createReport() {
-        return new SubCategoryReport(getContext());
+        return new SubCategoryReport(getContext(), c1);
     }
 
 }

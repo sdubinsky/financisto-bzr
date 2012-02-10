@@ -21,9 +21,11 @@ import java.util.Map;
  */
 public abstract class AbstractReportTest extends AbstractDbTest {
 
-    Currency currency;
+    Currency c1;
+    Currency c2;
     Account a1;
     Account a2;
+    Account a3;
     Report report;
     Map<String, Category> categories;
     WhereFilter filter = WhereFilter.empty();
@@ -31,9 +33,11 @@ public abstract class AbstractReportTest extends AbstractDbTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        currency = CurrencyBuilder.createDefault(db);
-        a1 = AccountBuilder.createDefault(db, currency);
-        a2 = AccountBuilder.createDefault(db, currency);
+        c1 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").makeDefault().create();
+        c2 = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").create();
+        a1 = AccountBuilder.createDefault(db, c1);
+        a2 = AccountBuilder.createDefault(db, c1);
+        a3 = AccountBuilder.createDefault(db, c2);
         categories = CategoryBuilder.createDefaultHierarchy(db);
         report = createReport();
         CurrencyCache.initialize(em);
@@ -54,20 +58,11 @@ public abstract class AbstractReportTest extends AbstractDbTest {
     }
 
     void assertIncome(GraphUnit u, long amount) {
-        assertEquals(amount, u.getIncomeExpense(a1.currency).income);
+        assertEquals(amount, (long)u.getIncomeExpense().income);
     }
 
     void assertExpense(GraphUnit u, long amount) {
-        assertEquals(amount, u.getIncomeExpense(a1.currency).expense);
+        assertEquals(amount, (long)u.getIncomeExpense().expense);
     }
-
-    void assertIncome(GraphUnit u, Currency c, long amount) {
-        assertEquals(amount, u.getIncomeExpense(c).income);
-    }
-
-    void assertExpense(GraphUnit u, Currency c, long amount) {
-        assertEquals(amount, u.getIncomeExpense(c).expense);
-    }
-
 
 }

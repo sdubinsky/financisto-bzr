@@ -18,13 +18,14 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.Currency;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_CATEGORY;
 
 public class CategoryReportAll extends AbstractReport {
 
-	public CategoryReportAll(Context context) {
-		super(context);		
+	public CategoryReportAll(Context context, Currency currency) {
+		super(context, currency);
 	}
 
 	@Override

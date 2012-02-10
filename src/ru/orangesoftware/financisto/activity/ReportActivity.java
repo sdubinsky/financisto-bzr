@@ -23,10 +23,9 @@ import android.view.animation.*;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ReportAdapter;
-import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
+import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
@@ -76,7 +75,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
                 filter = WhereFilter.fromSharedPreferences(getPreferences(0));
                 saveFilter = true;
             }
-			currentReport = ReportsListActivity.createReport(this, intent.getExtras());
+			currentReport = ReportsListActivity.createReport(this, db.em(), intent.getExtras());
 			selectReport();
 		}
 
@@ -221,7 +220,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
         @Override
         protected void onPostExecute(ReportData data) {
             setProgressBarIndeterminateVisibility(false);
-            displayTotal(data.totals);
+            displayTotal(data.total);
             ((TextView) findViewById(android.R.id.empty)).setText(R.string.empty_report);
             ReportAdapter adapter = new ReportAdapter(ReportActivity.this, data.units);
             setListAdapter(adapter);
@@ -229,11 +228,10 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
     }
 
-    private void displayTotal(Total[] totals) {
+    private void displayTotal(Total total) {
         if (currentReport.shouldDisplayTotal()) {
-            ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
             TextView totalText = (TextView)findViewById(R.id.total);
-            BlotterTotalsCalculationTask.setTotals(this, totalTextFlipper, totalText, totals);
+            TotalCalculationTask.setTotal(this, totalText, total);
         }
     }
 

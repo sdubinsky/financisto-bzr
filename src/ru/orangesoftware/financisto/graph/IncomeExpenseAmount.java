@@ -7,15 +7,19 @@ package ru.orangesoftware.financisto.graph;
  */
 public class IncomeExpenseAmount {
 
-    public long income;
-    public long expense;
+    public float income;
+    public float expense;
 
-    public void add(long amount, boolean forceIncome) {
+    public void add(float amount, boolean forceIncome) {
         if (forceIncome || amount > 0) {
             income += amount;
         } else {
             expense += amount;
         }
+    }
+
+    public long max() {
+        return (long)Math.max(Math.abs(income), Math.abs(expense));
     }
 
 }

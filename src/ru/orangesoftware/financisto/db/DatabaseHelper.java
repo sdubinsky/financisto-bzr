@@ -295,22 +295,16 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 	public static class ReportColumns {
 		
 		public static final String ID = "_id";
-		public static final String NAME = "name";	
-		public static final String CURRENCY_ID = "currency_id";
-		public static final String AMOUNT = "amount";
-		public static final String DATETIME = "datetime";
+		public static final String NAME = "name";
+        public static final String DATETIME = "datetime";
+        public static final String FROM_ACCOUNT_CURRENCY_ID = "from_account_currency_id";
+        public static final String FROM_AMOUNT = "from_amount";
+        public static final String TO_ACCOUNT_CURRENCY_ID = "to_account_currency_id";
+        public static final String TO_AMOUNT = "to_amount";
 		public static final String IS_TRANSFER = "is_transfer";
 
-		public static String[] NORMAL_PROJECTION = {ID, NAME, CURRENCY_ID, AMOUNT, DATETIME, IS_TRANSFER};
+		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, FROM_ACCOUNT_CURRENCY_ID, FROM_AMOUNT, TO_ACCOUNT_CURRENCY_ID, TO_AMOUNT, IS_TRANSFER};
 
-		public static interface Indicies {
-			public static final int ID = 0;
-			public static final int NAME = 1; 
-			public static final int CURRENCY_ID = 2; 
-			public static final int AMOUNT = 3;
-            public static final int DATETIME = 4;
-            public static final int IS_TRANSFER = 5;
-		}
 	}
 
 	public static class SubCategoryReportColumns extends ReportColumns {
@@ -318,7 +312,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String LEFT = "left";
 		public static final String RIGHT = "right";
 
-		public static String[] NORMAL_PROJECTION = {ID, NAME, CURRENCY_ID, AMOUNT, LEFT, RIGHT, IS_TRANSFER};
+		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, FROM_ACCOUNT_CURRENCY_ID, FROM_AMOUNT, TO_ACCOUNT_CURRENCY_ID, TO_AMOUNT, LEFT, RIGHT, IS_TRANSFER};
 	}
 	
 	public static class LocationColumns {

@@ -15,13 +15,14 @@ import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.model.Currency;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_PAYEES;
 
 public class PayeesReport extends AbstractReport {
 
-	public PayeesReport(Context context) {
-		super(context);		
+	public PayeesReport(Context context, Currency currency) {
+		super(context, currency);
 	}
 
 	@Override

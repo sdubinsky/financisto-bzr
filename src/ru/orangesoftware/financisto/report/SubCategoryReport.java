@@ -24,7 +24,6 @@ import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,8 +35,8 @@ public class SubCategoryReport extends AbstractReport {
 	
     private final GraphStyle[] styles = new GraphStyle[3];
 
-	public SubCategoryReport(Context context) {
-		super(context);
+	public SubCategoryReport(Context context, Currency currency) {
+		super(context, currency);
         createStyles(context);
 	}
 
@@ -52,7 +51,7 @@ public class SubCategoryReport extends AbstractReport {
 		filterTransfers(filter);
 		Cursor c = db.db().query(V_REPORT_SUB_CATEGORY, DatabaseHelper.SubCategoryReportColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null,
-                DatabaseHelper.SubCategoryReportColumns.CURRENCY_ID+","+DatabaseHelper.SubCategoryReportColumns.LEFT);
+                DatabaseHelper.SubCategoryReportColumns.FROM_ACCOUNT_CURRENCY_ID+","+DatabaseHelper.SubCategoryReportColumns.LEFT);
         try {
             CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
                 @Override
@@ -64,8 +63,8 @@ public class SubCategoryReport extends AbstractReport {
             ArrayList<GraphUnitTree> roots = createTree(db.em(), amounts, 0);
             ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
             flattenTree(roots, units);
-            Total[] totals = calculateTotals(roots);
-            return new ReportData(units, totals);
+            Total total = calculateTotal(roots);
+            return new ReportData(units, total);
         } finally {
             c.close();
         }
@@ -77,12 +76,11 @@ public class SubCategoryReport extends AbstractReport {
 		long lastId = -1;
 		for (CategoryAmount a : amounts) {
 			if (u == null || lastId != a.id) {
-				u = new GraphUnitTree(a.id, a.title, getStyle(level));
+				u = new GraphUnitTree(a.id, a.title, currency, getStyle(level));
 				roots.add(u);
 				lastId = a.id;
 			}
-            Currency c = CurrencyCache.getCurrency(em, a.currencyId);
-			u.addAmount(c, a.amount, skipTransfers && a.isTransfer != 0);
+			u.addAmount(a.amount, skipTransfers && a.isTransfer != 0);
 			if (a.hasChildren()) {
 				u.setChildren(createTree(em, a.children, level+1));
 				u = null;				
@@ -142,8 +140,8 @@ public class SubCategoryReport extends AbstractReport {
 
 		public List<GraphUnitTree> children;
 		
-		public GraphUnitTree(long id, String name, GraphStyle style) {
-			super(id, name, style);
+		public GraphUnitTree(long id, String name, Currency currency, GraphStyle style) {
+			super(id, name, currency, style);
 		}
 		
 		public void setChildren(List<GraphUnitTree> children) {

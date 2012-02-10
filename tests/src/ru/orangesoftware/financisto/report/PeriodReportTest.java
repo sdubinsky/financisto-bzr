@@ -3,6 +3,7 @@ package ru.orangesoftware.financisto.report;
 import android.preference.PreferenceManager;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.test.DateTime;
+import ru.orangesoftware.financisto.test.RateBuilder;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
 import ru.orangesoftware.financisto.test.TransferBuilder;
 
@@ -27,8 +28,8 @@ public class PeriodReportTest extends AbstractReportTest {
         report = createReport();
         List<GraphUnit> units = assertReportReturnsData();
         //then
-        assertIncome(units.get(0), currency, 0);
-        assertExpense(units.get(0), currency, -3500);
+        assertIncome(units.get(0), 0);
+        assertExpense(units.get(0), -3500);
     }
 
     public void test_should_calculate_correct_report_for_today_with_transfers() {
@@ -40,8 +41,8 @@ public class PeriodReportTest extends AbstractReportTest {
         //when
         report = createReport();
         List<GraphUnit> units = assertReportReturnsData();
-        assertIncome(units.get(0), currency, 250);
-        assertExpense(units.get(0), currency, -4700);
+        assertIncome(units.get(0), 250);
+        assertExpense(units.get(0), -4700);
     }
 
     public void test_should_calculate_correct_report_for_today_with_splits_without_transfers() {
@@ -55,8 +56,8 @@ public class PeriodReportTest extends AbstractReportTest {
         report = createReport();
         List<GraphUnit> units = assertReportReturnsData();
         //then
-        assertIncome(units.get(0), currency, 0);
-        assertExpense(units.get(0), currency, -8000);
+        assertIncome(units.get(0), 0);
+        assertExpense(units.get(0), -8000);
     }
 
     public void test_should_calculate_correct_report_for_today_with_splits_with_transfers() {
@@ -70,8 +71,40 @@ public class PeriodReportTest extends AbstractReportTest {
         report = createReport();
         List<GraphUnit> units = assertReportReturnsData();
         //then
-        assertIncome(units.get(0), currency, 2000);
-        assertExpense(units.get(0), currency, -10000);
+        assertIncome(units.get(0), 2000);
+        assertExpense(units.get(0), -10000);
+    }
+
+    public void test_should_calculate_report_in_home_currency_without_transfers() {
+        //given
+        givenTransfersAreExcludedFromReports();
+        RateBuilder.withDb(db).at(DateTime.today()).from(c2).to(c1).rate(0.1f).create();
+        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.today()).amount(-1000).create();
+        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.today()).amount(-2500).create();
+        TransactionBuilder.withDb(db).account(a3).dateTime(DateTime.today()).amount(-1500).create();
+        TransferBuilder.withDb(db).fromAccount(a1).toAccount(a3).fromAmount(-1200).toAmount(250).dateTime(DateTime.today()).create();
+        //when
+        report = createReport();
+        List<GraphUnit> units = assertReportReturnsData();
+        //then
+        assertIncome(units.get(0), 0);
+        assertExpense(units.get(0), -3650);
+    }
+
+    public void test_should_calculate_report_in_home_currency_with_transfers() {
+        //given
+        givenTransfersAreIncludedIntoReports();
+        RateBuilder.withDb(db).at(DateTime.today()).from(c2).to(c1).rate(0.1f).create();
+        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.today()).amount(-1000).create();
+        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.today()).amount(-2500).create();
+        TransactionBuilder.withDb(db).account(a3).dateTime(DateTime.today()).amount(-1500).create();
+        TransferBuilder.withDb(db).fromAccount(a1).toAccount(a3).fromAmount(-1200).toAmount(250).dateTime(DateTime.today()).create();
+        //when
+        report = createReport();
+        List<GraphUnit> units = assertReportReturnsData();
+        //then
+        assertIncome(units.get(0), 1200);
+        assertExpense(units.get(0), -4850);
     }
 
     private void givenTransfersAreExcludedFromReports() {
@@ -84,7 +117,7 @@ public class PeriodReportTest extends AbstractReportTest {
 
     @Override
     protected Report createReport() {
-        return new PeriodReport(getContext());
+        return new PeriodReport(getContext(), c1);
     }
 
 }

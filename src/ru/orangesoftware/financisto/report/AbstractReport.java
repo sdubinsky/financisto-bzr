@@ -21,17 +21,19 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
 import ru.orangesoftware.financisto.db.MyEntityManager;
+import ru.orangesoftware.financisto.db.TransactionsTotalCalculator;
 import ru.orangesoftware.financisto.graph.Amount;
 import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public abstract class AbstractReport implements Report {
 	
@@ -39,11 +41,13 @@ public abstract class AbstractReport implements Report {
 	
 	protected final Context context;
     protected final boolean skipTransfers;
+    protected final Currency currency;
 	
-	public AbstractReport(Context context) {
+	public AbstractReport(Context context, Currency currency) {
 		this.context = context;
 		this.skipTransfers = !MyPreferences.isIncludeTransfersIntoReports(context);
         this.style = new GraphStyle.Builder(context).build();
+        this.currency = currency;
 	}
 	
 	protected String alterName(long id, String name) {
@@ -54,9 +58,9 @@ public abstract class AbstractReport implements Report {
 		filterTransfers(filter);
 		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(), null, null, "_id");
-		ArrayList<GraphUnit> units = getUnitsFromCursor(db.em(), c);
-        Total[] totals = calculateTotals(units);
-        return new ReportData(units, totals);
+		ArrayList<GraphUnit> units = getUnitsFromCursor(db, c);
+        Total total = calculateTotal(units);
+        return new ReportData(units, total);
 	}
 
     protected void filterTransfers(WhereFilter filter) {
@@ -65,26 +69,26 @@ public abstract class AbstractReport implements Report {
 		}
 	}
 
-	protected ArrayList<GraphUnit> getUnitsFromCursor(MyEntityManager em, Cursor c) {
+	protected ArrayList<GraphUnit> getUnitsFromCursor(DatabaseAdapter db, Cursor c) {
 		try {
-			ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
-			GraphUnit u = null;
-			long lastId = -1;
-			while (c.moveToNext()) {
-				long id = getId(c);
-				String name = c.getString(ReportColumns.Indicies.NAME);
-				long currencyId = c.getLong(ReportColumns.Indicies.CURRENCY_ID);
-				long amount = c.getLong(ReportColumns.Indicies.AMOUNT);
-                long isTransfer = c.getLong(ReportColumns.Indicies.IS_TRANSFER);
+            MyEntityManager em = db.em();
+            ExchangeRateProvider rates = db.getHistoryRates();
+            ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
+            GraphUnit u = null;
+            long lastId = -1;
+            while (c.moveToNext()) {
+                long id = getId(c);
+                float amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(ReportColumns.DATETIME));
+                long isTransfer = c.getLong(c.getColumnIndex(ReportColumns.IS_TRANSFER));
                 if (id != lastId) {
 					if (u != null) {
 						units.add(u);
 					}
-					u = new GraphUnit(id, alterName(id, name), style);
+                    String name = c.getString(c.getColumnIndex(ReportColumns.NAME));
+					u = new GraphUnit(id, alterName(id, name), currency, style);
 					lastId = id;
 				}
-				Currency currency = CurrencyCache.getCurrency(em, currencyId);
-				u.addAmount(currency, amount, skipTransfers && isTransfer != 0);
+				u.addAmount(amount, skipTransfers && isTransfer != 0);
 			}
 			if (u != null) {
 				units.add(u);
@@ -99,29 +103,19 @@ public abstract class AbstractReport implements Report {
 		}
 	}
 	
-    protected Total[] calculateTotals(ArrayList<? extends GraphUnit> units) {
-        HashMap<Long, Total> map = new HashMap<Long, Total>();
+    protected Total calculateTotal(List<? extends GraphUnit> units) {
+        Total total = new Total(Currency.EMPTY, true);
         for (GraphUnit u : units) {
             for (Amount a : u) {
-                Total t = getOrCreate(map, a.currency);
                 long amount = a.amount;
                 if (amount > 0) {
-                    t.amount += amount;
+                    total.amount += amount;
                 } else {
-                    t.balance += amount;
+                    total.balance += amount;
                 }
             }
         }
-        return map.values().toArray(new Total[map.size()]);
-    }
-
-    private Total getOrCreate(HashMap<Long, Total> map, Currency currency) {
-        Total t = map.get(currency.id);
-        if (t == null) {
-            t = new Total(currency, true);
-            map.put(currency.id, t);
-        }
-        return t;
+        return total;
     }
 
 	protected long getId(Cursor c) {

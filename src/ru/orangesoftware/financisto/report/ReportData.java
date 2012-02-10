@@ -3,7 +3,6 @@ package ru.orangesoftware.financisto.report;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Total;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,11 +13,11 @@ import java.util.List;
 public class ReportData {
 
     public final List<GraphUnit> units;
-    public final Total[] totals;
+    public final Total total;
 
-    public ReportData(List<GraphUnit> units, Total[] totals) {
+    public ReportData(List<GraphUnit> units, Total total) {
         this.units = units;
-        this.totals = totals;
+        this.total = total;
     }
 
 }

@@ -104,25 +104,36 @@ public class TransactionsTotalCalculator {
                 filter.getSelection(), filter.getSelectionArgs(),
                 null, null, null);
         try {
-            ExchangeRateProvider rates = db.getHistoryRates();
-            float balance = 0;
-            while (c.moveToNext()) {
-                long datetime = c.getLong(0);
-                long fromCurrencyId = c.getLong(1);
-                long fromAmount = c.getLong(2);
-                long toCurrencyId = c.getLong(3);
-                long toAmount = c.getLong(4);
-                if (toCurrencyId > 0 && toCurrencyId == toCurrency.id) {
-                    balance += -toAmount;
-                } else {
-                    Currency fromCurrency = CurrencyCache.getCurrency(db.em(), fromCurrencyId);
-                    float rate = rates.getRate(fromCurrency, toCurrency, datetime).rate;
-                    balance += rate*fromAmount;
-                }
-            }
-            return (long)balance;
+            return calculateTotalFromCursor(db, c, toCurrency);
         } finally {
             c.close();
+        }
+    }
+
+    public static long calculateTotalFromCursor(DatabaseAdapter db, Cursor c, Currency toCurrency) {
+        MyEntityManager em = db.em();
+        ExchangeRateProvider rates = db.getHistoryRates();
+        float balance = 0;
+        while (c.moveToNext()) {
+            balance += getAmountFromCursor(em, c, toCurrency, rates, 0);
+        }
+        return (long)balance;
+    }
+
+    public static float getAmountFromCursor(MyEntityManager em, Cursor c, Currency toCurrency, ExchangeRateProvider rates, int index) {
+        long datetime = c.getLong(index++);
+        long fromCurrencyId = c.getLong(index++);
+        long fromAmount = c.getLong(index++);
+        long toCurrencyId = c.getLong(index++);
+        long toAmount = c.getLong(index);
+        if (fromCurrencyId == toCurrency.id) {
+            return fromAmount;
+        } else if (toCurrencyId > 0 && toCurrencyId == toCurrency.id) {
+            return -toAmount;
+        } else {
+            Currency fromCurrency = CurrencyCache.getCurrency(em, fromCurrencyId);
+            float rate = rates.getRate(fromCurrency, toCurrency, datetime).rate;
+            return rate*fromAmount;
         }
     }
 
