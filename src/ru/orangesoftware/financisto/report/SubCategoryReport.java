@@ -20,10 +20,12 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.MyEntityManager;
+import ru.orangesoftware.financisto.db.TransactionsTotalCalculator;
 import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
+import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,12 +53,15 @@ public class SubCategoryReport extends AbstractReport {
 		filterTransfers(filter);
 		Cursor c = db.db().query(V_REPORT_SUB_CATEGORY, DatabaseHelper.SubCategoryReportColumns.NORMAL_PROJECTION,
 				filter.getSelection(), filter.getSelectionArgs(), null, null,
-                DatabaseHelper.SubCategoryReportColumns.FROM_ACCOUNT_CURRENCY_ID+","+DatabaseHelper.SubCategoryReportColumns.LEFT);
+                DatabaseHelper.SubCategoryReportColumns.LEFT);
+        final MyEntityManager em = db.em();
+        final ExchangeRateProvider rates = db.getHistoryRates();
         try {
             CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
                 @Override
                 public CategoryAmount createNode(Cursor c) {
-                    return new CategoryAmount(c);
+                    float amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(DatabaseHelper.ReportColumns.DATETIME));
+                    return new CategoryAmount(c, amount);
                 }
             });
 
@@ -120,18 +125,16 @@ public class SubCategoryReport extends AbstractReport {
 
 	private static class CategoryAmount extends CategoryEntity<CategoryAmount> {
 		
-		private final long currencyId;
-		private final long amount;
-        private final long isTransfer;
+		private final float amount;
+        private final int isTransfer;
 
-        public CategoryAmount(Cursor c) {
-			id = c.getLong(0);
-			title = c.getString(1);
-			currencyId = c.getLong(2);
-			amount = c.getLong(3);	
-			left = c.getInt(4);	
-			right = c.getInt(5);
-            isTransfer = c.getInt(6);
+        public CategoryAmount(Cursor c, float amount) {
+			this.id = c.getLong(0);
+            this.title = c.getString(1);
+			this.amount = amount;
+            this.left = c.getInt(4);
+            this.right = c.getInt(5);
+            this.isTransfer = c.getInt(6);
 		}
 
 	}

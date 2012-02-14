@@ -2,8 +2,8 @@ package ru.orangesoftware.financisto.report;
 
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.graph.GraphUnit;
-import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
+import ru.orangesoftware.financisto.test.RateBuilder;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
 
 import java.util.List;
@@ -49,55 +49,40 @@ public class SubCategoryReportTest extends AbstractReportTest {
     }
 
     public void test_should_calculate_correct_report_with_multiple_currencies_1() {
-        givenAccountsWithDifferentCurrencies();
         // A  -120$
         //    -100$$
+        RateBuilder.withDb(db).at(DateTime.today()).from(c2).to(c1).rate(0.1f).create();
         TransactionBuilder.withDb(db).account(a1).category(categories.get("A")).dateTime(DateTime.today()).amount(-120).create();
-        TransactionBuilder.withDb(db).account(a2).category(categories.get("A")).dateTime(DateTime.today()).amount(-100).create();
+        TransactionBuilder.withDb(db).account(a3).category(categories.get("A")).dateTime(DateTime.today()).amount(-100).create();
         List<GraphUnit> units = assertReportReturnsData();
         assertName(units.get(0), "A");
-        assertExpense(units.get(0), -120);
-        assertExpense(units.get(0), -100);
+        assertExpense(units.get(0), -130);
+        assertIncome(units.get(0), 0);
     }
 
     public void test_should_calculate_correct_report_with_multiple_currencies_2() {
-        givenAccountsWithDifferentCurrencies();
-        // A  -3200$$
-        //    +250$$
-        //
-        // A2 -2200$$
-        //    +250$$
-        //
-        // A1 -1000$$
-        // A  -200$
-        // A1 -100$
+        RateBuilder.withDb(db).at(DateTime.today()).from(c2).to(c1).rate(0.1f).create();
         TransactionBuilder.withDb(db).account(a1).category(categories.get("A")).dateTime(DateTime.today()).amount(-100).create();
         TransactionBuilder.withDb(db).account(a1).category(categories.get("A1")).dateTime(DateTime.today()).amount(-100).create();
-        TransactionBuilder.withDb(db).account(a2).category(categories.get("A2")).dateTime(DateTime.today()).amount(250).create();
+        TransactionBuilder.withDb(db).account(a3).category(categories.get("A2")).dateTime(DateTime.today()).amount(250).create();
         TransactionBuilder.withDb(db).account(a1).category(categories.get("B")).dateTime(DateTime.today()).amount(500).create();
-        TransactionBuilder.withDb(db).account(a2).dateTime(DateTime.today()).amount(-5000)
+        TransactionBuilder.withDb(db).account(a3).dateTime(DateTime.today()).amount(-5000)
                 .withSplit(categories.get("A1"), -1000)
                 .withSplit(categories.get("A2"), -2200)
                 .withSplit(categories.get("B"), -1800)
                 .create();
         List<GraphUnit> units = assertReportReturnsData();
-        assertName(units.get(0), "A");
-        assertExpense(units.get(0), -3200);
-        assertIncome(units.get(0), 250);
-        assertName(units.get(1), "A2");
-        assertExpense(units.get(1), -2200);
-        assertIncome(units.get(1), 250);
-        assertName(units.get(2), "A1");
-        assertExpense(units.get(2), -1000);
-        assertName(units.get(3), "A");
-        assertExpense(units.get(3), -200);
-        assertName(units.get(4), "A1");
-        assertExpense(units.get(4), -100);
+        assertEquals(3, units.size());
+
+        assertUnit(units.get(0), "A", -520, 25);
+        assertUnit(units.get(1), "A2", -220, 25);
+        assertUnit(units.get(2), "A1", -200, 0);
     }
 
-    private void givenAccountsWithDifferentCurrencies() {
-        a1 = AccountBuilder.createDefault(db);
-        a2 = AccountBuilder.createDefault(db);
+    private void assertUnit(GraphUnit unit, String name, long expense, long income) {
+        assertName(unit, name);
+        assertExpense(unit, expense);
+        assertIncome(unit, income);
     }
 
     @Override
