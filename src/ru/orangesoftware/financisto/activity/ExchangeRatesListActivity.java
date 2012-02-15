@@ -177,16 +177,20 @@ public class ExchangeRatesListActivity extends AbstractListActivity {
 
     @Override
     protected void deleteItem(View v, int position, long id) {
+        ExchangeRate rate = (ExchangeRate) getListAdapter().getItem(position);
+        db.deleteRate(rate);
+        updateAdapter();
     }
 
     @Override
     protected void editItem(View v, int position, long id) {
+        ExchangeRate rate = (ExchangeRate) getListAdapter().getItem(position);
+        editRate(rate);
     }
 
     @Override
     protected void viewItem(View v, int position, long id) {
-        ExchangeRate rate = (ExchangeRate) getListAdapter().getItem(position);
-        editRate(rate);
+        editItem(v, position, id);
     }
 
     private void editRate(ExchangeRate rate) {

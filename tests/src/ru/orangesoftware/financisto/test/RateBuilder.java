@@ -22,6 +22,10 @@ public class RateBuilder {
     private final DatabaseAdapter db;
     private final ExchangeRate r = new ExchangeRate();
 
+    public static RateBuilder inMemory() {
+        return new RateBuilder(null);
+    }
+
     public static RateBuilder withDb(DatabaseAdapter db) {
         return new RateBuilder(db);
     }
@@ -52,7 +56,9 @@ public class RateBuilder {
     }
 
     public ExchangeRate create() {
-        db.saveRate(r);
+        if (db != null) {
+            db.saveRate(r);
+        }
         return r;
     }
 

@@ -1519,13 +1519,17 @@ public class DatabaseAdapter {
         SQLiteDatabase db = db();
         db.beginTransaction();
         try {
-            r.date = DateUtils.atMidnight(r.date);
-            saveRateInTransaction(db, r);
-            saveRateInTransaction(db, r.flip());
+            saveBothRatesInTransaction(r, db);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
+    }
+
+    private void saveBothRatesInTransaction(ExchangeRate r, SQLiteDatabase db) {
+        r.date = DateUtils.atMidnight(r.date);
+        saveRateInTransaction(db, r);
+        saveRateInTransaction(db, r.flip());
     }
 
     private void saveRateInTransaction(SQLiteDatabase db, ExchangeRate r) {
@@ -1602,6 +1606,40 @@ public class DatabaseAdapter {
         }
     }
 
+    public void deleteRate(ExchangeRate rate) {
+        deleteRate(rate.fromCurrencyId, rate.toCurrencyId, rate.date);
+    }
+
+    public void deleteRate(long fromCurrencyId, long toCurrencyId, long date) {
+        SQLiteDatabase db = db();
+        db.beginTransaction();
+        try {
+            deleteRateInTransaction(fromCurrencyId, toCurrencyId, date, db);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private void deleteRateInTransaction(long fromCurrencyId, long toCurrencyId, long date, SQLiteDatabase db) {
+        long d = DateUtils.atMidnight(date);
+        db.delete(EXCHANGE_RATES_TABLE, ExchangeRateColumns.DELETE_CLAUSE,
+                new String[]{String.valueOf(fromCurrencyId), String.valueOf(toCurrencyId), String.valueOf(d)});
+        db.delete(EXCHANGE_RATES_TABLE, ExchangeRateColumns.DELETE_CLAUSE,
+                new String[]{String.valueOf(toCurrencyId), String.valueOf(fromCurrencyId), String.valueOf(d)});
+    }
+
+    public void replaceRate(ExchangeRate rate, long originalDate) {
+        SQLiteDatabase db = db();
+        db.beginTransaction();
+        try {
+            deleteRateInTransaction(rate.fromCurrencyId, rate.toCurrencyId, originalDate, db);
+            saveBothRatesInTransaction(rate, db);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
 
     public long getAccountsTotal(Currency c1) {
         ExchangeRateProvider rates = getLatestRates();

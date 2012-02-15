@@ -10,9 +10,6 @@ package ru.orangesoftware.financisto.model.rates;
 
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.rates.ExchangeRate;
-import ru.orangesoftware.financisto.model.rates.LatestExchangeRates;
-import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CurrencyBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
 import ru.orangesoftware.financisto.test.RateBuilder;
@@ -94,6 +91,38 @@ public class ExchangeRateTest extends AbstractDbTest {
 
         assertEquals(1.0f/0.78635f, rates.get(0).rate, 0.00001f);
         assertEquals(1.0f/0.78592f, rates.get(1).rate, 0.00001f);
+    }
+
+    public void test_should_delete_rate() {
+        ExchangeRate r = RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2012, 1, 17)).rate(0.78592f).create();
+        RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2012, 1, 18)).rate(0.78635f).create();
+
+        assertEquals(2, db.findRates(c1).size());
+        assertEquals(2, db.findRates(c2).size());
+
+        db.deleteRate(r);
+        assertEquals(1, db.findRates(c1).size());
+        assertEquals(1, db.findRates(c2).size());
+
+        ExchangeRateProvider rates = db.getLatestRates();
+        assertEquals(0.78635f, rates.getRate(c1, c2, DateTime.date(2012, 1, 20).asLong()).rate, 0.00001f);
+    }
+
+    public void test_should_replace_rate() {
+        RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2012, 1, 17)).rate(0.78592f).create();
+
+        assertEquals(1, db.findRates(c1).size());
+        assertEquals(1, db.findRates(c2).size());
+        assertEquals(0.78592f, db.findRate(c1, c2, DateTime.date(2012, 1, 17).asLong()).rate, 0.00001f);
+        assertEquals(1f/0.78592f, db.findRate(c2, c1, DateTime.date(2012, 1, 17).asLong()).rate, 0.00001f);
+
+        ExchangeRate rate = RateBuilder.inMemory().from(c1).to(c2).at(DateTime.date(2012, 1, 18)).rate(0.888f).create();
+        db.replaceRate(rate, DateTime.date(2012, 1, 17).asLong());
+
+        assertEquals(1, db.findRates(c1).size());
+        assertEquals(1, db.findRates(c2).size());
+        assertEquals(0.888f, db.findRate(c1, c2, DateTime.date(2012, 1, 18).asLong()).rate, 0.00001f);
+        assertEquals(1f/0.888f, db.findRate(c2, c1, DateTime.date(2012, 1, 18).asLong()).rate, 0.00001f);
     }
 
 }

@@ -203,6 +203,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
                 "max("+rate_date+")",
                 rate.name()
         };
+        public static String DELETE_CLAUSE = from_currency_id+"=? and "+to_currency_id+"=? and "+rate_date+"=?";
         public static String LATEST_RATE_GROUP_BY = from_currency_id+","+to_currency_id;
         public static String NORMAL_PROJECTION_WHERE = from_currency_id+"=? and "+to_currency_id+"=? and "+rate_date+"=?";
     }

@@ -9,12 +9,15 @@
 package ru.orangesoftware.financisto.activity;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.rates.ExchangeRate;
@@ -22,6 +25,8 @@ import ru.orangesoftware.financisto.utils.DateUtils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.financisto.widget.RateNode;
 import ru.orangesoftware.financisto.widget.RateNodeOwner;
+
+import java.util.Calendar;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,9 +41,11 @@ public class ExchangeRateActivity extends AbstractActivity implements RateNodeOw
 
     private Currency fromCurrency;
     private Currency toCurrency;
+    private long originalDate;
     private long date;
     private float rate = 1;
 
+    private TextView dateNode;
     private RateNode rateNode;
 
     @Override
@@ -57,7 +64,7 @@ public class ExchangeRateActivity extends AbstractActivity implements RateNodeOw
             @Override
             public void onClick(View arg0) {
                 ExchangeRate rate = createRateFromUI();
-                db.saveRate(rate);
+                db.replaceRate(rate, originalDate);
                 Intent data = new Intent();
                 setResult(RESULT_OK, data);
                 finish();
@@ -93,7 +100,7 @@ public class ExchangeRateActivity extends AbstractActivity implements RateNodeOw
     private void updateUI(LinearLayout layout) {
         x.addInfoNode(layout, 0, R.string.rate_from_currency, fromCurrency.name);
         x.addInfoNode(layout, 0, R.string.rate_to_currency, toCurrency.name);
-        x.addInfoNode(layout, 0, R.string.date, formatRateDate(this, date));
+        dateNode = x.addInfoNode(layout, R.id.date, R.string.date, formatRateDate(this, date));
         rateNode = new RateNode(this, x, layout);
         rateNode.setRate(rate);
         rateNode.updateRateInfo();
@@ -123,7 +130,7 @@ public class ExchangeRateActivity extends AbstractActivity implements RateNodeOw
         if (date == -1) {
             date = DateUtils.atMidnight(System.currentTimeMillis());
         }
-        this.date = date;
+        this.originalDate = this.date = date;
 
         ExchangeRate rate = db.findRate(fromCurrency, toCurrency, date);
         if (rate != null) {
@@ -147,6 +154,25 @@ public class ExchangeRateActivity extends AbstractActivity implements RateNodeOw
 
     @Override
     protected void onClick(View v, int id) {
+        switch (id) {
+            case R.id.date:
+                editDate();
+                break;
+        }
+    }
+
+    private void editDate() {
+        final Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(date);
+        DatePickerDialog d = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener(){
+            @Override
+            public void onDateSet(DatePicker arg0, int y, int m, int d) {
+                c.set(y, m, d);
+                date = c.getTimeInMillis();
+                dateNode.setText(formatRateDate(ExchangeRateActivity.this, date));
+            }
+        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        d.show();
     }
 
     @Override
