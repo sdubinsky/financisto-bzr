@@ -31,7 +31,6 @@
 	<string name="add_currency">Währung hinzufügen</string>
 	<string name="opening_amount">Aktuelles Guthaben</string>
 	<string name="limit_amount">Kontolimit</string>
-	<string name="amount_in" formatted="false">Betrag in &lt;b&gt;%s %s&lt;/b&gt;</string>
 	<string name="view">Anzeigen</string>
 	<string name="edit">Bearbeiten</string>
 	<string name="delete">Löschen</string>
@@ -300,7 +299,7 @@
 	<string name="no_project">Kein Projekt</string>
 	<string name="current_location">Aktuelle Position</string>
 	<string name="protection">Schutz</string>
-	<string name="transaction_screen">Neuer Transaktionsbildschirm</string>
+	<string name="transaction_screen">\'Neue Transaktion\'-Bildschirm</string>
 	<string name="transaction_screen_summary">Einstellungen für den Transaktions/Transferbildschirm</string>
 	<string name="screen_layout">Bildschirmlayout</string>
 	<string name="show_location">Zeige Position</string>
@@ -322,8 +321,6 @@
 	<string name="remember_selection">Selektion merken</string>
 	<string name="remember_last_account">Letztes Konto</string>
 	<string name="remember_last_account_summary">Letztes selektiertes Konto merken</string>
-	<string name="remember_last_category">Letzte Kategorie</string>
-	<string name="remember_last_category_summary">Letzte Kategorie für das selektierte Konto merken</string>
 	<string name="remember_last_location">Letzte Position</string>
 	<string name="remember_last_location_summary">Letzte Position für die selektierte Kategorie merken</string>
 	<string name="remember_last_project">Letztes Projekt</string>
@@ -653,11 +650,6 @@
 	<string name="date_format">Datumsformat</string>
 	<string name="pin_protection_lock_transaction">Neue(n) Transaktion\\Transfer sperren</string>
 	<string name="pin_protection_lock_transaction_summary">\'Neue Transaktion\'- und \'Neuer Transfer\'-Bildschirm mit PIN sperren</string>
-	<string name="file_name">Dateiname</string>
-	<string name="chosse_account">Wähle Konto</string>
-	<string name="no_filemanager_installed">Kein Dateimanager installiert</string>
-	<string name="csv_import">CSV Import</string>
-	<string name="csv_import_inprogress">CSV Import in Bearbeitung</string>
 
 	<string name="split">[Split-Buchung...]</string>
 	<string name="split_transaction">[Split-Transaktion]</string>
@@ -675,10 +667,71 @@
 	<string name="unsplit_adjust_last_summary">Letzte Buchung anpassen</string>
 
 	<string name="add_transfer">Transfer hinzufügen</string>
+	<string name="file_name">Dateiname</string>
+	<string name="choose_account">Wähle Konto</string>
+	<string name="no_filemanager_installed">Kein Dateimanager installiert</string>
+	<string name="csv_import">CSV Import</string>
+	<string name="csv_import_inprogress">CSV Import in Bearbeitung</string>
 	<string name="select_filename">Wähle Import Dateiname</string>
 	<string name="import_file_not_found">Import Datei nicht gefunden</string>
 	<string name="import_unknown_category">Unbekannte Kategorie in Importdatei</string>
 	<string name="import_unknown_project">Unbekanntes Projekt in Importdatei</string>
 	<string name="import_wrong_currency">Falsche Währung in Importdatei</string>
+	<string name="import_illegal_argument_exception">Ungültiges Argument</string>
+	<string name="import_parse_error">Parsing-Fehler in Import-Datei</string>
+	<string name="csv_import_error">CSV-Import Fehler</string>
+
+	<string name="qif_import">QIF-Import</string>
+	<string name="qif_import_inprogress">Importiere Daten von QIF...</string>
+	<string name="qif_import_error">QIF-Import Fehler</string>
+	<string name="qif_import_success">QIF-Datei erfolgreich importiert</string>
+	<string name="import_export">Import/Export</string>
+	<string name="qif_import_disclaimer">*WARNUNG* Bitte beachten Sie, dass alle existierenden Daten gelöscht werden!</string>
+
+	<string name="remember_last_category_for_payee">Letzte Kategorie</string>
+	<string name="remember_last_category_for_payee_summary">Letzte Kategorie für gewählten Empfänger merken (oder Konto, wenn Empfänger deaktiviert ist)</string>
+
+	<string name="currency_symbol_format">Symbol-Format</string>
+	<string name="use_header_from_file">Überschriften von Datei verwenden</string>
+
+	<string name="info">Info</string>
+	<string name="balance">Saldo</string>
+	<string name="show_category_in_transfer">Transfer-Kategorie</string>
+	<string name="show_category_in_transfer_summary">Zeige Kategorie in \'Neuer Transfer\'-Bildschirm</string>
+	<string name="auto_backup">automatisches Sicherung</string>
+	<string name="auto_backup_enabled">automatische Sicherung aktivieren</string>
+	<string name="auto_backup_enabled_summary">Datenbank täglich zu bestimmter Uhrzeit sichern</string>
+	<string name="auto_backup_time">Zeit für automatisches Backup</string>
+	<string name="auto_backup_time_summary" formatted="false">Tägliche Sicherung um %02d:%02d</string>
+	<string name="select_folder">Wähle aktuellen Ordner</string>
+	<string name="create">Erstellen</string>
+	<string name="create_new_folder">Neu</string>
+	<string name="create_new_folder_title">Neuen Ordner erstellen</string>
+	<string name="create_new_folder_fail">Neuer Ordner konnte nicht erstellt werden</string>
+
+	<string name="database_backup">Datenbank-Backup</string>
+	<string name="database_backup_folder">Ordner für Sicherung</string>
+	<string name="database_backup_folder_summary">Ordner für Datenbank-Sicherung: %s</string>
+
+	<string name="backup_database_to">Sende Sicherung...</string>
+	<string name="backup_database_to_title">Sende Datenbank-Sicherung...</string>
+
+	<string name="license">Lizenz</string>
+
+	<string name="quick_menu_account_enabled">Konto Direkt-Menü</string>
+	<string name="quick_menu_account_enabled_summary">Direkt-Menü für Konto aktivieren</string>
+	<string name="quick_menu_transaction_enabled">Protokoll Direkt-Menü</string>
+	<string name="quick_menu_transaction_enabled_summary">Direkt-Menü für Protokoll aktivieren</string>
+
+	<string name="dropbox">Dropbox</string>
+	<string name="dropbox_authorize">Autorisierung</string>
+	<string name="dropbox_authorize_summary">Erlaube Financisto Dateien zu Dropbox hochzuladen</string>
+	<string name="dropbox_unlink">Trennen</string>
+	<string name="dropbox_unlink_summary">Verbiete Financisto Dateien zu Dropbox hochzuladen</string>
+	<string name="dropbox_upload_backup">Sicherungen hochladen</string>
+	<string name="dropbox_upload_backup_summary">Datenbank-Sicherungen zu Dropbox hochladen</string>
+	<string name="dropbox_upload_autobackup">Automatisches Backup hochladen</string>
+	<string name="dropbox_upload_autobackup_summary">Automatische Datenbank-Sicherungen zu Dropbox hochladen</string>
+	<string name="dropbox_uploading_file">Daten werden zu Dropbox hochgeladen...</string>
 
 </resources>
