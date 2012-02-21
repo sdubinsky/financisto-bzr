@@ -18,7 +18,6 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS;
 
 /**
@@ -85,7 +84,7 @@ public class TransactionsTotalCalculator {
 
     public long getBlotterBalance(Currency toCurrency) {
         WhereFilter filter = excludeTransfers(this.filter);
-        return getBalanceInHomeCurrency(V_BLOTTER, toCurrency, filter);
+        return getBalanceInHomeCurrency(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, toCurrency, filter);
     }
 
     public long getAccountBalance(Currency toCurrency, long accountId) {

@@ -26,6 +26,7 @@ import ru.orangesoftware.financisto.utils.Utils;
 
 import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
 
+@Deprecated
 public class BlotterTotalsCalculationTask extends AsyncTask<Object, Total, Total[]> {
 	
 	private volatile boolean isRunning = true;

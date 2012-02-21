@@ -13,8 +13,6 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.TransactionsTotalCalculator;
 import ru.orangesoftware.financisto.model.Total;
 
-import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
-
 public class BlotterTotalCalculationTask extends TotalCalculationTask {
 
 	private final DatabaseAdapter db;
@@ -28,8 +26,7 @@ public class BlotterTotalCalculationTask extends TotalCalculationTask {
 
     @Override
     protected Total getTotal() {
-        WhereFilter blotterFilter = enhanceFilterForAccountBlotter(filter);
-        TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, blotterFilter);
+        TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
         return calculator.getBlotterBalanceInHomeCurrency();
     }
 

@@ -25,10 +25,12 @@ import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.BudgetListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
+import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.rates.ExchangeRate;
+import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
 import ru.orangesoftware.financisto.utils.RecurUtils;
@@ -36,7 +38,6 @@ import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
 import ru.orangesoftware.financisto.utils.RecurUtils.RecurInterval;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class BudgetListActivity extends AbstractListActivity {
@@ -145,9 +146,8 @@ public class BudgetListActivity extends AbstractListActivity {
 			totalCalculationTask.stop();
 			totalCalculationTask.cancel(true);
 		}		
-		ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
 		TextView totalText = (TextView)findViewById(R.id.total);
-		totalCalculationTask = new BudgetTotalsCalculationTask(totalTextFlipper, totalText);
+		totalCalculationTask = new BudgetTotalsCalculationTask(totalText);
 		totalCalculationTask.execute((Void[])null);
 	}
 	
@@ -222,49 +222,42 @@ public class BudgetListActivity extends AbstractListActivity {
 		startActivityForResult(intent, VIEW_BUDGET_REQUEST);
 	}	
 	
-	public class BudgetTotalsCalculationTask extends AsyncTask<Void, Total, Total[]> {
+	public class BudgetTotalsCalculationTask extends AsyncTask<Void, Total, Total> {
 		
 		private volatile boolean isRunning = true;
 		
-		private final ViewFlipper totalTextFlipper;
 		private final TextView totalText;
 		
-		public BudgetTotalsCalculationTask(ViewFlipper totalTextFlipper, TextView totalText) {
-			this.totalTextFlipper = totalTextFlipper;
+		public BudgetTotalsCalculationTask(TextView totalText) {
 			this.totalText = totalText;
 		}
 
 		@Override
-		protected Total[] doInBackground(Void... params) {
+		protected Total doInBackground(Void... params) {
 			try {
                 return calculateBudgetTotals();
 			} catch (Exception ex) {
 				Log.e("BudgetTotals", "Unexpected error", ex);
-				return new Total[0];
+				return Total.ZERO;
 			}
 
 		}
 
-        public Total[] calculateBudgetTotals() {
+        public Total calculateBudgetTotals() {
             long t0 = System.currentTimeMillis();
             try {
-                StringBuilder sb = new StringBuilder();
-                Map<String, Total> map = new HashMap<String, Total>();
+                float amount = 0;
+                float balance = 0;
                 ArrayList<Budget> budgets = BudgetListActivity.this.budgets;
-                final Map<Long, Category> categories = MyEntity.asMap(db.getCategoriesList(true));
-                final Map<Long, Project> projects = MyEntity.asMap(em.getAllProjectsList(true));
+                Map<Long, Category> categories = MyEntity.asMap(db.getCategoriesList(true));
+                Map<Long, Project> projects = MyEntity.asMap(em.getAllProjectsList(true));
+                ExchangeRateProvider rates = db.getLatestRates();
+                Currency homeCurrency = em.getHomeCurrency();
                 for (final Budget b : budgets) {
                     Currency currency = CurrencyCache.getCurrency(em, b.currencyId);
-                    String s = currency.symbol;
-                    Total t = map.get(s);
-                    if (t == null) {
-                        t = new Total(currency, true);
-                        map.put(s, t);
-                    }
-                    sb.setLength(0);
                     final long spent = db.fetchBudgetBalance(categories, projects, b);
-                    t.amount += spent;
-                    t.balance += b.amount+spent;
+                    amount += inHomeCurrency(rates, currency, homeCurrency, spent);
+                    balance += inHomeCurrency(rates, currency, homeCurrency, b.amount+spent);
                     final String categoriesText = getChecked(categories, b.categories);
                     final String projectsText = getChecked(projects, b.projects);
                     handler.post(new Runnable() {
@@ -277,11 +270,19 @@ public class BudgetListActivity extends AbstractListActivity {
                         }
                     });
                 }
-                return map.values().toArray(new Total[map.size()]);
+                Total total = new Total(homeCurrency, true);
+                total.amount = (int)amount;
+                total.balance = (int)balance;
+                return total;
             } finally {
                 long t1 = System.currentTimeMillis();
                 Log.d("BUDGET TOTALS", (t1 - t0) + "ms");
             }
+        }
+
+        private float inHomeCurrency(ExchangeRateProvider rates, Currency fromCurrency, Currency toCurrency, long spent) {
+            ExchangeRate r = rates.getRate(fromCurrency, toCurrency);
+            return r.rate*spent;
         }
 
         private <T extends MyEntity> String getChecked(Map<Long, T> entities, String s) {
@@ -316,9 +317,9 @@ public class BudgetListActivity extends AbstractListActivity {
 		}
 
 		@Override
-		protected void onPostExecute(Total[] result) {
+		protected void onPostExecute(Total result) {
 			if (isRunning) {
-				BlotterTotalsCalculationTask.setTotals(BudgetListActivity.this, totalTextFlipper, totalText, result);
+                TotalCalculationTask.setTotal(BudgetListActivity.this, totalText, result);
 				((BudgetListAdapter)adapter).notifyDataSetChanged();
 			}
 		}

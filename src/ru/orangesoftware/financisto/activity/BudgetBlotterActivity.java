@@ -16,7 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.adapter.TransactionsListAdapter;
-import ru.orangesoftware.financisto.blotter.BlotterTotalsCalculationTask;
+import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
@@ -55,31 +55,31 @@ public class BudgetBlotterActivity extends BlotterActivity {
 		String where = Budget.createWhere(b, categories, projects);
 		return db.getBlotterWithSplits(where);
 	}
-	
-    /*@Override
-    protected BlotterTotalsCalculationTask createTotalCalculationTask() {
-        return new BlotterTotalsCalculationTask(this, db, blotterFilter, totalTextFlipper, totalText){
+
+    @Override
+    protected TotalCalculationTask createTotalCalculationTask() {
+        return new TotalCalculationTask(this, totalText) {
             @Override
-            protected Total[] getTransactionsBalance() {
+            protected Total getTotal() {
                 long t0 = System.currentTimeMillis();
                 try {
                     try {
                         long budgetId = blotterFilter.getBudgetId();
                         Budget b = em.load(Budget.class, budgetId);
                         Currency c = CurrencyCache.getCurrency(em, b.currencyId);
-                        Total[] totals = new Total[]{new Total(c)};
-                        totals[0].balance = db.fetchBudgetBalance(categories, projects, b);
-                        return totals;
+                        Total total = new Total(c);
+                        total.balance = db.fetchBudgetBalance(categories, projects, b);
+                        return total;
                     } finally {
                         long t1 = System.currentTimeMillis();
                         Log.d("BUDGET TOTALS", (t1-t0)+"ms");
                     }
                 } catch (Exception ex) {
                     Log.e("BudgetTotals", "Unexpected error", ex);
-                    return new Total[0];
+                    return Total.ZERO;
                 }
             }
         };
-    }*/
+    }
 
 }

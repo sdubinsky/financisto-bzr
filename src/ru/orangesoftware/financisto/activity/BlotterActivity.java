@@ -38,6 +38,7 @@ import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
 
+import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 import static ru.orangesoftware.financisto.utils.MyPreferences.isQuickMenuEnabledForTransaction;
 
@@ -92,7 +93,8 @@ public class BlotterActivity extends AbstractListActivity {
         if (filter.getAccountId() > 0) {
             return new AccountTotalCalculationTask(this, db, filter, totalText);
         } else {
-            return new BlotterTotalCalculationTask(this, db, filter, totalText);
+            WhereFilter blotterFilter = enhanceFilterForAccountBlotter(filter);
+            return new BlotterTotalCalculationTask(this, db, blotterFilter, totalText);
         }
     }
 

@@ -83,4 +83,8 @@ public class BudgetTest extends AbstractDbTest {
         assertEquals(0, spent);
     }
 
+    public void test_should_calculate_budget_total() {
+
+    }
+
 }

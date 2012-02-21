@@ -16,7 +16,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -24,7 +23,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 import greendroid.widget.QuickActionGrid;
 import greendroid.widget.QuickActionWidget;
 import ru.orangesoftware.financisto.R;
@@ -37,7 +35,6 @@ import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
-import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
@@ -281,13 +278,4 @@ public class AccountListActivity extends AbstractListActivity {
 		}
 	}
 
-	@Override
-	protected void onDestroy() {
-		ViewFlipper totalTextFlipper = (ViewFlipper)findViewById(R.id.flipperTotal);
-		if (totalTextFlipper != null) {
-			totalTextFlipper.stopFlipping();
-		}
-		super.onDestroy();
-	}
-	
 }
