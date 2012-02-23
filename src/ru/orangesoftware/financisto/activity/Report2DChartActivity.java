@@ -1,8 +1,8 @@
 package ru.orangesoftware.financisto.activity;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -198,7 +198,7 @@ public class Report2DChartActivity extends Activity {
 	
 	/**
 	 * Alert message to warn that there is no filter available (no category, no project, no account or no location)
-	 * @param resourceMessage Message warning the lack of filters by report type.
+	 * @param message Message warning the lack of filters by report type.
 	 */
 	private void alertNoFilter(String message) {
 		AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
@@ -333,8 +333,8 @@ public class Report2DChartActivity extends Activity {
 		Currency c = MyPreferences.getReferenceCurrency(this);
 		if (c == null) {
 			prefCurNotSet = true;
-			Currency[] currencies = CurrencyCache.getAllCurrencies();
-			if (currencies != null && currencies.length > 0) {
+			Collection<Currency> currencies = CurrencyCache.getAllCurrencies();
+			if (currencies != null && currencies.size() > 0) {
                 for (Currency currency : currencies) {
                     if (currency.isDefault) {
                         c = currency;

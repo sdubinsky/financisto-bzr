@@ -12,7 +12,7 @@ package ru.orangesoftware.financisto.activity;
  *     Rodrigo Sousa
  *******************************************************************************/
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Currency;
@@ -63,19 +63,20 @@ public class ReportPreferencesActivity extends PreferenceActivity {
 	 */
 	private void getCurrenciesList() {
 		String selectedCurrenceTitle = MyPreferences.getReferenceCurrencyTitle(this);
-		Currency[] currenciesList = CurrencyCache.getAllCurrencies();
+		Collection<Currency> currenciesList = CurrencyCache.getAllCurrencies();
 		
-		int count = currenciesList.length;
+		int count = currenciesList.size();
 
 		selectedCurrenceIndex = -1;		
 		currencies = new String[count];
-		for (int i=0; i<count; i++) {
-			Currency c = currenciesList[i];
-			if (c.title.equals(selectedCurrenceTitle)) {
-				selectedCurrenceIndex = i;
-			}
-			currencies[i] = c.title;
-		}
+        int i=0;
+        for (Currency c : currenciesList) {
+            if (c.title.equals(selectedCurrenceTitle)) {
+                selectedCurrenceIndex = i;
+            }
+            currencies[i] = c.title;
+            i++;
+        }
 	}
 
 

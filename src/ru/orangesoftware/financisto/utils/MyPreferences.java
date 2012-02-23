@@ -24,6 +24,7 @@ import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Currency;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -223,11 +224,11 @@ public class MyPreferences {
 	public static Currency getReferenceCurrency(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		
-		Currency[] currencies = CurrencyCache.getAllCurrencies();
+		Collection<Currency> currencies = CurrencyCache.getAllCurrencies();
 		Currency cur = null;
 		try { 
 			String refCurrency = sharedPreferences.getString("report_reference_currency", null);
-			if (currencies != null && currencies.length > 0) {
+			if (currencies != null && currencies.size() > 0) {
 				for (Currency currency : currencies) {
 					if (currency.title.equals(refCurrency)) cur = currency; 
 				}

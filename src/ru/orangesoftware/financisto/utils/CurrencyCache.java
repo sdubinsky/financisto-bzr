@@ -80,8 +80,8 @@ public class CurrencyCache {
 		return s != null ? (s.length() > 2 ? s.charAt(1) : 0): c;
 	}
 
-	public static synchronized Currency[] getAllCurrencies() {
-		return CURRENCIES.values();
+	public static synchronized Collection<Currency> getAllCurrencies() {
+		return CURRENCIES.valueCollection();
 	}
 
 
