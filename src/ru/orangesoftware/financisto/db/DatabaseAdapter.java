@@ -741,8 +741,23 @@ public class DatabaseAdapter {
 			c.close();
 		}
 		return db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION, 
-				"NOT ("+CategoryViewColumns.left+">="+left+" AND "+CategoryColumns.right+"<="+right+")", null, null, null, null);
+				"(NOT ("+CategoryViewColumns.left+">=? AND "+CategoryColumns.right+"<=?)) AND "+CategoryViewColumns._id+">=0",
+                new String[]{String.valueOf(left), String.valueOf(right)}, null, null, null);
 	}
+
+    public List<Category> getCategoriesWithoutSubtreeAsList(long categoryId) {
+        List<Category> list = new ArrayList<Category>();
+        Cursor c = getCategoriesWithoutSubtree(categoryId);
+        try {
+            while(c.moveToNext()) {
+                Category category = Category.formCursor(c);
+                list.add(category);
+            }
+            return list;
+        } finally {
+            c.close();
+        }
+    }
 
 	private static final String INSERT_CATEGORY_UPDATE_RIGHT = "UPDATE "+CATEGORY_TABLE+" SET "+CategoryColumns.right+"="+CategoryColumns.right+"+2 WHERE "+CategoryColumns.right+">?";
 	private static final String INSERT_CATEGORY_UPDATE_LEFT = "UPDATE "+CATEGORY_TABLE+" SET "+CategoryColumns.left+"="+CategoryColumns.left+"+2 WHERE "+CategoryColumns.left+">?";
