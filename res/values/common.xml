@@ -73,28 +73,34 @@
 	</string-array>
 	<string-array name="ui_language_entities">
 		<item>&lt;default&gt;</item>
+        <item>Catalan</item>
 		<item>Čeština</item>
 		<item>Deutsch</item>
+        <item>English</item>
 		<item>Español</item>
 		<item>Français</item>
 		<item>Italiano</item>
         <item>Norwegian</item>
         <item>Polski</item>
 		<item>Português (Brasil)</item>
+        <item>Romanian</item>
 		<item>Русский</item>
 		<item>Chinese (China)</item>
 		<item>Chinese (Taiwan)</item>
 	</string-array>
 	<string-array name="ui_language_values">
 		<item>default</item>
+        <item>ca</item>
 		<item>cs-CZ</item>
 		<item>de</item>
+        <item>en</item>
 		<item>es</item>
 		<item>fr</item>
 		<item>it</item>
         <item>no-NB</item>
         <item>pl</item>
 		<item>pt-BR</item>
+        <item>ro</item>
 		<item>ru</item>
 		<item>zh-CN</item>
 		<item>zh-TW</item>
