@@ -30,7 +30,8 @@
 			android:orientation="vertical" android:padding="3dp">
 			<TextView android:layout_height="wrap_content"
 				android:textStyle="bold" android:gravity="right"
-				android:layout_width="fill_parent" android:text="@string/total"/>
+				android:layout_width="fill_parent" android:text="@string/total"
+                android:textColor="@android:color/primary_text_light"/>
 			<TextView android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:layout_weight="1"
 				android:id="@+id/total" android:gravity="right|center"
