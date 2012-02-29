@@ -11,6 +11,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.Utils;
 
@@ -41,6 +44,9 @@ public abstract class TotalCalculationTask extends AsyncTask<Object, Total, Tota
 	@Override
 	protected void onPostExecute(Total result) {
 		if (isRunning) {
+            if (result.currency == Currency.EMPTY) {
+                Toast.makeText(context, R.string.currency_make_default_warning, Toast.LENGTH_LONG).show();
+            }
 			setTotal(context, totalText, result);
 		}
 	}

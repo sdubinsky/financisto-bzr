@@ -730,5 +730,6 @@
     <string name="rate_from_currency">From currency</string>
     <string name="rate_to_currency">To currency</string>
     <string name="currency_make_default">Make default</string>
+    <string name="currency_make_default_warning">Please set Default Currency to get correct Total (Menu -&gt; Entities -&gt; Currencies)</string>
 
 </resources>
