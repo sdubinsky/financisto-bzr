@@ -20,7 +20,6 @@
   <string name="add_currency">Afegir Moneda</string>
   <string name="opening_amount">Saldo inicial</string>
   <string name="limit_amount">Límit de crèdit</string>
-  <string name="amount_in" formatted="false">Import en &lt;b&gt;%s %s&lt;/b&gt;</string>
   <string name="view">Visualitza</string>
   <string name="edit">Edita</string>
   <string name="delete">Esborrar</string>
@@ -593,7 +592,7 @@
   <string name="import_export">Importació/Exportació</string>
   <string name="qif_import_disclaimer">*ADVERTÈNCIA* Tingues en compte que totes les dades existents s\'eliminaran!</string>
   <string name="remember_last_category_for_payee">Recordar Categoria</string>
-  <string name="remember_last_category_for_payee_summary">Recordar l\'última categoria per al beneficiari seleccionat</string>
+  <string name="remember_last_category_for_payee_summary">Recordar l\'última categoria per al beneficiari escollit (o compte, si el beneficiari està desactivat)</string>
   <string name="currency_symbol_format">Format de símbol</string>
   <string name="use_header_from_file">Utilitzar encapçalament de l\'arxiu</string>
   <string name="info">Informació</string>
@@ -613,8 +612,29 @@
   <string name="database_backup">Còpia de seguretat de base de dades</string>
   <string name="database_backup_folder">Carpeta de còpia de seguretat</string>
   <string name="database_backup_folder_summary">Carpeta de còpia de seguretat de base de  dades actual: %s</string>
-  <string name="backup_database_to">Còpia de seguretat base de dades per a...</string>
+  <string name="backup_database_to">Enviar còpia de seguretat a...</string>
   <string name="backup_database_to_title">Enviar còpia de seguretat per a...</string>
+  <string name="license">Llicència</string>
+  <string name="quick_menu_account_enabled">Menú ràpid a Comptes</string>
+  <string name="quick_menu_account_enabled_summary">Activar menú d\'un toc a Comptes</string>
+  <string name="quick_menu_transaction_enabled">Menú ràpid a Registres</string>
+  <string name="quick_menu_transaction_enabled_summary">Activar menú d\'un toc a Registres</string>
+  <string name="dropbox">Dropbox</string>
+  <string name="dropbox_authorize">Autoritzar</string>
+  <string name="dropbox_authorize_summary">Permet Financisto carregar arxius al seu Dropbox</string>
+  <string name="dropbox_unlink">Desenllaça</string>
+  <string name="dropbox_unlink_summary">Impedir Financisto de carregar arxius al seu Dropbox</string>
+  <string name="dropbox_upload_backup">Carregar còpies de seguretat</string>
+  <string name="dropbox_upload_backup_summary">Carregar còpies de seguretat de base de dades a Dropbox</string>
+  <string name="dropbox_upload_autobackup">Carregar còpies de seguretat automàtica</string>
+  <string name="dropbox_upload_autobackup_summary">Carregar còpies de seguretat automáticas de base de dades a Dropbox</string>
+  <string name="dropbox_uploading_file">Carregar l\'arxiu a Dropbox...</string>
+  <string name="exchange_rates">Taxes de canvi</string>
+  <string name="no_exchange_rates">Sense taxes de canvi</string>
+  <string name="exchange_rate">Taxa de canvi</string>
+  <string name="rate_from_currency">Des de moneda</string>
+  <string name="rate_to_currency">De la moneda</string>
+  <string name="currency_make_default">Fer per defecte</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Número</item>

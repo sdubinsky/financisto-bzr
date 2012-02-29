@@ -10,7 +10,7 @@
       Denis Solonenko - initial API and implementation
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="ru.orangesoftware.financisto" android:versionName="1.5.6" android:versionCode="60"
+	package="ru.orangesoftware.financisto" android:versionName="1.5.6" android:versionCode="61"
     android:installLocation="auto">
 	<application
             android:theme="@style/Theme.GreenDroid"
@@ -19,7 +19,7 @@
 		
 		<uses-library android:name="com.google.android.maps" android:required="false" />
 		
-		<receiver android:name=".activity.AccountWidget" android:label="@string/widget_2x1" > <!-- android:process=":otherProcess" -->
+		<receiver android:name=".activity.AccountWidget" android:label="@string/widget_2x1" >
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="ru.orangesoftware.financisto.UPDATE_WIDGET" />

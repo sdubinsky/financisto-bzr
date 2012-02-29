@@ -20,7 +20,6 @@
   <string name="add_currency">Incluir moeda</string>
   <string name="opening_amount">Saldo de abertura</string>
   <string name="limit_amount">Limite de saldo</string>
-  <string name="amount_in" formatted="false">Saldo em &lt;b&gt;%s %s&lt;/b&gt;</string>
   <string name="view">Visualizar</string>
   <string name="edit">Editar</string>
   <string name="delete">Apagar</string>
@@ -593,7 +592,7 @@
   <string name="import_export">Importar/Exportar</string>
   <string name="qif_import_disclaimer">*ATENÇÃO* Todos os dados existentes serão removidos!</string>
   <string name="remember_last_category_for_payee">Última categoria</string>
-  <string name="remember_last_category_for_payee_summary">Lembrar a última categoria para o favorecido escolhido</string>
+  <string name="remember_last_category_for_payee_summary">Lembrar a última categoria para o favorecido escolhido (ou conta, se o favorecido estiver desabilitado)</string>
   <string name="currency_symbol_format">Formato de símbolo</string>
   <string name="use_header_from_file">Usar cabeçalho do arquivo</string>
   <string name="info">Info</string>
@@ -613,8 +612,29 @@
   <string name="database_backup">Backup de banco de dados</string>
   <string name="database_backup_folder">Pasta de backup</string>
   <string name="database_backup_folder_summary">Pasta de backup de banco de dados atual: %s</string>
-  <string name="backup_database_to">Backup de banco de dados para...</string>
+  <string name="backup_database_to">Enviar Backup para...</string>
   <string name="backup_database_to_title">Enviar Backup de banco de dados para...</string>
+  <string name="license">Licença</string>
+  <string name="quick_menu_account_enabled">Menu rápido nas contas</string>
+  <string name="quick_menu_account_enabled_summary">Habilitar menu de um toque nas Contas</string>
+  <string name="quick_menu_transaction_enabled">Menu rápido nos Registros</string>
+  <string name="quick_menu_transaction_enabled_summary">Habilitar menu de um toque nos Registros</string>
+  <string name="dropbox">Dropbox</string>
+  <string name="dropbox_authorize">Autorizar</string>
+  <string name="dropbox_authorize_summary">Permitir Financisto fazer upload de arquivos para o seu Dropbox</string>
+  <string name="dropbox_unlink">Desvincular</string>
+  <string name="dropbox_unlink_summary">Impedir Financisto de fazer upload de arquivos para o seu Dropbox</string>
+  <string name="dropbox_upload_backup">Upload de Backups</string>
+  <string name="dropbox_upload_backup_summary">Upload de backups de banco de dados para Dropbox</string>
+  <string name="dropbox_upload_autobackup">Upload de backups automáticos</string>
+  <string name="dropbox_upload_autobackup_summary">Upload de backups automáticos de banco de dados para o Dropbox</string>
+  <string name="dropbox_uploading_file">Upload de arquivo para Dropbox...</string>
+  <string name="exchange_rates">Taxas de câmbio</string>
+  <string name="no_exchange_rates">Sem taxas de câmbio</string>
+  <string name="exchange_rate">Taxa de câmbio</string>
+  <string name="rate_from_currency">Da moeda</string>
+  <string name="rate_to_currency">Para moeda</string>
+  <string name="currency_make_default">Tornar padrão</string>
   <string-array name="attribute_types">
     <item>Texto</item>
     <item>Número</item>

@@ -20,7 +20,6 @@
   <string name="add_currency">Přidat měnu</string>
   <string name="opening_amount">Počáteční zůstatek</string>
   <string name="limit_amount">Limit zůstatku</string>
-  <string name="amount_in" formatted="false">Zůstatek mezi &lt;b&gt;%s %s&lt;/b&gt;</string>
   <string name="view">Zobrazit</string>
   <string name="edit">Upravit</string>
   <string name="delete">Smazat</string>
@@ -593,7 +592,7 @@
   <string name="import_export">Import/Export</string>
   <string name="qif_import_disclaimer">*VAROVÁNÍ* Všechna současná data budou odstraněna!</string>
   <string name="remember_last_category_for_payee">Poslední kategorie</string>
-  <string name="remember_last_category_for_payee_summary">Zapamatovat si poslední kategorii pro vybraného příjemce</string>
+  <string name="remember_last_category_for_payee_summary">Zapamatovat si poslední kategorii pro zvoleného plátce (nebo účet, pokud je plátce zakázán)</string>
   <string name="currency_symbol_format">Formát symbolu měny</string>
   <string name="use_header_from_file">Použít hlavičku ze souboru</string>
   <string name="info">Info</string>
@@ -613,8 +612,29 @@
   <string name="database_backup">Záloha databáze</string>
   <string name="database_backup_folder">Složka pro zálohu</string>
   <string name="database_backup_folder_summary">Současná složka pro zálohu: %s</string>
-  <string name="backup_database_to">Zálohovat databázi do...</string>
+  <string name="backup_database_to">Odeslat zálohu na...</string>
   <string name="backup_database_to_title">Odeslat zálohu databáze do...</string>
+  <string name="license">Licence</string>
+  <string name="quick_menu_account_enabled">Rychlé menu Účtů</string>
+  <string name="quick_menu_account_enabled_summary">Povolit menu \"na dotek\" v Účtech</string>
+  <string name="quick_menu_transaction_enabled">Rychlé menu Záznamníku</string>
+  <string name="quick_menu_transaction_enabled_summary">Povolit menu \"na dotek\" v Záznamníku</string>
+  <string name="dropbox">Dropbox</string>
+  <string name="dropbox_authorize">Autorizovat</string>
+  <string name="dropbox_authorize_summary">Povolit nahrávání souborů na váš Dropbox</string>
+  <string name="dropbox_unlink">Zrušit propojení</string>
+  <string name="dropbox_unlink_summary">Zakázat nahrávání souborů na váš Dropbox</string>
+  <string name="dropbox_upload_backup">Nahrát zálohy</string>
+  <string name="dropbox_upload_backup_summary">Nahrát zálohy databáze na Dropbox</string>
+  <string name="dropbox_upload_autobackup">Nahrát automatické zálohy</string>
+  <string name="dropbox_upload_autobackup_summary">Nahrát automatickou zálohu databáze na Dropbox</string>
+  <string name="dropbox_uploading_file">Nahrávám soubor na Dropbox...</string>
+  <string name="exchange_rates">Směnné kurzy</string>
+  <string name="no_exchange_rates">Žádné směnné kurzy</string>
+  <string name="exchange_rate">Směnný kurz</string>
+  <string name="rate_from_currency">Od měna</string>
+  <string name="rate_to_currency">Do měna</string>
+  <string name="currency_make_default">Nastavit jako výchozí</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Číslo</item>
