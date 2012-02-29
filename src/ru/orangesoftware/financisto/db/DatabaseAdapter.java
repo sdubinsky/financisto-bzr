@@ -1674,16 +1674,33 @@ public class DatabaseAdapter {
     }
 
     public boolean singleCurrencyOnly() {
-        Cursor c = db().rawQuery("select count(distinct "+AccountColumns.CURRENCY_ID+") from "+ACCOUNT_TABLE+
+        long currencyId = getSingleCurrencyId();
+        return currencyId > 0;
+    }
+    
+    private long getSingleCurrencyId() {
+        Cursor c = db().rawQuery("select distinct "+AccountColumns.CURRENCY_ID+" from "+ACCOUNT_TABLE+
                 " where "+AccountColumns.IS_INCLUDE_INTO_TOTALS+"=1 and "+AccountColumns.IS_ACTIVE+"=1", null);
         try {
-            if (c.moveToFirst()) {
-                return c.getInt(0) == 1;
+            if (c.getCount() == 1) {
+                c.moveToFirst();
+                return c.getLong(0);
             }
+            return -1;
         } finally {
             c.close();
         }
-        return false;
+    } 
+
+    public void setDefaultHomeCurrency() {
+        Currency homeCurrency = em.getHomeCurrency();
+        long singleCurrencyId = getSingleCurrencyId();
+        if (homeCurrency == Currency.EMPTY && singleCurrencyId > 0) {
+            Currency c = em.get(Currency.class, singleCurrencyId);
+            c.isDefault = true;
+            em.saveOrUpdate(c);
+        }
     }
+
 }
 

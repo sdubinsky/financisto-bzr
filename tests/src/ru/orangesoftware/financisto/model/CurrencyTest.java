@@ -1,6 +1,7 @@
 package ru.orangesoftware.financisto.model;
 
 import ru.orangesoftware.financisto.db.AbstractDbTest;
+import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CurrencyBuilder;
 import ru.orangesoftware.financisto.utils.Utils;
 
@@ -72,6 +73,15 @@ public class CurrencyTest extends AbstractDbTest {
 
     public void test_should_return_empty_currency_if_there_are_no_currencies() {
         assertEquals("", em.getHomeCurrency().name);
+    }
+
+    public void test_should_set_home_currency_if_it_has_not_been_set_and_the_same_currency_is_used_in_all_accounts() {
+        CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").create();
+        Currency c = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").create();
+        AccountBuilder.createDefault(db, c);
+        assertEquals(Currency.EMPTY, em.getHomeCurrency());
+        db.setDefaultHomeCurrency();
+        assertEquals(c, em.getHomeCurrency());
     }
 
 }

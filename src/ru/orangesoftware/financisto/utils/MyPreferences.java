@@ -25,7 +25,6 @@ import ru.orangesoftware.financisto.model.Currency;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
@@ -40,23 +39,23 @@ public class MyPreferences {
 		SORT_ORDER_ASC("sortOrder", true),
 		SORT_ORDER_DESC("sortOrder", false),
 		NAME("title", true);
-		
+
 		public final String property;
 		public final boolean asc;
-		
+
 		private AccountSortOrder(String property, boolean asc) {
 			this.property = property;
 			this.asc = asc;
 		}
 	}
-	
+
 	public static enum LocationsSortOrder {
 		FREQUENCY("count", false),
 		NAME("name", true);
-		
+
 		public final String property;
 		public final boolean asc;
-		
+
 		private LocationsSortOrder(String property, boolean asc) {
 			this.property = property;
 			this.asc = asc;
@@ -415,10 +414,18 @@ public class MyPreferences {
     }
 
     public static boolean shouldRebuildRunningBalance(Context context) {
+        return getOneTimeFlag(context, "should_rebuild_running_balance");
+    }
+
+    public static boolean shouldUpdateHomeCurrency(Context context) {
+        return getOneTimeFlag(context, "should_update_home_currency");
+    }
+
+    private static boolean getOneTimeFlag(Context context, String name) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean result = sharedPreferences.getBoolean("should_rebuild_running_balance", true);
+        boolean result = sharedPreferences.getBoolean(name, true);
         if (result) {
-            sharedPreferences.edit().putBoolean("should_rebuild_running_balance", false).commit();
+            sharedPreferences.edit().putBoolean(name, false).commit();
         }
         return result;
     }

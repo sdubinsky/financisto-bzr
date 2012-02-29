@@ -178,6 +178,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 				x.endTransaction();
 			}
 			t2 = System.currentTimeMillis();
+            if (MyPreferences.shouldUpdateHomeCurrency(this)) {
+                db.setDefaultHomeCurrency();
+            }
 			CurrencyCache.initialize(db.em());
             t3 = System.currentTimeMillis();
             if (MyPreferences.shouldRebuildRunningBalance(this)) {
