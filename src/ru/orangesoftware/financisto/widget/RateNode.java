@@ -106,7 +106,8 @@ public class RateNode {
 
     public float getRate() {
         try {
-            return Float.parseFloat(Utils.text(rate));
+            String rateText = Utils.text(rate);
+            return rateText != null ? Float.parseFloat(rateText) : 0;
         } catch (NumberFormatException ex) {
             return 0;
         }
