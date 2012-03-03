@@ -107,7 +107,11 @@ public class RateNode {
     public float getRate() {
         try {
             String rateText = Utils.text(rate);
-            return rateText != null ? Float.parseFloat(rateText) : 0;
+            if (rateText != null) {
+                rateText = rateText.replace(',', '.');
+                return Float.parseFloat(rateText);
+            }
+            return 0;
         } catch (NumberFormatException ex) {
             return 0;
         }

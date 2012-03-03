@@ -52,45 +52,50 @@ public class ExchangeRatesListActivity extends AbstractListActivity {
         super.internalOnCreate(savedInstanceState);
         currencies = em.getAllCurrenciesList("name");
 
-        toCurrencySpinner = (Spinner) findViewById(R.id.spinnerToCurrency);
-        toCurrencySpinner.setPromptId(R.string.rate_to_currency);
-        toCurrencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                updateAdapter();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-
         fromCurrencySpinner = (Spinner) findViewById(R.id.spinnerFromCurrency);
         fromCurrencySpinner.setPromptId(R.string.rate_from_currency);
-        fromCurrencySpinner.setAdapter(createCurrencyAdapter(currencies));
-        fromCurrencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                List<Currency> currencies = getCurrenciesButSelected(id);
-                int position = findSelectedCurrency(currencies, lastSelectedCurrencyId);
-                toCurrencySpinner.setAdapter(createCurrencyAdapter(currencies));
-                toCurrencySpinner.setSelection(position);
-                lastSelectedCurrencyId = id;
-            }
+        toCurrencySpinner = (Spinner) findViewById(R.id.spinnerToCurrency);
+        toCurrencySpinner.setPromptId(R.string.rate_to_currency);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-        fromCurrencySpinner.setSelection(findDefaultCurrency());
+        if (currencies.size() > 0) {
+            toCurrencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    updateAdapter();
+                }
 
-        ImageButton bFlip = (ImageButton)findViewById(R.id.bFlip);
-        bFlip.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View arg0) {
-                flipCurrencies();
-            }
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+
+            fromCurrencySpinner.setAdapter(createCurrencyAdapter(currencies));
+            fromCurrencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                    List<Currency> currencies = getCurrenciesButSelected(id);
+                    if (currencies.size() > 0) {
+                        int position = findSelectedCurrency(currencies, lastSelectedCurrencyId);
+                        toCurrencySpinner.setAdapter(createCurrencyAdapter(currencies));
+                        toCurrencySpinner.setSelection(position);
+                    }
+                    lastSelectedCurrencyId = id;
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+            fromCurrencySpinner.setSelection(findDefaultCurrency());
+
+            ImageButton bFlip = (ImageButton)findViewById(R.id.bFlip);
+            bFlip.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View arg0) {
+                    flipCurrencies();
+                }
+            });
+        }
     }
 
     private SpinnerAdapter createCurrencyAdapter(List<Currency> currencies) {
@@ -138,7 +143,9 @@ public class ExchangeRatesListActivity extends AbstractListActivity {
 
     private void flipCurrencies() {
         Currency toCurrency = (Currency) toCurrencySpinner.getSelectedItem();
-        fromCurrencySpinner.setSelection(findSelectedCurrency(currencies, toCurrency.id));
+        if (toCurrency != null) {
+            fromCurrencySpinner.setSelection(findSelectedCurrency(currencies, toCurrency.id));
+        }
     }
 
     private void updateAdapter() {
@@ -151,10 +158,14 @@ public class ExchangeRatesListActivity extends AbstractListActivity {
 
     @Override
     protected void addItem() {
-        Intent intent = new Intent(this, ExchangeRateActivity.class);
-        intent.putExtra(ExchangeRateActivity.FROM_CURRENCY_ID, fromCurrencySpinner.getSelectedItemId());
-        intent.putExtra(ExchangeRateActivity.TO_CURRENCY_ID, toCurrencySpinner.getSelectedItemId());
-        startActivityForResult(intent, ADD_RATE);
+        long fromCurrencyId = fromCurrencySpinner.getSelectedItemId();
+        long toCurrencyId = toCurrencySpinner.getSelectedItemId();
+        if (fromCurrencyId > 0 && toCurrencyId > 0) {
+            Intent intent = new Intent(this, ExchangeRateActivity.class);
+            intent.putExtra(ExchangeRateActivity.FROM_CURRENCY_ID, fromCurrencyId);
+            intent.putExtra(ExchangeRateActivity.TO_CURRENCY_ID, toCurrencyId);
+            startActivityForResult(intent, ADD_RATE);
+        }
     }
 
     @Override
