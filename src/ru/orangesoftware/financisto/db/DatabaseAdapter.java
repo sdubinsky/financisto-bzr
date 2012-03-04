@@ -1531,10 +1531,15 @@ public class DatabaseAdapter {
     }
 
     public void saveRate(ExchangeRate r) {
+        replaceRate(r, r.date);
+    }
+
+    public void replaceRate(ExchangeRate rate, long originalDate) {
         SQLiteDatabase db = db();
         db.beginTransaction();
         try {
-            saveBothRatesInTransaction(r, db);
+            deleteRateInTransaction(rate.fromCurrencyId, rate.toCurrencyId, originalDate, db);
+            saveBothRatesInTransaction(rate, db);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -1549,7 +1554,7 @@ public class DatabaseAdapter {
 
     private void saveRateInTransaction(SQLiteDatabase db, ExchangeRate r) {
         ContentValues values = r.toValues();
-        db.insertWithOnConflict(EXCHANGE_RATES_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(EXCHANGE_RATES_TABLE, null, values);
     }
 
     public ExchangeRate findRate(Currency fromCurrency, Currency toCurrency, long date) {
@@ -1642,18 +1647,6 @@ public class DatabaseAdapter {
                 new String[]{String.valueOf(fromCurrencyId), String.valueOf(toCurrencyId), String.valueOf(d)});
         db.delete(EXCHANGE_RATES_TABLE, ExchangeRateColumns.DELETE_CLAUSE,
                 new String[]{String.valueOf(toCurrencyId), String.valueOf(fromCurrencyId), String.valueOf(d)});
-    }
-
-    public void replaceRate(ExchangeRate rate, long originalDate) {
-        SQLiteDatabase db = db();
-        db.beginTransaction();
-        try {
-            deleteRateInTransaction(rate.fromCurrencyId, rate.toCurrencyId, originalDate, db);
-            saveBothRatesInTransaction(rate, db);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
     }
 
     public long getAccountsTotal(Currency c1) {
