@@ -48,6 +48,22 @@ public class SubCategoryReportTest extends AbstractReportTest {
         assertExpense(units.get(2), -1100);
     }
 
+    public void test_should_calculate_correct_report_with_one_currency_2() {
+        // A       = +6500
+        // - A1    +4000 = +5000
+        // -- AA1  +1000
+        // - A2    +1500
+        // B
+        TransactionBuilder.withDb(db).account(a1).category(categories.get("A1")).dateTime(DateTime.today()).amount(4000).create();
+        TransactionBuilder.withDb(db).account(a1).category(categories.get("AA1")).dateTime(DateTime.today()).amount(1000).create();
+        TransactionBuilder.withDb(db).account(a1).category(categories.get("A2")).dateTime(DateTime.today()).amount(1500).create();
+        List<GraphUnit> units = assertReportReturnsData();
+        assertUnit(units.get(0), "A", 0, 6500);
+        assertUnit(units.get(1), "A1", 0, 5000);
+        assertUnit(units.get(2), "AA1", 0, 1000);
+        assertUnit(units.get(3), "A2", 0, 1500);
+    }
+
     public void test_should_calculate_correct_report_with_multiple_currencies_1() {
         // A  -120$
         //    -100$$

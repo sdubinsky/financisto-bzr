@@ -57,11 +57,12 @@ public class SubCategoryReport extends AbstractReport {
         final MyEntityManager em = db.em();
         final ExchangeRateProvider rates = db.getHistoryRates();
         try {
+            final int leftColumnIndex = c.getColumnIndex(DatabaseHelper.SubCategoryReportColumns.LEFT);
             CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
                 @Override
                 public CategoryAmount createNode(Cursor c) {
                     float amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(DatabaseHelper.ReportColumns.DATETIME));
-                    return new CategoryAmount(c, amount);
+                    return new CategoryAmount(c, leftColumnIndex, amount);
                 }
             });
 
@@ -128,13 +129,13 @@ public class SubCategoryReport extends AbstractReport {
 		private final float amount;
         private final int isTransfer;
 
-        public CategoryAmount(Cursor c, float amount) {
+        public CategoryAmount(Cursor c, int leftColumnIndex, float amount) {
 			this.id = c.getLong(0);
             this.title = c.getString(1);
 			this.amount = amount;
-            this.left = c.getInt(4);
-            this.right = c.getInt(5);
-            this.isTransfer = c.getInt(6);
+            this.left = c.getInt(leftColumnIndex);
+            this.right = c.getInt(leftColumnIndex+1);
+            this.isTransfer = c.getInt(leftColumnIndex+2);
 		}
 
 	}
