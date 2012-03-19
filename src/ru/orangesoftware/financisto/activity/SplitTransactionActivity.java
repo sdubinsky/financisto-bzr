@@ -84,8 +84,10 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
     @Override
     protected void onClick(View v, int id) {
         if (id == R.id.category) {
-            x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter,
-                    DatabaseHelper.CategoryViewColumns._id.name(), split.categoryId);
+            if (!CategorySelectorActivity.pickCategory(this, split.categoryId, false)) {
+                x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter,
+                        DatabaseHelper.CategoryViewColumns._id.name(), split.categoryId);
+            }
         }
     }
 
@@ -103,6 +105,10 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             amountInput.processActivityResult(requestCode, data);
+            if (requestCode == CategorySelectorActivity.PICK_CATEGORY_REQUEST) {
+                long categoryId = data.getLongExtra(CategorySelectorActivity.SELECTED_CATEGORY_ID, 0);
+                selectCategory(categoryId);
+            }
         }
     }
 

@@ -10,11 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 import android.database.Cursor;
 
@@ -52,18 +48,22 @@ public class CategoryTree<T extends CategoryEntity<T>> implements Iterable<T> {
 		}	
 		return new CategoryTree<T>(roots);
 	}
-	
-	public static interface NodeCreator<T> {	
+
+    public void insertAtTop(T category) {
+        roots.add(0, category);
+    }
+
+    public static interface NodeCreator<T> {
 		T createNode(Cursor c);
 	}
 	
-	public HashMap<Long, T> asMap() {
-		HashMap<Long, T> map = new HashMap<Long, T>();
+	public Map<Long, T> asMap() {
+		Map<Long, T> map = new HashMap<Long, T>();
 		initializeMap(map, this);
 		return map;
 	}
 	
-	private void initializeMap(HashMap<Long, T> map, CategoryTree<T> tree) {
+	private void initializeMap(Map<Long, T> map, CategoryTree<T> tree) {
 		for (T c : tree) {
 			map.put(c.id, c);
 			if (c.hasChildren()) {
@@ -96,6 +96,10 @@ public class CategoryTree<T extends CategoryEntity<T>> implements Iterable<T> {
 	public T getAt(int pos) {
 		return roots.get(pos);
 	}
+    
+    public List<T> getRoots() {
+        return roots;
+    }
 
 	public boolean moveCategoryUp(int pos) {
 		if (pos > 0 && pos < size()) {

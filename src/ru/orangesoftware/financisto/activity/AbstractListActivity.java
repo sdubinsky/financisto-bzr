@@ -73,14 +73,18 @@ public abstract class AbstractListActivity extends ListActivity implements Recre
 		if (cursor != null) {
 			startManagingCursor(cursor);
 		}
-		
-		adapter = createAdapter(cursor);
-		setListAdapter(adapter);				
+
+        recreateAdapter();
 		
 		registerForContextMenu(getListView());
 	}
-	
-	protected abstract Cursor createCursor();
+
+    protected void recreateAdapter() {
+        adapter = createAdapter(cursor);
+        setListAdapter(adapter);
+    }
+
+    protected abstract Cursor createCursor();
 
 	protected abstract ListAdapter createAdapter(Cursor cursor);
 
@@ -188,10 +192,9 @@ public abstract class AbstractListActivity extends ListActivity implements Recre
 		}
 		cursor = createCursor();
 		if (cursor != null) {
-			adapter = createAdapter(cursor);
-			setListAdapter(adapter);				
 			startManagingCursor(cursor);
-		}				
+            recreateAdapter();
+        }
 	}
 
 	@Override

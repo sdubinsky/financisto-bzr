@@ -489,6 +489,14 @@ public class MyPreferences {
     public static boolean isDropboxUploadAutoBackups(Context context) {
         return isDropboxAuthorized(context) && getBoolean(context, "dropbox_upload_autobackup", false);
     }
+    
+    public static boolean isUseHierarchicalCategorySelector(Context context) {
+        return getBoolean(context, "use_hierarchical_category_selector", true);
+    }
+
+    public static boolean isAutoSelectChildCategory(Context context) {
+        return getBoolean(context, "hierarchical_category_selector_select_child_immediately", true);
+    }
 
     public static AccessTokenPair getDropboxKeys(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);

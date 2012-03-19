@@ -44,6 +44,9 @@ public class Category extends CategoryEntity<Category> {
 	@Transient
 	public ArrayList<Attribute> attributes;
 
+    @Transient
+    public String tag;
+
     public Category(){}
 	
 	public Category(long id){

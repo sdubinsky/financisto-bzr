@@ -32,6 +32,7 @@ import android.view.Window;
 import android.widget.*;
 import android.widget.LinearLayout.LayoutParams;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.*;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
@@ -60,8 +61,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private static final int NEW_LOCATION_REQUEST = 4002;
 	private static final int RECURRENCE_REQUEST = 4003;
 	private static final int NOTIFICATION_REQUEST = 4004;
-	private static final int PICTURE_REQUEST = 4005;	
-	
+	private static final int PICTURE_REQUEST = 4005;
+
 	private static final TransactionStatus[] statuses = TransactionStatus.values();
 	
 	protected AmountInput amountInput;
@@ -537,10 +538,13 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				x.select(this, R.id.account, R.string.account, accountCursor, accountAdapter, 
 						AccountColumns.ID, selectedAccountId);
 				break;
-			case R.id.category:
-				x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter, 
-						CategoryViewColumns._id.name(), selectedCategoryId);
+			case R.id.category: {
+                if (!CategorySelectorActivity.pickCategory(this, selectedCategoryId, true)) {
+                    x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter,
+                            DatabaseHelper.CategoryViewColumns._id.name(), selectedCategoryId);
+                }
 				break;
+            }
 			case R.id.category_add: {
 				Intent intent = new Intent(this, CategoryActivity.class);
 				startActivityForResult(intent, NEW_CATEGORY_REQUEST);				
@@ -754,13 +758,19 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				return;
 			}
 			switch (requestCode) {
-				case NEW_CATEGORY_REQUEST:
+				case NEW_CATEGORY_REQUEST: {
 					categoryCursor.requery();
 					long categoryId = data.getLongExtra(CategoryColumns._id.name(), -1);
 					if (categoryId != -1) {
 						selectCategory(categoryId);
 					}
 					break;
+                }
+                case CategorySelectorActivity.PICK_CATEGORY_REQUEST: {
+                    long categoryId = data.getLongExtra(CategorySelectorActivity.SELECTED_CATEGORY_ID, 0);
+                    selectCategory(categoryId);
+                    break;
+                }
 				case NEW_PROJECT_REQUEST:					
 					projects = em.getAllProjectsList(true);
 					long projectId = data.getLongExtra(EntityColumns.ID, -1);

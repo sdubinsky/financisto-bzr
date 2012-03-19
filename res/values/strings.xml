@@ -732,4 +732,13 @@
     <string name="currency_make_default">Make default</string>
     <string name="currency_make_default_warning">Please set Default Currency to get correct Total (Menu -&gt; Entities -&gt; Currencies)</string>
 
+    <string name="back">Back</string>
+    <string name="select">Select</string>
+    <string name="category_selector">Category selector</string>
+    <string name="use_hierarchical_category_selector">Hierarchical selector</string>
+    <string name="use_hierarchical_category_selector_summary">Use hierarchical category selector</string>
+    <string name="hierarchical_category_selector_select_child_immediately">Confirm automatically</string>
+    <string name="hierarchical_category_selector_select_child_immediately_summary">Confirm child category selection automatically</string>
+
+
 </resources>
