@@ -1652,18 +1652,18 @@ public class DatabaseAdapter {
     public long getAccountsTotal(Currency c1) {
         ExchangeRateProvider rates = getLatestRates();
         List<Account> accounts = em.getAllAccountsList();
-        long total = 0;
+        float total = 0;
         for (Account account : accounts) {
             if (account.shouldIncludeIntoTotals()) {
                 if (account.currency.id == c1.id) {
                     total += account.totalAmount;
                 } else {
                     ExchangeRate rate = rates.getRate(account.currency, c1);
-                    total += (long)(rate.rate*account.totalAmount);
+                    total += rate.rate*account.totalAmount;
                 }
             }
         }
-        return total;
+        return (long)total;
     }
 
     public boolean singleCurrencyOnly() {
