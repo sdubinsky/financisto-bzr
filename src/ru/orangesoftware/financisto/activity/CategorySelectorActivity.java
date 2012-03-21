@@ -53,10 +53,10 @@ public class CategorySelectorActivity extends AbstractListActivity {
         this.incomeColor = resources.getColor(R.color.category_type_income);
         this.expenseColor = resources.getColor(R.color.category_type_expense);
 
-        CategoryTree<Category> categories = db.getCategoriesTree(false);
-        navigator = new CategoryTreeNavigator(categories);
-        Category noCategory = db.getCategory(Category.NO_CATEGORY_ID);
-        navigator.tagCategories(noCategory);
+        navigator = new CategoryTreeNavigator(db);
+        if (MyPreferences.isSeparateIncomeExpense(this)) {
+            navigator.separateIncomeAndExpense();
+        }
 
         bBack = (Button)findViewById(R.id.bBack);
         bBack.setOnClickListener(new View.OnClickListener() {
@@ -77,14 +77,14 @@ public class CategorySelectorActivity extends AbstractListActivity {
         
         Intent intent = getIntent();
         if (intent != null) {
-            long selectedCategoryId = intent.getLongExtra(SELECTED_CATEGORY_ID, 0);
-            navigator.selectCategory(selectedCategoryId);
             boolean includeSplit = intent.getBooleanExtra(INCLUDE_SPLIT_CATEGORY, false);
             if (includeSplit) {
-                Category splitCategory = db.getCategory(Category.SPLIT_CATEGORY_ID);
-                categories.insertAtTop(splitCategory);
+                navigator.addSplitCategoryToTheTop();
             }
+            long selectedCategoryId = intent.getLongExtra(SELECTED_CATEGORY_ID, 0);
+            navigator.selectCategory(selectedCategoryId);
         }
+        
     }
 
     private void confirmSelection() {
@@ -174,7 +174,13 @@ public class CategorySelectorActivity extends AbstractListActivity {
                 v = (BlotterListAdapter.BlotterViewHolder)convertView.getTag();
             }
             Category c = getItem(position);
-            v.centerView.setText(c.title);
+            if (c.id == CategoryTreeNavigator.INCOME_CATEGORY_ID) {
+                v.centerView.setText(getString(R.string.income));                
+            } else if (c.id == CategoryTreeNavigator.EXPENSE_CATEGORY_ID) {
+                v.centerView.setText(getString(R.string.expense));
+            } else {
+                v.centerView.setText(c.title);
+            }
             v.bottomView.setText(c.tag);
             v.indicator.setBackgroundColor(c.isIncome() ? incomeColor : expenseColor);
             v.rightView.setVisibility(View.INVISIBLE);

@@ -8,6 +8,8 @@
 
 package ru.orangesoftware.financisto.model;
 
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -19,13 +21,20 @@ import java.util.Stack;
  */
 public class CategoryTreeNavigator {
 
+    public static final long INCOME_CATEGORY_ID = -101;
+    public static final long EXPENSE_CATEGORY_ID = -102;
+
+    private final DatabaseAdapter db;
     private final Stack<CategoryTree<Category>> categoriesStack = new Stack<CategoryTree<Category>>();
 
     public CategoryTree<Category> categories;
     public long selectedCategoryId = 0;
 
-    public CategoryTreeNavigator(CategoryTree<Category> categories) {
-        this.categories = categories;
+    public CategoryTreeNavigator(DatabaseAdapter db) {
+        this.db = db;
+        this.categories = db.getCategoriesTree(false);
+        Category noCategory = db.getCategory(Category.NO_CATEGORY_ID);
+        tagCategories(noCategory);
     }
 
     public void selectCategory(long selectedCategoryId) {
@@ -74,7 +83,9 @@ public class CategoryTreeNavigator {
     public boolean goBack() {
         if (!categoriesStack.isEmpty()) {
             Category selectedCategory = findCategory(selectedCategoryId);
-            selectedCategoryId = selectedCategory.getParentId();
+            if (selectedCategory != null) {
+                selectedCategoryId = selectedCategory.getParentId();
+            }
             categories = categoriesStack.pop();
             return true;
         }
@@ -114,6 +125,41 @@ public class CategoryTreeNavigator {
     
     public List<Category> getSelectedRoots() {
         return categories.getRoots();
+    }
+
+    public void addSplitCategoryToTheTop() {
+        Category splitCategory = db.getCategory(Category.SPLIT_CATEGORY_ID);
+        categories.insertAtTop(splitCategory);
+    }
+
+    public void separateIncomeAndExpense() {
+        CategoryTree<Category> newCategories = new CategoryTree<Category>();
+        Category income = new Category();
+        income.id = INCOME_CATEGORY_ID;
+        income.makeThisCategoryIncome();
+        income.title = "<INCOME>";
+        Category expense = new Category();
+        expense.id = EXPENSE_CATEGORY_ID;
+        expense.makeThisCategoryExpense();
+        expense.title = "<EXPENSE>";
+        for (Category category : categories) {
+            if (category.id <= 0) {
+                newCategories.add(category);
+            } else {
+                if (category.isIncome()) {
+                    income.addChild(category);
+                } else {
+                    expense.addChild(category);
+                }
+            }
+        }
+        if (income.hasChildren()) {
+            newCategories.add(income);
+        }
+        if (expense.hasChildren()) {
+            newCategories.add(expense);
+        }
+        categories = newCategories;
     }
 
 }

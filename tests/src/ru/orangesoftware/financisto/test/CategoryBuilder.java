@@ -31,7 +31,7 @@ public class CategoryBuilder {
         Category a1 = new CategoryBuilder(db).withParent(a).withTitle("A1").create();
         new CategoryBuilder(db).withParent(a1).withTitle("AA1").create();
         new CategoryBuilder(db).withParent(a).withTitle("A2").create();
-        new CategoryBuilder(db).withTitle("B").create();
+        new CategoryBuilder(db).withTitle("B").income().create();
         return allCategoriesAsMap(db);
     }
 
@@ -63,6 +63,11 @@ public class CategoryBuilder {
 
     public CategoryBuilder withParent(Category parent) {
         category.parent = parent;
+        return this;
+    }
+
+    private CategoryBuilder income() {
+        category.makeThisCategoryIncome();
         return this;
     }
 

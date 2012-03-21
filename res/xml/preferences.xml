@@ -34,6 +34,20 @@
                         android:defaultValue="NAME"/>
         <PreferenceScreen android:title="@string/transaction_screen"
                           android:summary="@string/transaction_screen_summary">
+            <PreferenceCategory android:title="@string/category_selector">
+                <CheckBoxPreference android:key="use_hierarchical_category_selector"
+                                    android:title="@string/use_hierarchical_category_selector"
+                                    android:summary="@string/use_hierarchical_category_selector_summary"
+                                    android:defaultValue="true"/>
+                <CheckBoxPreference android:key="hierarchical_category_selector_select_child_immediately"
+                                    android:title="@string/hierarchical_category_selector_select_child_immediately"
+                                    android:summary="@string/hierarchical_category_selector_select_child_immediately_summary"
+                                    android:defaultValue="true"/>
+                <CheckBoxPreference android:key="hierarchical_category_selector_income_expense"
+                                    android:title="@string/hierarchical_category_selector_income_expense"
+                                    android:summary="@string/hierarchical_category_selector_income_expense_summary"
+                                    android:defaultValue="false"/>
+            </PreferenceCategory>
             <PreferenceCategory android:title="@string/remember_selection">
                 <CheckBoxPreference android:key="remember_last_account"
                                     android:title="@string/remember_last_account"
@@ -95,16 +109,6 @@
                 <CheckBoxPreference android:key="ntsl_show_category_in_transfer"
                                     android:title="@string/show_category_in_transfer"
                                     android:summary="@string/show_category_in_transfer_summary"
-                                    android:defaultValue="true"/>
-            </PreferenceCategory>
-            <PreferenceCategory android:title="@string/category_selector">
-                <CheckBoxPreference android:key="use_hierarchical_category_selector"
-                                    android:title="@string/use_hierarchical_category_selector"
-                                    android:summary="@string/use_hierarchical_category_selector_summary"
-                                    android:defaultValue="true"/>
-                <CheckBoxPreference android:key="hierarchical_category_selector_select_child_immediately"
-                                    android:title="@string/hierarchical_category_selector_select_child_immediately"
-                                    android:summary="@string/hierarchical_category_selector_select_child_immediately_summary"
                                     android:defaultValue="true"/>
             </PreferenceCategory>
         </PreferenceScreen>

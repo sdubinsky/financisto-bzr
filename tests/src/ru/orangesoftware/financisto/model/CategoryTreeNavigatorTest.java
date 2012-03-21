@@ -30,8 +30,24 @@ public class CategoryTreeNavigatorTest extends AbstractDbTest {
          * B
          */
         categories = CategoryBuilder.createDefaultHierarchy(db);
-        CategoryTree<Category> tree = db.getCategoriesTree(false);
-        navigator = new CategoryTreeNavigator(tree);
+        navigator = new CategoryTreeNavigator(db);
+    }
+    
+    public void test_should_add_expense_income_level() {
+        navigator.separateIncomeAndExpense();
+        assertSelected(Category.NO_CATEGORY_ID, "<NO_CATEGORY>", "<INCOME>", "<EXPENSE>");
+
+        navigator.navigateTo(CategoryTreeNavigator.EXPENSE_CATEGORY_ID);
+        assertSelected(CategoryTreeNavigator.EXPENSE_CATEGORY_ID, "<EXPENSE>", "A");
+
+        navigator.navigateTo(categories.get("A").id);
+        assertSelected(categories.get("A").id, "A", "A1", "A2");
+
+        navigator.goBack();
+        assertSelected(Category.NO_CATEGORY_ID, "<EXPENSE>", "A");
+
+        navigator.goBack();
+        assertSelected(Category.NO_CATEGORY_ID, "<NO_CATEGORY>", "<INCOME>", "<EXPENSE>");
     }
 
     public void test_should_select_startup_category() {
@@ -66,7 +82,7 @@ public class CategoryTreeNavigatorTest extends AbstractDbTest {
         assertTrue(navigator.canGoBack());
 
         assertTrue(navigator.goBack());
-        assertSelected(categories.get("A").id, "A", "B");
+        assertSelected(categories.get("A").id, "<NO_CATEGORY>", "A", "B");
         assertFalse(navigator.canGoBack());
 
         assertFalse(navigator.goBack());

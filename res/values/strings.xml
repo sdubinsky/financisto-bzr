@@ -739,6 +739,7 @@
     <string name="use_hierarchical_category_selector_summary">Use hierarchical category selector</string>
     <string name="hierarchical_category_selector_select_child_immediately">Confirm automatically</string>
     <string name="hierarchical_category_selector_select_child_immediately_summary">Confirm child category selection automatically</string>
-
+    <string name="hierarchical_category_selector_income_expense">Income/Expense</string>
+    <string name="hierarchical_category_selector_income_expense_summary">Group income and expense categories together</string>
 
 </resources>

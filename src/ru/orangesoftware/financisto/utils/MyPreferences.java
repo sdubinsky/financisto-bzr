@@ -498,6 +498,10 @@ public class MyPreferences {
         return getBoolean(context, "hierarchical_category_selector_select_child_immediately", true);
     }
 
+    public static boolean isSeparateIncomeExpense(Context context) {
+        return getBoolean(context, "hierarchical_category_selector_income_expense", false);
+    }
+
     public static AccessTokenPair getDropboxKeys(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String authKey = sharedPreferences.getString(DROPBOX_AUTH_KEY, null);
