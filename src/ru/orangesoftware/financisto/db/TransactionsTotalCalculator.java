@@ -9,6 +9,7 @@
 package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
+import android.util.Log;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
@@ -16,6 +17,7 @@ import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS;
@@ -50,6 +52,10 @@ public class TransactionsTotalCalculator {
     }
 
     public Total[] getTransactionsBalance() {
+        WhereFilter filter = this.filter;
+        if (filter.getAccountId() == -1) {
+            filter = excludeAccountsNotIncludedInTotalsAndSplits(filter);
+        }
         Cursor c = db.db().query(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, BALANCE_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(),
                 BALANCE_GROUPBY, null, null);
@@ -83,7 +89,7 @@ public class TransactionsTotalCalculator {
     }
 
     public long getBlotterBalance(Currency toCurrency) {
-        WhereFilter filter = excludeTransfers(this.filter);
+        WhereFilter filter = excludeAccountsNotIncludedInTotalsAndSplits(this.filter);
         return getBalanceInHomeCurrency(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, toCurrency, filter);
     }
 
@@ -99,6 +105,7 @@ public class TransactionsTotalCalculator {
     }
 
     private long getBalanceInHomeCurrency(String view, Currency toCurrency, WhereFilter filter) {
+        Log.d("Financisto", "Query balance: "+filter.getSelection()+" => "+ Arrays.toString(filter.getSelectionArgs()));
         Cursor c = db.db().query(view, HOME_CURRENCY_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(),
                 null, null, null);
@@ -136,9 +143,10 @@ public class TransactionsTotalCalculator {
         }
     }
 
-    private WhereFilter excludeTransfers(WhereFilter filter) {
+    private WhereFilter excludeAccountsNotIncludedInTotalsAndSplits(WhereFilter filter) {
         WhereFilter copy = WhereFilter.copyOf(filter);
-        copy.put(WhereFilter.Criteria.eq("is_transfer", "0"));
+        copy.eq("from_account_is_include_into_totals", "1");
+        copy.neq("category_id", "-1");
         return copy;
     }
 

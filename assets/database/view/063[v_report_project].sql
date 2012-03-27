@@ -10,4 +10,4 @@ select
        t.is_transfer as is_transfer
 from project p
 inner join v_blotter_for_account t on t.project_id=p._id
-where p._id != 0;
+where p._id != 0 and from_account_is_include_into_totals=1;

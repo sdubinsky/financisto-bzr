@@ -132,6 +132,7 @@ public abstract class AbstractReport implements Report {
 		if (c != null) {
 			filter.put(c);
 		}
+        filter.eq("from_account_is_include_into_totals", "1");
 		Intent intent = new Intent(context, getBlotterActivityClass());
 		filter.toIntent(intent);
 		return intent;
@@ -142,8 +143,7 @@ public abstract class AbstractReport implements Report {
     }
 
     protected void cleanupFilter(WhereFilter filter) {
-        // fixing a bug with saving incorrect filter fot this report
-        // have to remove it here
+        // fixing a bug with saving incorrect filter fot this report have to remove it here
         filter.remove("left");
         filter.remove("right");
     }

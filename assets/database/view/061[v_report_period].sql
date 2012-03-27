@@ -9,5 +9,5 @@ select
        t.to_amount as to_amount,
        t.is_transfer as is_transfer
 from v_blotter_for_account_with_splits t
-where t.category_id != -1;
+where t.category_id != -1 and from_account_is_include_into_totals=1;
 	

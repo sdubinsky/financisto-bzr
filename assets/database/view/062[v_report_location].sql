@@ -10,4 +10,4 @@ select
        t.is_transfer as is_transfer
 from locations l
 inner join v_blotter_for_account t on t.location_id=l._id
-where l._id != 0;
+where l._id != 0 and from_account_is_include_into_totals=1;

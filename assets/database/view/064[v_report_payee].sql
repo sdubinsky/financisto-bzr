@@ -10,4 +10,4 @@ select
        t.is_transfer as is_transfer
 from payee p
 inner join v_blotter_for_account t on t.payee_id=p._id
-where p._id != 0;
+where p._id != 0 and from_account_is_include_into_totals=1;

@@ -239,7 +239,7 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
                 .withSplit(CategoryBuilder.noCategory(db), -50010, "Note on third split")
                 .create();
         assertEquals(
-                "!Type:Cat\nNA\nE\n^\nNA:A1\nE\n^\nNA:A1:AA1\nE\n^\nNA:A2\nE\n^\nNB\nE\n^\n"+ // this is not important
+                "!Type:Cat\nNA\nE\n^\nNA:A1\nE\n^\nNA:A1:AA1\nE\n^\nNA:A2\nE\n^\nNB\nI\n^\n"+
                 "!Account\n"+
                 "NMy Cash Account\n"+
                 "TCash\n"+

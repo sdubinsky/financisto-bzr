@@ -17,8 +17,6 @@ import ru.orangesoftware.financisto.test.*;
 
 import java.util.Map;
 
-import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
-
 /**
  * Created by IntelliJ IDEA.
  * User: denis.solonenko
@@ -26,12 +24,8 @@ import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAc
  */
 public class TransactionsTotalCalculatorTest extends AbstractDbTest {
 
-    Currency c1;
-    Currency c2;
-    Currency c3;
-
-    Account a1;
-    Account a2;
+    Currency c1, c2, c3;
+    Account a1, a2, a3;
 
     TransactionsTotalCalculator c;
 
@@ -45,10 +39,7 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
         c2 = CurrencyBuilder.withDb(db).name("EUR").title("Euro").symbol("€").create();
         c3 = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").create();
 
-        c = new TransactionsTotalCalculator(db, enhanceFilterForAccountBlotter(WhereFilter.copyOf(WhereFilter.empty())));
-
-        a1 = AccountBuilder.withDb(db).title("Cash").currency(c1).create();
-        a2 = AccountBuilder.withDb(db).title("Bank").currency(c2).create();
+        c = new TransactionsTotalCalculator(db, WhereFilter.empty());
 
         RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2012, 1, 17)).rate(0.78592f).create();
         RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2012, 1, 18)).rate(0.78635f).create();
@@ -56,18 +47,35 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
         RateBuilder.withDb(db).from(c1).to(c3).at(DateTime.date(2012, 1, 5)).rate(0.62510f).create();
         RateBuilder.withDb(db).from(c2).to(c3).at(DateTime.date(2012, 1, 5)).rate(0.12453f).create();
 
+        a1 = AccountBuilder.withDb(db).title("Cash").currency(c1).create();
+        a2 = AccountBuilder.withDb(db).title("Bank").currency(c2).create();
+        a3 = AccountBuilder.withDb(db).title("Cash2").currency(c1).doNotIncludeIntoTotals().create();
+
+        /*
+        10 A3 SGD +555
+        10 A1 USD +1
+        17 A1 USD +100
+        17 A2 EUR -100
+        18 A2 EUR -250
+        20 A1 USD -50 FT
+        20 A2 EUR +20 TT
+        22 A1 USD -450
+        23 A1 USD -50      S
+        23 A1 USD -150 FT  S
+        23 A2 EUR +100 TT  S
+         */
+
+        TransactionBuilder.withDb(db).account(a3).dateTime(DateTime.date(2012, 1, 10)).amount(555).create();
         TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 10)).amount(1).create();
         TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 17).at(13, 30, 0, 0)).amount(100).create();
+        TransactionBuilder.withDb(db).account(a2).dateTime(DateTime.date(2012, 1, 17).at(13, 30, 0, 0)).amount(-100).create();
+        TransactionBuilder.withDb(db).account(a2).dateTime(DateTime.date(2012, 1, 18).at(18, 40, 0, 0)).amount(-250).create();
+        TransferBuilder.withDb(db).fromAccount(a1).toAccount(a2).dateTime(DateTime.date(2012, 1, 20).atNoon()).fromAmount(-50).toAmount(20).create();
         TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 22).atMidnight()).amount(-450).create();
         TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 23)).amount(-200)
                 .withSplit(categories.get("A1"), -50)
                 .withTransferSplit(a2, -150, 100)
                 .create();
-
-        TransactionBuilder.withDb(db).account(a2).dateTime(DateTime.date(2012, 1, 18).at(18, 40, 0, 0)).amount(-250).create();
-        TransactionBuilder.withDb(db).account(a2).dateTime(DateTime.date(2012, 1, 17).at(13, 30, 0, 0)).amount(-100).create();
-
-        TransferBuilder.withDb(db).fromAccount(a1).toAccount(a2).dateTime(DateTime.date(2012, 1, 20).atNoon()).fromAmount(-50).toAmount(20).create();
     }
 
     public void test_should_calculate_blotter_total_in_multiple_currencies() {
@@ -78,8 +86,8 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
     }
 
     public void test_should_calculate_blotter_total_in_home_currency() {
-        assertEquals((long)(1f +100f -450f -200f -(1f/0.78635f)*250f -(1f/0.78592f)*100f), c.getBlotterBalance(c1));
-        assertEquals((long)(1f +0.78592f*100f -0.78635f*450f -0.78635f*200f -250f -100f), c.getBlotterBalance(c2));
+        assertEquals((long)(1f +100f -(1f/0.78592f)*100f -(1f/0.78635f)*250f -50f +50f -450f -50f -150f +150f), c.getBlotterBalance(c1));
+        assertEquals((long)(1f +0.78592f*100f -100f -250f -20f +20f -0.78635f*450f -0.78635f*50f -100f +100f), c.getBlotterBalance(c2));
         assertEquals(c.getBlotterBalance(c1), c.getBlotterBalanceInHomeCurrency().balance);
     }
 

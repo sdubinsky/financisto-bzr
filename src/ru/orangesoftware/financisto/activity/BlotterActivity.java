@@ -38,7 +38,6 @@ import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
 
-import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 import static ru.orangesoftware.financisto.utils.MyPreferences.isQuickMenuEnabledForTransaction;
 
@@ -89,22 +88,12 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 
     protected TotalCalculationTask createTotalCalculationTask() {
-        WhereFilter filter = getFilterForTotals();
+        WhereFilter filter = WhereFilter.copyOf(blotterFilter);
         if (filter.getAccountId() > 0) {
             return new AccountTotalCalculationTask(this, db, filter, totalText);
         } else {
-            WhereFilter blotterFilter = enhanceFilterForAccountBlotter(filter);
-            return new BlotterTotalCalculationTask(this, db, blotterFilter, totalText);
+            return new BlotterTotalCalculationTask(this, db, filter, totalText);
         }
-    }
-
-    private WhereFilter getFilterForTotals() {
-        WhereFilter filter = WhereFilter.copyOf(blotterFilter);
-        if (filterAccounts) {
-            filter = WhereFilter.copyOf(filter);
-            filter.put(WhereFilter.Criteria.eq("from_account_is_include_into_totals", "1"));
-        }
-        return filter;
     }
 
     @Override

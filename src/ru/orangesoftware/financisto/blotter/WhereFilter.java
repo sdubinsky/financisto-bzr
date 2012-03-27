@@ -57,6 +57,11 @@ public class WhereFilter {
 		return this;
 	}
 
+    public WhereFilter neq(String column, String value) {
+        criterias.add(Criteria.neq(column, value));
+        return this;
+    }
+
 	public WhereFilter btw(String column, String value1, String value2) {
 		criterias.add(Criteria.btw(column, value1, value2));
 		return this;
@@ -305,7 +310,7 @@ public class WhereFilter {
 	}
 	
 	public static enum Operation {
-		NOPE(""), EQ("=?"),GT(">?"),GTE(">=?"),LT("<?"),LTE("<=?"),BTW("BETWEEN ? AND ?");
+		NOPE(""), EQ("=?"), NEQ("!=?"), GT(">?"), GTE(">=?"), LT("<?"), LTE("<=?"), BTW("BETWEEN ? AND ?");
 		
 		public final String op;
 		
@@ -319,7 +324,11 @@ public class WhereFilter {
 		public static Criteria eq(String column, String value) {
 			return new Criteria(column, Operation.EQ, value);
 		}
-		
+
+        public static Criteria neq(String column, String value) {
+            return new Criteria(column, Operation.NEQ, value);
+        }
+
 		public static Criteria btw(String column, String value1, String value2) {
 			return new Criteria(column, Operation.BTW, value1, value2);
 		}		
