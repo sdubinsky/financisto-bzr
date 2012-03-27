@@ -1,17 +1,10 @@
 bin
 gen
-FinancistoSandbox.iml
-FinancistoSandbox.ipr
-FinancistoSandbox.iws
-FinancistoSandbox.eml
 classes
-tests/tests.iml
 Financisto.eml
-Financisto.iml
 Financisto.ipr
 Financisto.iws
 .settings
 GreenDroid/GreenDroid.eml
-GreenDroid/GreenDroid.iml
 .idea/workspace.xml
 .idea/tasks.xml
