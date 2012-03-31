@@ -152,7 +152,7 @@ public class AccountBlotterTest extends AbstractDbTest {
     }
 
     private void assertTotals(long...totalAmounts) {
-        WhereFilter filter = enhanceFilterForAccountBlotter(WhereFilter.empty());
+        WhereFilter filter = WhereFilter.empty();
         TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
         Total[] totals = calculator.getTransactionsBalance();
         assertEquals(totalAmounts.length, totals.length);

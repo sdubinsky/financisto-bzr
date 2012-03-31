@@ -16,8 +16,6 @@ import ru.orangesoftware.financisto.test.*;
 
 import java.util.Calendar;
 
-import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
-
 /**
  * Created by IntelliJ IDEA.
  * User: denis.solonenko
@@ -38,7 +36,7 @@ public class TransactionsTotalCalculatorBenchmark extends AbstractDbTest {
         c1 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").create();
         c2 = CurrencyBuilder.withDb(db).name("EUR").title("Euro").symbol("€").create();
 
-        c = new TransactionsTotalCalculator(db, enhanceFilterForAccountBlotter(WhereFilter.empty()));
+        c = new TransactionsTotalCalculator(db, WhereFilter.empty());
 
         a1 = AccountBuilder.withDb(db).title("Cash").currency(c1).create();
     }

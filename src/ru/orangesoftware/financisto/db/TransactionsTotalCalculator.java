@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.orangesoftware.financisto.db.DatabaseAdapter.enhanceFilterForAccountBlotter;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS;
 
 /**
@@ -99,7 +100,7 @@ public class TransactionsTotalCalculator {
     }
 
     private WhereFilter selectedAccountOnly(WhereFilter filter, long accountId) {
-        WhereFilter copy = WhereFilter.copyOf(filter);
+        WhereFilter copy = enhanceFilterForAccountBlotter(filter);
         copy.put(WhereFilter.Criteria.eq("from_account_id", String.valueOf(accountId)));
         return copy;
     }

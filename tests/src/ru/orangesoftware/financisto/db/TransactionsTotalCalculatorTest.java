@@ -93,7 +93,7 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
 
     public void test_should_calculate_account_total_in_home_currency() {
         //no conversion
-        assertEquals((long) (1f + 100f - 450f - 200f - 50f), c.getAccountBalance(c1, a1.id));
+        assertEquals((long) (1f + 100f -50f -450f -50f -150f), c.getAccountBalance(c1, a1.id));
 
         //note that the last amount is taken from the transfer without conversion
         assertEquals((long) (1f + 0.78592f * 100f - 0.78635f * 450f - 0.78635f * 200f - 20f), c.getAccountBalance(c2, a1.id));
