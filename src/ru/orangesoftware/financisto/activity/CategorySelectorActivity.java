@@ -87,6 +87,16 @@ public class CategorySelectorActivity extends AbstractListActivity {
         
     }
 
+    @Override
+    protected void onPause() {
+        // prevent pin
+    }
+
+    @Override
+    protected void onResume() {
+        // prevent pin
+    }
+
     private void confirmSelection() {
         Intent data = new Intent();
         data.putExtra(SELECTED_CATEGORY_ID, navigator.selectedCategoryId);
