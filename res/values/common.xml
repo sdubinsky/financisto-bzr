@@ -136,6 +136,8 @@
 		<item>6</item>
 	</string-array>
 	<string name="widget_2x1">Financisto 2x1</string>
+    <string name="widget_3x1">Financisto 3x1</string>
+    <string name="widget_4x1">Financisto 4x1</string>
 	<string name="currency_symbol_hint">$ £ ¥ π</string>
    	<string name="card_issuer_visa">Visa</string>
 	<string name="card_issuer_electron">Visa Electron</string>

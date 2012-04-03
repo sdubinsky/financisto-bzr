@@ -29,7 +29,9 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.orb.EntityManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
 
@@ -44,10 +46,21 @@ public class AccountWidget extends AppWidgetProvider {
     public static final String WIDGET_ID = "widgetId";
 
     public static void updateWidgets(Context context) {
-        ComponentName thisWidget = new ComponentName(context, AccountWidget.class);
+        Class[] allWidgetProviders = new Class[]{AccountWidget.class, AccountWidget3x1.class, AccountWidget4x1.class};
+        List<Integer> allWidgetIds = new ArrayList<Integer>();
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
-        int[] widgetIds = manager.getAppWidgetIds(thisWidget);
-        updateWidgets(context, manager, widgetIds, false);
+        for (Class widgetProvider : allWidgetProviders) {
+            ComponentName thisWidget = new ComponentName(context, widgetProvider);
+            int[] widgetIds = manager.getAppWidgetIds(thisWidget);
+            for (int widgetId : widgetIds) {
+                allWidgetIds.add(widgetId);
+            }
+        }
+        int[] ids = new int[allWidgetIds.size()];
+        for (int i=0; i<ids.length; i++) {
+            ids[i] = allWidgetIds.get(i);
+        }
+        updateWidgets(context, manager, ids, false);
     }
 
     @Override
@@ -75,14 +88,25 @@ public class AccountWidget extends AppWidgetProvider {
         if (MyPreferences.isWidgetEnabled(context)) {
             for (int id : appWidgetIds) {
                 long accountId = loadAccountForWidget(context, id);
+                int layoutId = manager.getAppWidgetInfo(id).initialLayout;
+                Class providerClass = getProviderClass(manager, id);
+                Log.d("FinancistoWidget", "using provider "+ providerClass);
                 RemoteViews remoteViews = nextAccount || accountId == -1
-                        ? buildUpdateForNextAccount(context, id, accountId)
-                        : buildUpdateForCurrentAccount(context, id, accountId);
+                        ? buildUpdateForNextAccount(context, id, layoutId, providerClass, accountId)
+                        : buildUpdateForCurrentAccount(context, id, layoutId, providerClass, accountId);
                 manager.updateAppWidget(id, remoteViews);
             }
         } else {
-            manager.updateAppWidget(appWidgetIds, noDataUpdate(context));
+            manager.updateAppWidget(appWidgetIds, noDataUpdate(context, R.layout.widget_2x1));
         }
+    }
+
+    private static Class getProviderClass(AppWidgetManager manager, int id) {
+        Class widgetProviderClass = AccountWidget.class;
+        try {
+            widgetProviderClass = Class.forName(manager.getAppWidgetInfo(id).provider.getClassName());
+        } catch (ClassNotFoundException e) { }
+        return widgetProviderClass;
     }
 
 
@@ -97,8 +121,8 @@ public class AccountWidget extends AppWidgetProvider {
         prefs.commit();
     }
 
-    private static RemoteViews updateWidgetFromAccount(Context context, int widgetId, Account a) {
-        RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_2x1);
+    private static RemoteViews updateWidgetFromAccount(Context context, int widgetId, int layoutId, Class providerClass, Account a) {
+        RemoteViews updateViews = new RemoteViews(context.getPackageName(), layoutId);
         updateViews.setTextViewText(R.id.line1, a.title);
         AccountType type = AccountType.valueOf(a.type);
         if (type.isCard && a.cardIssuer != null) {
@@ -112,15 +136,16 @@ public class AccountWidget extends AppWidgetProvider {
         Utils u = new Utils(context);
         int amountColor = u.getAmountColor(amount);
         updateViews.setTextColor(R.id.note, amountColor);
-        addScrollOnClick(context, updateViews, widgetId);
+        addScrollOnClick(context, updateViews, widgetId, providerClass);
         addTapOnClick(context, updateViews);
+        addButtonsClick(context, updateViews);
         saveAccountForWidget(context, widgetId, a.id);
         return updateViews;
     }
 
-    private static void addScrollOnClick(Context context, RemoteViews updateViews, int widgetId) {
+    private static void addScrollOnClick(Context context, RemoteViews updateViews, int widgetId, Class providerClass) {
         Uri widgetUri = ContentUris.withAppendedId(CONTENT_URI, widgetId);
-        Intent intent = new Intent(WIDGET_UPDATE_ACTION, widgetUri, context, AccountWidget.class);
+        Intent intent = new Intent(WIDGET_UPDATE_ACTION, widgetUri, context, providerClass);
         intent.putExtra(WIDGET_ID, widgetId);
         intent.putExtra("ts", System.currentTimeMillis());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -133,7 +158,16 @@ public class AccountWidget extends AppWidgetProvider {
         updateViews.setOnClickPendingIntent(R.id.layout, pendingIntent);
     }
 
-    private static RemoteViews buildUpdateForCurrentAccount(Context context, int widgetId, long accountId) {
+    private static void addButtonsClick(Context context, RemoteViews updateViews) {
+        Intent intent = new Intent(context, TransactionActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        updateViews.setOnClickPendingIntent(R.id.add_transaction, pendingIntent);
+        intent = new Intent(context, TransferActivity.class);
+        pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        updateViews.setOnClickPendingIntent(R.id.add_transfer, pendingIntent);
+    }
+
+    private static RemoteViews buildUpdateForCurrentAccount(Context context, int widgetId, int layoutId, Class providerClass, long accountId) {
         DatabaseAdapter db = new DatabaseAdapter(context);
         db.open();
         try {
@@ -141,10 +175,10 @@ public class AccountWidget extends AppWidgetProvider {
             Account a = em.getAccount(accountId);
             if (a != null) {
                 Log.d("FinancistoWidget", "buildUpdateForCurrentAccount building update for "+widgetId+" -> "+accountId);
-                return updateWidgetFromAccount(context, widgetId, a);
+                return updateWidgetFromAccount(context, widgetId, layoutId, providerClass, a);
             } else {
                 Log.d("FinancistoWidget", "buildUpdateForCurrentAccount not found "+widgetId+" -> "+accountId);
-                return buildUpdateForNextAccount(context, widgetId, -1);
+                return buildUpdateForNextAccount(context, widgetId, layoutId, providerClass, -1);
             }
         } catch (Exception ex) {
             return errorUpdate(context);
@@ -153,7 +187,7 @@ public class AccountWidget extends AppWidgetProvider {
         }
     }
 
-    private static RemoteViews buildUpdateForNextAccount(Context context, int widgetId, long accountId) {
+    private static RemoteViews buildUpdateForNextAccount(Context context, int widgetId, int layoutId, Class providerClass, long accountId) {
         DatabaseAdapter db = new DatabaseAdapter(context);
         db.open();
         try {
@@ -166,7 +200,7 @@ public class AccountWidget extends AppWidgetProvider {
                     if (count == 1 || accountId == -1) {
                         if (c.moveToNext()) {
                             Account a = EntityManager.loadFromCursor(c, Account.class);
-                            return updateWidgetFromAccount(context, widgetId, a);
+                            return updateWidgetFromAccount(context, widgetId, layoutId, providerClass, a);
                         }
                     } else {
                         boolean found = false;
@@ -178,17 +212,17 @@ public class AccountWidget extends AppWidgetProvider {
                             } else {
                                 if (found) {
                                     Log.d("FinancistoWidget", "buildUpdateForNextAccount building update for -> "+a.id);
-                                    return updateWidgetFromAccount(context, widgetId, a);
+                                    return updateWidgetFromAccount(context, widgetId, layoutId, providerClass, a);
                                 }
                             }
                         }
                         c.moveToFirst();
                         Account a = EntityManager.loadFromCursor(c, Account.class);
                         Log.d("FinancistoWidget", "buildUpdateForNextAccount not found, taking the first one -> "+a.id);
-                        return updateWidgetFromAccount(context, widgetId, a);
+                        return updateWidgetFromAccount(context, widgetId, layoutId, providerClass, a);
                     }
                 }
-                return noDataUpdate(context);
+                return noDataUpdate(context, layoutId);
             } finally {
                 c.close();
             }
@@ -206,8 +240,20 @@ public class AccountWidget extends AppWidgetProvider {
         return updateViews;
     }
 
-    private static RemoteViews noDataUpdate(Context context) {
-        return new RemoteViews(context.getPackageName(), R.layout.widget_2x1_no_data);
+    private static RemoteViews noDataUpdate(Context context, int layoutId) {
+        int noDataLayoutId = getNoDataLayout(layoutId);
+        return new RemoteViews(context.getPackageName(), noDataLayoutId);
+    }
+
+    private static int getNoDataLayout(int layoutId) {
+        switch (layoutId) {
+            case R.layout.widget_3x1:
+                return R.layout.widget_3x1_no_data;
+            case R.layout.widget_4x1:
+                return R.layout.widget_4x1_no_data;
+            default:
+                return R.layout.widget_2x1_no_data;
+        }
     }
 
 }

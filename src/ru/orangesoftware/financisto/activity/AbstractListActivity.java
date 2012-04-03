@@ -49,6 +49,8 @@ public abstract class AbstractListActivity extends ListActivity implements Recre
 	protected DatabaseAdapter db;
 	protected MyEntityManager em;
 	protected ImageButton bAdd;
+    
+    protected boolean enablePin = true;
 	
 	protected AbstractListActivity(int contentId) {
 		this.contentId = contentId;				
@@ -107,13 +109,13 @@ public abstract class AbstractListActivity extends ListActivity implements Recre
 	@Override
 	protected void onPause() {
 		super.onPause();
-		PinProtection.lock(this);
+        if (enablePin) PinProtection.lock(this);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		PinProtection.unlock(this);
+        if (enablePin) PinProtection.unlock(this);
 	}
 	
 	@Override

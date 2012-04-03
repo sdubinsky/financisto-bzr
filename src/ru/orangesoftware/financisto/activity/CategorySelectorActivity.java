@@ -43,6 +43,7 @@ public class CategorySelectorActivity extends AbstractListActivity {
 
     public CategorySelectorActivity() {
         super(R.layout.category_selector);
+        enablePin = false;
     }
 
     @Override
@@ -85,16 +86,6 @@ public class CategorySelectorActivity extends AbstractListActivity {
             navigator.selectCategory(selectedCategoryId);
         }
         
-    }
-
-    @Override
-    protected void onPause() {
-        // prevent pin
-    }
-
-    @Override
-    protected void onResume() {
-        // prevent pin
     }
 
     private void confirmSelection() {

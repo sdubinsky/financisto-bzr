@@ -10,7 +10,7 @@
       Denis Solonenko - initial API and implementation
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="ru.orangesoftware.financisto" android:versionName="1.5.7" android:versionCode="66"
+	package="ru.orangesoftware.financisto" android:versionName="1.5.7u1" android:versionCode="67"
     android:installLocation="auto">
 	<application
             android:theme="@style/Theme.GreenDroid"
@@ -26,7 +26,23 @@
 		    </intent-filter>
 		    <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_2x1" />
 		</receiver>
-		
+
+        <receiver android:name=".activity.AccountWidget3x1" android:label="@string/widget_3x1" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="ru.orangesoftware.financisto.UPDATE_WIDGET" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_3x1" />
+        </receiver>
+
+        <receiver android:name=".activity.AccountWidget4x1" android:label="@string/widget_4x1" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="ru.orangesoftware.financisto.UPDATE_WIDGET" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_4x1" />
+        </receiver>
+
 		<receiver android:name=".activity.ScheduledAlarmReceiver">
 		    <intent-filter>
 		        <action android:name="ru.orangesoftware.financisto.SCHEDULED_ALARM" />
