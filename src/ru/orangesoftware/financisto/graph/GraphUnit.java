@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.graph;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import ru.orangesoftware.financisto.model.Currency;
@@ -33,7 +34,7 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
         this.currency = currency;
 	}
 	
-	public void addAmount(float amount, boolean forceIncome) {
+	public void addAmount(BigDecimal amount, boolean forceIncome) {
         incomeExpenseAmount.add(amount, forceIncome);
 	}
 
@@ -43,8 +44,8 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
 
     public void flatten() {
         if (amounts.isEmpty()) {
-            long income = (long)incomeExpenseAmount.income;
-            long expense = (long)incomeExpenseAmount.expense;
+            long income = incomeExpenseAmount.income.longValue();
+            long expense = incomeExpenseAmount.expense.longValue();
             addToAmounts(income);
             addToAmounts(expense);
             Collections.sort(amounts);

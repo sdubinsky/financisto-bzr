@@ -16,6 +16,7 @@ import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -120,27 +121,27 @@ public class TransactionsTotalCalculator {
     public static long calculateTotalFromCursor(DatabaseAdapter db, Cursor c, Currency toCurrency) {
         MyEntityManager em = db.em();
         ExchangeRateProvider rates = db.getHistoryRates();
-        float balance = 0;
+        BigDecimal balance = BigDecimal.ZERO;
         while (c.moveToNext()) {
-            balance += getAmountFromCursor(em, c, toCurrency, rates, 0);
+            balance = balance.add(getAmountFromCursor(em, c, toCurrency, rates, 0));
         }
-        return (long)balance;
+        return balance.longValue();
     }
 
-    public static float getAmountFromCursor(MyEntityManager em, Cursor c, Currency toCurrency, ExchangeRateProvider rates, int index) {
+    public static BigDecimal getAmountFromCursor(MyEntityManager em, Cursor c, Currency toCurrency, ExchangeRateProvider rates, int index) {
         long datetime = c.getLong(index++);
         long fromCurrencyId = c.getLong(index++);
         long fromAmount = c.getLong(index++);
         long toCurrencyId = c.getLong(index++);
         long toAmount = c.getLong(index);
         if (fromCurrencyId == toCurrency.id) {
-            return fromAmount;
+            return BigDecimal.valueOf(fromAmount);
         } else if (toCurrencyId > 0 && toCurrencyId == toCurrency.id) {
-            return -toAmount;
+            return BigDecimal.valueOf(-toAmount);
         } else {
             Currency fromCurrency = CurrencyCache.getCurrency(em, fromCurrencyId);
-            float rate = rates.getRate(fromCurrency, toCurrency, datetime).rate;
-            return rate*fromAmount;
+            double rate = rates.getRate(fromCurrency, toCurrency, datetime).rate;
+            return BigDecimal.valueOf(rate*fromAmount);
         }
     }
 

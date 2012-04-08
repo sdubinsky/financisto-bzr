@@ -1,5 +1,7 @@
 package ru.orangesoftware.financisto.graph;
 
+import java.math.BigDecimal;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
@@ -7,19 +9,19 @@ package ru.orangesoftware.financisto.graph;
  */
 public class IncomeExpenseAmount {
 
-    public float income;
-    public float expense;
+    public BigDecimal income = BigDecimal.ZERO;
+    public BigDecimal expense = BigDecimal.ZERO;
 
-    public void add(float amount, boolean forceIncome) {
-        if (forceIncome || amount > 0) {
-            income += amount;
+    public void add(BigDecimal amount, boolean forceIncome) {
+        if (forceIncome || amount.longValue() > 0) {
+            income  = income.add(amount);
         } else {
-            expense += amount;
+            expense = expense.add(amount);
         }
     }
 
     public long max() {
-        return (long)Math.max(Math.abs(income), Math.abs(expense));
+        return Math.max(Math.abs(income.longValue()), Math.abs(expense.longValue()));
     }
 
 }

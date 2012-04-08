@@ -109,4 +109,11 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
         assertEquals((long) (0.12453f * (-250f - 100f + 20f + 100f)), c.getAccountBalance(c3, a2.id));
     }
 
+    public void test_should_calculate_account_total_in_home_currency_with_big_amounts() {
+        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 10)).amount(45000000000L).create();
+
+        //no conversion
+        assertEquals(45000000000L+(long) (1f + 100f -50f -450f -50f -150f), c.getAccountBalance(c1, a1.id));
+    }
+
 }

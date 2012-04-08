@@ -88,4 +88,9 @@ public class LatestExchangeRatesTest extends AbstractDbTest {
         assertEquals(500+1200, db.getAccountsTotal(c3));
     }
 
+    public void test_should_calculate_accounts_total_correctly_with_big_amounts() {
+        AccountBuilder.withDb(db).title("Cash").currency(c1).total(36487931200L).create();
+        assertEquals(36487931200L, db.getAccountsTotal(c1));
+    }
+
 }

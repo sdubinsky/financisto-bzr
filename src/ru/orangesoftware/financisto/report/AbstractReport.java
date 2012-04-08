@@ -30,6 +30,7 @@ import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +78,7 @@ public abstract class AbstractReport implements Report {
             long lastId = -1;
             while (c.moveToNext()) {
                 long id = getId(c);
-                float amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(ReportColumns.DATETIME));
+                BigDecimal amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(ReportColumns.DATETIME));
                 long isTransfer = c.getLong(c.getColumnIndex(ReportColumns.IS_TRANSFER));
                 if (id != lastId) {
 					if (u != null) {

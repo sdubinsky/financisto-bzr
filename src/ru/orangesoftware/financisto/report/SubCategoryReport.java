@@ -27,6 +27,7 @@ import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +62,7 @@ public class SubCategoryReport extends AbstractReport {
             CategoryTree<CategoryAmount> amounts = CategoryTree.createFromCursor(c, new NodeCreator<CategoryAmount>(){
                 @Override
                 public CategoryAmount createNode(Cursor c) {
-                    float amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(DatabaseHelper.ReportColumns.DATETIME));
+                    BigDecimal amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(DatabaseHelper.ReportColumns.DATETIME));
                     return new CategoryAmount(c, leftColumnIndex, amount);
                 }
             });
@@ -126,10 +127,10 @@ public class SubCategoryReport extends AbstractReport {
 
 	private static class CategoryAmount extends CategoryEntity<CategoryAmount> {
 		
-		private final float amount;
+		private final BigDecimal amount;
         private final int isTransfer;
 
-        public CategoryAmount(Cursor c, int leftColumnIndex, float amount) {
+        public CategoryAmount(Cursor c, int leftColumnIndex, BigDecimal amount) {
 			this.id = c.getLong(0);
             this.title = c.getString(1);
 			this.amount = amount;

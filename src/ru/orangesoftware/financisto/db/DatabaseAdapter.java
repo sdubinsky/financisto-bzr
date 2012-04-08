@@ -26,6 +26,7 @@ import ru.orangesoftware.financisto.model.rates.*;
 import ru.orangesoftware.financisto.utils.DateUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
@@ -1652,18 +1653,18 @@ public class DatabaseAdapter {
     public long getAccountsTotal(Currency c1) {
         ExchangeRateProvider rates = getLatestRates();
         List<Account> accounts = em.getAllAccountsList();
-        float total = 0;
+        BigDecimal total = BigDecimal.ZERO;
         for (Account account : accounts) {
             if (account.shouldIncludeIntoTotals()) {
                 if (account.currency.id == c1.id) {
-                    total += account.totalAmount;
+                    total = total.add(BigDecimal.valueOf(account.totalAmount));
                 } else {
                     ExchangeRate rate = rates.getRate(account.currency, c1);
-                    total += rate.rate*account.totalAmount;
+                    total = total.add(BigDecimal.valueOf(rate.rate*account.totalAmount));
                 }
             }
         }
-        return (long)total;
+        return total.longValue();
     }
 
     public boolean singleCurrencyOnly() {
