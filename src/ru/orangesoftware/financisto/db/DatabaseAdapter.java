@@ -1650,16 +1650,47 @@ public class DatabaseAdapter {
                 new String[]{String.valueOf(toCurrencyId), String.valueOf(fromCurrencyId), String.valueOf(d)});
     }
 
-    public long getAccountsTotal(Currency c1) {
+    public Total getAccountsTotalInHomeCurrency() {
+        Currency homeCurrency = em.getHomeCurrency();
+        Total total = new Total(homeCurrency);
+        total.balance = getAccountsTotal(homeCurrency);
+        return total;
+    }
+
+    /**
+     * Calculates total in every currency for all accounts
+     */
+    public Total[] getAccountsTotal() {
+        List<Account> accounts = em.getAllAccountsList();
+        Map<Currency, Total> totalsMap = new HashMap<Currency, Total>();
+        for (Account account : accounts) {
+            if (account.shouldIncludeIntoTotals()) {
+                Currency currency = account.currency;
+                Total total = totalsMap.get(currency);
+                if (total == null) {
+                    total = new Total(currency);
+                    totalsMap.put(currency, total);
+                }
+                total.balance += account.totalAmount;
+            }
+        }
+        Collection<Total> values = totalsMap.values();
+        return values.toArray(new Total[values.size()]);
+    }
+
+    /**
+     * Calculates total in home currency for all accounts
+     */
+    public long getAccountsTotal(Currency homeCurrency) {
         ExchangeRateProvider rates = getLatestRates();
         List<Account> accounts = em.getAllAccountsList();
         BigDecimal total = BigDecimal.ZERO;
         for (Account account : accounts) {
             if (account.shouldIncludeIntoTotals()) {
-                if (account.currency.id == c1.id) {
+                if (account.currency.id == homeCurrency.id) {
                     total = total.add(BigDecimal.valueOf(account.totalAmount));
                 } else {
-                    ExchangeRate rate = rates.getRate(account.currency, c1);
+                    ExchangeRate rate = rates.getRate(account.currency, homeCurrency);
                     total = total.add(BigDecimal.valueOf(rate.rate*account.totalAmount));
                 }
             }

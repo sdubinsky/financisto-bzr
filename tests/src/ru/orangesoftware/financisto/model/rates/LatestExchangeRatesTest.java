@@ -10,6 +10,7 @@ package ru.orangesoftware.financisto.model.rates;
 
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CurrencyBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
@@ -86,6 +87,36 @@ public class LatestExchangeRatesTest extends AbstractDbTest {
         // total in c3
         Currency c3 = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").create();
         assertEquals(500+1200, db.getAccountsTotal(c3));
+    }
+
+    public void test_should_calculate_accounts_total_in_every_currency() {
+        AccountBuilder.withDb(db).title("Cash1").currency(c1).total(500).create();
+
+        Total[] totals = db.getAccountsTotal();
+        assertTotal(totals, c1, 500);
+
+        AccountBuilder.withDb(db).title("Bank1").currency(c2).total(-200).create();
+
+        totals = db.getAccountsTotal();
+        assertTotal(totals, c1, 500);
+        assertTotal(totals, c2, -200);
+
+        AccountBuilder.withDb(db).title("Cash2").currency(c1).total(400).create();
+        AccountBuilder.withDb(db).title("Bank2").currency(c2).total(-100).create();
+
+        totals = db.getAccountsTotal();
+        assertTotal(totals, c1, 900);
+        assertTotal(totals, c2, -300);
+    }
+
+    private void assertTotal(Total[] totals, Currency currency, long amount) {
+        for (Total total : totals) {
+            if (total.currency.id == currency.id) {
+                assertEquals(amount, total.balance);
+                return;
+            }
+        }
+        fail("Unable to find total for "+currency);
     }
 
     public void test_should_calculate_accounts_total_correctly_with_big_amounts() {

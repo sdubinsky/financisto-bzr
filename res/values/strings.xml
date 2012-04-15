@@ -742,4 +742,10 @@
     <string name="hierarchical_category_selector_income_expense">Income/Expense</string>
     <string name="hierarchical_category_selector_income_expense_summary">Group income and expense categories together</string>
 
+    <string name="totals">Totals</string>
+    <string name="currency_total">All %s accounts</string>
+    <string name="home_currency_total">Total in %s</string>
+    <string name="total_rate">Rate: %0.5f</string>
+    <string name="home_currency">Home currency</string>
+
 </resources>

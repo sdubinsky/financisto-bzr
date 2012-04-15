@@ -150,6 +150,7 @@ public class RateNode {
             if (fromCurrency != null && toCurrency != null) {
                 HttpGet get = new HttpGet("http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency="+fromCurrency+"&ToCurrency="+toCurrency);
                 try {
+                    Log.i("RateDownload", get.getURI().toString());
                     HttpResponse r = httpClient.execute(get);
                     String s = EntityUtils.toString(r.getEntity());
                     Log.i("RateDownload", s);

@@ -68,8 +68,7 @@ public class ScheduledListActivity extends BlotterActivity {
         scheduler = new RecurrenceScheduler(db);
 		// remove filter button and totals
 		bFilter.setVisibility(View.GONE);
-		bTemplate.setVisibility(View.GONE);
-		findViewById(R.id.totalLayout).setVisibility(View.GONE);
+		findViewById(R.id.total).setVisibility(View.GONE);
 		internalOnCreateTemplates();
 	}
 

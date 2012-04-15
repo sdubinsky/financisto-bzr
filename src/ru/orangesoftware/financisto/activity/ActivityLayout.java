@@ -39,10 +39,20 @@ public class ActivityLayout {
 		return b.withLabel(labelId).create();
 	}
 
+    public View addTitleNode(LinearLayout layout, String label) {
+        Builder b = inflater.new Builder(layout, R.layout.select_entry_title);
+        return b.withLabel(label).create();
+    }
+
 	public View addTitleNodeNoDivider(LinearLayout layout, int labelId) {
 		Builder b = inflater.new Builder(layout, R.layout.select_entry_title);
 		return b.withLabel(labelId).withNoDivider().create();
 	}
+
+    public View addTitleNodeNoDivider(LinearLayout layout, String label) {
+        Builder b = inflater.new Builder(layout, R.layout.select_entry_title);
+        return b.withLabel(label).withNoDivider().create();
+    }
 
 	public void addListNodeSingle(LinearLayout layout, int id, int labelId) {
 		Builder b = inflater.new Builder(layout, R.layout.select_entry_simple_list);
@@ -67,6 +77,14 @@ public class ActivityLayout {
 		View v = b.withId(id, listener).withLabel(labelId).withData(defaultValue).create();
 		return (TextView)v.findViewById(R.id.data);
 	}
+
+    public TextView addInfoNode(LinearLayout layout, int id, String label, String defaultValue) {
+        Builder b = inflater.new Builder(layout, R.layout.select_entry_simple);
+        View v = b.withId(id, listener).withLabel(label).withData(defaultValue).create();
+        TextView data = (TextView)v.findViewById(R.id.data);
+        data.setTag(v);
+        return data;
+    }
 
 	public View addListNodeIcon(LinearLayout layout, int id, int labelId, int defaultValueResId) {
 		Builder b = inflater.new Builder(layout, R.layout.select_entry_icon);

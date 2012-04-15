@@ -57,11 +57,10 @@ public class BlotterActivity extends AbstractListActivity {
 	private static final int MENU_SAVE_AS_TEMPLATE = MENU_ADD+2;
 	
 	protected TextView totalText;
-	protected ImageButton bTransfer;
-	protected ImageButton bFilter;	
-	protected ImageButton bTemplate;	
-	
+	protected ImageButton bFilter;
+
     private QuickActionWidget transactionActionGrid;
+    private QuickActionWidget addButtonActionGrid;
 
 	private TotalCalculationTask calculationTask;
 
@@ -113,14 +112,6 @@ public class BlotterActivity extends AbstractListActivity {
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
 
-		bTransfer = (ImageButton)findViewById(R.id.bTransfer);
-		bTransfer.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				addItem(NEW_TRANSFER_REQUEST, TransferActivity.class);
-			}			
-		});
-		
 		bFilter = (ImageButton)findViewById(R.id.bFilter);
 		bFilter.setOnClickListener(new OnClickListener(){
 			@Override
@@ -129,14 +120,6 @@ public class BlotterActivity extends AbstractListActivity {
 				blotterFilter.toIntent(intent);
                 intent.putExtra(BlotterFilterActivity.IS_ACCOUNT_FILTER, isAccountBlotter && blotterFilter.getAccountId() > 0);
 				startActivityForResult(intent, FILTER_REQUEST);
-			}
-		});
-		
-		bTemplate = (ImageButton)findViewById(R.id.bTemplate);
-		bTemplate.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				createFromTemplate();
 			}
 		});
 
@@ -158,6 +141,7 @@ public class BlotterActivity extends AbstractListActivity {
 		applyFilter();
 		calculateTotals();
         prepareTransactionActionGrid();
+        prepareAddButtonActionGrid();
 	}
 
     protected void prepareTransactionActionGrid() {
@@ -189,6 +173,33 @@ public class BlotterActivity extends AbstractListActivity {
                     break;
                 case 4:
                     clearTransaction(selectedId);
+                    break;
+            }
+        }
+
+    };
+
+    private void prepareAddButtonActionGrid() {
+        if (isSupportedApiLevel()) {
+            addButtonActionGrid = new QuickActionGrid(this);
+            addButtonActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_add, R.string.transaction));
+            addButtonActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_transfer, R.string.transfer));
+            addButtonActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_templates, R.string.template));
+            addButtonActionGrid.setOnQuickActionClickListener(addButtonActionListener);
+        }
+    }
+
+    private QuickActionWidget.OnQuickActionClickListener addButtonActionListener = new QuickActionWidget.OnQuickActionClickListener() {
+        public void onQuickActionClicked(QuickActionWidget widget, int position) {
+            switch (position) {
+                case 0:
+                    addItem(NEW_TRANSACTION_REQUEST, TransactionActivity.class);
+                    break;
+                case 1:
+                    addItem(NEW_TRANSFER_REQUEST, TransferActivity.class);
+                    break;
+                case 2:
+                    createFromTemplate();
                     break;
             }
         }
@@ -260,8 +271,8 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 
 	@Override
-	protected void addItem() {		
-		addItem(NEW_TRANSACTION_REQUEST, TransactionActivity.class);
+	protected void addItem() {
+        addButtonActionGrid.show(bAdd);
 	}
 	
     protected void addItem(int requestId, Class<? extends AbstractTransactionActivity> clazz) {
@@ -361,7 +372,6 @@ public class BlotterActivity extends AbstractListActivity {
 		if (accountId != -1) {
 			Account a = em.getAccount(accountId);
 			bAdd.setVisibility(a != null && a.isActive ? View.VISIBLE : View.GONE);
-			bTransfer.setVisibility(a != null && a.isActive ? View.VISIBLE : View.GONE);
 		}
 		String title = blotterFilter.getTitle();
 		if (title != null) {

@@ -25,25 +25,8 @@
 			android:layout_height="wrap_content" android:id="@+id/bAdd"
 			android:src="@drawable/ic_input_add" />
 		<ImageButton android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/bTransfer"
-			android:src="@drawable/ic_input_transfer" />
-        <ImageButton android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/bTemplate"
-            android:src="@drawable/ic_input_templates"/>
-		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/bFilter"
 			android:src="@drawable/ic_menu_filter_off" />
-		<LinearLayout android:layout_width="wrap_content"
-			android:layout_weight="1" android:layout_height="fill_parent"
-			android:orientation="vertical" android:padding="3dp" android:id="@+id/totalLayout">
-			<TextView android:layout_height="wrap_content"
-				android:textStyle="bold" android:gravity="right"
-				android:layout_width="fill_parent" android:text="@string/total"
-                android:textColor="@android:color/primary_text_light"/>
-			<TextView android:layout_height="wrap_content"
-				android:layout_width="fill_parent" android:layout_weight="1"
-				android:id="@+id/total" android:gravity="right|center"
-				android:textStyle="bold"/>
-		</LinearLayout>
+        <include layout="@layout/total_text"/>
 	</LinearLayout>
 </LinearLayout>

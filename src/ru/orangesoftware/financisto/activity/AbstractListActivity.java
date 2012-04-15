@@ -13,7 +13,9 @@ package ru.orangesoftware.financisto.activity;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.content.Context;
 import android.util.Log;
+import android.view.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
@@ -23,11 +25,6 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -43,15 +40,16 @@ public abstract class AbstractListActivity extends ListActivity implements Recre
 	protected static final int MENU_ADD = Menu.FIRST+4;
 	
 	private final int contentId;
-		
+
+    protected LayoutInflater inflater;
 	protected Cursor cursor;
 	protected ListAdapter adapter;
 	protected DatabaseAdapter db;
 	protected MyEntityManager em;
 	protected ImageButton bAdd;
-    
+
     protected boolean enablePin = true;
-	
+
 	protected AbstractListActivity(int contentId) {
 		this.contentId = contentId;				
 	}
@@ -68,7 +66,8 @@ public abstract class AbstractListActivity extends ListActivity implements Recre
 		db.open();
 		
 		em = db.em();
-		
+
+        this.inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		internalOnCreate(savedInstanceState);
 		
 		cursor = createCursor();

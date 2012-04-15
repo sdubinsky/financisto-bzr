@@ -123,9 +123,20 @@ public class AccountListActivity extends AbstractListActivity {
 			totalCalculationTask.cancel(true);
 		}		
 		TextView totalText = (TextView)findViewById(R.id.total);
+        totalText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTotals();
+            }
+        });
         totalCalculationTask = new AccountTotalsCalculationTask(this, totalText);
-		totalCalculationTask.execute(null);
+		totalCalculationTask.execute();
 	}
+
+    private void showTotals() {
+        Intent intent = new Intent(this, AccountListTotalsActivity.class);
+        startActivityForResult(intent, -1);
+    }
 	
 	public class AccountTotalsCalculationTask extends TotalCalculationTask {
 
@@ -135,13 +146,10 @@ public class AccountListActivity extends AbstractListActivity {
 
         @Override
         protected Total getTotal() {
-            Currency homeCurrency = em.getHomeCurrency();
-            Total total = new Total(homeCurrency);
-            total.balance = db.getAccountsTotal(homeCurrency);
-            return total;
+            return db.getAccountsTotalInHomeCurrency();
         }
 
-	}
+    }
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {

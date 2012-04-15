@@ -33,7 +33,6 @@ public class CategorySelectorActivity extends AbstractListActivity {
     public static final String SELECTED_CATEGORY_ID = "SELECTED_CATEGORY_ID";
     public static final String INCLUDE_SPLIT_CATEGORY = "INCLUDE_SPLIT_CATEGORY";
 
-    private LayoutInflater inflater;
     private int incomeColor;
     private int expenseColor;
 
@@ -48,8 +47,6 @@ public class CategorySelectorActivity extends AbstractListActivity {
 
     @Override
     protected void internalOnCreate(Bundle savedInstanceState) {
-        this.inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         Resources resources = getResources();
         this.incomeColor = resources.getColor(R.color.category_type_income);
         this.expenseColor = resources.getColor(R.color.category_type_expense);
