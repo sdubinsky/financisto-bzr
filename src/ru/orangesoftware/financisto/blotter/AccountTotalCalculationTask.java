@@ -24,14 +24,19 @@ public class AccountTotalCalculationTask extends TotalCalculationTask {
 	public AccountTotalCalculationTask(Context context, DatabaseAdapter db, WhereFilter filter, TextView totalText) {
         super(context, totalText);
 		this.db = db;
-		this.filter = filter;
+		this.filter = enhanceFilterForAccountBlotter(filter);
 	}
 
     @Override
-    protected Total getTotal() {
-        WhereFilter blotterFilter = enhanceFilterForAccountBlotter(filter);
-        TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, blotterFilter);
+    public Total getTotalInHomeCurrency() {
+        TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
         return calculator.getAccountTotal();
+    }
+
+    @Override
+    public Total[] getTotals() {
+        TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
+        return calculator.getTransactionsBalance();
     }
 
 }

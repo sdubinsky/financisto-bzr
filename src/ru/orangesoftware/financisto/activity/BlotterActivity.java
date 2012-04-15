@@ -124,6 +124,12 @@ public class BlotterActivity extends AbstractListActivity {
 		});
 
 		totalText = (TextView)findViewById(R.id.total);
+        totalText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTotals();
+            }
+        });
 
 		Intent intent = getIntent();
 		if (intent != null) {			
@@ -143,6 +149,12 @@ public class BlotterActivity extends AbstractListActivity {
         prepareTransactionActionGrid();
         prepareAddButtonActionGrid();
 	}
+
+    private void showTotals() {
+        Intent intent = new Intent(this, BlotterTotalsDetailsActivity.class);
+        blotterFilter.toIntent(intent);
+        startActivityForResult(intent, -1);
+}
 
     protected void prepareTransactionActionGrid() {
         if (isSupportedApiLevel()) {

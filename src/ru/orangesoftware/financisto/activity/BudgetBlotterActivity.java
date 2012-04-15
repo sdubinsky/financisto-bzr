@@ -60,7 +60,7 @@ public class BudgetBlotterActivity extends BlotterActivity {
     protected TotalCalculationTask createTotalCalculationTask() {
         return new TotalCalculationTask(this, totalText) {
             @Override
-            protected Total getTotal() {
+            public Total getTotalInHomeCurrency() {
                 long t0 = System.currentTimeMillis();
                 try {
                     try {
@@ -78,6 +78,11 @@ public class BudgetBlotterActivity extends BlotterActivity {
                     Log.e("BudgetTotals", "Unexpected error", ex);
                     return Total.ZERO;
                 }
+            }
+
+            @Override
+            public Total[] getTotals() {
+                return new Total[0];
             }
         };
     }

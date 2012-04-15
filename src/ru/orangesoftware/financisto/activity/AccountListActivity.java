@@ -32,7 +32,6 @@ import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.dialog.AccountInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import ru.orangesoftware.financisto.view.NodeInflater;
@@ -134,7 +133,7 @@ public class AccountListActivity extends AbstractListActivity {
 	}
 
     private void showTotals() {
-        Intent intent = new Intent(this, AccountListTotalsActivity.class);
+        Intent intent = new Intent(this, AccountListTotalsDetailsActivity.class);
         startActivityForResult(intent, -1);
     }
 	
@@ -145,8 +144,13 @@ public class AccountListActivity extends AbstractListActivity {
         }
 
         @Override
-        protected Total getTotal() {
+        public Total getTotalInHomeCurrency() {
             return db.getAccountsTotalInHomeCurrency();
+        }
+
+        @Override
+        public Total[] getTotals() {
+            return new Total[0];
         }
 
     }

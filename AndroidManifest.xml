@@ -210,7 +210,11 @@
 
         <activity android:name=".dialog.FolderBrowser" android:label="@string/select_folder"/>
         <activity android:name=".activity.CategorySelectorActivity" android:label="@string/select_category"/>
-        <activity android:name=".activity.AccountListTotalsActivity" android:label="@string/totals"
+
+        <activity android:name=".activity.AccountListTotalsDetailsActivity" android:label="@string/totals"
+                  android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
+
+        <activity android:name=".activity.BlotterTotalsDetailsActivity" android:label="@string/totals"
                   android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
 
         <activity android:name="com.dropbox.client2.android.AuthActivity"

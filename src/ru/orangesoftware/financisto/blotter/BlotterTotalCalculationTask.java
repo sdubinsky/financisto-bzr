@@ -25,9 +25,15 @@ public class BlotterTotalCalculationTask extends TotalCalculationTask {
 	}
 
     @Override
-    protected Total getTotal() {
+    public Total getTotalInHomeCurrency() {
         TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
         return calculator.getBlotterBalanceInHomeCurrency();
+    }
+
+    @Override
+    public Total[] getTotals() {
+        TransactionsTotalCalculator calculator = new TransactionsTotalCalculator(db, filter);
+        return calculator.getTransactionsBalance();
     }
 
 }

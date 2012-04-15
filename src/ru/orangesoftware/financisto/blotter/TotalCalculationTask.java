@@ -32,14 +32,16 @@ public abstract class TotalCalculationTask extends AsyncTask<Object, Total, Tota
     @Override
 	protected Total doInBackground(Object... params) {
 		try {
-			return getTotal();
+			return getTotalInHomeCurrency();
 		} catch (Exception ex) {
 			Log.e("TotalBalance", "Unexpected error", ex);
 			return Total.ZERO;
 		}
 	}
 
-    protected abstract Total getTotal();
+    public abstract Total getTotalInHomeCurrency();
+
+    public abstract Total[] getTotals();
 
 	@Override
 	protected void onPostExecute(Total result) {

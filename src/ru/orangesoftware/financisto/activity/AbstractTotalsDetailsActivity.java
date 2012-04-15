@@ -33,13 +33,17 @@ import static ru.orangesoftware.financisto.activity.ExchangeRateActivity.formatR
  * User: denis.solonenko
  * Date: 3/15/12 16:40 PM
  */
-public class AccountListTotalsActivity extends AbstractActivity {
+public abstract class AbstractTotalsDetailsActivity extends AbstractActivity {
 
     private LinearLayout layout;
     private View calculatingNode;
     private Utils u;
+    protected boolean shouldShowHomeCurrencyTotal = true;
 
-    public AccountListTotalsActivity() {
+    private final int titleNodeResId;
+
+    protected AbstractTotalsDetailsActivity(int titleNodeResId) {
+        this.titleNodeResId = titleNodeResId;
     }
 
     @Override
@@ -47,11 +51,11 @@ public class AccountListTotalsActivity extends AbstractActivity {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.accounts_list_total);
+        setContentView(R.layout.totals_details);
 
         u = new Utils(this);
         layout = (LinearLayout)findViewById(R.id.list);
-        calculatingNode = x.addTitleNode(layout, R.string.calculating);
+        calculatingNode = x.addTitleNodeNoDivider(layout, R.string.calculating);
 
         Button bOk = (Button)findViewById(R.id.bOK);
         bOk.setOnClickListener(new View.OnClickListener() {
@@ -60,9 +64,12 @@ public class AccountListTotalsActivity extends AbstractActivity {
                 finish();
             }
         });
-        
+
+        internalOnCreate();
         calculateTotals();
     }
+
+    protected void internalOnCreate() {}
 
     private void calculateTotals() {
         CalculateAccountsTotalsTask task = new CalculateAccountsTotalsTask();
@@ -79,8 +86,8 @@ public class AccountListTotalsActivity extends AbstractActivity {
 
         @Override
         protected TotalsInfo doInBackground(Void... voids) {
-            Total[] totals = db.getAccountsTotal();
-            Total totalInHomeCurrency = db.getAccountsTotalInHomeCurrency();
+            Total[] totals = getTotals();
+            Total totalInHomeCurrency = getTotalInHomeCurrency();
             Currency homeCurrency = totalInHomeCurrency.currency;
             ExchangeRateProvider rates = db.getLatestRates();
             List<TotalInfo> result = new ArrayList<TotalInfo>();
@@ -99,16 +106,18 @@ public class AccountListTotalsActivity extends AbstractActivity {
             for (TotalInfo total : totals.totals) {
                 addAmountNode(total, homeCurrency);
             }
-            addHomeCurrencyAmountNode(totals.totalInHomeCurrency);
+            if (shouldShowHomeCurrencyTotal) {
+                addHomeCurrencyAmountNode(totals.totalInHomeCurrency);
+            }
         }
 
         private void addAmountNode(TotalInfo total, Currency homeCurrency) {
-            String title = getString(R.string.currency_total, total.total.currency.name);
+            String title = getString(titleNodeResId, total.total.currency.name);
             x.addTitleNodeNoDivider(layout, title);
             TextView data = addAmountNode(total.total);
             String rateInfo = new StringBuilder().append("1").append(total.total.currency).append("=")
                     .append(nf.format(total.rate.rate)).append(homeCurrency)
-                    .append(" (").append(formatRateDate(AccountListTotalsActivity.this, total.rate.date)).append(")").toString();
+                    .append(" (").append(formatRateDate(AbstractTotalsDetailsActivity.this, total.rate.date)).append(")").toString();
             data.setText(rateInfo);
         }
 
@@ -126,6 +135,10 @@ public class AccountListTotalsActivity extends AbstractActivity {
             return data;
         }
     }
+
+    protected abstract Total getTotalInHomeCurrency();
+
+    protected abstract Total[] getTotals();
 
     private static class TotalInfo {
 
