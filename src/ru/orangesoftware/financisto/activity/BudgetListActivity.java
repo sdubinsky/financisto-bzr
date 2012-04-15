@@ -280,7 +280,7 @@ public class BudgetListActivity extends AbstractListActivity {
             }
         }
 
-        private float inHomeCurrency(ExchangeRateProvider rates, Currency fromCurrency, Currency toCurrency, long spent) {
+        private double inHomeCurrency(ExchangeRateProvider rates, Currency fromCurrency, Currency toCurrency, long spent) {
             ExchangeRate r = rates.getRate(fromCurrency, toCurrency);
             return r.rate*spent;
         }

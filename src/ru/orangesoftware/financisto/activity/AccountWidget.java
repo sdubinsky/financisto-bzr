@@ -84,20 +84,20 @@ public class AccountWidget extends AppWidgetProvider {
     }
 
     private static void updateWidgets(Context context, AppWidgetManager manager, int[] appWidgetIds, boolean nextAccount) {
-        Log.d("FinancistoWidget", "updateWidgets "+ Arrays.toString(appWidgetIds)+" -> "+nextAccount);
-        if (MyPreferences.isWidgetEnabled(context)) {
-            for (int id : appWidgetIds) {
+        Log.d("FinancistoWidget", "updateWidgets " + Arrays.toString(appWidgetIds) + " -> " + nextAccount);
+        for (int id : appWidgetIds) {
+            int layoutId = manager.getAppWidgetInfo(id).initialLayout;
+            if (MyPreferences.isWidgetEnabled(context)) {
                 long accountId = loadAccountForWidget(context, id);
-                int layoutId = manager.getAppWidgetInfo(id).initialLayout;
                 Class providerClass = getProviderClass(manager, id);
-                Log.d("FinancistoWidget", "using provider "+ providerClass);
+                Log.d("FinancistoWidget", "using provider " + providerClass);
                 RemoteViews remoteViews = nextAccount || accountId == -1
                         ? buildUpdateForNextAccount(context, id, layoutId, providerClass, accountId)
                         : buildUpdateForCurrentAccount(context, id, layoutId, providerClass, accountId);
                 manager.updateAppWidget(id, remoteViews);
+            } else {
+                manager.updateAppWidget(id, noDataUpdate(context, layoutId));
             }
-        } else {
-            manager.updateAppWidget(appWidgetIds, noDataUpdate(context, R.layout.widget_2x1));
         }
     }
 

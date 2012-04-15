@@ -52,14 +52,14 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     public long fromCurrencyId;
     public long toCurrencyId;
     public long date;
-    public float rate;
+    public double rate;
 
     public ExchangeRate flip() {
         ExchangeRate r = new ExchangeRate();
         r.fromCurrencyId = toCurrencyId;
         r.toCurrencyId = fromCurrencyId;
         r.date = date;
-        r.rate = 1.0f/rate;
+        r.rate = 1.0d/rate;
         return r;
     }
 

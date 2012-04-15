@@ -43,7 +43,7 @@ public class ExchangeRateActivity extends AbstractActivity implements RateNodeOw
     private Currency toCurrency;
     private long originalDate;
     private long date;
-    private float rate = 1;
+    private double rate = 1;
 
     private TextView dateNode;
     private RateNode rateNode;

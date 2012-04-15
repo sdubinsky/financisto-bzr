@@ -117,7 +117,7 @@ public class RateNode {
         }
     }
 
-    public void setRate(float r) {
+    public void setRate(double r) {
         rate.removeTextChangedListener(rateWatcher);
         rate.setText(nf.format(Math.abs(r)));
         rate.addTextChangedListener(rateWatcher);
