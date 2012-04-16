@@ -69,7 +69,7 @@ public class LatestExchangeRatesTest extends AbstractDbTest {
     public void test_should_return_default_rate_if_not_found() {
         ExchangeRateProvider m = db.getLatestRates();
         ExchangeRate rate = m.getRate(c1, c2);
-        assertRate(DateTime.today(), 1.0f, rate);
+        assertRate(DateTime.today(), 1.0d, rate);
     }
 
     public void test_should_calculate_accounts_total_in_home_currency() {

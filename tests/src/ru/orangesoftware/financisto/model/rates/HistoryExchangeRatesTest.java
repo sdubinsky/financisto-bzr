@@ -68,7 +68,7 @@ public class HistoryExchangeRatesTest extends AbstractDbTest {
 
         ExchangeRateProvider rates = db.getHistoryRates();
         ExchangeRate rate = rates.getRate(c1, c2, DateTime.date(2012, 1, 7).atMidnight().asLong());
-        assertRate(DateTime.fromTimestamp(0), 1.0f, rate);
+        assertRate(DateTime.fromTimestamp(0), 1.0d, rate);
 
         // default rate should be cached
         ExchangeRate rate2 = rates.getRate(c1, c2, DateTime.date(1979, 8, 2).atMidnight().asLong());
