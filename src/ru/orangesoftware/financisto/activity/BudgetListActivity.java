@@ -37,6 +37,7 @@ import ru.orangesoftware.financisto.utils.RecurUtils;
 import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
 import ru.orangesoftware.financisto.utils.RecurUtils.RecurInterval;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -246,8 +247,8 @@ public class BudgetListActivity extends AbstractListActivity {
         public Total calculateBudgetTotals() {
             long t0 = System.currentTimeMillis();
             try {
-                float amount = 0;
-                float balance = 0;
+                BigDecimal amount = BigDecimal.ZERO;
+                BigDecimal balance = BigDecimal.ZERO;
                 ArrayList<Budget> budgets = BudgetListActivity.this.budgets;
                 Map<Long, Category> categories = MyEntity.asMap(db.getCategoriesList(true));
                 Map<Long, Project> projects = MyEntity.asMap(em.getAllProjectsList(true));
@@ -256,8 +257,8 @@ public class BudgetListActivity extends AbstractListActivity {
                 for (final Budget b : budgets) {
                     Currency currency = CurrencyCache.getCurrency(em, b.currencyId);
                     final long spent = db.fetchBudgetBalance(categories, projects, b);
-                    amount += inHomeCurrency(rates, currency, homeCurrency, spent);
-                    balance += inHomeCurrency(rates, currency, homeCurrency, b.amount+spent);
+                    amount = amount.add(inHomeCurrency(rates, currency, homeCurrency, spent));
+                    balance = balance.add(inHomeCurrency(rates, currency, homeCurrency, b.amount+spent));
                     final String categoriesText = getChecked(categories, b.categories);
                     final String projectsText = getChecked(projects, b.projects);
                     handler.post(new Runnable() {
@@ -271,8 +272,8 @@ public class BudgetListActivity extends AbstractListActivity {
                     });
                 }
                 Total total = new Total(homeCurrency, true);
-                total.amount = (int)amount;
-                total.balance = (int)balance;
+                total.amount = amount.longValue();
+                total.balance = balance.longValue();
                 return total;
             } finally {
                 long t1 = System.currentTimeMillis();
@@ -280,9 +281,9 @@ public class BudgetListActivity extends AbstractListActivity {
             }
         }
 
-        private double inHomeCurrency(ExchangeRateProvider rates, Currency fromCurrency, Currency toCurrency, long spent) {
+        private BigDecimal inHomeCurrency(ExchangeRateProvider rates, Currency fromCurrency, Currency toCurrency, long spent) {
             ExchangeRate r = rates.getRate(fromCurrency, toCurrency);
-            return r.rate*spent;
+            return BigDecimal.valueOf(r.rate*spent);
         }
 
         private <T extends MyEntity> String getChecked(Map<Long, T> entities, String s) {
