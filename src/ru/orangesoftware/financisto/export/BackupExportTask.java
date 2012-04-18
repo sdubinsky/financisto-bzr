@@ -1,13 +1,9 @@
 package ru.orangesoftware.financisto.export;
 
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.backup.DatabaseExport;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import android.app.ProgressDialog;
 import android.content.Context;
-import ru.orangesoftware.financisto.utils.MyPreferences;
-
-import static ru.orangesoftware.financisto.export.Export.uploadBackupFileToDropbox;
+import ru.orangesoftware.financisto.backup.DatabaseExport;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
 
 public class BackupExportTask extends ImportExportAsyncTask {
 
@@ -24,18 +20,11 @@ public class BackupExportTask extends ImportExportAsyncTask {
 	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
 		DatabaseExport export = new DatabaseExport(context, db.db(), true);
         backupFileName = export.export();
-        if (uploadToDropbox && MyPreferences.isDropboxUploadBackups(context)) {
-            publishProgress(context.getString(R.string.dropbox_uploading_file));
-            uploadBackupFileToDropbox(context, backupFileName);
+        if (uploadToDropbox) {
+            doUploadToDropbox(context, backupFileName);
         }
         return backupFileName;
 	}
-
-    @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-        dialog.setMessage(values[0]);
-    }
 
     @Override
 	protected String getSuccessMessage(Object result) {

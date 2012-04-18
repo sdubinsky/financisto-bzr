@@ -748,5 +748,6 @@
     <string name="home_currency_total">Total in %s</string>
     <string name="total_rate">Rate: %0.5f</string>
     <string name="home_currency">Home currency</string>
+    <string name="upload_to_dropbox">Upload to\nDropbox</string>
 
 </resources>

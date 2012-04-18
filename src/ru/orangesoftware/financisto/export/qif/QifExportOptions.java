@@ -29,12 +29,14 @@ public class QifExportOptions {
     public final SimpleDateFormat dateFormat;
     public final WhereFilter filter;
     public final long[] selectedAccounts;
+    public final boolean uploadToDropbox;
 
-    public QifExportOptions(Currency currency, String dateFormat, long[] selectedAccounts, WhereFilter filter) {
+    public QifExportOptions(Currency currency, String dateFormat, long[] selectedAccounts, WhereFilter filter, boolean uploadToDropbox) {
         this.currency = currency;
         this.dateFormat = new SimpleDateFormat(dateFormat);
         this.selectedAccounts = selectedAccounts;
         this.filter = filter;
+        this.uploadToDropbox = uploadToDropbox;
     }
 
     public static QifExportOptions fromIntent(Intent data) {
@@ -42,7 +44,8 @@ public class QifExportOptions {
         Currency currency = CurrencyExportPreferences.fromIntent(data, "qif");
         String dateFormat = data.getStringExtra(QifExportActivity.QIF_EXPORT_DATE_FORMAT);
         long[] selectedAccounts = data.getLongArrayExtra(QifExportActivity.QIF_EXPORT_SELECTED_ACCOUNTS);
-        return new QifExportOptions(currency, dateFormat, selectedAccounts, filter);
+        boolean uploadToDropbox = data.getBooleanExtra(QifExportActivity.QIF_EXPORT_UPLOAD_TO_DROPBOX, false);
+        return new QifExportOptions(currency, dateFormat, selectedAccounts, filter, uploadToDropbox);
     }
 
 }

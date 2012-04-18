@@ -17,6 +17,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import ru.orangesoftware.financisto.utils.MyPreferences;
+
+import static ru.orangesoftware.financisto.export.Export.uploadBackupFileToDropbox;
 
 public abstract class ImportExportAsyncTask extends AsyncTask<String, String, Object> {
 	
@@ -56,6 +59,19 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, String, Ob
 	protected abstract Object work(Context context, DatabaseAdapter db, String...params) throws Exception;
 	
 	protected abstract String getSuccessMessage(Object result);
+
+    protected void doUploadToDropbox(Context context, String backupFileName) {
+        if (MyPreferences.isDropboxUploadBackups(context)) {
+            publishProgress(context.getString(R.string.dropbox_uploading_file));
+            uploadBackupFileToDropbox(context, backupFileName);
+        }
+    }
+
+    @Override
+    protected void onProgressUpdate(String... values) {
+        super.onProgressUpdate(values);
+        dialog.setMessage(values[0]);
+    }
 
 	@Override
 	protected void onPostExecute(Object result) {

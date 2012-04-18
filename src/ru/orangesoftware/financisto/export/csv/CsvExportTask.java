@@ -17,7 +17,11 @@ public class CsvExportTask extends ImportExportAsyncTask {
 	@Override
 	protected Object work(Context context, DatabaseAdapter db, String...params) throws Exception {
 		CsvExport export = new CsvExport(context, db, options);
-		return export.export();
+        String backupFileName = export.export();
+        if (options.uploadToDropbox) {
+            doUploadToDropbox(context, backupFileName);
+        }
+        return backupFileName;
 	}
 
 	@Override

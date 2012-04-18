@@ -46,12 +46,14 @@
                               android:text="@string/field_separator"/>
                     <TextView android:layout_marginLeft="3dp"
                               android:text="@string/include_header"/>
+                    <TextView android:layout_marginLeft="3dp"
+                              android:text="@string/upload_to_dropbox"/>
                 </TableRow>
                 <TableRow>
                     <Spinner android:id="@+id/spinnerFieldSeparator"
                              android:entries="@array/field_separators"/>
-                    <CheckBox android:id="@+id/checkboxIncludeHeader"
-                              android:checked="true"/>
+                    <CheckBox android:id="@+id/checkboxIncludeHeader" android:checked="true"/>
+                    <CheckBox android:id="@+id/checkboxUploadToDropbox" android:checked="false"/>
                 </TableRow>
             </TableLayout>
         </LinearLayout>

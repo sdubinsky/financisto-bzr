@@ -62,6 +62,7 @@ public abstract class AbstractExportActivity extends Activity {
 		bOk.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                savePreferences();
                 Intent data = new Intent();
                 filter.toIntent(data);
                 updateResultIntentFromUi(data);
@@ -80,8 +81,13 @@ public abstract class AbstractExportActivity extends Activity {
         });
 
         internalOnCreate();
+        restorePreferences();
 		updatePeriod();
 	}
+
+    protected abstract void savePreferences();
+
+    protected abstract void restorePreferences();
 
     protected abstract void internalOnCreate();
 

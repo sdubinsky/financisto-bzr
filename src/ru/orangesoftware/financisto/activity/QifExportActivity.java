@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -32,6 +33,7 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
 
     public static final String QIF_EXPORT_SELECTED_ACCOUNTS = "QIF_EXPORT_SELECTED_ACCOUNTS";
     public static final String QIF_EXPORT_DATE_FORMAT = "QIF_EXPORT_DATE_FORMAT";
+    public static final String QIF_EXPORT_UPLOAD_TO_DROPBOX = "QIF_EXPORT_UPLOAD_TO_DROPBOX";
 
     private final CurrencyExportPreferences currencyPreferences = new CurrencyExportPreferences("qif");
 
@@ -124,6 +126,8 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
         }
         Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
         data.putExtra(QIF_EXPORT_DATE_FORMAT, dateFormats.getSelectedItem().toString());
+        CheckBox uploadToDropbox = (CheckBox)findViewById(R.id.checkboxUploadToDropbox);
+        data.putExtra(QIF_EXPORT_UPLOAD_TO_DROPBOX, uploadToDropbox.isChecked());
     }
 
     private long[] getSelectedAccountsIds() {
@@ -141,19 +145,7 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
         return ids;
     }
 
-    @Override
-	protected void onPause() {
-		super.onPause();
-		savePreferences();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		restorePreferences();
-	}
-
-	private void savePreferences() {
+	protected void savePreferences() {
 		SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
 
         currencyPreferences.savePreferences(this, editor);
@@ -165,6 +157,8 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
 
         Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
 		editor.putInt(QIF_EXPORT_DATE_FORMAT, dateFormats.getSelectedItemPosition());
+        CheckBox uploadToDropbox = (CheckBox)findViewById(R.id.checkboxUploadToDropbox);
+        editor.putBoolean(QIF_EXPORT_UPLOAD_TO_DROPBOX, uploadToDropbox.isChecked());
 
 		editor.commit();
 	}
@@ -178,7 +172,7 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
         return sb.toString();
     }
 
-    private void restorePreferences() {
+    protected void restorePreferences() {
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
         currencyPreferences.restorePreferences(this, preferences);
@@ -189,6 +183,9 @@ public class QifExportActivity extends AbstractExportActivity implements Activit
 
         Spinner dateFormats = (Spinner)findViewById(R.id.spinnerDateFormats);
         dateFormats.setSelection(preferences.getInt(QIF_EXPORT_DATE_FORMAT, 0));
+
+        CheckBox uploadToDropbox = (CheckBox)findViewById(R.id.checkboxUploadToDropbox);
+        uploadToDropbox.setChecked(preferences.getBoolean(QIF_EXPORT_UPLOAD_TO_DROPBOX, false));
 	}
 
     private void parseSelectedAccounts(String selectedIds) {

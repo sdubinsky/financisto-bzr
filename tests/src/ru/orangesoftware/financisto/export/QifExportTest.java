@@ -410,27 +410,27 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
     }
 
     private String exportAsString() throws Exception {
-        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, null, WhereFilter.empty());
+        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, null, WhereFilter.empty(), false);
         return exportAsString(options);
     }
 
     private String exportAsString(Currency currency) throws Exception {
-        QifExportOptions options = new QifExportOptions(currency, QifExportOptions.DEFAULT_DATE_FORMAT, null, WhereFilter.empty());
+        QifExportOptions options = new QifExportOptions(currency, QifExportOptions.DEFAULT_DATE_FORMAT, null, WhereFilter.empty(), false);
         return exportAsString(options);
     }
 
     private String exportAsString(String dateFormat) throws Exception {
-        QifExportOptions options = new QifExportOptions(Currency.EMPTY, dateFormat, null, WhereFilter.empty());
+        QifExportOptions options = new QifExportOptions(Currency.EMPTY, dateFormat, null, WhereFilter.empty(), false);
         return exportAsString(options);
     }
 
     private String exportAsString(WhereFilter filter) throws Exception {
-        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, null, filter);
+        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, null, filter, false);
         return exportAsString(options);
     }
 
     private String exportAsString(long[] accounts) throws Exception {
-        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, accounts, WhereFilter.empty());
+        QifExportOptions options = new QifExportOptions(Currency.EMPTY, QifExportOptions.DEFAULT_DATE_FORMAT, accounts, WhereFilter.empty(), false);
         return exportAsString(options);
     }
 
