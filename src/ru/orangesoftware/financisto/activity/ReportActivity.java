@@ -36,6 +36,7 @@ import ru.orangesoftware.financisto.report.PeriodReport;
 import ru.orangesoftware.financisto.report.Report;
 import ru.orangesoftware.financisto.report.ReportData;
 import ru.orangesoftware.financisto.utils.PinProtection;
+import ru.orangesoftware.financisto.utils.Utils;
 
 public class ReportActivity extends ListActivity implements RecreateCursorSupportedActivity {
 
@@ -231,7 +232,8 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
     private void displayTotal(Total total) {
         if (currentReport.shouldDisplayTotal()) {
             TextView totalText = (TextView)findViewById(R.id.total);
-            TotalCalculationTask.setTotal(this, totalText, total);
+            Utils u = new Utils(this);
+            u.setTotal(totalText, total);
         }
     }
 

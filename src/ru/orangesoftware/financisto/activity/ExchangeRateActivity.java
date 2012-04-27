@@ -10,7 +10,6 @@ package ru.orangesoftware.financisto.activity;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -27,6 +26,8 @@ import ru.orangesoftware.financisto.widget.RateNode;
 import ru.orangesoftware.financisto.widget.RateNodeOwner;
 
 import java.util.Calendar;
+
+import static ru.orangesoftware.financisto.utils.Utils.formatRateDate;
 
 /**
  * Created by IntelliJ IDEA.
@@ -104,11 +105,6 @@ public class ExchangeRateActivity extends AbstractActivity implements RateNodeOw
         rateNode = new RateNode(this, x, layout);
         rateNode.setRate(rate);
         rateNode.updateRateInfo();
-    }
-
-    public static String formatRateDate(Context context, long date) {
-        return android.text.format.DateUtils.formatDateTime(context, date,
-                android.text.format.DateUtils.FORMAT_SHOW_DATE | android.text.format.DateUtils.FORMAT_ABBREV_MONTH);
     }
 
     private boolean validateIntent(Intent intent) {

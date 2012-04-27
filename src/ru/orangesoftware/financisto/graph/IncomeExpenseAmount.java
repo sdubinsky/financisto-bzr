@@ -24,4 +24,8 @@ public class IncomeExpenseAmount {
         return Math.max(Math.abs(income.longValue()), Math.abs(expense.longValue()));
     }
 
+    public long balance() {
+        return income.longValue()+expense.longValue();
+    }
+
 }

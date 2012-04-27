@@ -21,25 +21,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.BudgetListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
-import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.model.rates.ExchangeRate;
-import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.db.BudgetsTotalCalculator;
+import ru.orangesoftware.financisto.model.Budget;
+import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
 import ru.orangesoftware.financisto.utils.RecurUtils;
 import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
 import ru.orangesoftware.financisto.utils.RecurUtils.RecurInterval;
+import ru.orangesoftware.financisto.utils.Utils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class BudgetListActivity extends AbstractListActivity {
 	
@@ -62,7 +62,15 @@ public class BudgetListActivity extends AbstractListActivity {
 	@Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
-		
+
+        TextView totalText = (TextView)findViewById(R.id.total);
+        totalText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTotals();
+            }
+        });
+
 		bFilter = (ImageButton)findViewById(R.id.bFilter);
 		bFilter.setOnClickListener(new View.OnClickListener(){
 			@Override
@@ -86,6 +94,12 @@ public class BudgetListActivity extends AbstractListActivity {
 		applyFilter();	
 		calculateTotals();
 	}
+
+    private void showTotals() {
+        Intent intent = new Intent(this, BudgetListTotalsDetailsActivity.class);
+        filter.toIntent(intent);
+        startActivityForResult(intent, -1);
+    }
 
 	private void saveFilter() {
 		SharedPreferences preferences = getPreferences(0);
@@ -236,7 +250,9 @@ public class BudgetListActivity extends AbstractListActivity {
 		@Override
 		protected Total doInBackground(Void... params) {
 			try {
-                return calculateBudgetTotals();
+                BudgetsTotalCalculator c = new BudgetsTotalCalculator(db, budgets);
+                c.updateBudgets(handler);
+                return c.calculateTotalInHomeCurrency();
 			} catch (Exception ex) {
 				Log.e("BudgetTotals", "Unexpected error", ex);
 				return Total.ZERO;
@@ -244,83 +260,11 @@ public class BudgetListActivity extends AbstractListActivity {
 
 		}
 
-        public Total calculateBudgetTotals() {
-            long t0 = System.currentTimeMillis();
-            try {
-                BigDecimal amount = BigDecimal.ZERO;
-                BigDecimal balance = BigDecimal.ZERO;
-                ArrayList<Budget> budgets = BudgetListActivity.this.budgets;
-                Map<Long, Category> categories = MyEntity.asMap(db.getCategoriesList(true));
-                Map<Long, Project> projects = MyEntity.asMap(em.getAllProjectsList(true));
-                ExchangeRateProvider rates = db.getLatestRates();
-                Currency homeCurrency = em.getHomeCurrency();
-                for (final Budget b : budgets) {
-                    Currency currency = CurrencyCache.getCurrency(em, b.currencyId);
-                    final long spent = db.fetchBudgetBalance(categories, projects, b);
-                    amount = amount.add(inHomeCurrency(rates, currency, homeCurrency, spent));
-                    balance = balance.add(inHomeCurrency(rates, currency, homeCurrency, b.amount+spent));
-                    final String categoriesText = getChecked(categories, b.categories);
-                    final String projectsText = getChecked(projects, b.projects);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            b.updated = true;
-                            b.spent = spent;
-                            b.categoriesText = categoriesText;
-                            b.projectsText = projectsText;
-                        }
-                    });
-                }
-                Total total = new Total(homeCurrency, true);
-                total.amount = amount.longValue();
-                total.balance = balance.longValue();
-                return total;
-            } finally {
-                long t1 = System.currentTimeMillis();
-                Log.d("BUDGET TOTALS", (t1 - t0) + "ms");
-            }
-        }
-
-        private BigDecimal inHomeCurrency(ExchangeRateProvider rates, Currency fromCurrency, Currency toCurrency, long spent) {
-            ExchangeRate r = rates.getRate(fromCurrency, toCurrency);
-            return BigDecimal.valueOf(r.rate*spent);
-        }
-
-        private <T extends MyEntity> String getChecked(Map<Long, T> entities, String s) {
-			long[] ids = MyEntity.splitIds(s);
-			if (ids == null) {
-				return null;
-			}
-			if (ids.length == 1) {
-				MyEntity e = entities.get(ids[0]);
-				if (e == null) {
-					return null;
-				} else {
-					return e.title;
-				}
-			} else {
-				StringBuilder sb = new StringBuilder();
-				for (long id : ids) {
-					MyEntity e = entities.get(id);
-					if (e != null) {
-						if (sb.length() > 0) {
-							sb.append(",");						
-						}
-						sb.append(e.title);
-					}
-				}
-				if (sb.length() == 0) {
-					return null;
-				} else {
-					return sb.toString();
-				}
-			}
-		}
-
 		@Override
 		protected void onPostExecute(Total result) {
 			if (isRunning) {
-                TotalCalculationTask.setTotal(BudgetListActivity.this, totalText, result);
+                Utils u = new Utils(BudgetListActivity.this);
+                u.setTotal(totalText, result);
 				((BudgetListAdapter)adapter).notifyDataSetChanged();
 			}
 		}

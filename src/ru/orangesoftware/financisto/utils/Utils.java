@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -37,6 +38,7 @@ public class Utils {
 
     private static final int zeroColor = Resources.getSystem().getColor(android.R.color.secondary_text_dark);
 
+    private final Context context;
     private final StringBuilder sb = new StringBuilder();
 
 	private final int positiveColor;
@@ -50,8 +52,14 @@ public class Utils {
 		this.negativeColor = r.getColor(R.color.negative_amount);
         this.transferColor = r.getColor(R.color.transfer_color);
         this.futureColor = r.getColor(R.color.future_color);
+        this.context = context;
 	}
-		
+
+    public static String formatRateDate(Context context, long date) {
+        return android.text.format.DateUtils.formatDateTime(context, date,
+                android.text.format.DateUtils.FORMAT_SHOW_DATE | android.text.format.DateUtils.FORMAT_ABBREV_MONTH);
+    }
+
 	public static String amountToString(Currency c, long amount) {
 		return amountToString(c, amount, false);
 	}
@@ -148,17 +156,6 @@ public class Utils {
 		return -1;
 	}
 
-	public static void setTotal(Context context, TextView textView, Total t) {
-		SpannableStringBuilder sb = new SpannableStringBuilder();
-		sb.append(Utils.amountToString(t.currency, t.amount, false));
-		int x = sb.length();
-		sb.setSpan(getAmountSpan(context, t.amount), 0, x, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-		sb.append(" | ");
-		sb.append(Utils.amountToString(t.currency, t.balance, false));
-		sb.setSpan(getAmountSpan(context, t.balance), x+3, sb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-		textView.setText(sb, TextView.BufferType.NORMAL);
-	}	
-	
 	public static String[] joinArrays(String[] a1, String[] a2) {
 		if (a1.length == 0) {
 			return a2;
@@ -269,6 +266,41 @@ public class Utils {
 
     public void setPositiveColor(TextView textView) {
         textView.setTextColor(positiveColor);
+    }
+
+    public void setTotal(TextView totalText, Total total) {
+        if (total.isError()) {
+            setTotalError(totalText);
+        } else {
+            setAmountText(totalText, total);
+            totalText.setError(null);
+        }
+    }
+
+    public void setAmountText(TextView totalText, Total total) {
+        if (total.showAmount) {
+            setAmountTextWithBothAmountAndBalance(totalText, total);
+        } else {
+            setAmountText(totalText, total.currency, total.balance, false);
+        }
+    }
+
+    private void setAmountTextWithBothAmountAndBalance(TextView textView, Total t) {
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append(Utils.amountToString(t.currency, t.amount, false));
+        int x = sb.length();
+        sb.setSpan(getAmountSpan(context, t.amount), 0, x, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        sb.append(" | ");
+        sb.append(Utils.amountToString(t.currency, t.balance, false));
+        sb.setSpan(getAmountSpan(context, t.balance), x+3, sb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        textView.setText(sb, TextView.BufferType.NORMAL);
+    }
+
+    private void setTotalError(TextView totalText) {
+        totalText.setText(R.string.not_available);
+        Drawable dr = context.getResources().getDrawable(R.drawable.total_error);
+        dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
+        totalText.setError(totalText.getText(), dr);
     }
 
 }

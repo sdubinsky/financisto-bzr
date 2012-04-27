@@ -11,8 +11,6 @@ package ru.orangesoftware.financisto.model.rates;
 import android.content.ContentValues;
 import android.database.Cursor;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.utils.DateUtils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,14 +19,11 @@ import ru.orangesoftware.financisto.utils.DateUtils;
  */
 public class ExchangeRate implements Comparable<ExchangeRate> {
 
-    public static ExchangeRate createDefaultRate(Currency fromCurrency, Currency toCurrency) {
-        ExchangeRate rate;
-        rate = new ExchangeRate();
-        rate.fromCurrencyId = fromCurrency.id;
-        rate.toCurrencyId = toCurrency.id;
-        rate.date = DateUtils.atMidnight(System.currentTimeMillis());
-        rate.rate = 1;
-        return rate;
+    public static final ExchangeRate NA = new ExchangeRate();
+    public static final ExchangeRate ONE = new ExchangeRate();
+
+    static {
+        ONE.rate = 1.0d;
     }
 
     public static ExchangeRate fromCursor(Cursor c) {
@@ -59,7 +54,7 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         r.fromCurrencyId = toCurrencyId;
         r.toCurrencyId = fromCurrencyId;
         r.date = date;
-        r.rate = 1.0d/rate;
+        r.rate = rate == 0 ? 0 : 1.0d/rate;
         return r;
     }
 

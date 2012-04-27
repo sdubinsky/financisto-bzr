@@ -64,6 +64,14 @@ public class ActivityLayout {
 		b.withId(id, listener).withLabel(labelId).create();
 	}
 
+    public TextView addInfoNodeSingle(LinearLayout layout, int id, String label) {
+        Builder b = inflater.new Builder(layout, R.layout.select_entry_single);
+        View v = b.withId(id, listener).withLabel(label).create();
+        TextView labelView = (TextView)v.findViewById(R.id.label);
+        labelView.setTag(v);
+        return labelView;
+    }
+
 	public TextView addInfoNode(LinearLayout layout, int id, int labelId, int defaultValueResId) {
 		Builder b = inflater.new Builder(layout, R.layout.select_entry_simple);
 		View v = b.withId(id, listener).withLabel(labelId).withData(defaultValueResId).create();

@@ -8,6 +8,7 @@
 
 package ru.orangesoftware.financisto.activity;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -22,11 +23,10 @@ import ru.orangesoftware.financisto.model.rates.ExchangeRate;
 import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.Utils;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-
-import static ru.orangesoftware.financisto.activity.ExchangeRateActivity.formatRateDate;
 
 /**
  * Created by IntelliJ IDEA.
@@ -82,10 +82,9 @@ public abstract class AbstractTotalsDetailsActivity extends AbstractActivity {
     
     private class CalculateAccountsTotalsTask extends AsyncTask<Void, Void, TotalsInfo> {
 
-        private final DecimalFormat nf = new DecimalFormat("0.00000");
-
         @Override
         protected TotalsInfo doInBackground(Void... voids) {
+            prepareInBackground();
             Total[] totals = getTotals();
             Total totalInHomeCurrency = getTotalInHomeCurrency();
             Currency homeCurrency = totalInHomeCurrency.currency;
@@ -96,49 +95,58 @@ public abstract class AbstractTotalsDetailsActivity extends AbstractActivity {
                 TotalInfo info = new TotalInfo(total, rate);
                 result.add(info);
             }
+            Collections.sort(result, new Comparator<TotalInfo>() {
+                @Override
+                public int compare(TotalInfo thisTotalInfo, TotalInfo thatTotalInfo) {
+                    String thisName = thisTotalInfo.total.currency.name;
+                    String thatName = thatTotalInfo.total.currency.name;
+                    return thisName.compareTo(thatName);
+                }
+            });
             return new TotalsInfo(result, totalInHomeCurrency);
         }
 
         @Override
         protected void onPostExecute(TotalsInfo totals) {
             calculatingNode.setVisibility(View.GONE);
-            Currency homeCurrency = totals.totalInHomeCurrency.currency;
             for (TotalInfo total : totals.totals) {
-                addAmountNode(total, homeCurrency);
+                String title = getString(titleNodeResId, total.total.currency.name);
+                addAmountNode(total.total, title);
             }
             if (shouldShowHomeCurrencyTotal) {
-                addHomeCurrencyAmountNode(totals.totalInHomeCurrency);
+                addAmountNode(totals.totalInHomeCurrency, getString(R.string.home_currency_total));
             }
         }
 
-        private void addAmountNode(TotalInfo total, Currency homeCurrency) {
-            String title = getString(titleNodeResId, total.total.currency.name);
+        private void addAmountNode(Total total, String title) {
             x.addTitleNodeNoDivider(layout, title);
-            TextView data = addAmountNode(total.total);
-            String rateInfo = new StringBuilder().append("1").append(total.total.currency).append("=")
-                    .append(nf.format(total.rate.rate)).append(homeCurrency)
-                    .append(" (").append(formatRateDate(AbstractTotalsDetailsActivity.this, total.rate.date)).append(")").toString();
-            data.setText(rateInfo);
+            if (total.isError()) {
+                addAmountAndErrorNode(total);
+            } else {
+                addSingleAmountNode(total);
+            }
         }
 
-        private void addHomeCurrencyAmountNode(Total total) {
-            x.addTitleNodeNoDivider(layout, getString(R.string.home_currency_total, total.currency.name));
-            TextView data = addAmountNode(total);
-            data.setText(R.string.home_currency);
+        private void addAmountAndErrorNode(Total total) {
+            TextView data = x.addInfoNode(layout, -1, R.string.not_available, "");
+            Drawable dr = getResources().getDrawable(R.drawable.total_error);
+            dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
+            data.setText(total.getError(AbstractTotalsDetailsActivity.this));
+            data.setError("Error!", dr);
         }
 
-        private TextView addAmountNode(Total total) {
-            TextView data = x.addInfoNode(layout, -1, "", "");
-            View v = (View) data.getTag();
-            TextView label = (TextView)v.findViewById(R.id.label);
-            u.setAmountText(label, total.currency, total.balance, false);
-            return data;
+        private void addSingleAmountNode(Total total) {
+            TextView label = x.addInfoNodeSingle(layout, -1, "");
+            u.setAmountText(label, total);
         }
+
     }
 
     protected abstract Total getTotalInHomeCurrency();
 
     protected abstract Total[] getTotals();
+
+    protected void prepareInBackground() { }
 
     private static class TotalInfo {
 

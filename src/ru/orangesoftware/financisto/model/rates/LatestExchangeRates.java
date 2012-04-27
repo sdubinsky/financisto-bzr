@@ -11,9 +11,6 @@ package ru.orangesoftware.financisto.model.rates;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.utils.DateUtils;
-
-import static ru.orangesoftware.financisto.model.rates.ExchangeRate.createDefaultRate;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,10 +23,13 @@ public class LatestExchangeRates implements ExchangeRateProvider, ExchangeRatesC
 
     @Override
     public ExchangeRate getRate(Currency fromCurrency, Currency toCurrency) {
+        if (fromCurrency.id == toCurrency.id) {
+            return ExchangeRate.ONE;
+        }
         TLongObjectMap<ExchangeRate> rateMap = getMapFor(fromCurrency.id);
         ExchangeRate rate = rateMap.get(toCurrency.id);
         if (rate == null) {
-            rate = createDefaultRate(fromCurrency, toCurrency);
+            rate = ExchangeRate.NA;
             rateMap.put(toCurrency.id, rate);
         }
         return rate;

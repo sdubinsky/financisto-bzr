@@ -25,7 +25,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.orangesoftware.financisto.activity.ExchangeRateActivity.formatRateDate;
+import static ru.orangesoftware.financisto.utils.Utils.formatRateDate;
 
 /**
  * Created by IntelliJ IDEA.

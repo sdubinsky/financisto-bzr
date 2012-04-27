@@ -49,7 +49,8 @@ public abstract class TotalCalculationTask extends AsyncTask<Object, Total, Tota
             if (result.currency == Currency.EMPTY) {
                 Toast.makeText(context, R.string.currency_make_default_warning, Toast.LENGTH_LONG).show();
             }
-			setTotal(context, totalText, result);
+            Utils u = new Utils(context);
+    	    u.setTotal(totalText, result);
 		}
 	}
 	
@@ -57,13 +58,4 @@ public abstract class TotalCalculationTask extends AsyncTask<Object, Total, Tota
 		isRunning = false;
 	}
 	
-	public static void setTotal(Context context, TextView totalText, Total total) {
-		Utils u = new Utils(context);
-        if (total.showAmount) {
-            Utils.setTotal(context, totalText, total);
-        } else {
-            u.setAmountText(totalText, total.currency, total.balance, false);
-        }
-	}
-
 }

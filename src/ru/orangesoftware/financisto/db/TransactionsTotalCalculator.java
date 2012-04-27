@@ -13,6 +13,8 @@ import android.util.Log;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
+import ru.orangesoftware.financisto.model.TotalError;
+import ru.orangesoftware.financisto.model.rates.ExchangeRate;
 import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
@@ -85,17 +87,15 @@ public class TransactionsTotalCalculator {
 
     public Total getBlotterBalanceInHomeCurrency() {
         Currency homeCurrency = db.em().getHomeCurrency();
-        Total total = new Total(homeCurrency);
-        total.balance = getBlotterBalance(homeCurrency);
-        return total;
+        return getBlotterBalance(homeCurrency);
     }
 
-    public long getBlotterBalance(Currency toCurrency) {
+    public Total getBlotterBalance(Currency toCurrency) {
         WhereFilter filter = excludeAccountsNotIncludedInTotalsAndSplits(this.filter);
         return getBalanceInHomeCurrency(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, toCurrency, filter);
     }
 
-    public long getAccountBalance(Currency toCurrency, long accountId) {
+    public Total getAccountBalance(Currency toCurrency, long accountId) {
         WhereFilter filter = selectedAccountOnly(this.filter, accountId);
         return getBalanceInHomeCurrency(V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS, toCurrency, filter);
     }
@@ -106,19 +106,26 @@ public class TransactionsTotalCalculator {
         return copy;
     }
 
-    private long getBalanceInHomeCurrency(String view, Currency toCurrency, WhereFilter filter) {
+    private Total getBalanceInHomeCurrency(String view, Currency toCurrency, WhereFilter filter) {
         Log.d("Financisto", "Query balance: "+filter.getSelection()+" => "+ Arrays.toString(filter.getSelectionArgs()));
         Cursor c = db.db().query(view, HOME_CURRENCY_PROJECTION,
                 filter.getSelection(), filter.getSelectionArgs(),
                 null, null, null);
         try {
-            return calculateTotalFromCursor(db, c, toCurrency);
+            try {
+                long balance = calculateTotalFromCursor(db, c, toCurrency);
+                Total total = new Total(toCurrency);
+                total.balance = balance;
+                return total;
+            } catch (UnableToCalculateRateException e) {
+                return new Total(e.toCurrency, TotalError.atDateRateError(e.fromCurrency, e.datetime));
+            }
         } finally {
             c.close();
         }
     }
 
-    public static long calculateTotalFromCursor(DatabaseAdapter db, Cursor c, Currency toCurrency) {
+    private static long calculateTotalFromCursor(DatabaseAdapter db, Cursor c, Currency toCurrency) throws UnableToCalculateRateException {
         MyEntityManager em = db.em();
         ExchangeRateProvider rates = db.getHistoryRates();
         BigDecimal balance = BigDecimal.ZERO;
@@ -128,7 +135,7 @@ public class TransactionsTotalCalculator {
         return balance.longValue();
     }
 
-    public static BigDecimal getAmountFromCursor(MyEntityManager em, Cursor c, Currency toCurrency, ExchangeRateProvider rates, int index) {
+    public static BigDecimal getAmountFromCursor(MyEntityManager em, Cursor c, Currency toCurrency, ExchangeRateProvider rates, int index) throws UnableToCalculateRateException {
         long datetime = c.getLong(index++);
         long fromCurrencyId = c.getLong(index++);
         long fromAmount = c.getLong(index++);
@@ -140,8 +147,13 @@ public class TransactionsTotalCalculator {
             return BigDecimal.valueOf(-toAmount);
         } else {
             Currency fromCurrency = CurrencyCache.getCurrency(em, fromCurrencyId);
-            double rate = rates.getRate(fromCurrency, toCurrency, datetime).rate;
-            return BigDecimal.valueOf(rate*fromAmount);
+            ExchangeRate exchangeRate = rates.getRate(fromCurrency, toCurrency, datetime);
+            if (exchangeRate == ExchangeRate.NA) {
+                throw new UnableToCalculateRateException(fromCurrency, toCurrency, datetime);
+            } else {
+                double rate = exchangeRate.rate;
+                return BigDecimal.valueOf(rate*fromAmount);
+            }
         }
     }
 

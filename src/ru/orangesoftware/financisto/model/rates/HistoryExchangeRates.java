@@ -46,8 +46,7 @@ public class HistoryExchangeRates implements ExchangeRateProvider, ExchangeRates
         // s.tailSet(r) still creates a new TreeSet object
         SortedSet<ExchangeRate> rates = s.tailSet(r);
         if (rates.isEmpty()) {
-            ExchangeRate defaultRate = ExchangeRate.createDefaultRate(fromCurrency, toCurrency);
-            defaultRate.date = 0;
+            ExchangeRate defaultRate = ExchangeRate.NA;
             s.add(defaultRate);
             return defaultRate;
         }

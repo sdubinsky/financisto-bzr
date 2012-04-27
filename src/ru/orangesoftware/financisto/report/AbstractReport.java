@@ -17,11 +17,8 @@ import ru.orangesoftware.financisto.activity.BlotterActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.db.*;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
-import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.db.TransactionsTotalCalculator;
 import ru.orangesoftware.financisto.graph.Amount;
 import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
@@ -78,7 +75,12 @@ public abstract class AbstractReport implements Report {
             long lastId = -1;
             while (c.moveToNext()) {
                 long id = getId(c);
-                BigDecimal amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(ReportColumns.DATETIME));
+                BigDecimal amount;
+                try {
+                    amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(ReportColumns.DATETIME));
+                } catch (UnableToCalculateRateException e) {
+                    amount = BigDecimal.ZERO;
+                }
                 long isTransfer = c.getLong(c.getColumnIndex(ReportColumns.IS_TRANSFER));
                 if (id != lastId) {
 					if (u != null) {

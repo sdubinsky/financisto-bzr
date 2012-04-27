@@ -1652,9 +1652,7 @@ public class DatabaseAdapter {
 
     public Total getAccountsTotalInHomeCurrency() {
         Currency homeCurrency = em.getHomeCurrency();
-        Total total = new Total(homeCurrency);
-        total.balance = getAccountsTotal(homeCurrency);
-        return total;
+        return getAccountsTotal(homeCurrency);
     }
 
     /**
@@ -1681,7 +1679,7 @@ public class DatabaseAdapter {
     /**
      * Calculates total in home currency for all accounts
      */
-    public long getAccountsTotal(Currency homeCurrency) {
+    public Total getAccountsTotal(Currency homeCurrency) {
         ExchangeRateProvider rates = getLatestRates();
         List<Account> accounts = em.getAllAccountsList();
         BigDecimal total = BigDecimal.ZERO;
@@ -1691,11 +1689,17 @@ public class DatabaseAdapter {
                     total = total.add(BigDecimal.valueOf(account.totalAmount));
                 } else {
                     ExchangeRate rate = rates.getRate(account.currency, homeCurrency);
-                    total = total.add(BigDecimal.valueOf(rate.rate*account.totalAmount));
+                    if (rate == ExchangeRate.NA) {
+                        return new Total(homeCurrency, TotalError.lastRateError(account.currency));
+                    } else {
+                        total = total.add(BigDecimal.valueOf(rate.rate*account.totalAmount));
+                    }
                 }
             }
         }
-        return total.longValue();
+        Total result = new Total(homeCurrency);
+        result.balance = total.longValue();
+        return result;
     }
 
     public boolean singleCurrencyOnly() {
