@@ -10,10 +10,7 @@ package ru.orangesoftware.financisto.activity;
 
 import android.content.Intent;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.blotter.AccountTotalCalculationTask;
-import ru.orangesoftware.financisto.blotter.BlotterTotalCalculationTask;
-import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.blotter.*;
 import ru.orangesoftware.financisto.model.Total;
 
 /**
@@ -34,8 +31,13 @@ public class BlotterTotalsDetailsActivity extends AbstractTotalsDetailsActivity 
         Intent intent = getIntent();
         if (intent != null) {
             WhereFilter blotterFilter = WhereFilter.fromIntent(intent);
+            cleanupFilter(blotterFilter);
             totalCalculationTask = createTotalCalculationTask(blotterFilter);
         }
+    }
+
+    private void cleanupFilter(WhereFilter blotterFilter) {
+        blotterFilter.remove(BlotterFilter.BUDGET_ID);
     }
 
     private TotalCalculationTask createTotalCalculationTask(WhereFilter blotterFilter) {
