@@ -24,6 +24,7 @@ import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
+import ru.orangesoftware.financisto.model.TotalError;
 import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
@@ -75,21 +76,22 @@ public abstract class AbstractReport implements Report {
             long lastId = -1;
             while (c.moveToNext()) {
                 long id = getId(c);
+                long isTransfer = c.getLong(c.getColumnIndex(ReportColumns.IS_TRANSFER));
+                if (id != lastId) {
+                    if (u != null) {
+                        units.add(u);
+                    }
+                    String name = c.getString(c.getColumnIndex(ReportColumns.NAME));
+                    u = new GraphUnit(id, alterName(id, name), currency, style);
+                    lastId = id;
+                }
                 BigDecimal amount;
                 try {
                     amount = TransactionsTotalCalculator.getAmountFromCursor(em, c, currency, rates, c.getColumnIndex(ReportColumns.DATETIME));
                 } catch (UnableToCalculateRateException e) {
                     amount = BigDecimal.ZERO;
+                    u.error = TotalError.atDateRateError(e.fromCurrency, e.datetime);
                 }
-                long isTransfer = c.getLong(c.getColumnIndex(ReportColumns.IS_TRANSFER));
-                if (id != lastId) {
-					if (u != null) {
-						units.add(u);
-					}
-                    String name = c.getString(c.getColumnIndex(ReportColumns.NAME));
-					u = new GraphUnit(id, alterName(id, name), currency, style);
-					lastId = id;
-				}
 				u.addAmount(amount, skipTransfers && isTransfer != 0);
 			}
 			if (u != null) {
@@ -106,9 +108,12 @@ public abstract class AbstractReport implements Report {
 	}
 	
     protected Total calculateTotal(List<? extends GraphUnit> units) {
-        Total total = new Total(Currency.EMPTY, true);
+        Total total = new Total(currency, true);
         for (GraphUnit u : units) {
             for (Amount a : u) {
+                if (u.error != null) {
+                    return new Total(currency, u.error);
+                }
                 long amount = a.amount;
                 if (amount > 0) {
                     total.amount += amount;

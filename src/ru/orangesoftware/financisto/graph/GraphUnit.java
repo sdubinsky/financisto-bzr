@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.TotalError;
 
 public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
 
@@ -26,6 +27,7 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
     private final List<Amount> amounts = new LinkedList<Amount>();
 
     private long maxAmount;
+    public TotalError error;
 	
 	public GraphUnit(long id, String name, Currency currency, GraphStyle style) {
 		this.id = id;
@@ -72,5 +74,5 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
     public int size() {
         return amounts.size();
     }
-
+    
 }

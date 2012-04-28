@@ -25,7 +25,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ReportAdapter;
-import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
@@ -98,7 +97,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 	
     private void showOrRemoveTotals() {
         if (!currentReport.shouldDisplayTotal()) {
-            findViewById(R.id.labelTotal).setVisibility(View.GONE);
+            findViewById(R.id.total).setVisibility(View.GONE);
         }
     }
 
