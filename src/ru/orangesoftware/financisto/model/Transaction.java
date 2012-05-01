@@ -18,13 +18,14 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 
 @Entity
 @Table(name = "transactions")
-public class Transaction implements Cloneable {
+public class Transaction implements Serializable, Cloneable {
 	
 	@Id
 	@Column(name = "_id")

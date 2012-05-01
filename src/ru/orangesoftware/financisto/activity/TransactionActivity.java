@@ -14,6 +14,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,8 +32,8 @@ import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
 
+import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static ru.orangesoftware.financisto.model.Category.isSplit;
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
@@ -42,11 +43,12 @@ import static ru.orangesoftware.financisto.utils.Utils.text;
 public class TransactionActivity extends AbstractTransactionActivity {
 
 	public static final String CURRENT_BALANCE_EXTRA = "accountCurrentBalance";
+    public static final String ACTIVITY_STATE = "ACTIVITY_STATE";
 
 	private static final int MENU_TURN_GPS_ON = Menu.FIRST;
     private static final int SPLIT_REQUEST = 5001;
 
-    private final AtomicLong idSequence = new AtomicLong();
+    private long idSequence = 0;
     private final IdentityHashMap<View, Transaction> viewToSplitMap = new IdentityHashMap<View, Transaction>();
 
     private AutoCompleteTextView payeeText;
@@ -438,7 +440,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 
     private void createSplit(boolean asTransfer) {
         Transaction split = new Transaction();
-        split.id = idSequence.decrementAndGet();
+        split.id = --idSequence;
         split.fromAccountId = selectedAccountId;
         split.fromAmount = split.unsplitAmount = calculateUnsplitAmount();
         editSplit(split, asTransfer ? SplitTransferActivity.class : SplitTransactionActivity.class);
@@ -457,6 +459,61 @@ public class TransactionActivity extends AbstractTransactionActivity {
             if (resultCode == RESULT_OK) {
                 Transaction split = Transaction.fromIntentAsSplit(data);
                 addOrEditSplit(split);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("Financisto", "onSaveInstanceState");
+        try {
+            if (selectedCategoryId == Category.SPLIT_CATEGORY_ID) {
+                Log.d("Financisto", "Saving splits...");
+                ActivityState state = new ActivityState();
+                state.categoryId = selectedCategoryId;
+                state.idSequence = idSequence;
+                state.splits = new ArrayList<Transaction>(viewToSplitMap.values());
+                ByteArrayOutputStream s = new ByteArrayOutputStream();
+                try {
+                    ObjectOutputStream out = new ObjectOutputStream(s);
+                    out.writeObject(state);
+                    outState.putByteArray(ACTIVITY_STATE, s.toByteArray());
+                } finally {
+                    s.close();
+                }
+            }
+        } catch (IOException e) {
+            Log.e("Financisto", "Unable to save state", e);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d("Financisto", "onRestoreInstanceState");
+        byte[] bytes = savedInstanceState.getByteArray(ACTIVITY_STATE);
+        if (bytes != null) {
+            try {
+                ByteArrayInputStream s = new ByteArrayInputStream(bytes);
+                try {
+                    ObjectInputStream in = new ObjectInputStream(s);
+                    ActivityState state = (ActivityState) in.readObject();
+                    if (state.categoryId == Category.SPLIT_CATEGORY_ID) {
+                        Log.d("Financisto", "Restoring splits...");
+                        viewToSplitMap.clear();
+                        splitsLayout.removeAllViews();
+                        idSequence = state.idSequence;
+                        selectCategory(state.categoryId);
+                        for (Transaction split : state.splits) {
+                            addOrEditSplit(split);
+                        }
+                    }
+                } finally {
+                    s.close();
+                }
+            } catch (Exception e) {
+                Log.e("Financisto", "Unable to restore state", e);
             }
         }
     }
@@ -543,5 +600,11 @@ public class TransactionActivity extends AbstractTransactionActivity {
         super.onDestroy();
     }
 
+    private static class ActivityState implements Serializable {
+        public long categoryId;
+        public long idSequence;
+        public List<Transaction> splits;
+    }
+    
 
 }
