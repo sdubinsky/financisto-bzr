@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -33,12 +34,15 @@ import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.utils.EnumUtils;
+import ru.orangesoftware.financisto.utils.ExecutableEntityEnum;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
 
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+import static ru.orangesoftware.financisto.utils.EnumUtils.showPickOneDialog;
 import static ru.orangesoftware.financisto.utils.MyPreferences.isQuickMenuEnabledForTransaction;
 
 public class BlotterActivity extends AbstractListActivity {
@@ -284,9 +288,13 @@ public class BlotterActivity extends AbstractListActivity {
 
 	@Override
 	protected void addItem() {
-        addButtonActionGrid.show(bAdd);
+        if (isSupportedApiLevel()) {
+            addButtonActionGrid.show(bAdd);
+        } else {
+            showPickOneDialog(this, R.string.add_transaction, TransactionQuickMenuEntities.values(), addButtonActionListener);
+        }
 	}
-	
+
     protected void addItem(int requestId, Class<? extends AbstractTransactionActivity> clazz) {
         Intent intent = new Intent(BlotterActivity.this, clazz);
         long accountId = blotterFilter.getAccountId();
@@ -488,6 +496,47 @@ public class BlotterActivity extends AbstractListActivity {
 	        default:
 	            return super.onOptionsItemSelected(item);
         }
+    }
+
+    private enum TransactionQuickMenuEntities implements ExecutableEntityEnum<QuickActionWidget.OnQuickActionClickListener> {
+
+        NEW_TRANSACTION(R.string.transaction, R.drawable.ic_input_add){
+            @Override
+            public void execute(QuickActionWidget.OnQuickActionClickListener listener) {
+                listener.onQuickActionClicked(null, 0);
+            }
+        },
+        NEW_TRANSFER(R.string.transfer, R.drawable.ic_input_transfer) {
+            @Override
+            public void execute(QuickActionWidget.OnQuickActionClickListener listener) {
+                listener.onQuickActionClicked(null, 1);
+            }
+        },
+        NEW_TEMPLATE(R.string.template, R.drawable.ic_input_templates) {
+            @Override
+            public void execute(QuickActionWidget.OnQuickActionClickListener listener) {
+                listener.onQuickActionClicked(null, 2);
+            }
+        };
+
+        private final int titleId;
+        private final int iconId;
+
+        private TransactionQuickMenuEntities(int titleId, int iconId) {
+            this.titleId = titleId;
+            this.iconId = iconId;
+        }
+
+        @Override
+        public int getTitleId() {
+            return titleId;
+        }
+
+        @Override
+        public int getIconId() {
+            return iconId;
+        }
+
     }
 	
 }

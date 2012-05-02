@@ -10,6 +10,9 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.utils;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.adapter.EntityEnumAdapter;
 import android.content.Context;
 import android.widget.ArrayAdapter;
@@ -41,6 +44,22 @@ public abstract class EnumUtils {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		return adapter;
 	}
+
+    public static <V, T extends ExecutableEntityEnum<V>> void showPickOneDialog(Context context, int titleId, final T[] items, final V value) {
+        ListAdapter adapter = EnumUtils.createEntityEnumAdapter(context, items);
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        T e = items[which];
+                        e.execute(value);
+                    }
+                })
+                .create();
+        dialog.setTitle(titleId);
+        dialog.show();
+    }
 
     public static String[] asStringArray(Enum... values) {
         int count = values.length;

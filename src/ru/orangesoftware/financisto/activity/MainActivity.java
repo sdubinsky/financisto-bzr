@@ -66,6 +66,7 @@ import java.util.List;
 
 import static ru.orangesoftware.financisto.export.docs.GoogleDocsClient.createDocsClient;
 import static ru.orangesoftware.financisto.service.DailyAutoBackupScheduler.scheduleNextAutoBackup;
+import static ru.orangesoftware.financisto.utils.EnumUtils.showPickOneDialog;
 
 public class MainActivity extends TabActivity implements TabHost.OnTabChangeListener {
 	
@@ -299,20 +300,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
             openBrowser("market://search?q=pname:ru.orangesoftware.financisto.support");
             break;
         case MENU_IMPORT_EXPORT:
-            final ImportExportEntities[] importExportEntities = ImportExportEntities.values();
-            ListAdapter importExportAdapter = EnumUtils.createEntityEnumAdapter(this, importExportEntities);
-            final AlertDialog importExportDialog = new AlertDialog.Builder(this)
-                    .setAdapter(importExportAdapter, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            ImportExportEntities e = importExportEntities[which];
-                            e.execute(MainActivity.this);
-                        }
-                    })
-                    .create();
-            importExportDialog.setTitle(R.string.import_export);
-            importExportDialog.show();
+            showPickOneDialog(this, R.string.import_export, ImportExportEntities.values(), this);
             break;
 		case MENU_BACKUP:
 			doBackup();
@@ -598,7 +586,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		
 	}
 
-    private enum ImportExportEntities implements EntityEnum {
+    private enum ImportExportEntities implements ExecutableEntityEnum<MainActivity> {
 
         CSV_EXPORT(R.string.csv_export, R.drawable.ic_menu_back){
             @Override
@@ -642,8 +630,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         public int getIconId() {
             return iconId;
         }
-
-        public abstract void execute(MainActivity mainActivity);
 
     }
 
