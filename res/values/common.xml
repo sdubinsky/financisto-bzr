@@ -188,4 +188,7 @@
         <item>$1</item>
     </string-array>
 
+    <dimen name="report_labels_text_size">15sp</dimen>
+    <dimen name="report_legend_text_size">15sp</dimen>
+
 </resources>

@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -23,6 +24,10 @@ import android.view.animation.*;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import org.achartengine.ChartFactory;
+import org.achartengine.model.CategorySeries;
+import org.achartengine.renderer.DefaultRenderer;
+import org.achartengine.renderer.SimpleSeriesRenderer;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ReportAdapter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
@@ -30,6 +35,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
+import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.report.PeriodReport;
 import ru.orangesoftware.financisto.report.Report;
@@ -37,11 +43,15 @@ import ru.orangesoftware.financisto.report.ReportData;
 import ru.orangesoftware.financisto.utils.PinProtection;
 import ru.orangesoftware.financisto.utils.Utils;
 
+import java.math.BigDecimal;
+
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+
 public class ReportActivity extends ListActivity implements RecreateCursorSupportedActivity {
 
 	private DatabaseAdapter db;
 	private ImageButton bFilter;
-	private Report currentReport;
+    private Report currentReport;
     private ReportAsyncTask reportTask;
 	
 	private WhereFilter filter = WhereFilter.empty();
@@ -67,7 +77,19 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 				startActivityForResult(intent, 1);
 			}
 		});
-				
+
+        ImageButton bPieChart = (ImageButton) findViewById(R.id.bPieChart);
+        if (isSupportedApiLevel()) {
+            bPieChart.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showPieChart();
+                }
+            });
+        } else {
+            bPieChart.setVisibility(View.GONE);
+        }
+
 		Intent intent = getIntent();
 		if (intent != null) {
 			filter = WhereFilter.fromIntent(intent);
@@ -83,7 +105,11 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
         showOrRemoveTotals();
 	}
 
-	@Override
+    private void showPieChart() {
+        new PieChartGeneratorTask().execute();
+    }
+
+    @Override
 	protected void onPause() {
 		super.onPause();
 		PinProtection.lock(this);
@@ -203,7 +229,15 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
         }
         applyFilter();
     }
-	
+
+    private void displayTotal(Total total) {
+        if (currentReport.shouldDisplayTotal()) {
+            TextView totalText = (TextView)findViewById(R.id.total);
+            Utils u = new Utils(this);
+            u.setTotal(totalText, total);
+        }
+    }
+
     private class ReportAsyncTask extends AsyncTask<Void, Void, ReportData> {
 
         @Override
@@ -228,12 +262,63 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
     }
 
-    private void displayTotal(Total total) {
-        if (currentReport.shouldDisplayTotal()) {
-            TextView totalText = (TextView)findViewById(R.id.total);
-            Utils u = new Utils(this);
-            u.setTotal(totalText, total);
-        }
-    }
+    private class PieChartGeneratorTask extends AsyncTask<Void, Void, Intent> {
 
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        @Override
+        protected Intent doInBackground(Void... voids) {
+            return createPieChart();
+        }
+
+        private Intent createPieChart() {
+            DefaultRenderer renderer = new DefaultRenderer();
+            renderer.setLabelsTextSize(getResources().getDimension(R.dimen.report_labels_text_size));
+            renderer.setLegendTextSize(getResources().getDimension(R.dimen.report_legend_text_size));
+            renderer.setMargins(new int[] { 0, 0, 0, 0 });
+            ReportData report = currentReport.getReport(db, WhereFilter.copyOf(filter));
+            CategorySeries series = new CategorySeries("AAA");
+            long total = Math.abs(report.total.amount)+Math.abs(report.total.balance);
+            int[] colors = generateColors(2*report.units.size());
+            int i = 0;
+            for (GraphUnit unit : report.units) {
+                addSeries(series, renderer, unit.name, unit.getIncomeExpense().income, total, colors[i++]);
+                addSeries(series, renderer, unit.name, unit.getIncomeExpense().expense, total, colors[i++]);
+            }
+            renderer.setZoomButtonsVisible(true);
+            renderer.setZoomEnabled(true);
+            renderer.setChartTitleTextSize(20);
+            return ChartFactory.getPieChartIntent(ReportActivity.this, series, renderer, getString(R.string.report));
+        }
+
+        public int[] generateColors(int n) {
+            int[] colors = new int[n];
+            for (int i = 0; i < n; i++) {
+                colors[i] = Color.HSVToColor(new float[]{360*(float)i/(float)n, .75f, .85f});
+            }
+            return colors;
+        }
+
+        private void addSeries(CategorySeries series, DefaultRenderer renderer, String name, BigDecimal expense, long total, int color) {
+            long amount = expense.longValue();
+            if (amount != 0) {
+                long percentage = 100*Math.abs(amount)/total;
+                series.add((amount > 0 ? "+" : "-") + name + "(" + percentage + "%)", percentage);
+                SimpleSeriesRenderer r = new SimpleSeriesRenderer();
+                r.setColor(color);
+                renderer.addSeriesRenderer(r);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Intent intent) {
+            setProgressBarIndeterminateVisibility(false);
+            startActivity(intent);
+        }
+
+    }
+    
 }
