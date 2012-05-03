@@ -131,7 +131,11 @@ public abstract class AbstractTotalsDetailsActivity extends AbstractActivity {
             TextView data = x.addInfoNode(layout, -1, R.string.not_available, "");
             Drawable dr = getResources().getDrawable(R.drawable.total_error);
             dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
-            data.setText(total.getError(AbstractTotalsDetailsActivity.this));
+            if (total.currency == Currency.EMPTY) {
+                data.setText(R.string.currency_make_default_warning);
+            } else {
+                data.setText(total.getError(AbstractTotalsDetailsActivity.this));
+            }
             data.setError("Error!", dr);
         }
 
