@@ -22,6 +22,10 @@
                             android:title="@string/quick_menu_transaction_enabled"
                             android:summary="@string/quick_menu_transaction_enabled_summary"
                             android:defaultValue="true"/>
+        <CheckBoxPreference android:key="collapse_blotter_buttons"
+                            android:title="@string/collapse_blotter_buttons"
+                            android:summary="@string/collapse_blotter_buttons_summary"
+                            android:defaultValue="false"/>
         <ListPreference android:key="sort_accounts"
                         android:title="@string/sort_accounts" android:summary="@string/sort_accounts_summary"
                         android:entries="@array/sort_accounts_entities"

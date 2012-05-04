@@ -754,4 +754,7 @@
     <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
     <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
 
+    <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
+    <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
+
 </resources>

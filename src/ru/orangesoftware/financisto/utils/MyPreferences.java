@@ -399,6 +399,11 @@ public class MyPreferences {
         return sharedPreferences.getInt("auto_backup_time", 600);
     }
 
+    public static boolean isCollapseBlotterButtons(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("collapse_blotter_buttons", false);
+    }
+
     private static boolean isFeatureSupported(Context context, String feature) {
         if (hasSystemFeatureMethod != null) {
             PackageManager pm = context.getPackageManager();

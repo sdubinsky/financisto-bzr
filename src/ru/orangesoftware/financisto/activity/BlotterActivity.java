@@ -13,7 +13,6 @@ package ru.orangesoftware.financisto.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -34,9 +33,9 @@ import ru.orangesoftware.financisto.dialog.TransactionInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.ExecutableEntityEnum;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
@@ -62,6 +61,8 @@ public class BlotterActivity extends AbstractListActivity {
 	
 	protected TextView totalText;
 	protected ImageButton bFilter;
+    protected ImageButton bTransfer;
+    protected ImageButton bTemplate;
 
     private QuickActionWidget transactionActionGrid;
     private QuickActionWidget addButtonActionGrid;
@@ -72,6 +73,8 @@ public class BlotterActivity extends AbstractListActivity {
 	protected WhereFilter blotterFilter;
 	private boolean filterAccounts = false;
     private boolean isAccountBlotter = false;
+
+    private boolean showAllBlotterButtons = true;
 
     public BlotterActivity(int layoutId) {
 		super(layoutId);
@@ -115,6 +118,28 @@ public class BlotterActivity extends AbstractListActivity {
     @Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		super.internalOnCreate(savedInstanceState);
+
+        showAllBlotterButtons = !MyPreferences.isCollapseBlotterButtons(this);
+
+        if (showAllBlotterButtons) {
+            bTransfer = (ImageButton)findViewById(R.id.bTransfer);
+            bTransfer.setVisibility(View.VISIBLE);
+            bTransfer.setOnClickListener(new OnClickListener(){
+                @Override
+                public void onClick(View arg0) {
+                    addItem(NEW_TRANSFER_REQUEST, TransferActivity.class);
+                }
+            });
+
+            bTemplate = (ImageButton)findViewById(R.id.bTemplate);
+            bTemplate.setVisibility(View.VISIBLE);
+            bTemplate.setOnClickListener(new OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    createFromTemplate();
+                }
+            });
+        }
 
 		bFilter = (ImageButton)findViewById(R.id.bFilter);
 		bFilter.setOnClickListener(new OnClickListener(){
@@ -288,10 +313,14 @@ public class BlotterActivity extends AbstractListActivity {
 
 	@Override
 	protected void addItem() {
-        if (isSupportedApiLevel()) {
-            addButtonActionGrid.show(bAdd);
+        if (showAllBlotterButtons) {
+            addItem(NEW_TRANSACTION_REQUEST, TransactionActivity.class);
         } else {
-            showPickOneDialog(this, R.string.add_transaction, TransactionQuickMenuEntities.values(), addButtonActionListener);
+            if (isSupportedApiLevel()) {
+                addButtonActionGrid.show(bAdd);
+            } else {
+                showPickOneDialog(this, R.string.add_transaction, TransactionQuickMenuEntities.values(), addButtonActionListener);
+            }
         }
 	}
 
@@ -392,6 +421,9 @@ public class BlotterActivity extends AbstractListActivity {
 		if (accountId != -1) {
 			Account a = em.getAccount(accountId);
 			bAdd.setVisibility(a != null && a.isActive ? View.VISIBLE : View.GONE);
+            if (showAllBlotterButtons) {
+                bTransfer.setVisibility(a != null && a.isActive ? View.VISIBLE : View.GONE);
+            }
 		}
 		String title = blotterFilter.getTitle();
 		if (title != null) {

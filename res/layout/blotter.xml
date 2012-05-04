@@ -24,6 +24,12 @@
 		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/bAdd"
 			android:src="@drawable/ic_input_add" />
+        <ImageButton android:layout_width="wrap_content"
+                     android:layout_height="wrap_content" android:id="@+id/bTransfer"
+                     android:src="@drawable/ic_input_transfer" android:visibility="gone"/>
+        <ImageButton android:layout_width="wrap_content"
+                     android:layout_height="wrap_content" android:id="@+id/bTemplate"
+                     android:src="@drawable/ic_input_templates" android:visibility="gone"/>
 		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/bFilter"
 			android:src="@drawable/ic_menu_filter_off" />
