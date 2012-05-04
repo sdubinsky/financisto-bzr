@@ -337,8 +337,8 @@
   <string name="user_login_summary">Google-Login (user@gmail.com)</string>
   <string name="user_password">Passwort</string>
   <string name="user_password_summary">Google Passwort</string>
-  <string name="backup_folder">Ordner für Sicherung</string>
-  <string name="backup_folder_summary">Ordner in Google Docs zum Speichern der Sicherung.</string>
+  <string name="backup_folder">Backup Collection</string>
+  <string name="backup_folder_summary">To store backup files create a new collection in My Collections</string>
   <string name="report_preferences">Einstellungen für Berichte</string>
   <string name="all_reports_preferences">Allgemeine Einstellungen für Berichte</string>
   <string name="category_by_period_preferences">Berichte nach Kategorie und Zeitraum</string>
@@ -635,6 +635,29 @@
   <string name="rate_from_currency">From currency</string>
   <string name="rate_to_currency">To currency</string>
   <string name="currency_make_default">Festlegen als Standard</string>
+  <string name="currency_make_default_warning">Please set Default Currency to get correct Total (Menu -&gt; Entities -&gt; Currencies)</string>
+  <string name="back">Back</string>
+  <string name="select">Select</string>
+  <string name="category_selector">Category selector</string>
+  <string name="use_hierarchical_category_selector">Hierarchical selector</string>
+  <string name="use_hierarchical_category_selector_summary">Use hierarchical category selector</string>
+  <string name="hierarchical_category_selector_select_child_immediately">Confirm automatically</string>
+  <string name="hierarchical_category_selector_select_child_immediately_summary">Confirm child category selection automatically</string>
+  <string name="hierarchical_category_selector_income_expense">Income/Expense</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Group income and expense categories together</string>
+  <string name="totals">Totals</string>
+  <string name="account_total_in_currency">All %s accounts</string>
+  <string name="blotter_total_in_currency">All %s transactions</string>
+  <string name="budget_total_in_currency">All %s budgets</string>
+  <string name="home_currency_total">Total in home currency</string>
+  <string name="total_rate">Rate: %0.5f</string>
+  <string name="home_currency">Home currency</string>
+  <string name="upload_to_dropbox">Upload to\nDropbox</string>
+  <string name="not_available">N/A</string>
+  <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
+  <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
+  <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
+  <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Nummer</item>

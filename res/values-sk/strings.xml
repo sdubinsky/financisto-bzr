@@ -337,8 +337,8 @@
   <string name="user_login_summary">Prihlásenie na Google účet (užív. meno)</string>
   <string name="user_password">Heslo</string>
   <string name="user_password_summary">Heslo na Google účet</string>
-  <string name="backup_folder">Priečinok zálohy</string>
-  <string name="backup_folder_summary">Priečinok na Google Dokumenty na ukladanie záloh.</string>
+  <string name="backup_folder">Zálohovať inkaso</string>
+  <string name="backup_folder_summary">Pre uloženie súborov zálohy vytvoriť nové inkaso v Mojich inkasách</string>
   <string name="report_preferences">Nastavenia správ</string>
   <string name="all_reports_preferences">Hlavné Nastavenia správ</string>
   <string name="category_by_period_preferences">Nastavenia kategórie za obdobie</string>
@@ -635,6 +635,29 @@
   <string name="rate_from_currency">Z meny</string>
   <string name="rate_to_currency">Do meny</string>
   <string name="currency_make_default">Nastaviť ako predvolenú</string>
+  <string name="currency_make_default_warning">Abyste získali správny Súčet, nastavte prosím východziu menu (Menu -&gt; Položky -&gt; Meny)</string>
+  <string name="back">Späť</string>
+  <string name="select">Vybrať</string>
+  <string name="category_selector">Výber kategórií</string>
+  <string name="use_hierarchical_category_selector">Hierarchický výber</string>
+  <string name="use_hierarchical_category_selector_summary">Použiť hierarchický výber kategórií</string>
+  <string name="hierarchical_category_selector_select_child_immediately">Automaticky potvrdiť</string>
+  <string name="hierarchical_category_selector_select_child_immediately_summary">Automaticky potvrdiť výber podkategórie</string>
+  <string name="hierarchical_category_selector_income_expense">Príjem/Výdaj</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Zoskupiť prímové a výdajové kategórie dohromady</string>
+  <string name="totals">Súčty</string>
+  <string name="account_total_in_currency">Všetky účty %s</string>
+  <string name="blotter_total_in_currency">Všetky transakcie %s</string>
+  <string name="budget_total_in_currency">Všetky rozpočty %s</string>
+  <string name="home_currency_total">Súčet v domácej mene</string>
+  <string name="total_rate">Kurz: %0.5f</string>
+  <string name="home_currency">Domáca mena</string>
+  <string name="upload_to_dropbox">Nahrať na\nDropbox</string>
+  <string name="not_available">Nedostupné</string>
+  <string name="rate_not_available_on_date_error" formatted="false">Žiadny výmenný kurz uvedený na %s pre prepočet z %s na %s</string>
+  <string name="rate_not_available_error" formatted="false">Žiadny výmenný kurz uvedený pre prepočet z %s na %s</string>
+  <string name="collapse_blotter_buttons">Zbaliť tlačidlo účtovnej knihy</string>
+  <string name="collapse_blotter_buttons_summary">Zoskupiť tlačidlá Nové transakcia/Prevod/Šablóna spolu (vyžaduje reštart)</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Číslo</item>

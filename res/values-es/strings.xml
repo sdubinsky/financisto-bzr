@@ -337,8 +337,8 @@
   <string name="user_login_summary">Nombre de usuario de la cuenta de Google [user@gmail.com]</string>
   <string name="user_password">Contraseña</string>
   <string name="user_password_summary">Contraseña de la cuenta de Google</string>
-  <string name="backup_folder">Carpeta de Respaldo</string>
-  <string name="backup_folder_summary">Carpeta en Google Docs donde almacenar las copias de respaldo</string>
+  <string name="backup_folder">Backup Collection</string>
+  <string name="backup_folder_summary">To store backup files create a new collection in My Collections</string>
   <string name="report_preferences">Preferencias de Informe</string>
   <string name="all_reports_preferences">Propiedades Generales</string>
   <string name="category_by_period_preferences">Propiedades por Categoría/Periodo</string>
@@ -612,8 +612,8 @@
   <string name="database_backup">Backup de base de datos</string>
   <string name="database_backup_folder">Carpeta de backup</string>
   <string name="database_backup_folder_summary">Carpeta de backup de base de datos actual: %s</string>
-  <string name="backup_database_to">Enviar backup para...</string>
-  <string name="backup_database_to_title">Enviar backup para...</string>
+  <string name="backup_database_to">Enviar backup a...</string>
+  <string name="backup_database_to_title">Enviar backup de base de datos a...</string>
   <string name="license">Licencia</string>
   <string name="quick_menu_account_enabled">Menú rápido en Cuentas</string>
   <string name="quick_menu_account_enabled_summary">Activar menú de un toque en Cuentas</string>
@@ -623,18 +623,41 @@
   <string name="dropbox_authorize">Autorizar</string>
   <string name="dropbox_authorize_summary">Permitir Financisto cargar archivos en su Dropbox</string>
   <string name="dropbox_unlink">Desvincular</string>
-  <string name="dropbox_unlink_summary">Impedir Financisto de cargar archivos en su Dropbox</string>
+  <string name="dropbox_unlink_summary">Impedir Financisto cargar archivos en su Dropbox</string>
   <string name="dropbox_upload_backup">Cargar backups</string>
-  <string name="dropbox_upload_backup_summary">Cargar backup de base de datos para Dropbox</string>
+  <string name="dropbox_upload_backup_summary">Cargar backup de base de datos en Dropbox</string>
   <string name="dropbox_upload_autobackup">Cargar backups automáticas</string>
-  <string name="dropbox_upload_autobackup_summary">Cargar backups automáticas de base de datos para Dropbox</string>
-  <string name="dropbox_uploading_file">Cargar archivos a Dropbox...</string>
+  <string name="dropbox_upload_autobackup_summary">Cargar backups automáticas de base de datos en Dropbox</string>
+  <string name="dropbox_uploading_file">Cargando archivo en Dropbox...</string>
   <string name="exchange_rates">Tasas de cambio</string>
   <string name="no_exchange_rates">Sin tasas de cambio</string>
   <string name="exchange_rate">Tasa de cambio</string>
   <string name="rate_from_currency">De la divisa</string>
   <string name="rate_to_currency">A la divisa</string>
-  <string name="currency_make_default">Tornar predeterminado</string>
+  <string name="currency_make_default">Predeterminar</string>
+  <string name="currency_make_default_warning">Por favor, ajuste divisa por defecto para obtener el total correcto (Menú -&gt; Identidades -&gt; Divisas)</string>
+  <string name="back">Atrás</string>
+  <string name="select">Seleccione</string>
+  <string name="category_selector">Selector de categoría</string>
+  <string name="use_hierarchical_category_selector">Selector jerárquico</string>
+  <string name="use_hierarchical_category_selector_summary">Usar selector de categoría jerárquico</string>
+  <string name="hierarchical_category_selector_select_child_immediately">Confirmar automáticamente</string>
+  <string name="hierarchical_category_selector_select_child_immediately_summary">Confirmar selección de categoría hijo automáticamente</string>
+  <string name="hierarchical_category_selector_income_expense">Ingresos/Gastos</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Agrupar categorías de ingresos y gastos juntas</string>
+  <string name="totals">Totals</string>
+  <string name="account_total_in_currency">All %s accounts</string>
+  <string name="blotter_total_in_currency">All %s transactions</string>
+  <string name="budget_total_in_currency">All %s budgets</string>
+  <string name="home_currency_total">Total in home currency</string>
+  <string name="total_rate">Rate: %0.5f</string>
+  <string name="home_currency">Home currency</string>
+  <string name="upload_to_dropbox">Upload to\nDropbox</string>
+  <string name="not_available">N/A</string>
+  <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
+  <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
+  <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
+  <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
   <string-array name="attribute_types">
     <item>Texto</item>
     <item>Número</item>

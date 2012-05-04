@@ -337,8 +337,8 @@
   <string name="user_login_summary">Connexió de compte de Google (nom d\'usuari)</string>
   <string name="user_password">Contrasenya</string>
   <string name="user_password_summary">Contrasenya de compte de Google</string>
-  <string name="backup_folder">Carpeta de còpia de seguretat</string>
-  <string name="backup_folder_summary">Carpeta de Google Docs per emmagatzemar arxius de còpia de seguretat</string>
+  <string name="backup_folder">Col·lecció de còpia de seguretat</string>
+  <string name="backup_folder_summary">Per emmagatzemar arxius ha de crear una nova col·lecció a Les Meves Col·leccions</string>
   <string name="report_preferences">Preferències d\'informes</string>
   <string name="all_reports_preferences">Preferències generals d\'informe</string>
   <string name="category_by_period_preferences">Propietats per Categoria/Període</string>
@@ -635,6 +635,29 @@
   <string name="rate_from_currency">Des de moneda</string>
   <string name="rate_to_currency">De la moneda</string>
   <string name="currency_make_default">Fer per defecte</string>
+  <string name="currency_make_default_warning">Si us plau, estableix Moneda per defecte per obtenir un Total correcte(Menu -&gt; Entitats -&gt; Monedes)</string>
+  <string name="back">Endarrera</string>
+  <string name="select">Selecciona</string>
+  <string name="category_selector">Selector de categoria</string>
+  <string name="use_hierarchical_category_selector">Selector jeràrquica</string>
+  <string name="use_hierarchical_category_selector_summary">Emprar selector de categoria jeràrquica</string>
+  <string name="hierarchical_category_selector_select_child_immediately">Confirmar automàticament</string>
+  <string name="hierarchical_category_selector_select_child_immediately_summary">Confirmar selecció de categoria filla automàticament</string>
+  <string name="hierarchical_category_selector_income_expense">Ingresos i despeses</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Grup de categories ingressos i despeses en total</string>
+  <string name="totals">Totals</string>
+  <string name="account_total_in_currency">Tots %s comptes</string>
+  <string name="blotter_total_in_currency">Totes %s les transaccions</string>
+  <string name="budget_total_in_currency">Tots %s els pressupostos</string>
+  <string name="home_currency_total">Total en moneda local</string>
+  <string name="total_rate">Ràtio: %0.5f</string>
+  <string name="home_currency">Moneda local</string>
+  <string name="upload_to_dropbox">Pujar a \nDropbox</string>
+  <string name="not_available">No disponible</string>
+  <string name="rate_not_available_on_date_error" formatted="false">No hi ha ràtio de canvi especificat a %s per calcular entre %s i %s</string>
+  <string name="rate_not_available_error" formatted="false">Cap tipus específic de ràtio de canvi entre %s i %s</string>
+  <string name="collapse_blotter_buttons">Botons de contracció Blotter</string>
+  <string name="collapse_blotter_buttons_summary">Grup Nova Transacció/Transferència/Plantilla botons (necessita reiniciar)</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Número</item>

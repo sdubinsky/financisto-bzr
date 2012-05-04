@@ -337,8 +337,8 @@
   <string name="user_login_summary">Nome de usuário no Google (usuário)</string>
   <string name="user_password">Senha</string>
   <string name="user_password_summary">Senha no Google</string>
-  <string name="backup_folder">Pasta de backup</string>
-  <string name="backup_folder_summary">Pasta no Google Docs para armazenar os arquivos.</string>
+  <string name="backup_folder">Coleção de Backup</string>
+  <string name="backup_folder_summary">Para armazenar arquivos de backup crie uma nova coleção em Minhas Coleções</string>
   <string name="report_preferences">Preferências de Relatório</string>
   <string name="all_reports_preferences">Todos os relatórios</string>
   <string name="category_by_period_preferences">Relatório Categoria/Período</string>
@@ -567,8 +567,8 @@
   <string name="downloading_rate" formatted="false">Baixando taxa de conversão %s/%s...</string>
   <string name="unsplit_adjust_amount">Saldo</string>
   <string name="unsplit_adjust_amount_summary">Ajustar saldo</string>
-  <string name="unsplit_adjust_evenly">Exatamente</string>
-  <string name="unsplit_adjust_evenly_summary">Ajustar exatamente</string>
+  <string name="unsplit_adjust_evenly">Uniformemente</string>
+  <string name="unsplit_adjust_evenly_summary">Ajustar uniformemente</string>
   <string name="unsplit_adjust_last">Último</string>
   <string name="unsplit_adjust_last_summary">Ajustar último</string>
   <string name="add_transfer">Adicionar transferência</string>
@@ -615,7 +615,7 @@
   <string name="backup_database_to">Enviar Backup para...</string>
   <string name="backup_database_to_title">Enviar Backup de banco de dados para...</string>
   <string name="license">Licença</string>
-  <string name="quick_menu_account_enabled">Menu rápido nas contas</string>
+  <string name="quick_menu_account_enabled">Menu rápido de contas</string>
   <string name="quick_menu_account_enabled_summary">Habilitar menu de um toque nas Contas</string>
   <string name="quick_menu_transaction_enabled">Menu rápido nos Registros</string>
   <string name="quick_menu_transaction_enabled_summary">Habilitar menu de um toque nos Registros</string>
@@ -635,6 +635,29 @@
   <string name="rate_from_currency">Da moeda</string>
   <string name="rate_to_currency">Para moeda</string>
   <string name="currency_make_default">Tornar padrão</string>
+  <string name="currency_make_default_warning">Defina a Moeda Padrão para obter o Total correto (Menu -&gt; Entidades -&gt; Moedas)</string>
+  <string name="back">Voltar</string>
+  <string name="select">Selecionar</string>
+  <string name="category_selector">Seletor de categoria</string>
+  <string name="use_hierarchical_category_selector">Seletor hierárquico</string>
+  <string name="use_hierarchical_category_selector_summary">Usar seletor de categoria hierárquico</string>
+  <string name="hierarchical_category_selector_select_child_immediately">Confirmar automaticamente</string>
+  <string name="hierarchical_category_selector_select_child_immediately_summary">Confirmar seleção de categoria filho automaticamente</string>
+  <string name="hierarchical_category_selector_income_expense">Receita/Despesa</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Grupo de categorias receitas e despesas juntos</string>
+  <string name="totals">Totais</string>
+  <string name="account_total_in_currency">Todas as %s contas</string>
+  <string name="blotter_total_in_currency">Todas as %s transações</string>
+  <string name="budget_total_in_currency">Todas os %s orçamentos</string>
+  <string name="home_currency_total">Total em moeda local</string>
+  <string name="total_rate">Taxa: %0.5f</string>
+  <string name="home_currency">Moeda local</string>
+  <string name="upload_to_dropbox">Upload para o\nDropbox</string>
+  <string name="not_available">N/D</string>
+  <string name="rate_not_available_on_date_error" formatted="false">Nenhuma taxa de câmbio especificada em %s para calcular entre %s e %s</string>
+  <string name="rate_not_available_error" formatted="false">Nenhuma taxa de câmbio especificada entre %s e %s</string>
+  <string name="collapse_blotter_buttons">Reduzir botões de Registro</string>
+  <string name="collapse_blotter_buttons_summary">Agrupar os botões Nova(o) Transação/Transferência/Modelo (requer reinicialização)</string>
   <string-array name="attribute_types">
     <item>Texto</item>
     <item>Número</item>
