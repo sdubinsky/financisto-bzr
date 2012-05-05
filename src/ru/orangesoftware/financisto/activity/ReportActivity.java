@@ -304,7 +304,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
         private void addSeries(CategorySeries series, DefaultRenderer renderer, String name, BigDecimal expense, long total, int color) {
             long amount = expense.longValue();
-            if (amount != 0) {
+            if (amount != 0 && total != 0) {
                 long percentage = 100*Math.abs(amount)/total;
                 series.add((amount > 0 ? "+" : "-") + name + "(" + percentage + "%)", percentage);
                 SimpleSeriesRenderer r = new SimpleSeriesRenderer();
