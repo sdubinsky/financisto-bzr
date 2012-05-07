@@ -163,7 +163,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		categoryAdapter = TransactionUtils.createCategoryAdapter(db, this, categoryCursor);
 
 		if (isShowProject) {
-			projects = em.getAllProjectsList(true);
+			projects = em.getActiveProjectsList(true);
 			projectAdapter = TransactionUtils.createProjectAdapter(this, projects);
 		}
 
@@ -772,7 +772,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
                     break;
                 }
 				case NEW_PROJECT_REQUEST:					
-					projects = em.getAllProjectsList(true);
+					projects = em.getActiveProjectsList(true);
 					long projectId = data.getLongExtra(EntityColumns.ID, -1);
 					if (projectId != -1) {
 						selectProject(projectId);

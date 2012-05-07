@@ -71,6 +71,35 @@ public class MyEntityManager extends EntityManager {
 		}
 	}
 
+    private <T extends MyEntity> ArrayList<T> getAllEntitiesList(Class<T> clazz, boolean include0, boolean onlyActive) {
+        Query<T> q = createQuery(clazz);
+        q.where(include0 ? Expressions.gte("id", 0) : Expressions.gt("id", 0));
+        if(onlyActive)
+        {
+            q.where(Expressions.eq("isActive",1));
+        }
+        q.asc("title");
+        Cursor c = q.execute();
+        try {
+            T e0 = null;
+            ArrayList<T> list = new ArrayList<T>();
+            while (c.moveToNext()) {
+                T e = EntityManager.loadFromCursor(c, clazz);
+                if (e.id == 0) {
+                    e0 = e;
+                } else {
+                    list.add(e);
+                }
+            }
+            if (e0 != null) {
+                list.add(0, e0);
+            }
+            return list;
+        } finally {
+            c.close();
+        }
+    }
+
 	/* ===============================================
 	 * LOCATION
 	 * =============================================== */
@@ -323,6 +352,10 @@ public class MyEntityManager extends EntityManager {
 	public ArrayList<Project> getAllProjectsList(boolean includeNoProject) {
 		return getAllEntitiesList(Project.class, includeNoProject);
 	}
+
+    public ArrayList<Project> getActiveProjectsList(boolean includeNoProject) {
+        return getAllEntitiesList(Project.class, includeNoProject, true);
+    }
 
 //	public Category getCategoryByLeft(long left) {
 //		Query<Category> q = createQuery(Category.class);

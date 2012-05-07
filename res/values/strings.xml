@@ -757,4 +757,5 @@
     <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
     <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
 
+    <string name="isActive">Is active</string>
 </resources>
