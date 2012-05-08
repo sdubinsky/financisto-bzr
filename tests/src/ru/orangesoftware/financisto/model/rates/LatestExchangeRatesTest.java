@@ -66,10 +66,10 @@ public class LatestExchangeRatesTest extends AbstractDbTest {
         assertRate(DateTime.date(2012, 1, 16), 1.0f/0.222f, rate);
     }
 
-    public void test_should_return_default_rate_if_not_found() {
+    public void test_should_return_error_if_rate_is_not_found() {
         ExchangeRateProvider m = db.getLatestRates();
         ExchangeRate rate = m.getRate(c1, c2);
-        assertRate(DateTime.today(), 1.0d, rate);
+        assertTrue(ExchangeRate.NA == rate);
     }
 
     public void test_should_calculate_accounts_total_in_home_currency() {
@@ -79,14 +79,14 @@ public class LatestExchangeRatesTest extends AbstractDbTest {
         RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2012, 1, 18)).rate(0.78635f).create();
 
         // total in c1
-        assertEquals((long)(500+(1.0f/0.78635f)*1200), db.getAccountsTotal(c1));
+        assertEquals((long)(500+(1.0f/0.78635f)*1200), db.getAccountsTotal(c1).balance);
 
         // total in c2
-        assertEquals((long)(1200+(0.78635f)*500), db.getAccountsTotal(c2));
+        assertEquals((long)(1200+(0.78635f)*500), db.getAccountsTotal(c2).balance);
 
         // total in c3
         Currency c3 = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").create();
-        assertEquals(500+1200, db.getAccountsTotal(c3));
+        assertTrue(db.getAccountsTotal(c3).isError());
     }
 
     public void test_should_calculate_accounts_total_in_every_currency() {
@@ -121,7 +121,7 @@ public class LatestExchangeRatesTest extends AbstractDbTest {
 
     public void test_should_calculate_accounts_total_correctly_with_big_amounts() {
         AccountBuilder.withDb(db).title("Cash").currency(c1).total(36487931200L).create();
-        assertEquals(36487931200L, db.getAccountsTotal(c1));
+        assertEquals(36487931200L, db.getAccountsTotal(c1).balance);
     }
 
 }

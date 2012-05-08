@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class TransactionsTotalCalculatorTest extends AbstractDbTest {
 
-    Currency c1, c2, c3;
+    Currency c1, c2, c3, c4;
     Account a1, a2, a3;
 
     TransactionsTotalCalculator c;
@@ -38,6 +38,7 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
         c1 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").makeDefault().create();
         c2 = CurrencyBuilder.withDb(db).name("EUR").title("Euro").symbol("€").create();
         c3 = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").create();
+        c4 = CurrencyBuilder.withDb(db).name("RUB").title("Russian Ruble").symbol("p.").create();
 
         c = new TransactionsTotalCalculator(db, WhereFilter.empty());
 
@@ -53,7 +54,6 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
 
         /*
         10 A3 SGD +555
-        10 A1 USD +1
         17 A1 USD +100
         17 A2 EUR -100
         18 A2 EUR -250
@@ -66,7 +66,6 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
          */
 
         TransactionBuilder.withDb(db).account(a3).dateTime(DateTime.date(2012, 1, 10)).amount(555).create();
-        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 10)).amount(1).create();
         TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 17).at(13, 30, 0, 0)).amount(100).create();
         TransactionBuilder.withDb(db).account(a2).dateTime(DateTime.date(2012, 1, 17).at(13, 30, 0, 0)).amount(-100).create();
         TransactionBuilder.withDb(db).account(a2).dateTime(DateTime.date(2012, 1, 18).at(18, 40, 0, 0)).amount(-250).create();
@@ -77,43 +76,55 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
                 .withTransferSplit(a2, -150, 100)
                 .create();
     }
+    
+    public void test_should_return_error_if_exchange_rate_not_available() {
+        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 10)).amount(1).create();
+
+        assertFalse(c.getAccountBalance(c1, a1.id).isError()); // no conversion
+        assertFalse(c.getAccountBalance(c3, a1.id).isError()); // all rates are available
+
+        Total total = c.getAccountBalance(c2, a1.id);
+        assertTrue(total.isError()); // no rate available on 10th
+
+        total = c.getAccountBalance(c4, a1.id);
+        assertTrue(total.isError());  // no rates at all
+    }
 
     public void test_should_calculate_blotter_total_in_multiple_currencies() {
         Total[] totals = c.getTransactionsBalance();
         assertEquals(2, totals.length);
-        assertEquals(-599, totals[0].balance);
+        assertEquals(-600, totals[0].balance);
         assertEquals(-230, totals[1].balance);
     }
 
     public void test_should_calculate_blotter_total_in_home_currency() {
-        assertEquals((long)(1f +100f -(1f/0.78592f)*100f -(1f/0.78635f)*250f -50f +50f -450f -50f -150f +150f), c.getBlotterBalance(c1));
-        assertEquals((long)(1f +0.78592f*100f -100f -250f -20f +20f -0.78635f*450f -0.78635f*50f -100f +100f), c.getBlotterBalance(c2));
-        assertEquals(c.getBlotterBalance(c1), c.getBlotterBalanceInHomeCurrency().balance);
+        assertEquals((long)(100f -(1f/0.78592f)*100f -(1f/0.78635f)*250f -50f +50f -450f -50f -150f +150f), c.getBlotterBalance(c1).balance);
+        assertEquals((long)(0.78592f*100f -100f -250f -20f +20f -0.78635f*450f -0.78635f*50f -100f +100f), c.getBlotterBalance(c2).balance);
+        assertEquals(c.getBlotterBalance(c1).balance, c.getBlotterBalanceInHomeCurrency().balance);
     }
 
     public void test_should_calculate_account_total_in_home_currency() {
         //no conversion
-        assertEquals((long) (1f + 100f -50f -450f -50f -150f), c.getAccountBalance(c1, a1.id));
+        assertEquals((long) (100f -50f -450f -50f -150f), c.getAccountBalance(c1, a1.id).balance);
 
         //note that the last amount is taken from the transfer without conversion
-        assertEquals((long) (1f + 0.78592f * 100f - 0.78635f * 450f - 0.78635f * 200f - 20f), c.getAccountBalance(c2, a1.id));
+        assertEquals((long) (0.78592f * 100f - 0.78635f * 450f - 0.78635f * 200f - 20f), c.getAccountBalance(c2, a1.id).balance);
 
         //no conversion
-        assertEquals((long)(-250f -100f +20f +100f), c.getAccountBalance(c2, a2.id));
+        assertEquals((long)(-250f -100f +20f +100f), c.getAccountBalance(c2, a2.id).balance);
 
         //conversion+transfers
-        assertEquals((long) (-(1f / 0.78635f) * 250f - (1f / 0.78592f) * 100f + 50f + 150f), c.getAccountBalance(c1, a2.id));
+        assertEquals((long) (-(1f / 0.78635f) * 250f - (1f / 0.78592f) * 100f + 50f + 150f), c.getAccountBalance(c1, a2.id).balance);
 
         //conversions
-        assertEquals((long) (0.62510f * (1f + 100f - 450f - 200f - 50f)), c.getAccountBalance(c3, a1.id));
-        assertEquals((long) (0.12453f * (-250f - 100f + 20f + 100f)), c.getAccountBalance(c3, a2.id));
+        assertEquals((long) (0.62510f * (100f - 450f - 200f - 50f)), c.getAccountBalance(c3, a1.id).balance);
+        assertEquals((long) (0.12453f * (-250f - 100f + 20f + 100f)), c.getAccountBalance(c3, a2.id).balance);
     }
 
     public void test_should_calculate_account_total_in_home_currency_with_big_amounts() {
         TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 10)).amount(45000000000L).create();
-
         //no conversion
-        assertEquals(45000000000L+(long) (1f + 100f -50f -450f -50f -150f), c.getAccountBalance(c1, a1.id));
+        assertEquals(45000000000L+(long) (100f -50f -450f -50f -150f), c.getAccountBalance(c1, a1.id).balance);
     }
 
 }

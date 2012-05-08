@@ -62,17 +62,17 @@ public class HistoryExchangeRatesTest extends AbstractDbTest {
         assertRate(DateTime.date(2012, 1, 20), 1.0f / 0.78712f, rate);
     }
 
-    public void test_should_return_default_rates_for_non_existing_dates() {
+    public void test_should_return_error_non_existing_dates() {
         RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2012, 1, 18)).rate(0.78654f).create();
         RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2012, 1, 19)).rate(0.78712f).create();
 
         ExchangeRateProvider rates = db.getHistoryRates();
         ExchangeRate rate = rates.getRate(c1, c2, DateTime.date(2012, 1, 7).atMidnight().asLong());
-        assertRate(DateTime.fromTimestamp(0), 1.0d, rate);
+        assertTrue(ExchangeRate.NA == rate);
 
         // default rate should be cached
         ExchangeRate rate2 = rates.getRate(c1, c2, DateTime.date(1979, 8, 2).atMidnight().asLong());
-        assertTrue(rate == rate2);
+        assertTrue(ExchangeRate.NA == rate2);
     }
 
 }
