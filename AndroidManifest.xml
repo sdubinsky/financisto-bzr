@@ -85,6 +85,7 @@
 				<action android:name="android.intent.action.MAIN" />
 				<action android:name="ru.orangesoftware.financisto.NEW_TRANSACTION" />
 				<category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
 		
@@ -97,6 +98,7 @@
 				<action android:name="android.intent.action.MAIN" />
 				<action android:name="ru.orangesoftware.financisto.NEW_TRANSFER" />
 				<category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
 
