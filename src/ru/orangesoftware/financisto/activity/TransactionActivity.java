@@ -43,6 +43,7 @@ import static ru.orangesoftware.financisto.utils.Utils.text;
 public class TransactionActivity extends AbstractTransactionActivity {
 
 	public static final String CURRENT_BALANCE_EXTRA = "accountCurrentBalance";
+	public static final String AMOUNT_EXTRA = "accountAmount";
     public static final String ACTIVITY_STATE = "ACTIVITY_STATE";
 
 	private static final int MENU_TURN_GPS_ON = Menu.FIRST;
@@ -79,6 +80,8 @@ public class TransactionActivity extends AbstractTransactionActivity {
 			if (intent.hasExtra(CURRENT_BALANCE_EXTRA)) {
 				currentBalance = intent.getLongExtra(CURRENT_BALANCE_EXTRA, 0);
 				isUpdateBalanceMode = true;
+			} else if(intent.hasExtra(AMOUNT_EXTRA)) {
+				currentBalance = intent.getLongExtra(AMOUNT_EXTRA, 0);
 			}
 		}
 		if (transaction.isTemplateLike()) {
@@ -221,6 +224,11 @@ public class TransactionActivity extends AbstractTransactionActivity {
                 amountInput.setExpense();
             }
 		} else {
+            if (currentBalance >= 0) {
+                amountInput.setIncome();
+            } else {
+                amountInput.setExpense();
+            }
             createSplitsLayout(layout);
             amountInput.setOnAmountChangedListener(new OnAmountChangedListener() {
                 @Override
