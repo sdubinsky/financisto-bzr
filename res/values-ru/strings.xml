@@ -635,7 +635,7 @@
   <string name="rate_from_currency">Из валюты</string>
   <string name="rate_to_currency">В валюту</string>
   <string name="currency_make_default">Сделать домашней</string>
-  <string name="currency_make_default_warning">Укажите Домашнюю валюту для получения верного Итога (Меню -&gt; Сущности -&gt; Вылюты)</string>
+  <string name="currency_make_default_warning">Укажите Домашнюю валюту для получения верного Итога (Меню -&gt; Сущности -&gt; Валюты)</string>
   <string name="back">Назад</string>
   <string name="select">Выбрать</string>
   <string name="category_selector">Селектор категорий</string>
@@ -714,4 +714,5 @@
     <item>10 минут</item>
     <item>15 минут</item>
   </string-array>
+  <string name="isActive">Активный</string>
 </resources>

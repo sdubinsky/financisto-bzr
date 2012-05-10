@@ -313,7 +313,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			clear(BlotterFilter.CATEGORY_LEFT, category);
 			break;
 		case R.id.project: {
-			ArrayList<Project> projects = em.getAllProjectsList(false);
+			ArrayList<Project> projects = em.getActiveProjectsList(false);
 			ListAdapter adapter = TransactionUtils.createProjectAdapter(this, projects);
 			Criteria c = filter.get(BlotterFilter.PROJECT_ID);
 			long selectedId = c != null ? c.getLongValue1() : -1;

@@ -34,7 +34,7 @@ public class BudgetBlotterActivity extends BlotterActivity {
 	@Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
 		categories = MyEntity.asMap(db.getCategoriesList(true));
-		projects = MyEntity.asMap(em.getAllProjectsList(true));
+		projects = MyEntity.asMap(em.getActiveProjectsList(true));
 		super.internalOnCreate(savedInstanceState);
 		bFilter.setVisibility(View.GONE);
 	}

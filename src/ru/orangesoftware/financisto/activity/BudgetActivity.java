@@ -64,7 +64,7 @@ public class BudgetActivity extends AbstractActivity {
 		currencyAdapter = TransactionUtils.createCurrencyAdapter(this, currencyCursor);
 		
 		categories = db.getCategoriesList(true);
-		projects = em.getAllProjectsList(true);
+		projects = em.getActiveProjectsList(true);
 		
 		LinearLayout layout = (LinearLayout) findViewById(R.id.list);
 
@@ -321,7 +321,7 @@ public class BudgetActivity extends AbstractActivity {
                 categories = merge(categories, db.getCategoriesList(true));
 				break;
 			case NEW_PROJECT_REQUEST:
-                projects = merge(projects, em.getAllProjectsList(true));
+                projects = merge(projects, em.getActiveProjectsList(true));
 				break;
 			case RECUR_REQUEST:
                 String recur = data.getStringExtra(RecurActivity.EXTRA_RECUR);
