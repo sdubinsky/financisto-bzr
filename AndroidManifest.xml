@@ -157,7 +157,10 @@
 		
 		<activity android:name=".activity.BlotterFilterActivity" android:label="@string/filter"
 			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
-		
+
+        <activity android:name=".activity.ReportFilterActivity" android:label="@string/filter"
+                  android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
+
 		<activity android:name=".activity.CategoryActivity" android:label="@string/category"
 			android:configChanges="orientation|keyboardHidden"/>
 		

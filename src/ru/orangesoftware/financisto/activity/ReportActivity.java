@@ -49,6 +49,8 @@ import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLeve
 
 public class ReportActivity extends ListActivity implements RecreateCursorSupportedActivity {
 
+    protected static final int FILTER_REQUEST = 1;
+
 	private DatabaseAdapter db;
 	private ImageButton bFilter;
     private Report currentReport;
@@ -72,9 +74,9 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 		bFilter.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ReportActivity.this, DateFilterActivity.class);
+				Intent intent = new Intent(ReportActivity.this, ReportFilterActivity.class);
 				filter.toIntent(intent);
-				startActivityForResult(intent, 1);
+				startActivityForResult(intent, FILTER_REQUEST);
 			}
 		});
 
@@ -208,16 +210,15 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == 1) {
+		if (requestCode == FILTER_REQUEST) {
 			if (resultCode == RESULT_FIRST_USER) {
-				filter.clearDateTime();
+				filter.clear();
                 saveFilter();
-				selectReport();
+                selectReport();
 			} else if (resultCode == RESULT_OK) {
-				DateTimeCriteria c = WhereFilter.dateTimeFromIntent(data);
-				filter.put(c);
+                filter = WhereFilter.fromIntent(data);
                 saveFilter();
-				selectReport();
+                selectReport();
 			}
 		}
 	}
