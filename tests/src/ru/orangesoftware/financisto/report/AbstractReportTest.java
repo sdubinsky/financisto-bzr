@@ -46,6 +46,11 @@ public abstract class AbstractReportTest extends AbstractDbTest {
     protected abstract Report createReport();
 
     List<GraphUnit> assertReportReturnsData() {
+        return assertReportReturnsData(IncomeExpense.BOTH);
+    }
+
+    List<GraphUnit> assertReportReturnsData(IncomeExpense incomeExpense) {
+        report.setIncomeExpense(incomeExpense);
         ReportData data = report.getReport(db, filter);
         assertNotNull(data);
         List<GraphUnit> units = data.units;

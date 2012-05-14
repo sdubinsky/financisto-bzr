@@ -31,12 +31,12 @@ import java.util.List;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_SUB_CATEGORY;
 
-public class SubCategoryReport extends AbstractReport {
+public class SubCategoryReport extends Report {
 	
     private final GraphStyle[] styles = new GraphStyle[3];
 
 	public SubCategoryReport(Context context, Currency currency) {
-		super(context, currency);
+		super(ReportType.BY_CATEGORY, context, currency);
         createStyles(context);
 	}
 
@@ -96,7 +96,7 @@ public class SubCategoryReport extends AbstractReport {
 			}
 		}
         for (GraphUnitTree root : roots) {
-            root.flatten();
+            root.flatten(incomeExpense);
         }
 		Collections.sort(roots);
 		return roots;
@@ -160,11 +160,11 @@ public class SubCategoryReport extends AbstractReport {
 		}
 
         @Override
-        public void flatten() {
-            super.flatten();
+        public void flatten(IncomeExpense incomeExpense) {
+            super.flatten(incomeExpense);
             if (children != null) {
                 for (GraphUnitTree child : children) {
-                    child.flatten();
+                    child.flatten(incomeExpense);
                 }
                 Collections.sort(children);
             }

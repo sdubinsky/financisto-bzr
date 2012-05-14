@@ -1,5 +1,7 @@
 package ru.orangesoftware.financisto.graph;
 
+import ru.orangesoftware.financisto.report.IncomeExpense;
+
 import java.math.BigDecimal;
 
 /**
@@ -28,4 +30,18 @@ public class IncomeExpenseAmount {
         return income.longValue()+expense.longValue();
     }
 
+    public void filter(IncomeExpense incomeExpense) {
+        switch (incomeExpense) {
+            case INCOME:
+                expense = BigDecimal.ZERO;
+                break;
+            case EXPENSE:
+                income = BigDecimal.ZERO;
+                break;
+            case SUMMARY:
+                income = income.add(expense);
+                expense = BigDecimal.ZERO;
+                break;
+        }
+    }
 }

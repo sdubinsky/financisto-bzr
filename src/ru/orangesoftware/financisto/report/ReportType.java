@@ -24,16 +24,10 @@ public enum ReportType {
 		}
 	},
 	BY_CATEGORY(R.string.report_by_category, R.string.report_by_category_summary, R.drawable.report_icon_default){
-		@Override
-		public Report createReport(Context context, Currency currency) {
-			return new CategoryReportAll(context, currency);
-		}
-	},
-	BY_CATEGORY_TOP_DOWN(R.string.report_by_sub_category, R.string.report_by_sub_category_summary, R.drawable.report_icon_default){
-		@Override
-		public Report createReport(Context context, Currency currency) {
-			return new CategoryReportTopDown(context, currency);
-		}
+        @Override
+        public Report createReport(Context context, Currency currency) {
+            return new CategoryReport(context, currency);
+        }
 	},
 	BY_SUB_CATEGORY(R.string.report_by_category, R.string.report_by_category_summary, R.drawable.report_icon_default){
 		@Override

@@ -144,7 +144,7 @@
 	<string name="overall">Overall</string>
 	<string name="report_by_period">By Period</string>
 	<string name="report_by_period_summary">Transactions report by period</string>
-	<string name="report_by_category">By Category (All)</string>
+	<string name="report_by_category">By Category</string>
 	<string name="report_by_category_summary">Transactions report by category</string>
 	<string name="report_by_location">By Location</string>
 	<string name="report_by_location_summary">Transactions report by location</string>
@@ -543,8 +543,6 @@
 	<string name="enable_widget_summary">Show account total on the widget</string>		
 	<string name="attach_picture">Attach picture</string>		
 	<string name="new_picture">Take a picture</string>		
-	<string name="report_by_sub_category">By Category (Top-down)</string>
-	<string name="report_by_sub_category_summary">Transactions report by sub-category</string>
 
 	<string name="credits">Credits</string>
 	<string name="sort_by_title">Sort by title</string>
@@ -757,5 +755,11 @@
     <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
     <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
 
-    <string name="isActive">Is active</string>
+    <string name="is_active">Is active</string>
+
+    <string name="report_income_expense_both">Income/Expenses</string>
+    <string name="report_income_expense_income">Income</string>
+    <string name="report_income_expense_expense">Expenses</string>
+    <string name="report_income_expense_summary">Summary</string>
+
 </resources>

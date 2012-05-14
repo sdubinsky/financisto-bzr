@@ -33,7 +33,6 @@ public class ReportsListActivity extends ListActivity {
 	public final ReportType[] reports = new ReportType[]{
 			ReportType.BY_PERIOD,
 			ReportType.BY_CATEGORY,
-			ReportType.BY_CATEGORY_TOP_DOWN,
             ReportType.BY_PAYEE,
 			ReportType.BY_LOCATION,
 			ReportType.BY_PROJECT,

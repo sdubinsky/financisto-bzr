@@ -27,16 +27,16 @@ import java.util.ArrayList;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_PERIOD;
 import static ru.orangesoftware.financisto.utils.DateUtils.*;
 
-public class PeriodReport extends AbstractReport {
+public class PeriodReport extends Report {
 	
 	private final Period[] periods = new Period[]{
 			today(), yesterday(), thisWeek(), lastWeek(), thisMonth(), lastMonth()
 	};	
     
     private Period currentPeriod;
-	
+
 	public PeriodReport(Context context, Currency currency) {
-		super(context, currency);
+		super(ReportType.BY_PERIOD, context, currency);
 	}
 
 	@Override

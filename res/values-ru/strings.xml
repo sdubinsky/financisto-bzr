@@ -714,5 +714,5 @@
     <item>10 минут</item>
     <item>15 минут</item>
   </string-array>
-  <string name="isActive">Активный</string>
+  <string name="is_active">Активный</string>
 </resources>

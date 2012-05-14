@@ -32,11 +32,11 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ReportAdapter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
-import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Total;
+import ru.orangesoftware.financisto.report.IncomeExpense;
 import ru.orangesoftware.financisto.report.PeriodReport;
 import ru.orangesoftware.financisto.report.Report;
 import ru.orangesoftware.financisto.report.ReportData;
@@ -51,13 +51,18 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
     protected static final int FILTER_REQUEST = 1;
 
+    private static final String FILTER_INCOME_EXPENSE = "FILTER_INCOME_EXPENSE";
+    
 	private DatabaseAdapter db;
 	private ImageButton bFilter;
+    private ImageButton bToggle;
     private Report currentReport;
     private ReportAsyncTask reportTask;
 	
 	private WhereFilter filter = WhereFilter.empty();
     private boolean saveFilter = false;
+    
+    private IncomeExpense incomeExpenseState = IncomeExpense.BOTH;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +70,9 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.report);
 
-        applyAnimationToListView();
-
         db = new DatabaseAdapter(this);
 		db.open();
-		
+
 		bFilter = (ImageButton)findViewById(R.id.bFilter);
 		bFilter.setOnClickListener(new OnClickListener(){
 			@Override
@@ -79,6 +82,14 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 				startActivityForResult(intent, FILTER_REQUEST);
 			}
 		});
+
+        bToggle = (ImageButton)findViewById(R.id.bToggle);
+        bToggle.setOnClickListener(new OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                toggleIncomeExpense();
+            }
+        });
 
         ImageButton bPieChart = (ImageButton) findViewById(R.id.bPieChart);
         if (isSupportedApiLevel()) {
@@ -94,18 +105,38 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
 		Intent intent = getIntent();
 		if (intent != null) {
+            currentReport = ReportsListActivity.createReport(this, db.em(), intent.getExtras());
 			filter = WhereFilter.fromIntent(intent);
             if (filter.isEmpty()) {
-                filter = WhereFilter.fromSharedPreferences(getPreferences(0));
-                saveFilter = true;
+                loadFilter();
             }
-			currentReport = ReportsListActivity.createReport(this, db.em(), intent.getExtras());
 			selectReport();
 		}
 
         applyFilter();
+        applyIncomeExpense();
         showOrRemoveTotals();
 	}
+
+    private SharedPreferences getPreferencesForReport() {
+        return getSharedPreferences("ReportActivity_"+currentReport.reportType.name()+"_DEFAULT", 0);
+    }
+
+    private void toggleIncomeExpense() {
+        IncomeExpense[] values = IncomeExpense.values();
+        int nextIndex = incomeExpenseState.ordinal() + 1;
+        incomeExpenseState = nextIndex < values.length ? values[nextIndex] : values[0];
+        applyIncomeExpense();
+        saveFilter();
+        selectReport();
+    }
+
+    private void applyIncomeExpense() {
+        String reportTitle = getString(currentReport.reportType.titleId);
+        String incomeExpenseTitle = getString(incomeExpenseState.getTitleId());
+        setTitle(reportTitle+" ("+incomeExpenseTitle+")");
+        bToggle.setImageDrawable(getResources().getDrawable(incomeExpenseState.getIconId()));
+    }
 
     private void showPieChart() {
         new PieChartGeneratorTask().execute();
@@ -122,7 +153,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 		super.onResume();
 		PinProtection.unlock(this);
 	}
-	
+
     private void showOrRemoveTotals() {
         if (!currentReport.shouldDisplayTotal()) {
             findViewById(R.id.total).setVisibility(View.GONE);
@@ -158,7 +189,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
 	private void selectReport() {
         cancelCurrentReportTask();
-        reportTask = new ReportAsyncTask();
+        reportTask = new ReportAsyncTask(currentReport, incomeExpenseState);
         reportTask.execute();
 	}
 
@@ -225,10 +256,20 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
     private void saveFilter() {
         if (saveFilter) {
-            SharedPreferences preferences = getPreferences(0);
+            SharedPreferences preferences = getPreferencesForReport();
             filter.toSharedPreferences(preferences);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(FILTER_INCOME_EXPENSE, incomeExpenseState.name());
+            editor.commit();
         }
         applyFilter();
+    }
+
+    private void loadFilter() {
+        SharedPreferences preferences = getPreferencesForReport();
+        filter = WhereFilter.fromSharedPreferences(preferences);
+        incomeExpenseState = IncomeExpense.valueOf(preferences.getString(FILTER_INCOME_EXPENSE, IncomeExpense.BOTH.name()));
+        saveFilter = true;
     }
 
     private void displayTotal(Total total) {
@@ -241,6 +282,14 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
     private class ReportAsyncTask extends AsyncTask<Void, Void, ReportData> {
 
+        private final Report report;
+        private final IncomeExpense incomeExpense;
+
+        private ReportAsyncTask(Report report, IncomeExpense incomeExpense) {
+            this.report = report;
+            this.incomeExpense = incomeExpense;
+        }
+
         @Override
         protected void onPreExecute() {
             setProgressBarIndeterminateVisibility(true);
@@ -249,7 +298,8 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
         @Override
         protected ReportData doInBackground(Void...voids) {
-            return currentReport.getReport(db, WhereFilter.copyOf(filter));
+            report.setIncomeExpense(incomeExpense);
+            return report.getReport(db, WhereFilter.copyOf(filter));
         }
 
         @Override
@@ -259,6 +309,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
             ((TextView) findViewById(android.R.id.empty)).setText(R.string.empty_report);
             ReportAdapter adapter = new ReportAdapter(ReportActivity.this, data.units);
             setListAdapter(adapter);
+            applyAnimationToListView();
         }
 
     }

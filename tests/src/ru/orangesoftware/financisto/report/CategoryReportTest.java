@@ -11,7 +11,7 @@ import java.util.List;
  * User: Denis Solonenko
  * Date: 7/6/11 11:15 PM
  */
-public class CategoryReportTopDownTest extends AbstractReportTest {
+public class CategoryReportTest extends AbstractReportTest {
 
     public void test_should_calculate_correct_report() {
         // A -3400
@@ -38,7 +38,7 @@ public class CategoryReportTopDownTest extends AbstractReportTest {
 
     @Override
     protected Report createReport() {
-        return new CategoryReportTopDown(getContext(), c1);
+        return new CategoryReport(getContext(), c1);
     }
 
 }

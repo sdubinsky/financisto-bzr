@@ -23,10 +23,10 @@ import ru.orangesoftware.financisto.model.Currency;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_CATEGORY;
 
-public class CategoryReportTopDown extends AbstractReport {
+public class CategoryReport extends Report {
 	
-	public CategoryReportTopDown(Context context, Currency currency) {
-		super(context, currency);
+	public CategoryReport(Context context, Currency currency) {
+		super(ReportType.BY_CATEGORY, context, currency);
 	}
 
 	@Override

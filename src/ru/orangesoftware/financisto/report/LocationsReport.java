@@ -12,21 +12,18 @@ package ru.orangesoftware.financisto.report;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_LOCATIONS;
 
-import java.util.ArrayList;
-
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.graph.GraphUnit;
 import android.content.Context;
 import ru.orangesoftware.financisto.model.Currency;
 
-public class LocationsReport extends AbstractReport {
+public class LocationsReport extends Report {
 
 	public LocationsReport(Context context, Currency currency) {
-		super(context, currency);
+		super(ReportType.BY_LOCATION, context, currency);
 	}
 
 	@Override

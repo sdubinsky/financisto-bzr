@@ -19,10 +19,10 @@ import ru.orangesoftware.financisto.model.Currency;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_PROJECTS;
 
-public class ProjectsReport extends AbstractReport {
+public class ProjectsReport extends Report {
 
 	public ProjectsReport(Context context, Currency currency) {
-		super(context, currency);
+		super(ReportType.BY_PROJECT, context, currency);
 	}
 
 	@Override

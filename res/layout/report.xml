@@ -11,7 +11,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:layout_width="fill_parent"
 	android:orientation="vertical">
-	<TextView android:layout_width="fill_parent" android:id="@+id/period" 
+	<TextView android:layout_width="fill_parent" android:id="@+id/period"
 				android:layout_height="wrap_content" android:text="@string/no_filter"
 				android:gravity="center_horizontal" android:layout_marginBottom="5dp" android:ellipsize="marquee" android:singleLine="true"/>
 	<ListView android:id="@android:id/list" android:layout_width="fill_parent"
@@ -26,6 +26,8 @@
 		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/bFilter"
 			android:src="@drawable/ic_menu_filter_off"/>
+        <ImageButton android:layout_width="wrap_content"
+                     android:layout_height="wrap_content" android:id="@+id/bToggle"/>
         <ImageButton android:layout_width="wrap_content"
                      android:layout_height="wrap_content" android:id="@+id/bPieChart"
                      android:src="@drawable/ic_tab_budgets"/>

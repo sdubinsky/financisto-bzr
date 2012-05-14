@@ -107,6 +107,40 @@ public class PeriodReportTest extends AbstractReportTest {
         assertExpense(units.get(0), -4850);
     }
 
+    public void test_should_calculate_report_in_home_currency_with_transfers_with_selected_income_expense() {
+        //given
+        givenTransfersAreIncludedIntoReports();
+        RateBuilder.withDb(db).at(DateTime.today()).from(c2).to(c1).rate(0.1f).create();
+        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.today()).amount(-1000).create();
+        TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.today()).amount(-2500).create();
+        TransactionBuilder.withDb(db).account(a3).dateTime(DateTime.today()).amount(-1500).create();
+        TransferBuilder.withDb(db).fromAccount(a1).toAccount(a3).fromAmount(-1200).toAmount(250).dateTime(DateTime.today()).create();
+        //when
+        report = createReport();
+        List<GraphUnit> units = assertReportReturnsData(IncomeExpense.BOTH);
+        //then
+        assertIncome(units.get(0), 1200);
+        assertExpense(units.get(0), -4850);
+        //when
+        report = createReport();
+        units = assertReportReturnsData(IncomeExpense.INCOME);
+        //then
+        assertIncome(units.get(0), 1200);
+        assertExpense(units.get(0), 0);
+        //when
+        report = createReport();
+        units = assertReportReturnsData(IncomeExpense.EXPENSE);
+        //then
+        assertIncome(units.get(0), 0);
+        assertExpense(units.get(0), -4850);
+        //when
+        report = createReport();
+        units = assertReportReturnsData(IncomeExpense.SUMMARY);
+        //then
+        assertIncome(units.get(0), -3650);
+        assertExpense(units.get(0), 0);
+    }
+
     private void givenTransfersAreExcludedFromReports() {
         assertTrue(PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean("include_transfers_into_reports", false).commit());
     }

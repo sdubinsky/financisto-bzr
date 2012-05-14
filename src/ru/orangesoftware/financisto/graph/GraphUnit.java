@@ -15,6 +15,7 @@ import java.util.*;
 
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.TotalError;
+import ru.orangesoftware.financisto.report.IncomeExpense;
 
 public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
 
@@ -26,7 +27,7 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
     private final IncomeExpenseAmount incomeExpenseAmount = new IncomeExpenseAmount();
     private final List<Amount> amounts = new LinkedList<Amount>();
 
-    private long maxAmount;
+    public long maxAmount;
     public TotalError error;
 	
 	public GraphUnit(long id, String name, Currency currency, GraphStyle style) {
@@ -44,8 +45,9 @@ public class GraphUnit implements Comparable<GraphUnit>, Iterable<Amount> {
         return incomeExpenseAmount;
     }
 
-    public void flatten() {
+    public void flatten(IncomeExpense incomeExpense) {
         if (amounts.isEmpty()) {
+            incomeExpenseAmount.filter(incomeExpense);
             long income = incomeExpenseAmount.income.longValue();
             long expense = incomeExpenseAmount.expense.longValue();
             addToAmounts(income);

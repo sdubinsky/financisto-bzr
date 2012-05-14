@@ -18,7 +18,7 @@ public class SubCategoryReportTest extends AbstractReportTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        CategoryReportTopDown r = new CategoryReportTopDown(getContext(), c1);
+        CategoryReport r = new CategoryReport(getContext(), c1);
         filter = r.createFilterForSubCategory(db, WhereFilter.empty(), categories.get("A").id);
     }
 
