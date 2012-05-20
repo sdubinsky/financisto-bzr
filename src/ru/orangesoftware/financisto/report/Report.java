@@ -63,6 +63,10 @@ public abstract class Report {
 
     public abstract ReportData getReport(DatabaseAdapter db, WhereFilter filter);
 
+    public ReportData getReportForChart(DatabaseAdapter db, WhereFilter filter) {
+        return getReport(db, filter);
+    }
+
 	protected ReportData queryReport(DatabaseAdapter db, String table, WhereFilter filter) {
 		filterTransfers(filter);
 		Cursor c = db.db().query(table, DatabaseHelper.ReportColumns.NORMAL_PROJECTION,

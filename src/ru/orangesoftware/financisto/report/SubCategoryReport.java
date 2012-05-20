@@ -27,6 +27,7 @@ import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_SUB_CATEGORY;
@@ -69,7 +70,7 @@ public class SubCategoryReport extends Report {
                 }
             });
 
-            ArrayList<GraphUnitTree> roots = createTree(db.em(), amounts, 0);
+            ArrayList<GraphUnitTree> roots = createTree(amounts, 0);
             ArrayList<GraphUnit> units = new ArrayList<GraphUnit>();
             flattenTree(roots, units);
             Total total = calculateTotal(roots);
@@ -78,8 +79,18 @@ public class SubCategoryReport extends Report {
             c.close();
         }
 	}
-	
-	private ArrayList<GraphUnitTree> createTree(MyEntityManager em, CategoryTree<CategoryAmount> amounts, int level) {
+
+    @Override
+    public ReportData getReportForChart(DatabaseAdapter db, WhereFilter filter) {
+        ReportData data = super.getReportForChart(db, filter);
+        if (data.units.size() > 1) {
+            //remove first unit which is parent category
+            data.units.remove(0);
+        }
+        return data;
+    }
+
+    private ArrayList<GraphUnitTree> createTree(CategoryTree<CategoryAmount> amounts, int level) {
 		ArrayList<GraphUnitTree> roots = new ArrayList<GraphUnitTree>();
 		GraphUnitTree u = null;
 		long lastId = -1;
@@ -91,12 +102,17 @@ public class SubCategoryReport extends Report {
 			}
 			u.addAmount(a.amount, skipTransfers && a.isTransfer != 0);
 			if (a.hasChildren()) {
-				u.setChildren(createTree(em, a.children, level+1));
+				u.setChildren(createTree(a.children, level+1));
 				u = null;				
 			}
 		}
-        for (GraphUnitTree root : roots) {
+        Iterator<GraphUnitTree> i = roots.iterator();
+        while (i.hasNext()) {
+            GraphUnitTree root = i.next();
             root.flatten(incomeExpense);
+            if (root.size() == 0) {
+                i.remove();
+            }
         }
 		Collections.sort(roots);
 		return roots;

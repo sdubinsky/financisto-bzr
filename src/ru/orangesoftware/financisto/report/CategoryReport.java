@@ -42,6 +42,7 @@ public class CategoryReport extends Report {
 		Intent intent = new Intent(context, ReportActivity.class);
 		filter.toIntent(intent);
 		intent.putExtra(ReportsListActivity.EXTRA_REPORT_TYPE, ReportType.BY_SUB_CATEGORY.name());
+        intent.putExtra(ReportActivity.FILTER_INCOME_EXPENSE, incomeExpense.name());
 		return intent;
 	}
 

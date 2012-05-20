@@ -51,7 +51,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 
     protected static final int FILTER_REQUEST = 1;
 
-    private static final String FILTER_INCOME_EXPENSE = "FILTER_INCOME_EXPENSE";
+    public static final String FILTER_INCOME_EXPENSE = "FILTER_INCOME_EXPENSE";
     
 	private DatabaseAdapter db;
 	private ImageButton bFilter;
@@ -107,6 +107,9 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 		if (intent != null) {
             currentReport = ReportsListActivity.createReport(this, db.em(), intent.getExtras());
 			filter = WhereFilter.fromIntent(intent);
+            if (intent.hasExtra(FILTER_INCOME_EXPENSE)) {
+                incomeExpenseState = IncomeExpense.valueOf(intent.getStringExtra(FILTER_INCOME_EXPENSE));
+            }
             if (filter.isEmpty()) {
                 loadFilter();
             }
@@ -331,7 +334,7 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
             renderer.setLabelsTextSize(getResources().getDimension(R.dimen.report_labels_text_size));
             renderer.setLegendTextSize(getResources().getDimension(R.dimen.report_legend_text_size));
             renderer.setMargins(new int[] { 0, 0, 0, 0 });
-            ReportData report = currentReport.getReport(db, WhereFilter.copyOf(filter));
+            ReportData report = currentReport.getReportForChart(db, WhereFilter.copyOf(filter));
             CategorySeries series = new CategorySeries("AAA");
             long total = Math.abs(report.total.amount)+Math.abs(report.total.balance);
             int[] colors = generateColors(2*report.units.size());
