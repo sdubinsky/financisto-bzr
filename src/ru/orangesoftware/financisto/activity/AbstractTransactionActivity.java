@@ -164,8 +164,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		categoryAdapter = TransactionUtils.createCategoryAdapter(db, this, categoryCursor);
 
 		if (isShowProject) {
-			projects = em.getActiveProjectsList(true);
-			projectAdapter = TransactionUtils.createProjectAdapter(this, projects);
+            fetchProjects();
 		}
 
 		if (isShowLocation) {
@@ -324,6 +323,11 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		long t1 = System.currentTimeMillis();
 		Log.i("TransactionActivity", "onCreate "+(t1-t0)+"ms");
 	}
+
+    private void fetchProjects() {
+        projects = em.getActiveProjectsList(true);
+        projectAdapter = TransactionUtils.createProjectAdapter(this, projects);
+    }
 
     protected abstract Cursor fetchCategories();
 
@@ -775,10 +779,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
                     selectCategory(categoryId);
                     break;
                 }
-				case NEW_PROJECT_REQUEST:					
-					projects = em.getActiveProjectsList(true);
-					long projectId = data.getLongExtra(EntityColumns.ID, -1);
-					if (projectId != -1) {
+				case NEW_PROJECT_REQUEST:
+                    fetchProjects();
+                    long projectId = data.getLongExtra(EntityColumns.ID, -1);
+                    if (projectId != -1) {
 						selectProject(projectId);
 					}
 					break;
