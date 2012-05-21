@@ -55,6 +55,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	public static final String ACCOUNT_ID_EXTRA = "accountId";
 	public static final String DUPLICATE_EXTRA = "isDuplicate";
 	public static final String TEMPLATE_EXTRA = "isTemplate";
+    public static final String DATETIME_EXTRA = "dateTimeExtra";
 
 	private static final int NEW_CATEGORY_REQUEST = 4000;
 	private static final int NEW_PROJECT_REQUEST = 4001;
@@ -179,6 +180,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		if (intent != null) {
 			accountId = intent.getLongExtra(ACCOUNT_ID_EXTRA, -1);
 			transactionId = intent.getLongExtra(TRAN_ID_EXTRA, -1);
+            transaction.dateTime = intent.getLongExtra(DATETIME_EXTRA, System.currentTimeMillis());
 			if (transactionId != -1) {
 				transaction = db.getTransaction(transactionId);
 				isDuplicate = intent.getBooleanExtra(DUPLICATE_EXTRA, false);
@@ -288,6 +290,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
                     finish();
                 } else {
                     if (saveAndFinish()) {
+                        intent.putExtra(DATETIME_EXTRA, transaction.dateTime);
                         startActivityForResult(intent, -1);
                     }
                 }
@@ -297,6 +300,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		if (transactionId != -1) {
 			editTransaction(transaction);
 		} else {
+            setDateTime(transaction.dateTime);
             selectCategory(0);
             if (accountId != -1) {
                 selectAccount(accountId);
@@ -315,7 +319,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			if (transaction.isScheduled()) {
 				selectStatus(TransactionStatus.PN);
 			}
-		}		
+		}
 		
 		long t1 = System.currentTimeMillis();
 		Log.i("TransactionActivity", "onCreate "+(t1-t0)+"ms");
