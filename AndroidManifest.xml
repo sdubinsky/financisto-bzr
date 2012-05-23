@@ -10,7 +10,7 @@
       Denis Solonenko - initial API and implementation
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="ru.orangesoftware.financisto" android:versionName="1.5.8u2" android:versionCode="71"
+	package="ru.orangesoftware.financisto" android:versionName="1.5.8u2" android:versionCode="72"
     android:installLocation="auto">
 	<application
             android:theme="@style/Theme.GreenDroid"
