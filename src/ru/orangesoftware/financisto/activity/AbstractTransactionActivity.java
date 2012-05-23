@@ -421,12 +421,20 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private void connectGps(boolean forceUseGps) {
 		if (locationManager != null) {
 			boolean useGps = forceUseGps || MyPreferences.isUseGps(this);
-        	if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {	    	        
-    	        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, networkLocationListener);	        	    	        
-        	}
-        	if (useGps && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-        		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, gpsLocationListener);
-        	}
+            try {
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {	    	        
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, networkLocationListener);	        	    	        
+                }
+            } catch (Exception e) {
+                Log.e("Financisto", "Unable to connect network provider");
+            }
+            try {
+                if (useGps && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, gpsLocationListener);
+                }
+            } catch (Exception e) {
+                Log.e("Financisto", "Unable to connect gps provider");
+            }
 		}
 	}
 

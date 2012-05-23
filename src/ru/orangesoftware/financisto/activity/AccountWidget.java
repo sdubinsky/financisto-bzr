@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.activity;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.*;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -86,25 +87,28 @@ public class AccountWidget extends AppWidgetProvider {
     private static void updateWidgets(Context context, AppWidgetManager manager, int[] appWidgetIds, boolean nextAccount) {
         Log.d("FinancistoWidget", "updateWidgets " + Arrays.toString(appWidgetIds) + " -> " + nextAccount);
         for (int id : appWidgetIds) {
-            int layoutId = manager.getAppWidgetInfo(id).initialLayout;
-            if (MyPreferences.isWidgetEnabled(context)) {
-                long accountId = loadAccountForWidget(context, id);
-                Class providerClass = getProviderClass(manager, id);
-                Log.d("FinancistoWidget", "using provider " + providerClass);
-                RemoteViews remoteViews = nextAccount || accountId == -1
-                        ? buildUpdateForNextAccount(context, id, layoutId, providerClass, accountId)
-                        : buildUpdateForCurrentAccount(context, id, layoutId, providerClass, accountId);
-                manager.updateAppWidget(id, remoteViews);
-            } else {
-                manager.updateAppWidget(id, noDataUpdate(context, layoutId));
+            AppWidgetProviderInfo appWidgetInfo = manager.getAppWidgetInfo(id);
+            if (appWidgetInfo != null) {
+                int layoutId = appWidgetInfo.initialLayout;
+                if (MyPreferences.isWidgetEnabled(context)) {
+                    long accountId = loadAccountForWidget(context, id);
+                    Class providerClass = getProviderClass(appWidgetInfo);
+                    Log.d("FinancistoWidget", "using provider " + providerClass);
+                    RemoteViews remoteViews = nextAccount || accountId == -1
+                            ? buildUpdateForNextAccount(context, id, layoutId, providerClass, accountId)
+                            : buildUpdateForCurrentAccount(context, id, layoutId, providerClass, accountId);
+                    manager.updateAppWidget(id, remoteViews);
+                } else {
+                    manager.updateAppWidget(id, noDataUpdate(context, layoutId));
+                }
             }
         }
     }
 
-    private static Class getProviderClass(AppWidgetManager manager, int id) {
+    private static Class getProviderClass(AppWidgetProviderInfo appWidgetInfo) {
         Class widgetProviderClass = AccountWidget.class;
         try {
-            widgetProviderClass = Class.forName(manager.getAppWidgetInfo(id).provider.getClassName());
+            widgetProviderClass = Class.forName(appWidgetInfo.provider.getClassName());
         } catch (ClassNotFoundException e) { }
         return widgetProviderClass;
     }

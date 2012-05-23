@@ -8,6 +8,7 @@ select
        t.to_account_currency_id as to_account_currency_id,
        t.to_amount as to_amount,
        t.is_transfer as is_transfer,
+       t.from_account_id as from_account_id,
        t.to_account_id as to_account_id,
        t.category_id as category_id,
        t.category_left as category_left,
@@ -18,4 +19,4 @@ select
        t.status as status
 from v_blotter_for_account_with_splits t
 where t.category_id != -1 and from_account_is_include_into_totals=1;
-	
+

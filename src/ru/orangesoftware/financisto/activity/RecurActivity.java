@@ -394,7 +394,7 @@ public class RecurActivity extends Activity {
 
 	protected View selectInterval(RecurInterval interval) {
 		if (interval == RecurInterval.NO_RECUR) {
-			selectPeriod(RecurPeriod.STOPS_ON_DATE);
+            sPeriod.setSelection(RecurPeriod.STOPS_ON_DATE.ordinal());
 			sPeriod.setEnabled(false);
 		} else {
 			sPeriod.setEnabled(true);

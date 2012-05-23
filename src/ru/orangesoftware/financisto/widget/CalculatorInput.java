@@ -96,8 +96,11 @@ public class CalculatorInput extends Activity implements OnClickListener {
     }
 
     private void setDisplay(String s) {
-        result = s;
-        tvResult.setText(s);
+        if (Utils.isNotEmpty(s)) {
+            s = s.replaceAll(",", ".");
+            result = s;
+            tvResult.setText(s);
+        }
     }
 
     private void onButtonClick(char c) {

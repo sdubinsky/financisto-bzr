@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -94,9 +93,9 @@ public class QuickActionGrid extends QuickActionWidget {
     @Override
     protected void onMeasureAndLayout(Rect anchorRect, View contentView) {
 
-        contentView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        contentView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.WRAP_CONTENT, GridView.LayoutParams.WRAP_CONTENT));
         contentView.measure(MeasureSpec.makeMeasureSpec(getScreenWidth(), MeasureSpec.EXACTLY),
-                LayoutParams.WRAP_CONTENT);
+                GridView.LayoutParams.WRAP_CONTENT);
 
         int rootHeight = contentView.getMeasuredHeight();
 

@@ -79,7 +79,7 @@ public class RateNode {
             public void onClick(View v) {
                 Activity activity = owner.getActivity();
                 Intent intent = new Intent(activity, CalculatorInput.class);
-                intent.putExtra(AmountInput.EXTRA_AMOUNT, Utils.text(rate));
+                intent.putExtra(AmountInput.EXTRA_AMOUNT, String.valueOf(getRate()));
                 activity.startActivityForResult(intent, EDIT_RATE);
             }
         });

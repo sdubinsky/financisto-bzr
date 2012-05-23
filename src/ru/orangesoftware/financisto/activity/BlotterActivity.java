@@ -70,7 +70,7 @@ public class BlotterActivity extends AbstractListActivity {
 	private TotalCalculationTask calculationTask;
 
 	protected boolean saveFilter;
-	protected WhereFilter blotterFilter;
+	protected WhereFilter blotterFilter = WhereFilter.empty();
 	private boolean filterAccounts = false;
     private boolean isAccountBlotter = false;
 
