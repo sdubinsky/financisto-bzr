@@ -17,11 +17,11 @@ public abstract class Report2DChart {
 	public static final String REPORT_TYPE = "report_type";
 
 	// position in ReportListActivity array
-	public static final int REPORT_ACCOUNT_BY_PERIOD = 6;
-	public static final int REPORT_CATEGORY_BY_PERIOD = 7;
-    public static final int REPORT_PAYEE_BY_PERIOD = 8;
-	public static final int REPORT_LOCATION_BY_PERIOD = 9;
-	public static final int REPORT_PROJECT_BY_PERIOD = 10;
+	public static final int REPORT_ACCOUNT_BY_PERIOD = 5;
+	public static final int REPORT_CATEGORY_BY_PERIOD = 6;
+    public static final int REPORT_PAYEE_BY_PERIOD = 7;
+	public static final int REPORT_LOCATION_BY_PERIOD = 8;
+	public static final int REPORT_PROJECT_BY_PERIOD = 9;
 	
 	protected int level = 0;
 	protected int chartWidth;
