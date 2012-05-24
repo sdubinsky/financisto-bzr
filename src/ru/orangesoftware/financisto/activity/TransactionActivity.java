@@ -218,13 +218,13 @@ public class TransactionActivity extends AbstractTransactionActivity {
 					u.setAmountText(differenceText, amountInput.getCurrency(), balanceDifference, true);
 				}
 			});
-            if (currentBalance >= 0) {
+            if (currentBalance > 0) {
                 amountInput.setIncome();
             } else {
                 amountInput.setExpense();
             }
 		} else {
-            if (currentBalance >= 0) {
+            if (currentBalance > 0) {
                 amountInput.setIncome();
             } else {
                 amountInput.setExpense();
