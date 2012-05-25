@@ -15,6 +15,7 @@ package ru.orangesoftware.financisto.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -365,12 +366,10 @@ public class MyPreferences {
 	}
 	
 	private static void switchLocale(Context context, Locale locale) {
-    	Resources res = context.getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        android.content.res.Configuration conf = res.getConfiguration();
-        conf.locale = locale;
-        Log.i("MyPreferences", "Switching locale to "+conf.locale.getDisplayName());
-        res.updateConfiguration(conf, dm);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        context.getApplicationContext().getResources().updateConfiguration(config, null);
+        Log.i("MyPreferences", "Switching locale to "+config.locale.getDisplayName());
 	}
 
     public static boolean isCameraSupported(Context context) {
