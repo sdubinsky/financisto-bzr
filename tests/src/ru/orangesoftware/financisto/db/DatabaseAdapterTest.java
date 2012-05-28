@@ -19,7 +19,6 @@ public class DatabaseAdapterTest extends AbstractDbTest {
     public void setUp() throws Exception {
         super.setUp();
         a1 = AccountBuilder.createDefault(db);
-        a2 = AccountBuilder.createDefault(db);
         categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
     }
 
@@ -106,6 +105,7 @@ public class DatabaseAdapterTest extends AbstractDbTest {
 
     public void test_should_return_id_of_the_nearest_transaction_which_is_older_than_specified_date() {
         //given
+        a2 = AccountBuilder.createDefault(db);
         Transaction t8 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 25).at(17, 30, 45, 0)).account(a2).amount(-234).create();
         Transaction t7 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 25).at(16, 30, 45, 0)).account(a1).amount(-234).create();
         Transaction t6 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 24).at(23, 59, 59, 999)).account(a1).amount(200).create();
@@ -127,6 +127,7 @@ public class DatabaseAdapterTest extends AbstractDbTest {
 
     public void test_should_delete_old_transactions() {
         //given
+        a2 = AccountBuilder.createDefault(db);
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 25).at(17, 30, 45, 0)).account(a2).amount(-234).create();
         TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 24).at(12, 30, 0, 0)).account(a1).amount(-100)
                 .withSplit(categoriesMap.get("A1"), -50)
