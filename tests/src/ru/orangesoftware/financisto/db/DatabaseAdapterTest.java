@@ -12,12 +12,14 @@ import java.util.Map;
 public class DatabaseAdapterTest extends AbstractDbTest {
 
     Account a1;
+    Account a2;
     Map<String, Category> categoriesMap;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         a1 = AccountBuilder.createDefault(db);
+        a2 = AccountBuilder.createDefault(db);
         categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
     }
 
@@ -101,7 +103,70 @@ public class DatabaseAdapterTest extends AbstractDbTest {
         assertEquals(Category.NO_CATEGORY_ID, list.get(0).id);
         assertEquals(categoriesMap.get("B").id, list.get(1).id);
     }
-    
+
+    public void test_should_return_id_of_the_nearest_transaction_which_is_older_than_specified_date() {
+        //given
+        Transaction t8 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 25).at(17, 30, 45, 0)).account(a2).amount(-234).create();
+        Transaction t7 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 25).at(16, 30, 45, 0)).account(a1).amount(-234).create();
+        Transaction t6 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 24).at(23, 59, 59, 999)).account(a1).amount(200).create();
+        Transaction t5 = TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2012, 5, 23).at(0, 0, 0, 45)).account(a1).amount(100).create();
+        Transaction t4 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 23).at(0, 0, 0, 45)).account(a1).amount(100).create();
+        Transaction t3 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 22).at(12, 0, 12, 345)).account(a1).amount(10).create();
+        Transaction t2 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 22).at(12, 0, 12, 345)).account(a1).amount(10).makeTemplate().create();
+        Transaction t1 = TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 21).at(0, 0, 0, 0)).account(a1).amount(-20).create();
+        //then
+        assertEquals(-1, db.findNearestOlderTransactionId(a1, DateTime.date(2012, 5, 20).asLong()));
+        assertEquals(t1.id, db.findNearestOlderTransactionId(a1, DateTime.date(2012, 5, 21).at(15, 30, 30, 456).asLong()));
+        assertEquals(t3.id, db.findNearestOlderTransactionId(a1, DateTime.date(2012, 5, 22).asLong()));
+        assertEquals(t4.id, db.findNearestOlderTransactionId(a1, DateTime.date(2012, 5, 23).asLong()));
+        assertEquals(t6.id, db.findNearestOlderTransactionId(a1, DateTime.date(2012, 5, 24).asLong()));
+        assertEquals(t7.id, db.findNearestOlderTransactionId(a1, DateTime.date(2012, 5, 25).asLong()));
+        assertEquals(t7.id, db.findNearestOlderTransactionId(a1, DateTime.date(2012, 5, 26).asLong()));
+        assertEquals(t8.id, db.findNearestOlderTransactionId(a2, DateTime.date(2012, 5, 26).asLong()));
+    }
+
+    public void test_should_delete_old_transactions() {
+        //given
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 25).at(17, 30, 45, 0)).account(a2).amount(-234).create();
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 24).at(12, 30, 0, 0)).account(a1).amount(-100)
+                .withSplit(categoriesMap.get("A1"), -50)
+                .withTransferSplit(a2, -50, 50)
+                .create();
+        TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2012, 5, 23).at(0, 0, 0, 45)).account(a1).amount(100).create();
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 23).at(23, 59, 59, 999)).account(a1).amount(10).create();
+        TransferBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 22).at(22, 0, 0, 0))
+                .fromAccount(a1).fromAmount(10)
+                .toAccount(a2).toAmount(10).create();
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 22).at(12, 0, 12, 345)).account(a1).amount(10).makeTemplate().create();
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 21).at(0, 0, 0, 0)).account(a1).amount(-20).create();
+        assertTransactionsCount(a1, 8);
+        assertTransactionsCount(a2, 1);
+        //then
+        db.deleteOldTransactions(a1, DateTime.date(2012, 5, 20).asLong());
+        assertTransactionsCount(a1, 8);
+        assertTransactionsCount(a2, 1);
+        //then
+        db.deleteOldTransactions(a1, DateTime.date(2012, 5, 21).asLong());
+        assertTransactionsCount(a1, 7);
+        assertTransactionsCount(a2, 1);
+        //then
+        db.deleteOldTransactions(a1, DateTime.date(2012, 5, 22).asLong());
+        assertTransactionsCount(a1, 6);
+        assertTransactionsCount(a2, 1);
+        //then
+        db.deleteOldTransactions(a1, DateTime.date(2012, 5, 23).asLong());
+        assertTransactionsCount(a1, 5);
+        assertTransactionsCount(a2, 1);
+        //then
+        db.deleteOldTransactions(a1, DateTime.date(2012, 5, 25).asLong());
+        assertTransactionsCount(a1, 2);
+        assertTransactionsCount(a2, 1);
+        //then
+        db.deleteOldTransactions(a2, DateTime.date(2012, 5, 25).asLong());
+        assertTransactionsCount(a1, 2);
+        assertTransactionsCount(a2, 0);
+    }
+
     private String fetchFirstPayee(String s) {
         Cursor c = em.getAllPayeesLike(s);
         try {

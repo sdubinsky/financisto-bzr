@@ -78,6 +78,11 @@ public class TransactionBuilder {
         return this;
     }
 
+    public TransactionBuilder makeTemplate() {
+        t.setAsTemplate();
+        return this;
+    }
+
     public TransactionBuilder scheduleOnce(DateTime dateTime) {
         t.dateTime = dateTime.asLong();
         t.setAsScheduled();
@@ -123,4 +128,5 @@ public class TransactionBuilder {
         t.id = db.insertOrUpdate(t);
         return t;
     }
+    
 }

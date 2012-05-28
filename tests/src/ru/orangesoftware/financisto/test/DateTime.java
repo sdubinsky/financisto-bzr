@@ -41,7 +41,7 @@ public class DateTime {
         dt.c.set(Calendar.YEAR, year);
         dt.c.set(Calendar.MONTH, month-1);
         dt.c.set(Calendar.DAY_OF_MONTH, day);
-        return dt;
+        return dt.atMidnight();
     }
 
     public static DateTime fromTimestamp(long timestamp) {

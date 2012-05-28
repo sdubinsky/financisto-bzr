@@ -38,33 +38,21 @@ public abstract class AbstractDbTest extends AndroidTestCase {
     }
 
     public void assertFinalBalanceForAccount(Account a, long expectedBalance) {
-        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
+        long balance = DatabaseUtils.rawFetchLong(db, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(a.id)});
-        try {
-            if (c.moveToFirst()) {
-                long balance = c.getLong(0);
-                assertEquals(expectedBalance, balance);
-            } else {
-                fail();
-            }
-        } finally {
-            c.close();
-        }
+        assertEquals(expectedBalance, balance);
     }
 
     public void assertAccountBalanceForTransaction(Transaction t, Account a, long expectedBalance) {
-        Cursor c = db.db().rawQuery("select balance from running_balance where account_id=? and transaction_id=?",
-                new String[]{String.valueOf(a.id), String.valueOf(t.id)});
-        try {
-            if (c.moveToFirst()) {
-                long balance = c.getLong(0);
-                assertEquals(expectedBalance, balance);
-            } else {
-                fail();
-            }
-        } finally {
-            c.close();
-        }
+        long balance = db.getAccountBalanceForTransaction(a, t);
+        assertEquals(expectedBalance, balance);
+    }
+
+    public void assertTransactionsCount(Account account, long expectedCount) {
+        long count = DatabaseUtils.rawFetchLong(db,
+                "select count(*) from transactions where from_account_id=?",
+                new String[]{String.valueOf(account.id)});
+        assertEquals("Transaction for account "+account.id, expectedCount, count);
     }
 
 }

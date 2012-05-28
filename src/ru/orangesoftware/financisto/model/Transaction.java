@@ -196,17 +196,22 @@ public class Transaction implements Serializable, Cloneable {
 	public boolean isTransfer() {
 		return toAccountId > 0;
 	}
-	
+
 	public boolean isTemplate() {
 		return isTemplate == 1;
 	}
-	
+
+    public void setAsTemplate() {
+        this.isTemplate = 1;
+    }
+
+    public boolean isScheduled() {
+		return isTemplate == 2;
+	}
+
     public void setAsScheduled() {
         this.isTemplate = 2;
     }
-	public boolean isScheduled() {
-		return isTemplate == 2;
-	}
 
 	public boolean isTemplateLike() {
 		return isTemplate > 0;
@@ -215,7 +220,7 @@ public class Transaction implements Serializable, Cloneable {
 	public boolean isNotTemplateLike() {
 		return isTemplate == 0;
 	}
-	
+
 	public boolean isCreditCardPayment() {
 		return isCCardPayment == 1;
 	}
@@ -227,7 +232,7 @@ public class Transaction implements Serializable, Cloneable {
     public boolean isSplitChild() {
         return parentId > 0;
     }
-	
+
 	public String getSystemAttribute(SystemAttribute sa) {
 		return systemAttributes != null ? systemAttributes.get(sa) : null;
 	}
@@ -249,5 +254,4 @@ public class Transaction implements Serializable, Cloneable {
         sb.append("TA(").append(toAccountId).append(")->").append(toAmount);
         return sb.toString();
     }
-
 }

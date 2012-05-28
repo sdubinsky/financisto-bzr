@@ -177,6 +177,12 @@ public class DateUtils {
         return startOfDay(c).getTimeInMillis();
     }
 
+    public static long atDayEnd(long date) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(date);
+        return endOfDay(c).getTimeInMillis();
+    }
+
 	public static Date atDateAtTime(long now, Calendar startDate) {
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(now);

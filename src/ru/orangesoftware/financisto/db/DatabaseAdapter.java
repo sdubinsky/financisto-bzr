@@ -1731,5 +1731,51 @@ public class DatabaseAdapter {
         }
     }
 
+    public void purgeAccountAtDate(Account account, long date) {
+        long nearestTransactionId = findNearestOlderTransactionId(account, date);
+        if (nearestTransactionId > 0) {
+            SQLiteDatabase db = db();
+            db.beginTransaction();
+            try {
+                Transaction newTransaction = createTransactionFromNearest(account, nearestTransactionId);
+                deleteOldTransactions(account, date);
+                insertWithoutUpdatingBalance(newTransaction);
+                db.execSQL(INSERT_RUNNING_BALANCE, new Object[]{account.id, newTransaction.id, newTransaction.dateTime, newTransaction.fromAmount});
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        }
+    }
+
+    private Transaction createTransactionFromNearest(Account account, long nearestTransactionId) {
+        Transaction nearestTransaction = em.get(Transaction.class, nearestTransactionId);
+        long balance = getAccountBalanceForTransaction(account, nearestTransaction);
+        Transaction newTransaction = new Transaction();
+        newTransaction.fromAccountId = account.id;
+        newTransaction.dateTime = DateUtils.atDayEnd(nearestTransaction.dateTime);
+        newTransaction.fromAmount = balance;
+        return newTransaction;
+    }
+
+    public void deleteOldTransactions(Account account, long date) {
+        SQLiteDatabase db = db();
+        db.delete("transactions", "from_account_id=? and datetime<=? and is_template=0",
+                new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))});
+        db.delete("running_balance", "account_id=? and datetime<=?",
+                new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))});
+    }
+
+    public long getAccountBalanceForTransaction(Account a, Transaction t) {
+        return DatabaseUtils.rawFetchLong(this, "select balance from running_balance where account_id=? and transaction_id=?",
+                new String[]{String.valueOf(a.id), String.valueOf(t.id)});
+    }
+
+    public long findNearestOlderTransactionId(Account account, long date) {
+        return DatabaseUtils.rawFetchLong(this,
+                "select _id from v_blotter where from_account_id=? and datetime<=? order by datetime desc limit 1",
+                new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))});
+    }
+
 }
 
