@@ -11,6 +11,7 @@ package ru.orangesoftware.financisto.export.qif;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MainActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -46,6 +47,7 @@ public class QifImportTask extends ImportExportAsyncTask {
             qifImport.importDatabase();
             return null;
         } catch (Exception e) {
+            Log.e("Financisto", "Qif import error", e);
             handler.sendEmptyMessage(R.string.qif_import_error);
             return e;
         }

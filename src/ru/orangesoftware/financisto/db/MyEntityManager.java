@@ -73,10 +73,11 @@ public class MyEntityManager extends EntityManager {
 
     private <T extends MyEntity> ArrayList<T> getAllEntitiesList(Class<T> clazz, boolean include0, boolean onlyActive) {
         Query<T> q = createQuery(clazz);
-        q.where(include0 ? Expressions.gte("id", 0) : Expressions.gt("id", 0));
-        if(onlyActive)
-        {
-            q.where(Expressions.eq("isActive",1));
+        Expression include0Ex = include0 ? Expressions.gte("id", 0) : Expressions.gt("id", 0);
+        if (onlyActive) {
+            q.where(Expressions.and(include0Ex, Expressions.eq("isActive",1)));
+        } else {
+            q.where(include0Ex);
         }
         q.asc("title");
         Cursor c = q.execute();
@@ -522,9 +523,8 @@ public class MyEntityManager extends EntityManager {
         return q.list();
     }
 
-    public void insertCategory(Category c) {
-        c.id = -1;
-        saveOrUpdate(c);
+    public void reInsertCategory(Category c) {
+        reInsert(c);
     }
 
     public Currency getHomeCurrency() {
@@ -536,4 +536,5 @@ public class MyEntityManager extends EntityManager {
         }
         return homeCurrency;
     }
+
 }

@@ -12,8 +12,8 @@ import android.util.Log;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.export.csv.CsvImport;
 import ru.orangesoftware.financisto.export.csv.CsvImportOptions;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.export.csv.CsvTransaction;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
@@ -21,8 +21,7 @@ import ru.orangesoftware.financisto.test.DateTime;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,9 +41,106 @@ public class CsvImportTest extends AbstractImportExportTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        categories = CategoryBuilder.createDefaultHierarchy(db);
         defaultOptions = createDefaultOptions();
         defaultAccountId = defaultOptions.selectedAccountId;
+    }
+
+    public void test_should_collect_all_categories_from_transactions() {
+        //given
+        csvImport = new CsvImport(db, defaultOptions);
+        List<CsvTransaction> transactions = new LinkedList<CsvTransaction>();
+        transactions.add(newCsvTransactionWithCategory(null, "A"));
+        transactions.add(newCsvTransactionWithCategory("", "A"));
+        transactions.add(newCsvTransactionWithCategory("A", "A1"));
+        transactions.add(newCsvTransactionWithCategory("A", "A2"));
+        transactions.add(newCsvTransactionWithCategory("A:A1", "AA1"));
+        transactions.add(newCsvTransactionWithCategory("B:B1", "BB1"));
+        transactions.add(newCsvTransactionWithCategory("B", "B2"));
+        //when
+        Set<CategoryInfo> categories = csvImport.collectCategories(transactions);
+        //then
+        assertEquals(asCategoryInfoSet("A", "A:A1", "A:A2", "A:A1:AA1", "B:B1:BB1", "B:B2"), categories);
+    }
+
+    public void test_should_insert_all_categories_from_transactions() {
+        //given
+        csvImport = new CsvImport(db, defaultOptions);
+        List<CsvTransaction> transactions = new LinkedList<CsvTransaction>();
+        transactions.add(newCsvTransactionWithCategory(null, null));
+        transactions.add(newCsvTransactionWithCategory("", ""));
+        transactions.add(newCsvTransactionWithCategory(null, "A"));
+        transactions.add(newCsvTransactionWithCategory("", "A"));
+        transactions.add(newCsvTransactionWithCategory("A", "A1"));
+        transactions.add(newCsvTransactionWithCategory("A", "A2"));
+        transactions.add(newCsvTransactionWithCategory("A", "A1"));
+        //when
+        Map<String, Category> categories = csvImport.collectAndInsertCategories(transactions);
+        //then
+        CategoryTree<Category> categoriesTree = db.getCategoriesTree(false);
+        assertEquals(1, categoriesTree.size());
+        assertEquals(3, categories.size());
+        //when
+        transactions = new LinkedList<CsvTransaction>();
+        transactions.add(newCsvTransactionWithCategory("B:B1", "BB1"));
+        transactions.add(newCsvTransactionWithCategory("A:A1", "AA1"));
+        categories = csvImport.collectAndInsertCategories(transactions);
+        //then
+        categoriesTree = db.getCategoriesTree(false);
+        assertEquals(2, categoriesTree.size());
+        assertEquals(7, categories.size());
+    }
+
+    public void test_should_insert_all_projects_from_transactions() {
+        //given
+        csvImport = new CsvImport(db, defaultOptions);
+        List<CsvTransaction> transactions = new LinkedList<CsvTransaction>();
+        transactions.add(newCsvTransactionWithProject(null));
+        transactions.add(newCsvTransactionWithProject(""));
+        transactions.add(newCsvTransactionWithProject("No project"));
+        transactions.add(newCsvTransactionWithProject("P1"));
+        transactions.add(newCsvTransactionWithProject("P1"));
+        transactions.add(newCsvTransactionWithProject("P2"));
+        //when
+        Map<String, Project> projects = csvImport.collectAndInsertProjects(transactions);
+        //then
+        List<Project> allProjects = em.getActiveProjectsList(false);
+        assertEquals(2, allProjects.size());
+        assertEquals(2, projects.size());
+        //when
+        transactions = new LinkedList<CsvTransaction>();
+        transactions.add(newCsvTransactionWithProject("P1"));
+        transactions.add(newCsvTransactionWithProject("P3"));
+        projects = csvImport.collectAndInsertProjects(transactions);
+        //then
+        allProjects = em.getActiveProjectsList(false);
+        assertEquals(3, allProjects.size());
+        assertEquals(3, projects.size());
+    }
+
+    public void test_should_insert_all_payees_from_transactions() {
+        //given
+        csvImport = new CsvImport(db, defaultOptions);
+        List<CsvTransaction> transactions = new LinkedList<CsvTransaction>();
+        transactions.add(newCsvTransactionWithPayee(null));
+        transactions.add(newCsvTransactionWithPayee(""));
+        transactions.add(newCsvTransactionWithPayee("Payee1"));
+        transactions.add(newCsvTransactionWithPayee("Payee1"));
+        transactions.add(newCsvTransactionWithPayee("Payee2"));
+        //when
+        Map<String, Payee> payees = csvImport.collectAndInsertPayees(transactions);
+        //then
+        ArrayList<Payee> allPayees = em.getAllPayeeList();
+        assertEquals(2, allPayees.size());
+        assertEquals(2, payees.size());
+        //when
+        transactions = new LinkedList<CsvTransaction>();
+        transactions.add(newCsvTransactionWithPayee("Payee1"));
+        transactions.add(newCsvTransactionWithPayee("Payee3"));
+        payees = csvImport.collectAndInsertPayees(transactions);
+        //then
+        allPayees = em.getAllPayeeList();
+        assertEquals(3, allPayees.size());
+        assertEquals(3, payees.size());
     }
 
     public void test_should_import_empty_file() throws Exception {
@@ -52,6 +148,7 @@ public class CsvImportTest extends AbstractImportExportTest {
     }
 
     public void test_should_import_one_transaction_into_the_selected_account() throws Exception {
+        categories = CategoryBuilder.createDefaultHierarchy(db);
         doImport("date,time,account,amount,currency,category,parent,payee,location,project,note\n" +
                 "10.07.2011,07:13:17,AAA,-10.50,SGD,AA1,A:A1,P1,,,", defaultOptions);
 
@@ -67,8 +164,9 @@ public class CsvImportTest extends AbstractImportExportTest {
     }
 
     public void test_should_import_one_transaction_without_the_header() throws Exception {
+        categories = CategoryBuilder.createDefaultHierarchy(db);
         defaultOptions.useHeaderFromFile = false;
-        doImport("10.07.2011,07:13:17,AAA,2100.56,SGD,A1,\"\",P1,Current location,No project,", defaultOptions);
+        doImport("10.07.2011,07:13:17,AAA,2100.56,SGD,B,\"\",P1,Current location,No project,", defaultOptions);
 
         List<TransactionInfo> transactions = em.getTransactionsForAccount(defaultAccountId);
         assertEquals(1, transactions.size());
@@ -77,7 +175,7 @@ public class CsvImportTest extends AbstractImportExportTest {
         assertEquals(DateTime.date(2011, 7, 10).at(7, 13, 17, 0).asLong(), t.dateTime);
         assertEquals(defaultAccountId, t.fromAccount.id);
         assertEquals(210056, t.fromAmount);
-        assertEquals(categories.get("A1").id, t.category.id);
+        assertEquals(categories.get("B").id, t.category.id);
         assertEquals("P1", t.payee.title);
     }
 
@@ -93,10 +191,37 @@ public class CsvImportTest extends AbstractImportExportTest {
         csvImport.doImport();
     }
 
+    private CsvTransaction newCsvTransactionWithCategory(String parent, String category) {
+        CsvTransaction transaction = new CsvTransaction();
+        transaction.categoryParent = parent;
+        transaction.category = category;
+        return transaction;
+    }
+
+    private CsvTransaction newCsvTransactionWithProject(String project) {
+        CsvTransaction transaction = new CsvTransaction();
+        transaction.project = project;
+        return transaction;
+    }
+
+    private CsvTransaction newCsvTransactionWithPayee(String payee) {
+        CsvTransaction transaction = new CsvTransaction();
+        transaction.payee = payee;
+        return transaction;
+    }
+
     public CsvImportOptions createDefaultOptions() {
         Account a = createFirstAccount();
         Currency c = a.currency;
         return new CsvImportOptions(c, CsvImportOptions.DEFAULT_DATE_FORMAT, a.id, WhereFilter.empty(), null, ',', true);
+    }
+
+    private Set<CategoryInfo> asCategoryInfoSet(String...categories) {
+        Set<CategoryInfo> set = new HashSet<CategoryInfo>();
+        for (String category : categories) {
+            set.add(new CategoryInfo(category, false));
+        }
+        return set;
     }
 
 }

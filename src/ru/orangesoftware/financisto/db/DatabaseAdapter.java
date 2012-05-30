@@ -630,7 +630,7 @@ public class DatabaseAdapter {
 		}
 	}
 
-	public Category getCategory(String title) {
+	public Category getCategoryByTitle(String title) {
         SQLiteDatabase db = db();
 		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
 				CategoryViewColumns.title+"=?", new String[]{String.valueOf(title)}, null, null, null);
@@ -934,13 +934,14 @@ public class DatabaseAdapter {
 	}
 	
     public void insertCategoryTreeInTransaction(CategoryTree<Category> tree) {
+        db().delete("category", "_id > 0", null);
         insertCategoryInTransaction(tree);
         updateCategoryTreeInTransaction(tree);
     }
 
     private void insertCategoryInTransaction(CategoryTree<Category> tree) {
         for (Category category : tree) {
-            em.insertCategory(category);
+            em.reInsertCategory(category);
             if (category.hasChildren()) {
                 insertCategoryInTransaction(category.children);
             }

@@ -11,15 +11,14 @@ package ru.orangesoftware.financisto.export;
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.*;
 import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.test.DateTime;
 import ru.orangesoftware.orb.Expressions;
 import ru.orangesoftware.orb.Query;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static ru.orangesoftware.financisto.export.qif.QifDateFormat.EU_FORMAT;
 
@@ -79,13 +78,11 @@ public class QifImportTest extends AbstractDbTest {
         p.categories.add(new QifCategory("P2:x1", false));
         p.categories.add(new QifCategory("P1", false));
         p.categories.add(new QifCategory("P1:cc2", true));
+
+        //when
         doImport(p);
 
-        assertNotNull(qifImport.findCategory("P1"));
-        assertNotNull(qifImport.findCategory("P1:cc1"));
-        assertNotNull(qifImport.findCategory("P1:cc1:c2"));
-        assertNotNull(qifImport.findCategory("P2:x1"));
-
+        //then
         CategoryTree<Category> categories = db.getCategoriesTree(false);
         assertNotNull(categories);
         assertEquals(2, categories.size());
@@ -137,11 +134,6 @@ public class QifImportTest extends AbstractDbTest {
         assertEquals(-6780, t.fromAmount);
         assertEquals("c1", t.category.title);
         assertEquals("Class1:Subclass1", t.project.title);
-    }
-
-    private void assertCategory(String name, boolean isIncome, Category c) {
-        assertEquals(name, c.title);
-        assertEquals(isIncome, c.isIncome());
     }
 
     public void test_should_import_account_with_a_couple_of_transactions() throws Exception {

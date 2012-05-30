@@ -13,13 +13,13 @@ import android.util.Log;
 import ru.orangesoftware.financisto.backup.Backup;
 import ru.orangesoftware.financisto.backup.FullDatabaseImport;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.export.CategoryCache;
 import ru.orangesoftware.financisto.model.*;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static ru.orangesoftware.financisto.export.qif.QifUtils.splitCategoryName;
 import static ru.orangesoftware.financisto.utils.Utils.isEmpty;
 
 /**
@@ -34,8 +34,7 @@ public class QifImport extends FullDatabaseImport {
     private final Map<String, QifAccount> accountTitleToAccount = new HashMap<String, QifAccount>();
     private final Map<String, Long> payeeToId = new HashMap<String, Long>();
     private final Map<String, Long> projectToId = new HashMap<String, Long>();
-    private final Map<String, Category> categoryNameToCategory = new HashMap<String, Category>();
-    private final CategoryTree<Category> categoryTree = new CategoryTree<Category>();
+    private final CategoryCache categoryCache = new CategoryCache();
 
     public QifImport(Context context, DatabaseAdapter db, QifImportOptions options) {
         super(context, db);
@@ -79,7 +78,7 @@ public class QifImport extends FullDatabaseImport {
         insertProjects(parser.classes);
         long t2 = System.currentTimeMillis();
         Log.i("Financisto", "QIF Import: Inserting projects done in "+ TimeUnit.MILLISECONDS.toSeconds(t2-t1)+"s");
-        insertCategories(parser.categories);
+        categoryCache.insertCategories(dbAdapter, parser.categories);
         long t3 = System.currentTimeMillis();
         Log.i("Financisto", "QIF Import: Inserting categories done in "+ TimeUnit.MILLISECONDS.toSeconds(t3-t2)+"s");
         insertAccounts(parser.accounts);
@@ -104,59 +103,6 @@ public class QifImport extends FullDatabaseImport {
             long id = em.saveOrUpdate(p);
             projectToId.put(project, id);
         }
-    }
-
-    private void insertCategories(Set<QifCategory> categories) {
-        for (QifCategory category : categories) {
-            String name = splitCategoryName(category.name);
-            insertCategory(name, category.isIncome);
-        }
-        categoryTree.sortByTitle();
-        dbAdapter.insertCategoryTreeInTransaction(categoryTree);
-    }
-
-    private Category insertCategory(String name, boolean isIncome) {
-        if (isChildCategory(name)) {
-            return insertChildCategory(name, isIncome);
-        } else {
-            return insertRootCategory(name, isIncome);
-        }
-    }
-
-    private boolean isChildCategory(String name) {
-        return name.contains(":");
-    }
-
-    private Category insertRootCategory(String name, boolean income) {
-        Category c = categoryNameToCategory.get(name);
-        if (c == null) {
-            c = createCategoryInCache(name, name, income);
-            categoryTree.add(c);
-        }
-        return c;
-    }
-
-    private Category createCategoryInCache(String fullName, String name, boolean income) {
-        Category c = new Category();
-        c.title = name;
-        if (income) {
-            c.makeThisCategoryIncome();
-        }
-        categoryNameToCategory.put(fullName, c);
-        return c;
-    }
-
-    private Category insertChildCategory(String name, boolean income) {
-        int i = name.lastIndexOf(':');
-        String parentCategoryName = name.substring(0, i);
-        String childCategoryName = name.substring(i+1);
-        Category parent = insertCategory(parentCategoryName, income);
-        Category child = categoryNameToCategory.get(name);
-        if (child == null) {
-            child = createCategoryInCache(name, childCategoryName, income);
-            parent.addChild(child);
-        }
-        return child;
     }
 
     private void insertAccounts(List<QifAccount> accounts) {
@@ -312,18 +258,10 @@ public class QifImport extends FullDatabaseImport {
     }
 
     private void findCategory(QifTransaction transaction, Transaction t) {
-        Category c = findCategory(transaction.category);
+        Category c = categoryCache.findCategory(transaction.category);
         if (c != null) {
             t.categoryId = c.id;
         }
-    }
-
-    public Category findCategory(String category) {
-        if (isEmpty(category)) {
-            return null;
-        }
-        String name = splitCategoryName(category);
-        return categoryNameToCategory.get(name);
     }
 
 }

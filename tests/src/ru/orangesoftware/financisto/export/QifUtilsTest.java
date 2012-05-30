@@ -44,11 +44,4 @@ public class QifUtilsTest extends AndroidTestCase {
         assertEquals(100250, parseMoney("1.002,5"));
     }
 
-    public void test_should_split_category_name() {
-        assertEquals("P1", splitCategoryName("P1"));
-        assertEquals("P1:c1", splitCategoryName("P1:c1"));
-        assertEquals("P1", splitCategoryName("P1/C2"));
-        assertEquals("P1:c1", splitCategoryName("P1:c1/C2"));
-    }
-
 }

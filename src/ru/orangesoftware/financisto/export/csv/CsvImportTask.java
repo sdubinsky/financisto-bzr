@@ -11,6 +11,7 @@ package ru.orangesoftware.financisto.export.csv;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MainActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -44,17 +45,21 @@ public class CsvImportTask extends ImportExportAsyncTask {
             CsvImport csvimport = new CsvImport(db, options);
             return csvimport.doImport();
         } catch (Exception e) {
-            if (e.getMessage().equals("Import file not found"))
+            Log.e("Financisto", "Csv import error", e);
+            String message = e.getMessage();
+            if (message == null) {
+                handler.sendEmptyMessage(R.string.csv_import_error);
+            } else  if (message.equals("Import file not found"))
                 handler.sendEmptyMessage(R.string.import_file_not_found);
-            else if (e.getMessage().equals("Unknown category in import line"))
+            else if (message.equals("Unknown category in import line"))
                 handler.sendEmptyMessage(R.string.import_unknown_category);
-            else if (e.getMessage().equals("Unknown project in import line"))
+            else if (message.equals("Unknown project in import line"))
                 handler.sendEmptyMessage(R.string.import_unknown_project);
-            else if (e.getMessage().equals("Wrong currency in import line"))
+            else if (message.equals("Wrong currency in import line"))
                 handler.sendEmptyMessage(R.string.import_wrong_currency);
-            else if (e.getMessage().equals("IllegalArgumentException"))
+            else if (message.equals("IllegalArgumentException"))
                 handler.sendEmptyMessage(R.string.import_illegal_argument_exception);
-            else if (e.getMessage().equals("ParseException"))
+            else if (message.equals("ParseException"))
                 handler.sendEmptyMessage(R.string.import_parse_error);
             else
                 handler.sendEmptyMessage(R.string.csv_import_error);

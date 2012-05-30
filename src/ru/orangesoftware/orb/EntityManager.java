@@ -117,6 +117,21 @@ public abstract class EntityManager {
 		}
 	}
 
+    public long reInsert(Object entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException("Entity is null");
+        }
+        SQLiteDatabase db = db();
+        EntityDefinition ed = getEntityDefinitionOrThrow(entity.getClass());
+        ContentValues values = getContentValues(ed, entity);
+        long id = ed.getId(entity);
+        long newId = db.insertOrThrow(ed.tableName, null, values);
+        if (id != newId) {
+            throw new IllegalArgumentException("Unable to re-insert "+entity.getClass()+" with id "+id);
+        }
+        return id;
+    }
+
 	private ContentValues getContentValues(EntityDefinition ed, Object entity) {
 		ContentValues values = new ContentValues();
 		FieldInfo[] fields = ed.fields;

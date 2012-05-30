@@ -1,11 +1,15 @@
 package ru.orangesoftware.financisto.db;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Transaction;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,6 +57,15 @@ public abstract class AbstractDbTest extends AndroidTestCase {
                 "select count(*) from transactions where from_account_id=?",
                 new String[]{String.valueOf(account.id)});
         assertEquals("Transaction for account "+account.id, expectedCount, count);
+    }
+
+    public void assertCategory(String name, boolean isIncome, Category c) {
+        assertEquals(name, c.title);
+        assertEquals(isIncome, c.isIncome());
+    }
+
+    public static <T> Set<T> asSet(T...values) {
+        return new HashSet<T>(Arrays.asList(values));
     }
 
 }

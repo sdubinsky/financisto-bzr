@@ -50,7 +50,7 @@ public class CsvImportOptions {
         String dateFormat = data.getStringExtra(CsvImportActivity.CSV_IMPORT_DATE_FORMAT);
         long selectedAccountId = data.getLongExtra(CsvImportActivity.CSV_IMPORT_SELECTED_ACCOUNT_2, -1);
         String filename = data.getStringExtra(CsvImportActivity.CSV_IMPORT_FILENAME);
-        boolean useHeaderFromFile = data.getBooleanExtra(CsvImportActivity.CSV_IMPORT_FILENAME, true);
+        boolean useHeaderFromFile = data.getBooleanExtra(CsvImportActivity.CSV_IMPORT_USE_HEADER_FROM_FILE, true);
         return new CsvImportOptions(currency, dateFormat, selectedAccountId, filter, filename, fieldSeparator, useHeaderFromFile);
     }
 
