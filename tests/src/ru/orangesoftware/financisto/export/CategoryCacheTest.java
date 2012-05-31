@@ -36,13 +36,13 @@ public class CategoryCacheTest extends AbstractImportExportTest {
 
     public void test_should_import_categories() throws Exception {
         //given
-        //P1
-        // - cc1
-        // -- c1
-        // -- c2
-        // - cc2
-        //P2
-        // - x1
+        //P1         1-10
+        // - cc1     2-7
+        // -- c1     3-4
+        // -- c2     5-6
+        // - cc2     8-9
+        //P2         11-14
+        // - x1      12-13
         Set<CategoryInfo> list = new HashSet<CategoryInfo>();
         list.add(new CategoryInfo("P1:cc1:c1", true));
         list.add(new CategoryInfo("P1:cc1", true));
@@ -60,6 +60,10 @@ public class CategoryCacheTest extends AbstractImportExportTest {
         assertNotNull(cache.findCategory("P1:cc1"));
         assertNotNull(cache.findCategory("P1:cc1:c2"));
         assertNotNull(cache.findCategory("P2:x1"));
+
+        Category noCategory = db.getCategory(Category.NO_CATEGORY_ID);
+        assertEquals(0, noCategory.left);
+        assertEquals(15, noCategory.right);
 
         //then
         CategoryTree<Category> categories = db.getCategoriesTree(false);
@@ -120,20 +124,24 @@ public class CategoryCacheTest extends AbstractImportExportTest {
 
         //then
         /**
-         * A
-         * - A1
-         * -- AA1
-         * -- AA2
-         * - A2
-         * -- AB1
-         * B
-         * C
-         * D
-         * - D1
+         * A            1-12
+         * - A1         2-7
+         * -- AA1       3-4
+         * -- AA2       5-6
+         * - A2         8-11
+         * -- AB1       9-10
+         * B            13-14
+         * C            15-16
+         * D            17-20
+         * - D1         18-19
          */
         CategoryTree<Category> categories = db.getCategoriesTree(false);
         assertNotNull(categories);
         assertEquals(4, categories.size());
+
+        Category noCategory = db.getCategory(Category.NO_CATEGORY_ID);
+        assertEquals(0, noCategory.left);
+        assertEquals(21, noCategory.right);
 
     }
 

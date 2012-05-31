@@ -954,6 +954,8 @@ public class DatabaseAdapter {
 	private static final String WHERE_CATEGORY_ID = CategoryColumns._id+"=?";
 	
 	private void updateCategoryTreeInTransaction(CategoryTree<Category> tree) {
+        int left = 1;
+        int right = 2;
 		ContentValues values = new ContentValues();
 		String[] sid = new String[1];
 		for (Category c : tree) {
@@ -964,7 +966,17 @@ public class DatabaseAdapter {
 			if (c.hasChildren()) {
 				updateCategoryTreeInTransaction(c.children);
 			}
+            if (c.left < left) {
+                left = c.left;
+            }
+            if (c.right > right) {
+                right = c.right;
+            }
 		}
+        values.put(CategoryColumns.left.name(), left-1);
+        values.put(CategoryColumns.right.name(), right+1);
+        sid[0] = String.valueOf(Category.NO_CATEGORY_ID);
+        db().update(CATEGORY_TABLE, values, WHERE_CATEGORY_ID, sid);
 	}
 
 	public void moveCategory(long id, long newParentId, String title, int type) {

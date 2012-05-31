@@ -22,10 +22,10 @@ public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
 	public T parent;
 	
 	@Column(name = "left")
-	public int left;
+	public int left = 1;
 	
 	@Column(name = "right")
-	public int right;
+	public int right = 2;
 	
     @Column(name = "type")
     public int type = TYPE_EXPENSE;
