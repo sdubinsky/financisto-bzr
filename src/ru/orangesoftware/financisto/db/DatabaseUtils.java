@@ -17,7 +17,15 @@ import android.database.Cursor;
  */
 public class DatabaseUtils {
     
-    public static long rawFetchLong(DatabaseAdapter db, String query, String[] selectionArgs) {
+    public static long rawFetchId(DatabaseAdapter db, String query, String[] selectionArgs) {
+        return rawFetchLong(db, query, selectionArgs, -1);
+    }
+
+    public static long rawFetchLongValue(DatabaseAdapter db, String query, String[] selectionArgs) {
+        return rawFetchLong(db, query, selectionArgs, 0);
+    }
+
+    private static long rawFetchLong(DatabaseAdapter db, String query, String[] selectionArgs, long defaultValue) {
         Cursor c = db.db().rawQuery(query, selectionArgs);
         try {
             if (c.moveToFirst()) {
@@ -26,7 +34,7 @@ public class DatabaseUtils {
         } finally {
             c.close();
         }
-        return -1;
+        return defaultValue;
     }
-    
+
 }

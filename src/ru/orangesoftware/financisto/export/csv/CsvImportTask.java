@@ -17,6 +17,7 @@ import ru.orangesoftware.financisto.activity.MainActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
+import ru.orangesoftware.financisto.export.ProgressListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,6 +44,12 @@ public class CsvImportTask extends ImportExportAsyncTask {
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
         try {
             CsvImport csvimport = new CsvImport(db, options);
+            csvimport.setProgressListener(new ProgressListener() {
+                @Override
+                public void onProgress(int percentage) {
+                    publishProgress(String.valueOf(percentage));
+                }
+            });
             return csvimport.doImport();
         } catch (Exception e) {
             Log.e("Financisto", "Csv import error", e);
@@ -66,6 +73,12 @@ public class CsvImportTask extends ImportExportAsyncTask {
             throw e;
         }
 
+    }
+
+    @Override
+    protected void onProgressUpdate(String... values) {
+        super.onProgressUpdate(values);
+        dialog.setMessage(context.getString(R.string.csv_import_inprogress_update, values[0]));
     }
 
     @Override

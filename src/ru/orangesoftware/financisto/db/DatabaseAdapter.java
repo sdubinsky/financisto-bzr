@@ -507,16 +507,8 @@ public class DatabaseAdapter {
     }
 
     private long fetchAccountBalanceAtTheTime(long accountId, long datetime) {
-        Cursor c = db().rawQuery("select balance from running_balance where account_id = ? and datetime <= ? order by datetime desc, transaction_id desc limit 1",
+        return DatabaseUtils.rawFetchLongValue(this, "select balance from running_balance where account_id = ? and datetime <= ? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(accountId), String.valueOf(datetime)});
-        try {
-            if (c.moveToFirst()) {
-                return c.getLong(0);
-            }
-        } finally {
-            c.close();
-        }
-        return 0;
     }
 
     // ===================================================================
@@ -1768,12 +1760,12 @@ public class DatabaseAdapter {
     }
 
     public long getAccountBalanceForTransaction(Account a, Transaction t) {
-        return DatabaseUtils.rawFetchLong(this, "select balance from running_balance where account_id=? and transaction_id=?",
+        return DatabaseUtils.rawFetchId(this, "select balance from running_balance where account_id=? and transaction_id=?",
                 new String[]{String.valueOf(a.id), String.valueOf(t.id)});
     }
 
     public long findNearestOlderTransactionId(Account account, long date) {
-        return DatabaseUtils.rawFetchLong(this,
+        return DatabaseUtils.rawFetchId(this,
                 "select _id from v_blotter where from_account_id=? and datetime<=? order by datetime desc limit 1",
                 new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))});
     }

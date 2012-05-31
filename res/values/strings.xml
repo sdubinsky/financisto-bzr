@@ -762,4 +762,6 @@
     <string name="report_income_expense_expense">Expenses</string>
     <string name="report_income_expense_summary">Summary</string>
 
+    <string name="csv_import_inprogress_update">Importing data from CSV: %s%%...</string>
+
 </resources>

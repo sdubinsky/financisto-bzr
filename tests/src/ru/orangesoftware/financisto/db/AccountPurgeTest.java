@@ -92,7 +92,7 @@ public class AccountPurgeTest extends AbstractDbTest {
     }
 
     private Transaction getOldestTransaction(Account account) {
-        long id = DatabaseUtils.rawFetchLong(db,
+        long id = DatabaseUtils.rawFetchId(db,
                 "select _id from transactions where from_account_id=? and is_template=0 order by datetime limit 1",
                 new String[]{String.valueOf(account.id)});
         return em.get(Transaction.class, id);

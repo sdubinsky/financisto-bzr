@@ -42,7 +42,7 @@ public abstract class AbstractDbTest extends AndroidTestCase {
     }
 
     public void assertFinalBalanceForAccount(Account a, long expectedBalance) {
-        long balance = DatabaseUtils.rawFetchLong(db, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
+        long balance = DatabaseUtils.rawFetchLongValue(db, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(a.id)});
         assertEquals(expectedBalance, balance);
     }
@@ -53,7 +53,7 @@ public abstract class AbstractDbTest extends AndroidTestCase {
     }
 
     public void assertTransactionsCount(Account account, long expectedCount) {
-        long count = DatabaseUtils.rawFetchLong(db,
+        long count = DatabaseUtils.rawFetchLongValue(db,
                 "select count(*) from transactions where from_account_id=?",
                 new String[]{String.valueOf(account.id)});
         assertEquals("Transaction for account "+account.id, expectedCount, count);

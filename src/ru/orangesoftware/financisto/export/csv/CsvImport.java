@@ -6,6 +6,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.CategoryCache;
 import ru.orangesoftware.financisto.export.CategoryInfo;
+import ru.orangesoftware.financisto.export.ProgressListener;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.Utils;
 
@@ -23,6 +24,7 @@ public class CsvImport {
     private final Account account;
     private char decimalSeparator;
     private char groupSeparator;
+    private ProgressListener progressListener;
 
     public CsvImport(DatabaseAdapter db, CsvImportOptions options) {
         this.db = db;
@@ -116,10 +118,19 @@ public class CsvImport {
         database.beginTransaction();
         try {
             List<TransactionAttribute> emptyAttributes = Collections.emptyList();
+            int count = 0;
+            int totalCount = transactions.size();
             for (CsvTransaction transaction : transactions) {
                 Transaction t = transaction.createTransaction(categories, projects, payees);
                 db.insertOrUpdateInTransaction(t, emptyAttributes);
+                if (++count % 100 == 0) { 
+                    Log.i("Financisto", "Inserted "+count+" out of "+totalCount);
+                    if (progressListener != null) {
+                        progressListener.onProgress((int)(100f*count/totalCount));
+                    }
+                }
             }
+            Log.i("Financisto", "Total transactions inserted: "+count);
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
@@ -135,6 +146,7 @@ public class CsvImport {
             header = Arrays.asList(CsvExport.HEADER);
         }
         try {
+            long deltaTime = 0;
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
             Csv.Reader reader = new Csv.Reader(new FileReader(csvFilename))
                     .delimiter(options.fieldSeparator).ignoreComments(true);
@@ -186,6 +198,7 @@ public class CsvImport {
                             }
                         }
                     }
+                    transaction.time += deltaTime++;
                     transactions.add(transaction);
                 } else {
                     // first line of csv-file is table headline
@@ -225,4 +238,7 @@ public class CsvImport {
 
     }
 
+    public void setProgressListener(ProgressListener progressListener) {
+        this.progressListener = progressListener;
+    }
 }
