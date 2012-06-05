@@ -41,13 +41,13 @@
   <string name="delete_category_dialog">Elimina la categoria e tutte le sottocategorie (se esistenti)?</string>
   <string name="currency_delete_alert">Impossibile eliminare la valuta predefinita.</string>
   <string name="yes">Si</string>
-  <string name="no">Non</string>
+  <string name="no">No</string>
   <string name="error">Errore</string>
   <string name="include_subcategories">Include sottocategorie</string>
   <string name="include_subcategories_summary">Aggiungi transazione da sottocategorie</string>
   <string name="start_date">Data inizio</string>
   <string name="end_date">Data fine</string>
-  <string name="budget">Bilancio</string>
+  <string name="budget">Budget</string>
   <string name="no_limit">Nessun limite</string>
   <string name="period">Periodo</string>
   <string name="period_from">Periodo Dal</string>
@@ -106,11 +106,11 @@
   <string name="attribute_default_value">Valore predefinito</string>
   <string name="checkbox_values">Si/No</string>
   <string name="checkbox_values_yes">Si</string>
-  <string name="checkbox_values_no">Non</string>
+  <string name="checkbox_values_no">No</string>
   <string name="checkbox_values_hint">Si;No</string>
   <string name="location_name">Nome posizione</string>
-  <string name="satellite_on">GPS On</string>
-  <string name="satellite_off">GPS Off</string>
+  <string name="satellite_on">GPS attivo</string>
+  <string name="satellite_off">GPS disattivo</string>
   <string name="my_location">La mia posizione</string>
   <string name="move_marker_to_center">Puntina al centro</string>
   <string name="move_go_to_marker">Vai alla puntina</string>
@@ -126,7 +126,7 @@
   <string name="overall">Globale</string>
   <string name="report_by_period">Per periodo</string>
   <string name="report_by_period_summary">Rapporti transazioni per periodo</string>
-  <string name="report_by_category">Per categoria</string>
+  <string name="report_by_category">By Category</string>
   <string name="report_by_category_summary">Rapporti transazioni per categoria</string>
   <string name="report_by_location">Per posizione</string>
   <string name="report_by_location_summary">Rapporti transazioni per posizione</string>
@@ -140,10 +140,10 @@
   <string name="report_by_location_by_period_summary">Rapporti transazioni per posizione e periodo</string>
   <string name="report_by_project_by_period">Per progetto / periodo</string>
   <string name="report_by_project_by_period_summary">Rapporti transazioni per progetto e periodo</string>
-  <string name="max_result_label">Mas:</string>
+  <string name="max_result_label">Max:</string>
   <string name="min_result_label">Min:</string>
   <string name="mean_result_label">Media:</string>
-  <string name="sum_result_label">Som:</string>
+  <string name="sum_result_label">Somma:</string>
   <string name="report_init_res">0</string>
   <string name="no_data_to_report">Nessun dato disponibile per visualizzare il rapporto.</string>
   <string name="report_preferences_not_set">Aggiusta le preferenze nelle impostazioni. Considerando la valuta e il periodo predefiniti.</string>
@@ -209,7 +209,7 @@
   <string name="pin_protection_notify">Impostare il PIN dalle Preferenze</string>
   <string name="change_pin">Cambia PIN</string>
   <string name="change_pin_summary">Cambia numero PIN.</string>
-  <string name="pin">Password</string>
+  <string name="pin">PIN</string>
   <string name="set_pin">Imposta PIN</string>
   <string name="confirm_pin">Conferma PIN</string>
   <string name="restore">Ripristina</string>
@@ -330,7 +330,7 @@
   <string name="use_fixed_layout_summary">Blocca i pulsanti OK/Annulla nel layout</string>
   <string name="no_data">Nessuna dato</string>
   <string name="calculating">Calcolo in corso...</string>
-  <string name="budget_mode">Facile condizioni</string>
+  <string name="budget_mode">Facilita condizioni</string>
   <string name="budget_mode_summary">Utilizza condizioni meno restrittive (categoria o progetto) per filtrare le transazioni</string>
   <string name="gdocs_backup">Backup Google Docs</string>
   <string name="user_login">Accesso</string>
@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">Mostra il totale del conto nel widget</string>
   <string name="attach_picture">Allega immagine</string>
   <string name="new_picture">Scatta una foto</string>
-  <string name="report_by_sub_category">Per sottocategoria</string>
-  <string name="report_by_sub_category_summary">Rapporti transazioni per sottocategoria</string>
   <string name="credits">Riconoscimenti</string>
   <string name="sort_by_title">Ordina per nome</string>
   <string name="sort_all_by_title">Ordina tutto per nome</string>
@@ -545,17 +543,17 @@
   <string name="donate_error">Il Market Android non è disponibile nel tuo dispositivo</string>
   <string name="type">Tipo</string>
   <string name="qif_export">Esportazione QIF</string>
-  <string name="qif_export_inprogress">Esportazione di dati in QIF...</string>
-  <string name="all_accounts">Tutti gli account</string>
+  <string name="qif_export_inprogress">Esportazione dei dati in QIF...</string>
+  <string name="all_accounts">Tutti i conti</string>
   <string name="filter_value_not_found">Non trovato...</string>
-  <string name="empty_report">Relazione vuota</string>
+  <string name="empty_report">Rapporto vuoto</string>
   <string name="day_of_month">Giorno del mese</string>
   <string name="show_running_balance">Visualizza saldo corrente</string>
   <string name="show_running_balance_summary">Mostra saldo del conto in esecuzione (richiede riavvio)</string>
-  <string name="new_currency">Nuova moneta...</string>
+  <string name="new_currency">Nuova valuta...</string>
   <string name="lock_time">Tempo di blocco</string>
   <string name="lock_time_summary">Tempo per mantenere lo schermo attivo prima di essere bloccata</string>
-  <string name="date_format">Formato di data</string>
+  <string name="date_format">Formato della data</string>
   <string name="pin_protection_lock_transaction">Bloccare Transazione\\Transferimento</string>
   <string name="pin_protection_lock_transaction_summary">Bloccare \'Nuova transazione\' e \'Nuovo transferimento\' con password</string>
   <string name="split">[Divisione...]</string>
@@ -573,15 +571,15 @@
   <string name="unsplit_adjust_last_summary">Regolare ultima</string>
   <string name="add_transfer">Agg trasferimento</string>
   <string name="file_name">Nome del file</string>
-  <string name="choose_account">Scegliere conto</string>
-  <string name="no_filemanager_installed">Nessun file manager installati</string>
+  <string name="choose_account">Scegli conto</string>
+  <string name="no_filemanager_installed">Nessun gestore di file installato</string>
   <string name="csv_import">Importazione CSV</string>
   <string name="csv_import_inprogress">Importazione di dati da CSV...</string>
-  <string name="select_filename">Selezionare il file di importazione</string>
+  <string name="select_filename">Seleziona il file da cui importare</string>
   <string name="import_file_not_found">File di importazione non trovato</string>
   <string name="import_unknown_category">Categoria sconosciuta nel file di importazione</string>
   <string name="import_unknown_project">Progetto sconosciuto nel file di importazione</string>
-  <string name="import_wrong_currency">Moneda incorrecta en el archivo de importación</string>
+  <string name="import_wrong_currency">Valuta sbagliata nel file di importazione</string>
   <string name="import_illegal_argument_exception">Eccezione di argomento illegale</string>
   <string name="import_parse_error">Errore di analisi nel file di importazione</string>
   <string name="csv_import_error">Errore importazione CSV</string>
@@ -596,68 +594,73 @@
   <string name="currency_symbol_format">Formato del simbolo</string>
   <string name="use_header_from_file">Usa intestazione da file</string>
   <string name="info">Informazioni</string>
-  <string name="balance">Oscillazione</string>
-  <string name="show_category_in_transfer">Categoria di trasferimento</string>
+  <string name="balance">Bilancio</string>
+  <string name="show_category_in_transfer">Categoria del trasferimento</string>
   <string name="show_category_in_transfer_summary">Mostra la categoria selezionata nella schermata di Nuovo Trasferimento</string>
   <string name="auto_backup">Backup automatico</string>
   <string name="auto_backup_enabled">Attivare il backup automatico</string>
   <string name="auto_backup_enabled_summary">Backup del database ogni giorno all\'ora specificata</string>
   <string name="auto_backup_time">Ora di backup automatico</string>
-  <string name="auto_backup_time_summary" formatted="false">Fare un backup giornaliero al %02d:%02d</string>
-  <string name="select_folder">Selezionare la cartella corrente</string>
-  <string name="create">Creare</string>
+  <string name="auto_backup_time_summary" formatted="false">Fare un backup giornaliero alle %02d:%02d</string>
+  <string name="select_folder">Seleziona la cartella corrente</string>
+  <string name="create">Crea</string>
   <string name="create_new_folder">Nuovo</string>
   <string name="create_new_folder_title">Crea nuova cartella</string>
   <string name="create_new_folder_fail">Impossibile creare la cartella</string>
   <string name="database_backup">Backup del database</string>
   <string name="database_backup_folder">Cartella backup</string>
   <string name="database_backup_folder_summary">Cartella corrente di backup del database: %s</string>
-  <string name="backup_database_to">Send Backup To...</string>
-  <string name="backup_database_to_title">Inviare il Backup del Database per...</string>
+  <string name="backup_database_to">Invia il backup a...</string>
+  <string name="backup_database_to_title">Invia il backup del database a...</string>
   <string name="license">Licenza</string>
-  <string name="quick_menu_account_enabled">Accounts quick-menu</string>
+  <string name="quick_menu_account_enabled">Menu rapido dei conti</string>
   <string name="quick_menu_account_enabled_summary">Enable one-tap menu in the Accounts</string>
   <string name="quick_menu_transaction_enabled">Blotter quick-menu</string>
   <string name="quick_menu_transaction_enabled_summary">Enable one-tap menu in the Blotter</string>
   <string name="dropbox">Dropbox</string>
   <string name="dropbox_authorize">Autorizzare</string>
-  <string name="dropbox_authorize_summary">Allow Financisto to upload files to your Dropbox</string>
+  <string name="dropbox_authorize_summary">Permetti a Financisto di caricare i file sul tuo Dropbox</string>
   <string name="dropbox_unlink">Scollegare</string>
-  <string name="dropbox_unlink_summary">Prevent Financisto from uploading files to your Dropbox</string>
-  <string name="dropbox_upload_backup">Upload Backups</string>
-  <string name="dropbox_upload_backup_summary">Upload database backups to Dropbox</string>
-  <string name="dropbox_upload_autobackup">Upload Auto-backups</string>
-  <string name="dropbox_upload_autobackup_summary">Upload database auto-backups to Dropbox</string>
-  <string name="dropbox_uploading_file">Uploading file to Dropbox...</string>
+  <string name="dropbox_unlink_summary">Impedisci a Financisto di caricare i file sul tuo Dropbox</string>
+  <string name="dropbox_upload_backup">Carica i backup</string>
+  <string name="dropbox_upload_backup_summary">Carica i backup dei database su Dropbox</string>
+  <string name="dropbox_upload_autobackup">Carica i backup automatici</string>
+  <string name="dropbox_upload_autobackup_summary">Carica i backup automatici del database su Dropbox</string>
+  <string name="dropbox_uploading_file">Caricamento del file su Dropbox...</string>
   <string name="exchange_rates">Tassi di cambio</string>
-  <string name="no_exchange_rates">No tassi di cambio</string>
+  <string name="no_exchange_rates">Nessun tasso di cambio</string>
   <string name="exchange_rate">Tasso di cambio</string>
-  <string name="rate_from_currency">Da moneta</string>
-  <string name="rate_to_currency">Alla moneta</string>
+  <string name="rate_from_currency">Dalla valuta</string>
+  <string name="rate_to_currency">Alla valuta</string>
   <string name="currency_make_default">Rendere predefinito</string>
-  <string name="currency_make_default_warning">Please set Default Currency to get correct Total (Menu -&gt; Entities -&gt; Currencies)</string>
-  <string name="back">Back</string>
-  <string name="select">Select</string>
-  <string name="category_selector">Category selector</string>
-  <string name="use_hierarchical_category_selector">Hierarchical selector</string>
-  <string name="use_hierarchical_category_selector_summary">Use hierarchical category selector</string>
-  <string name="hierarchical_category_selector_select_child_immediately">Confirm automatically</string>
+  <string name="currency_make_default_warning">Imposta la valuta predefinita per ottenere il totale corretto (Menu-&gt;Entità-&gt;Valute)</string>
+  <string name="back">Indietro</string>
+  <string name="select">Seleziona</string>
+  <string name="category_selector">Selettore delle categorie</string>
+  <string name="use_hierarchical_category_selector">Selettore gerarchico</string>
+  <string name="use_hierarchical_category_selector_summary">Usa selettore gerarchico di categorie</string>
+  <string name="hierarchical_category_selector_select_child_immediately">Conferma automaticamente</string>
   <string name="hierarchical_category_selector_select_child_immediately_summary">Confirm child category selection automatically</string>
-  <string name="hierarchical_category_selector_income_expense">Income/Expense</string>
+  <string name="hierarchical_category_selector_income_expense">Entrate/Uscite</string>
   <string name="hierarchical_category_selector_income_expense_summary">Group income and expense categories together</string>
-  <string name="totals">Totals</string>
-  <string name="account_total_in_currency">All %s accounts</string>
-  <string name="blotter_total_in_currency">All %s transactions</string>
-  <string name="budget_total_in_currency">All %s budgets</string>
-  <string name="home_currency_total">Total in home currency</string>
-  <string name="total_rate">Rate: %0.5f</string>
-  <string name="home_currency">Home currency</string>
-  <string name="upload_to_dropbox">Upload to\nDropbox</string>
-  <string name="not_available">N/A</string>
+  <string name="totals">Totali</string>
+  <string name="account_total_in_currency">Tutti i conti di %s</string>
+  <string name="blotter_total_in_currency">Tutte le transazioni di %s</string>
+  <string name="budget_total_in_currency">Tutti i budget di %s</string>
+  <string name="home_currency_total">Totale nella valuta principale</string>
+  <string name="total_rate">Tasso: %0.5f</string>
+  <string name="home_currency">Valuta principale</string>
+  <string name="upload_to_dropbox">Carica su\nDropbox</string>
+  <string name="not_available">N/D</string>
   <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
   <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
   <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
   <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
+  <string name="is_active">Is active</string>
+  <string name="report_income_expense_both">Income/Expenses</string>
+  <string name="report_income_expense_income">Income</string>
+  <string name="report_income_expense_expense">Expenses</string>
+  <string name="report_income_expense_summary">Summary</string>
   <string-array name="attribute_types">
     <item>Testo</item>
     <item>Numero</item>
@@ -707,7 +710,7 @@
     <item>1 anni</item>
   </string-array>
   <string-array name="lock_time_entities">
-    <item>Via</item>
+    <item>Disattivo</item>
     <item>1 minuto</item>
     <item>3 minuti</item>
     <item>5 minuti</item>

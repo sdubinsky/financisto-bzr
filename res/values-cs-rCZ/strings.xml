@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">Zobrazí zůstatek účtu na widgetu</string>
   <string name="attach_picture">Připojit obrázek</string>
   <string name="new_picture">Vyfotit</string>
-  <string name="report_by_sub_category">Dle podkategorie</string>
-  <string name="report_by_sub_category_summary">Zpráva dle podkategorie</string>
   <string name="credits">Příjmy</string>
   <string name="sort_by_title">Seřadit dle názvu</string>
   <string name="sort_all_by_title">Seřadit vše dle názvu</string>
@@ -645,19 +643,24 @@
   <string name="hierarchical_category_selector_select_child_immediately_summary">Automaticky potvrdit výběr podkategorie</string>
   <string name="hierarchical_category_selector_income_expense">Příjem/Výdaj</string>
   <string name="hierarchical_category_selector_income_expense_summary">Seskupit příjmové a výdajové kategorie dohromady</string>
-  <string name="totals">Totals</string>
-  <string name="account_total_in_currency">All %s accounts</string>
-  <string name="blotter_total_in_currency">All %s transactions</string>
-  <string name="budget_total_in_currency">All %s budgets</string>
-  <string name="home_currency_total">Total in home currency</string>
-  <string name="total_rate">Rate: %0.5f</string>
-  <string name="home_currency">Home currency</string>
-  <string name="upload_to_dropbox">Upload to\nDropbox</string>
+  <string name="totals">Zůstatky</string>
+  <string name="account_total_in_currency">Všechny %s účty</string>
+  <string name="blotter_total_in_currency">Všechny %s operace</string>
+  <string name="budget_total_in_currency">Všechny %s rozpočty</string>
+  <string name="home_currency_total">Zůstatek v domácí měně</string>
+  <string name="total_rate">Kurz: %0.5f</string>
+  <string name="home_currency">Domácí měna</string>
+  <string name="upload_to_dropbox">Nahrát na\nDropbox</string>
   <string name="not_available">N/A</string>
-  <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
-  <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
-  <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
-  <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
+  <string name="rate_not_available_on_date_error" formatted="false">Nebyl stanoven směnný kurz %s pro výpočet převodu mezi %s a %s</string>
+  <string name="rate_not_available_error" formatted="false">Chybí směnný kurz mezi %s a %s</string>
+  <string name="collapse_blotter_buttons">Sbalit tlačítka záznamníku</string>
+  <string name="collapse_blotter_buttons_summary">Seskupí tlačítka nové operace/převodu/šablony do jednoho s násedným výběrem (vyžaduje restart)</string>
+  <string name="is_active">Je aktivní</string>
+  <string name="report_income_expense_both">Příjmy/Výdaje</string>
+  <string name="report_income_expense_income">Příjmy</string>
+  <string name="report_income_expense_expense">Výdaje</string>
+  <string name="report_income_expense_summary">Shrnutí</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Číslo</item>

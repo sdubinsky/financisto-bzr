@@ -126,7 +126,7 @@
   <string name="overall">Global</string>
   <string name="report_by_period">Per Període</string>
   <string name="report_by_period_summary">Informe de transaccions per període</string>
-  <string name="report_by_category">Per Categoria (vista independent)</string>
+  <string name="report_by_category">Per categoria</string>
   <string name="report_by_category_summary">Informe de transaccions en subcategories per separat</string>
   <string name="report_by_location">Per Ubicació</string>
   <string name="report_by_location_summary">Informe de transaccions per ubicació</string>
@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">Mostrar el saldo total dels comptes al widget</string>
   <string name="attach_picture">Adjuntar una foto</string>
   <string name="new_picture">Toca aquí per activar la càmera</string>
-  <string name="report_by_sub_category">Per Categoria (vista jeràrquica)</string>
-  <string name="report_by_sub_category_summary">Informe de transaccions per branques de subcategories</string>
   <string name="credits">Crèdits</string>
   <string name="sort_by_title">Ordre intern alfabètic</string>
   <string name="sort_all_by_title">Ordenar tot alfabèticament</string>
@@ -658,6 +656,11 @@
   <string name="rate_not_available_error" formatted="false">Cap tipus específic de ràtio de canvi entre %s i %s</string>
   <string name="collapse_blotter_buttons">Botons de contracció Blotter</string>
   <string name="collapse_blotter_buttons_summary">Grup Nova Transacció/Transferència/Plantilla botons (necessita reiniciar)</string>
+  <string name="is_active">És actiu</string>
+  <string name="report_income_expense_both">Ingressos/despeses</string>
+  <string name="report_income_expense_income">Ingressos</string>
+  <string name="report_income_expense_expense">Despeses</string>
+  <string name="report_income_expense_summary">Resum</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Número</item>

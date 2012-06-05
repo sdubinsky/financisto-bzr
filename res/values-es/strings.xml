@@ -126,7 +126,7 @@
   <string name="overall">Global</string>
   <string name="report_by_period">Por Periodo</string>
   <string name="report_by_period_summary">Informe de transacciones por periodo</string>
-  <string name="report_by_category">Por Categoría (vista independiente)</string>
+  <string name="report_by_category">By Category</string>
   <string name="report_by_category_summary">Informe de transacciones en subcategorías por separado</string>
   <string name="report_by_location">Por Ubicación</string>
   <string name="report_by_location_summary">Informe de transacciones por ubicación</string>
@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">Mostrar el saldo total de las cuentas en el widget</string>
   <string name="attach_picture">Adjuntar una foto</string>
   <string name="new_picture">Toque aquí para activar la cámara</string>
-  <string name="report_by_sub_category">Por Categoría (vista jerárquica)</string>
-  <string name="report_by_sub_category_summary">Informe de transacciones por ramas de subcategorías</string>
   <string name="credits">Créditos</string>
   <string name="sort_by_title">Orden interno alfabético</string>
   <string name="sort_all_by_title">Ordenar todo alfabéticamente</string>
@@ -658,6 +656,11 @@
   <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
   <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
   <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
+  <string name="is_active">Is active</string>
+  <string name="report_income_expense_both">Income/Expenses</string>
+  <string name="report_income_expense_income">Income</string>
+  <string name="report_income_expense_expense">Expenses</string>
+  <string name="report_income_expense_summary">Summary</string>
   <string-array name="attribute_types">
     <item>Texto</item>
     <item>Número</item>

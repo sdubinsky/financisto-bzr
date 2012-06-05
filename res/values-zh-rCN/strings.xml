@@ -126,7 +126,7 @@
   <string name="overall">全体</string>
   <string name="report_by_period">以期间统计</string>
   <string name="report_by_period_summary">以期间分别统计的交易报告</string>
-  <string name="report_by_category">以分类统计</string>
+  <string name="report_by_category">By Category</string>
   <string name="report_by_category_summary">以分类分别统计的交易报告</string>
   <string name="report_by_location">以地点统计</string>
   <string name="report_by_location_summary">以地点分别统计的交易报告</string>
@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">在小工具显示账户总额</string>
   <string name="attach_picture">附加照片</string>
   <string name="new_picture">拍摄照片</string>
-  <string name="report_by_sub_category">以子分类统计</string>
-  <string name="report_by_sub_category_summary">以子分类分别统计的交易报告</string>
   <string name="credits">致谢</string>
   <string name="sort_by_title">按名称排序</string>
   <string name="sort_all_by_title">按名称排序</string>
@@ -658,6 +656,11 @@
   <string name="rate_not_available_error" formatted="false">没有指定 %s 和 %s 之间的汇率</string>
   <string name="collapse_blotter_buttons">折叠明细按钮</string>
   <string name="collapse_blotter_buttons_summary">将 新交易/转帐/模板 按钮放在一起(需重启)</string>
+  <string name="is_active">Is active</string>
+  <string name="report_income_expense_both">Income/Expenses</string>
+  <string name="report_income_expense_income">Income</string>
+  <string name="report_income_expense_expense">Expenses</string>
+  <string name="report_income_expense_summary">Summary</string>
   <string-array name="attribute_types">
     <item>文字</item>
     <item>数值</item>

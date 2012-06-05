@@ -32,19 +32,19 @@
   <string name="amount">Čiastka</string>
   <string name="date">Dátum</string>
   <string name="time">Čas</string>
-  <string name="parent">Nadradený</string>
+  <string name="parent">Nadradená kategória</string>
   <string name="total">Súčet:</string>
   <string name="filter">Filter</string>
   <string name="no_filter">Bez filtra</string>
   <string name="transfer">Prevod</string>
   <string name="confirmation">Potvrdenie</string>
-  <string name="delete_category_dialog">Zmazať kategóriu a všetky podkategórie (ak existujú)?</string>
-  <string name="currency_delete_alert">Nie je možné zmazať menu která sa používa.</string>
+  <string name="delete_category_dialog">Odstrániť kategóriu a všetky podkategórie (ak existujú)?</string>
+  <string name="currency_delete_alert">Nie je možné odstrániť menu, ktorá sa používa.</string>
   <string name="yes">Áno</string>
   <string name="no">Nie</string>
   <string name="error">Chyba</string>
   <string name="include_subcategories">Vrátane podkategórií</string>
-  <string name="include_subcategories_summary">Pridať transakciu z podkategórií</string>
+  <string name="include_subcategories_summary">Pridať transakcie z podkategórií</string>
   <string name="start_date">Dátum začiatku</string>
   <string name="end_date">Dátum konca</string>
   <string name="budget">Rozpočet</string>
@@ -74,11 +74,11 @@
   <string name="account_to">Na účet</string>
   <string name="amount_from">Odch. suma</string>
   <string name="amount_to">Prich. suma</string>
-  <string name="rate">Pomer</string>
-  <string name="no_rate">Bez pomeru</string>
+  <string name="rate">Kurz</string>
+  <string name="no_rate">Bez kurzu</string>
   <string name="transaction">Transakcia</string>
   <string name="transaction_title">Nová transakcia</string>
-  <string name="transfer_title">Nový prenos</string>
+  <string name="transfer_title">Nový prevod</string>
   <string name="about">O aplikácii</string>
   <string name="about_copyright2">Všetky práva vyhradené</string>
   <string name="menu">Menu</string>
@@ -96,13 +96,13 @@
   <string name="parent_attributes">Nadradené vlastnosti</string>
   <string name="change_attributes">Zmeniť vlastnosti</string>
   <string name="calculator">Kalkulačka</string>
-  <string name="no_attributes">Žiadna vlastnosť</string>
+  <string name="no_attributes">Žiadne vlastnosti</string>
   <string name="add_attribute">Pridať vlastnosť</string>
   <string name="new_attribute">Nová vlastnosť</string>
   <string name="attribute_type">Typ</string>
   <string name="attribute_name">Názov</string>
   <string name="attribute_values">Hodnoty</string>
-  <string name="attribute_values_hint">Použiť ; na oddelenie hodnôt</string>
+  <string name="attribute_values_hint">Použite ; na oddelenie hodnôt</string>
   <string name="attribute_default_value">Predvolená hodnota</string>
   <string name="checkbox_values">Áno/Nie</string>
   <string name="checkbox_values_yes">Áno</string>
@@ -123,10 +123,10 @@
   <string name="reports">Správy</string>
   <string name="no_reports">Žiadne správy</string>
   <string name="select_report">Prosím vyberte správu...</string>
-  <string name="overall">Súhrné</string>
+  <string name="overall">Súhrnné</string>
   <string name="report_by_period">Podľa obdobia</string>
   <string name="report_by_period_summary">Správa o transakciách podľa obdobia</string>
-  <string name="report_by_category">Podľa kategórie (Všetky)</string>
+  <string name="report_by_category">Podľa kategórie</string>
   <string name="report_by_category_summary">Správa o transakciách podľa kategórie</string>
   <string name="report_by_location">Podľa polohy</string>
   <string name="report_by_location_summary">Správa o transakciách podľa polohy</string>
@@ -146,13 +146,13 @@
   <string name="sum_result_label">Suma:</string>
   <string name="report_init_res">0</string>
   <string name="no_data_to_report">Pre zobrazenie správy nie sú dostupné žiadne dáta.</string>
-  <string name="report_preferences_not_set">Upravte nastavenia v menu Nastavenia správ. Vzhľadom na východiskovú menu a obdobie.</string>
-  <string name="currency_not_set">Referenčná mena nie je nastavená v Nastaveniach. Vzhľadom na východiskovú menu.</string>
-  <string name="period_not_set">Referenčné obdobie nie je nastavené v Nastaveniach. Vzhľadom na východiskové obdobie.</string>
-  <string name="report_no_category">Pre filtrovenie správy nie je dostupná žiadna kategória.</string>
-  <string name="report_no_project">Pre filtrovenie správy nie je dostupný žiadny projekt.</string>
-  <string name="report_no_account">Pre filtrovenie správy nie je dostupný žiadny účet.</string>
-  <string name="report_no_location">Pre filtrovenie správy nie je dostupná žiadna poloha.</string>
+  <string name="report_preferences_not_set">Upravte nastavenia v menu Nastavenia správ. Bola použitá predvolená mena a prednastavené obdobie.</string>
+  <string name="currency_not_set">Referenčná mena nie je nastavená v Nastaveniach správ. Bola použitá predvolená mena.</string>
+  <string name="period_not_set">Referenčné obdobie nie je nastavené v Nastaveniach správ. Bolo použité prednastavené obdobie.</string>
+  <string name="report_no_category">Pre filtrovanie správy nie je dostupná žiadna kategória.</string>
+  <string name="report_no_project">Pre filtrovanie správy nie je dostupný žiadny projekt.</string>
+  <string name="report_no_account">Pre filtrovanie správy nie je dostupný žiadny účet.</string>
+  <string name="report_no_location">Pre filtrovanie správy nie je dostupná žiadna poloha.</string>
   <string name="no_account">Žiadny účet</string>
   <string name="period_today">Dnes</string>
   <string name="period_yesterday">Včera</string>
@@ -164,13 +164,13 @@
   <string name="currency_symbol">Symbol meny</string>
   <string name="currency_code">Kód</string>
   <string name="currency_code_hint">kód ISO 4217</string>
-  <string name="is_default">Je predvolený</string>
+  <string name="is_default">Je predvolená</string>
   <string name="is_included_into_totals">Zahrnúť do súčtov</string>
   <string name="is_included_into_totals_summary">Zahrnúť transakcie z tohto účtu do celkového súčtu</string>
   <string name="decimals">\nDesatiny</string>
-  <string name="decimal_separator">Oddelovač\ndesatin</string>
-  <string name="group_separator">Oddelovač\ntisícov</string>
-  <string name="field_separator">Oddelovač\npolí</string>
+  <string name="decimal_separator">Oddeľovač\ndesatín</string>
+  <string name="group_separator">Oddeľovač\ntisícov</string>
+  <string name="field_separator">Oddeľovač\npolí</string>
   <string name="include_header">Vrátane\nhlavičky</string>
   <string name="delete_account_confirm">Odstrániť účet?</string>
   <string name="delete_transaction_confirm">Odstrániť transakciu?</string>
@@ -179,7 +179,7 @@
   <string name="delete_budget_recurring_confirm">Odstrániť opakujúci rozpočet?</string>
   <string name="delete_budget_one_entry">Tento záznam</string>
   <string name="delete_budget_all_entries">Všetky záznamy</string>
-  <string name="edit_recurring_budget">Upravujete opakujúci sa rozpočet, to ovlyvní všetky záznamy</string>
+  <string name="edit_recurring_budget">Upravujete opakujúci sa rozpočet, to ovplyvní všetky záznamy</string>
   <string name="account_type">Typ účtu</string>
   <string name="card_issuer">Vydavateľ karty</string>
   <string name="account_type_cash">Hotovosť</string>
@@ -191,13 +191,13 @@
   <string name="account_type_other">Iný</string>
   <string name="card_type">Typ karty</string>
   <string name="card_number">Číslo karty</string>
-  <string name="card_number_hint">Posledné 4 čísla karty</string>
+  <string name="card_number_hint">Posledné 4 číslice z čísla karty</string>
   <string name="issuer">Vydavateľ</string>
   <string name="cash">Hotovosť</string>
   <string name="sort_order">Zoradenie</string>
   <string name="force_gps_location">Vynútiť GPS polohu</string>
   <string name="whats_new">Čo je nové</string>
-  <string name="attribute_delete_alert">Toto odstráni vlastnosť z kategorií a transakcií.</string>
+  <string name="attribute_delete_alert">Toto odstráni vlastnosť z kategórií a transakcií.</string>
   <string name="user_interface">Používateľské rozhranie</string>
   <string name="sort_accounts">Zoradiť účty</string>
   <string name="sort_accounts_summary">Definovanie poradia triedenia zoznamu účtov (vyžaduje reštart)</string>
@@ -215,25 +215,25 @@
   <string name="restore">Obnoviť</string>
   <string name="backup_database">Zálohovať databázu</string>
   <string name="backup_database_inprogress">Zálohovanie databázy...</string>
-  <string name="backup_database_gdocs">Zálohovať na Google Dokumenty</string>
+  <string name="backup_database_gdocs">Zálohovať na Disk Google</string>
   <string name="backup_database_gdocs_inprogress">Zálohovanie databázy...</string>
   <string name="csv_export">CSV Export</string>
   <string name="csv_export_inprogress">Exportovanie databázy do CSV...</string>
   <string name="restore_database">Obnoviť databázu</string>
   <string name="restore_database_inprogress">Obnovuje sa databáza...</string>
-  <string name="restore_database_gdocs">Obnoviť z Google Dokumenty</string>
+  <string name="restore_database_gdocs">Obnoviť z Disku Google</string>
   <string name="restore_database_inprogress_gdocs">Obnovuje sa databáza...</string>
   <string name="restore_database_success">Databáza bola úspešne obnovená.</string>
-  <string name="gdocs_connection_failed">Nedá sa pripojiť na Google Dokumenty.</string>
-  <string name="gdocs_folder_not_found">Priečinok zálohy na Google Dokumenty nebol nájdený.</string>
-  <string name="gdocs_credentials_not_configured">Prosím nastavte v Nastaveniach prihlasovacie údaje k účtu Google.</string>
-  <string name="gdocs_folder_not_configured">Prosím nastavte v Nastaveniach priečinok zálohy Google Dokumenty.</string>
+  <string name="gdocs_connection_failed">Nedá sa pripojiť na Disk Google.</string>
+  <string name="gdocs_folder_not_found">Priečinok zálohy na Disk Google nebol nájdený.</string>
+  <string name="gdocs_credentials_not_configured">Prosím, nastavte v Nastaveniach prihlasovacie údaje k účtu Google.</string>
+  <string name="gdocs_folder_not_configured">Prosím, nastavte v Nastaveniach priečinok zálohy Disk Google.</string>
   <string name="gdocs_login_failed">Neplatné prihlasovacie údaje k účtu Google.</string>
-  <string name="gdocs_backup_failed">Chyba pri odosielaní zálohy na Google Dokumenty. Skúste to znova.</string>
+  <string name="gdocs_backup_failed">Chyba pri odosielaní zálohy na Disk Google. Skúste to znova.</string>
   <string name="gdocs_restore_failed">Chyba pri získavaní súboru zálohy. Skúste to znova.</string>
-  <string name="gdocs_folder_error">Chyba pri prístupe k priečinku v Google Dokumenty.</string>
-  <string name="gdocs_service_error">Chyba, služba Google Dokumenty nie je k dostupná.</string>
-  <string name="gdocs_io_error">Chyba pripojenia s Google Dokumenty.</string>
+  <string name="gdocs_folder_error">Chyba pri prístupe k priečinku v Disk Google.</string>
+  <string name="gdocs_service_error">Chyba, služba Disk Google nie je dostupná.</string>
+  <string name="gdocs_io_error">Chyba pripojenia s Disk Google.</string>
   <string name="package_info_error">Nebolo možné získať prístup k balíčku informácií Financisto.</string>
   <string name="success">Úspešne!</string>
   <string name="fail">Chyba...</string>
@@ -246,7 +246,7 @@
   <string name="difference">Rozdiel</string>
   <string name="new_balance">Nový zostatok</string>
   <string name="duplicate_success">Transakcia bola duplikovaná s aktuálny dátumom a časom</string>
-  <string name="duplicate_success_with_multiplier">Transakcia bola duplikovaná s aktuálny dátumom a časom (x%d)</string>
+  <string name="duplicate_success_with_multiplier">Transakcia bola duplikovaná s aktuálnym dátumom a časom (x%d)</string>
   <string name="no_category">Bez kategórie</string>
   <string name="no_project">Bez projektu</string>
   <string name="no_period">Bez obdobia</string>
@@ -256,7 +256,7 @@
   <string name="transaction_screen_summary">Nastavenia pre obrazovku nová transakcia/prevod</string>
   <string name="screen_layout">Rozloženie obrazovky</string>
   <string name="show_location">Zobraziť polohu</string>
-  <string name="show_location_summary">Zobraziť menu poloha</string>
+  <string name="show_location_summary">Zobraziť pole pre výber polohy</string>
   <string name="show_location_order">Zoradenie polôh</string>
   <string name="show_location_order_summary">Relatívna pozícia menu polohy</string>
   <string name="show_payee">Zobraziť príjemcu</string>
@@ -265,11 +265,11 @@
   <string name="show_payee_order_summary">Relatívna pozícia edit. poľa príjemcu</string>
   <string name="show_note">Zobraziť poznámku</string>
   <string name="show_note_summary">Zobraziť edit. pole poznámky</string>
-  <string name="show_note_order">Zoradenie poznámok</string>
+  <string name="show_note_order">Poradie poznámky</string>
   <string name="show_note_order_summary">Relatívna pozícia poznámkového edit. poľa</string>
   <string name="show_project">Zobraziť projekt</string>
   <string name="show_project_summary">Zobraziť menu projektu</string>
-  <string name="show_project_order">Zoradenie projektov</string>
+  <string name="show_project_order">Poradie projektu</string>
   <string name="show_project_order_summary">Relatívna pozícia projektového menu</string>
   <string name="remember_selection">Zapamätať si výber</string>
   <string name="remember_last_account">Posledný účet</string>
@@ -295,7 +295,7 @@
   <string name="recur_interval_weekly">Týždenne</string>
   <string name="recur_interval_monthly">Mesačne</string>
   <string name="recur_interval_semi_monthly">Pol-mesačne</string>
-  <string name="recur_interval_yearly">Ročně</string>
+  <string name="recur_interval_yearly">Ročne</string>
   <string name="recur_stops_on_date">Končí dátumom</string>
   <string name="recur_stops_on_date_summary">Končí: %s</string>
   <string name="recur_indefinitely">Nekonečne</string>
@@ -307,7 +307,7 @@
   <string name="recur_repeat_indefinitely">Nekonečne</string>
   <string name="recur_repeat_exactly">Presne</string>
   <string name="recur_repeat_times">krát</string>
-  <string name="recur_repeat_starts_on">Začíná</string>
+  <string name="recur_repeat_starts_on">Začína</string>
   <string name="recur_repeat_stops_on">Končí</string>
   <string name="recur_error_specify_days">Prosím, uveďte počet dní</string>
   <string name="recur_error_specify_first_day">Prosím, uveďte prvý deň</string>
@@ -327,18 +327,18 @@
   <string name="shortcut_new_transfer">Odkaz \'Nový prevod\'</string>
   <string name="shortcut_summary">Pridať odkaz na domácu obrazovku</string>
   <string name="use_fixed_layout">Použiť fixné rozloženie</string>
-  <string name="use_fixed_layout_summary">Nastaviť tlač. OK/Zrušiť napevno v rozložení</string>
+  <string name="use_fixed_layout_summary">Tlačidlá OK a Zrušiť vždy viditeľné</string>
   <string name="no_data">Žiadne dáta</string>
   <string name="calculating">Počítam...</string>
   <string name="budget_mode">Zjednodušiť podmienky</string>
   <string name="budget_mode_summary">Použiť menej obmedzujúce podmienky (kategórie alebo projekty) na filtrovanie transakcií</string>
-  <string name="gdocs_backup">Záloha Google Dokumenty</string>
+  <string name="gdocs_backup">Záloha Disk Google</string>
   <string name="user_login">Prihlásenie</string>
   <string name="user_login_summary">Prihlásenie na Google účet (užív. meno)</string>
   <string name="user_password">Heslo</string>
   <string name="user_password_summary">Heslo na Google účet</string>
-  <string name="backup_folder">Zálohovať inkaso</string>
-  <string name="backup_folder_summary">Pre uloženie súborov zálohy vytvoriť nové inkaso v Mojich inkasách</string>
+  <string name="backup_folder">Zálohovať do priečinka</string>
+  <string name="backup_folder_summary">Pre uloženie súborov zálohy vytvorte nový priečinok na Disk Google</string>
   <string name="report_preferences">Nastavenia správ</string>
   <string name="all_reports_preferences">Hlavné Nastavenia správ</string>
   <string name="category_by_period_preferences">Nastavenia kategórie za obdobie</string>
@@ -349,17 +349,17 @@
   <string name="report_consider_null_results">Zahrnúť nulové výsl. do štatistík</string>
   <string name="report_consider_null_results_summary">Zahrnúť nulové výsledky do generovania štatistík (min, max a stred).</string>
   <string name="report_include_no_filter">Vrátane bez &lt;filtru&gt;</string>
-  <string name="report_include_no_filter_summary">Vrátane nezaradených transakcií na zozname filtrov správ (Bez kategórie, Bez projektu a Neznáma poloha)</string>
+  <string name="report_include_no_filter_summary">Zahrnúť nezaradené transakcie do zoznamu filtrov správ (Bez kategórie, Bez projektu a Neznáma poloha)</string>
   <string name="report_reference_month">Referenčný mesiac</string>
   <string name="report_reference_month_summary">Definovanie referenčného mesiaca, predstavujúceho koniec zobrazeného obdobia správy.</string>
   <string name="report_last_quarter">Minulý štvrťrok</string>
   <string name="report_last_half_year">Minulý polrok</string>
-  <string name="report_last_9_months">Predch. 9 mesiacov</string>
+  <string name="report_last_9_months">Posledných 9 mesiacov</string>
   <string name="report_last_year">Minulý rok</string>
   <string name="report_reference_period">Referenčné obdobie</string>
   <string name="report_reference_period_summary">Definovanie referenčného obdobia (počet mesiacov), ktoré bude zahrnuté v grafoch správy.</string>
   <string name="report_reference_currency">Referenčná mena</string>
-  <string name="report_reference_currency_summary">Definovanie referenčnej meny, ktorá bude zahrnutá v dátach grafov správy.</string>
+  <string name="report_reference_currency_summary">Definovanie referenčnej meny, ktorá bude použitá pre získanie dát grafov správ</string>
   <string name="report_last_n_months">Posledných $n mesiacov</string>
   <string name="report_n_months_var">$n</string>
   <string name="month_jan">JAN</string>
@@ -403,7 +403,7 @@
   <string name="recur_interval_geeky">Rozumne</string>
   <string name="recurrence_pattern">Vzor opakovania</string>
   <string name="recurrence_period">Doba opakovania</string>
-  <string name="recurrence_period_starts_on">Začíná</string>
+  <string name="recurrence_period_starts_on">Začína</string>
   <string name="recurrence_weekly_days">Týždenne v</string>
   <string name="recurrence_monthly_pattern">Mesačný vzor</string>
   <string name="recurrence_monthly_every_nth_day">Každý N-tý deň</string>
@@ -412,7 +412,7 @@
   <string name="recur_interval_semi_monthly_2">2. deň</string>
   <string name="recurrence_none">Bez opakovania</string>
   <string name="specify_value">Upresniť hodnotu...</string>
-  <string name="recurrence_evaluate">Vyhodnotiť dáta</string>
+  <string name="recurrence_evaluate">Vypočítať dátumy</string>
   <string name="first">Prvý</string>
   <string name="second">Druhý</string>
   <string name="third">Tretí</string>
@@ -420,7 +420,7 @@
   <string name="last">Posledný</string>
   <string name="day">deň</string>
   <string name="weekday">pracovný deň</string>
-  <string name="weekend_day">víkend</string>
+  <string name="weekend_day">víkendový deň</string>
   <string name="sunday">Nedeľa</string>
   <string name="monday">Pondelok</string>
   <string name="tuesday">Utorok</string>
@@ -470,16 +470,14 @@
   <string name="expired">(neplatné)</string>
   <string name="pending">(čakajúce)</string>
   <string name="system_attribute_delete_after_expired">Odstrániť po vypršaní</string>
-  <string name="no_transaction_found">Nenájdená žiadna transakcia, prosím reštartujte Financisto...</string>
-  <string name="include_credit">Vrátane prímov</string>
-  <string name="include_credit_summary">Vrátane prímov (prímy alebo výnosy) započítať do zostatku rozpočtu</string>
+  <string name="no_transaction_found">Nebola nájdená žiadna transakcia, prosím reštartujte Financisto...</string>
+  <string name="include_credit">Vrátane príjmov</string>
+  <string name="include_credit_summary">Zahrnúť príjmy (príjmy alebo výnosy) do zostatku rozpočtu</string>
   <string name="enable_widget">Povoliť widget</string>
   <string name="enable_widget_summary">Zobraziť zostatok účtu na widgete</string>
   <string name="attach_picture">Priložiť obrázok</string>
   <string name="new_picture">Odfotiť</string>
-  <string name="report_by_sub_category">Podľa kategórie (zostupne)</string>
-  <string name="report_by_sub_category_summary">Správa o transakciách podľa podkategórie</string>
-  <string name="credits">Prímy</string>
+  <string name="credits">Príjmy</string>
   <string name="sort_by_title">Zoradiť podľa názvu</string>
   <string name="sort_all_by_title">Zoradiť všetko podľa názvu</string>
   <string name="include_transfers_into_reports">Prevody do správ</string>
@@ -502,7 +500,7 @@
   <string name="credit_card_statement">Výpis kreditnej karty</string>
   <string name="ccard_statement_title">&lt;kreditka&gt; výpis</string>
   <string name="ccard_par">&lt;kreditka&gt;</string>
-  <string name="bill_on">Účet za </string>
+  <string name="bill_on">Účet z </string>
   <string name="monthly_result">Mesačný zostatok</string>
   <string name="closing_day_error">Neplatný deň uzávierky.</string>
   <string name="payment_day_error">Neplatný deň splatnosti.</string>
@@ -510,10 +508,10 @@
   <string name="is_ccard_payment">Platba kreditnou kartou</string>
   <string name="is_ccard_payment_summary">Nezahrnúť do zostatku</string>
   <string name="header_payments">Platby</string>
-  <string name="header_credits">Rôzne prímy</string>
+  <string name="header_credits">Rôzne príjmy</string>
   <string name="header_expenses">Výdavky</string>
   <string name="ui_language">Lokalizácia</string>
-  <string name="ui_language_summary">Nastaviť jazyk prostredia (vyžaduje sa reštart!)</string>
+  <string name="ui_language_summary">Nastaviť jazyk (vyžaduje reštart!)</string>
   <string name="enter_pin">Zadajte PIN</string>
   <string name="mass_operations">Hromadné operácie</string>
   <string name="card_issuer_unionpay">UnionPay</string>
@@ -536,11 +534,11 @@
   <string name="show_picture_summary">Zobraziť položku \'Odfotiť\'</string>
   <string name="payees">Príjemcovia</string>
   <string name="report_by_payee">Podľa príjemcu</string>
-  <string name="report_by_payee_summary">Správa o transakcii podľa príjemcu</string>
+  <string name="report_by_payee_summary">Správa o transakciách podľa príjemcu</string>
   <string name="report_by_payee_by_period">Podľa Príjemcu/Obdobia</string>
-  <string name="report_by_payee_by_period_summary">Správa o transakcii podľa príjemcu a obdobia</string>
-  <string name="no_payee">Žiadny príjemcovia</string>
-  <string name="report_no_payee">Pre filtrovenie správy nie sú dostupný žiadny príjemcovia.</string>
+  <string name="report_by_payee_by_period_summary">Správa o transakciách podľa príjemcu a obdobia</string>
+  <string name="no_payee">Žiadni príjemcovia</string>
+  <string name="report_no_payee">Pre filtrovanie správy nie sú dostupní žiadni príjemcovia.</string>
   <string name="donate">Podporiť vývoj</string>
   <string name="donate_error">Android Market nie je dostupný na Vašom zariadení</string>
   <string name="type">Typ</string>
@@ -554,10 +552,10 @@
   <string name="show_running_balance_summary">Zobraziť priebežný zostatok účtu v účtovnej knihe (vyž. reštart)</string>
   <string name="new_currency">Nová mena...</string>
   <string name="lock_time">Interval zamykania</string>
-  <string name="lock_time_summary">Doba po ktorú nechať hlavnú obrazovku nezamknutú</string>
+  <string name="lock_time_summary">Doba, po ktorú nechať hlavnú obrazovku nezamknutú</string>
   <string name="date_format">Formát dátumu</string>
-  <string name="pin_protection_lock_transaction">Zamknúť Nové transakcie\\Prevod</string>
-  <string name="pin_protection_lock_transaction_summary">Zamkne obrazovky \'Nové transakcie\' a \'Nový prevod\' s PIN</string>
+  <string name="pin_protection_lock_transaction">Zamknúť Nové transakcie\\Prevody</string>
+  <string name="pin_protection_lock_transaction_summary">Zamkne obrazovky \'Nová transakcia\' a \'Nový prevod\' s PIN</string>
   <string name="split">[Rozdeliť...]</string>
   <string name="split_transaction">[Rozdeliť-Transakciu]</string>
   <string name="split_transfer">[Rozdeliť-Prevod]</string>
@@ -567,8 +565,8 @@
   <string name="downloading_rate" formatted="false">Načítanie %s/%s prevodného kurzu...</string>
   <string name="unsplit_adjust_amount">Zostatok</string>
   <string name="unsplit_adjust_amount_summary">Upraviť zostatok</string>
-  <string name="unsplit_adjust_evenly">Rovnomerne</string>
-  <string name="unsplit_adjust_evenly_summary">Upraviť rovnomerne</string>
+  <string name="unsplit_adjust_evenly">Rovnako</string>
+  <string name="unsplit_adjust_evenly_summary">Upraviť každý rovnako</string>
   <string name="unsplit_adjust_last">Posledný</string>
   <string name="unsplit_adjust_last_summary">Upraviť posledný</string>
   <string name="add_transfer">Pridať prevod</string>
@@ -577,8 +575,8 @@
   <string name="no_filemanager_installed">Nie je nainš. správca súborov</string>
   <string name="csv_import">CSV Import</string>
   <string name="csv_import_inprogress">Importujem dáta z CSV...</string>
-  <string name="select_filename">Vyberte súbor k importu</string>
-  <string name="import_file_not_found">Importovaný súbor nebol nájdený</string>
+  <string name="select_filename">Vyberte súbor na import</string>
+  <string name="import_file_not_found">Súbor na import nebol nájdený</string>
   <string name="import_unknown_category">Neznáma kategória v importovanom súbore</string>
   <string name="import_unknown_project">Neznámy projekt v importovanom súbore</string>
   <string name="import_wrong_currency">Chybná mena v importovanom súbore</string>
@@ -591,7 +589,7 @@
   <string name="qif_import_success">QIF súbor bol úspešne importovaný</string>
   <string name="import_export">Import/Export</string>
   <string name="qif_import_disclaimer">*UPOZORNENIE* Všetky existujúce dáta budú odstránené!</string>
-  <string name="remember_last_category_for_payee">Poslednú kategóriu</string>
+  <string name="remember_last_category_for_payee">Posledná kategória</string>
   <string name="remember_last_category_for_payee_summary">Zapamätať si poslednú kategóriu pre vybraného príjemcu (alebo účet, ak je príjemca zakázaný)</string>
   <string name="currency_symbol_format">Formát symbolu meny</string>
   <string name="use_header_from_file">Použiť hlavičku zo súboru</string>
@@ -603,7 +601,7 @@
   <string name="auto_backup_enabled">Povoliť automatickú zálohu</string>
   <string name="auto_backup_enabled_summary">Zálohovať databázu denne v určenom čase</string>
   <string name="auto_backup_time">Čas automatickej zálohy</string>
-  <string name="auto_backup_time_summary" formatted="false">Urobiť dennú zálohu v %02d:%02d</string>
+  <string name="auto_backup_time_summary" formatted="false">Urobiť dennú zálohu o %02d:%02d</string>
   <string name="select_folder">Vybrať aktuálny priečinok</string>
   <string name="create">Vytvoriť</string>
   <string name="create_new_folder">Nový</string>
@@ -615,9 +613,9 @@
   <string name="backup_database_to">Odoslať zálohu na...</string>
   <string name="backup_database_to_title">Odoslať zálohu databázy do...</string>
   <string name="license">Licencia</string>
-  <string name="quick_menu_account_enabled">Rychlé menu Účtov</string>
+  <string name="quick_menu_account_enabled">Rýchle menu Účtov</string>
   <string name="quick_menu_account_enabled_summary">Povoliť menu \"na dotyk\" v Účtoch</string>
-  <string name="quick_menu_transaction_enabled">Rychlé menu Účtovnej knihy</string>
+  <string name="quick_menu_transaction_enabled">Rýchle menu Účtovnej knihy</string>
   <string name="quick_menu_transaction_enabled_summary">Povoliť menu \"na dotyk\" v Účtovnej knihe</string>
   <string name="dropbox">Dropbox</string>
   <string name="dropbox_authorize">Povoliť</string>
@@ -630,7 +628,7 @@
   <string name="dropbox_upload_autobackup_summary">Nahrať automatické zálohy databázy na Dropbox</string>
   <string name="dropbox_uploading_file">Nahrávam súbor na Dropbox...</string>
   <string name="exchange_rates">Výmenné kurzy</string>
-  <string name="no_exchange_rates">Žiadne kurzy</string>
+  <string name="no_exchange_rates">Žiadne výmenné kurzy</string>
   <string name="exchange_rate">Výmenný kurz</string>
   <string name="rate_from_currency">Z meny</string>
   <string name="rate_to_currency">Do meny</string>
@@ -643,8 +641,8 @@
   <string name="use_hierarchical_category_selector_summary">Použiť hierarchický výber kategórií</string>
   <string name="hierarchical_category_selector_select_child_immediately">Automaticky potvrdiť</string>
   <string name="hierarchical_category_selector_select_child_immediately_summary">Automaticky potvrdiť výber podkategórie</string>
-  <string name="hierarchical_category_selector_income_expense">Príjem/Výdaj</string>
-  <string name="hierarchical_category_selector_income_expense_summary">Zoskupiť prímové a výdajové kategórie dohromady</string>
+  <string name="hierarchical_category_selector_income_expense">Príjmy/Výdavky</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Zoskupiť príjmové a výdavkové kategórie do skupín Príjmy a Výdavky</string>
   <string name="totals">Súčty</string>
   <string name="account_total_in_currency">Všetky účty %s</string>
   <string name="blotter_total_in_currency">Všetky transakcie %s</string>
@@ -654,15 +652,20 @@
   <string name="home_currency">Domáca mena</string>
   <string name="upload_to_dropbox">Nahrať na\nDropbox</string>
   <string name="not_available">Nedostupné</string>
-  <string name="rate_not_available_on_date_error" formatted="false">Žiadny výmenný kurz uvedený na %s pre prepočet z %s na %s</string>
-  <string name="rate_not_available_error" formatted="false">Žiadny výmenný kurz uvedený pre prepočet z %s na %s</string>
+  <string name="rate_not_available_on_date_error" formatted="false">Na %s nie je uvedený žiadny výmenný kurz pre prepočet z %s na %s</string>
+  <string name="rate_not_available_error" formatted="false">Nie je uvedený žiadny výmenný kurz pre prepočet z %s na %s</string>
   <string name="collapse_blotter_buttons">Zbaliť tlačidlo účtovnej knihy</string>
   <string name="collapse_blotter_buttons_summary">Zoskupiť tlačidlá Nové transakcia/Prevod/Šablóna spolu (vyžaduje reštart)</string>
+  <string name="is_active">Je aktívny</string>
+  <string name="report_income_expense_both">Príjmy/Výdavky</string>
+  <string name="report_income_expense_income">Príjmy</string>
+  <string name="report_income_expense_expense">Výdavky</string>
+  <string name="report_income_expense_summary">Súhrn</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Číslo</item>
     <item>Zoznam</item>
-    <item>Odškrtávač</item>
+    <item>Zaškrtávacie políčko</item>
   </string-array>
   <string-array name="datetime_filter_items">
     <item>Dnes</item>
@@ -679,8 +682,8 @@
     <item>Kreditná karta</item>
   </string-array>
   <string-array name="sort_accounts_entities">
-    <item>Vzostupne</item>
-    <item>Zostupne</item>
+    <item>Vzostupne podľa def. poradia</item>
+    <item>Zostupne podľa def. poradia</item>
     <item>Podľa mena</item>
   </string-array>
   <string-array name="sort_locations_entities">
@@ -692,13 +695,13 @@
     <item>Od najstaršieho</item>
   </string-array>
   <string-array name="report_reference_month_entities">
-    <item>Pred 6 mesiacmi</item>
-    <item>Pred 3 mesiacmi</item>
+    <item>O 6 mesiacov dozadu</item>
+    <item>O 3 mesiace dozadu</item>
     <item>Minulý mesiac</item>
     <item>Aktuálny mesiac</item>
     <item>Budúci mesiac</item>
-    <item>Nasledujúce 3 mesiace</item>
-    <item>Nasledujúcich 6 mesiacov</item>
+    <item>O 3 mesiace dopredu</item>
+    <item>O 6 mesiacov dopredu</item>
   </string-array>
   <string-array name="report_reference_period_entities">
     <item>3 mesiace</item>

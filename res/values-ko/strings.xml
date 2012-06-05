@@ -126,7 +126,7 @@
   <string name="overall">총액</string>
   <string name="report_by_period">기간 별</string>
   <string name="report_by_period_summary">기간 별 거래 보고서</string>
-  <string name="report_by_category">분류 별</string>
+  <string name="report_by_category">By Category</string>
   <string name="report_by_category_summary">분류 별 거래 보고서</string>
   <string name="report_by_location">위치 별</string>
   <string name="report_by_location_summary">위치 별 거래 보고서</string>
@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">위젯에 계정 총 계 보이기</string>
   <string name="attach_picture">사진 첨부</string>
   <string name="new_picture">사진 찍기</string>
-  <string name="report_by_sub_category">부-분류 별</string>
-  <string name="report_by_sub_category_summary">부-분류 별 거래 보고서</string>
   <string name="credits">공헌</string>
   <string name="sort_by_title">제목 순 정령</string>
   <string name="sort_all_by_title">모든 제목 정렬</string>
@@ -658,6 +656,11 @@
   <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
   <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
   <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
+  <string name="is_active">Is active</string>
+  <string name="report_income_expense_both">Income/Expenses</string>
+  <string name="report_income_expense_income">Income</string>
+  <string name="report_income_expense_expense">Expenses</string>
+  <string name="report_income_expense_summary">Summary</string>
   <string-array name="attribute_types">
     <item>문구</item>
     <item>숫자</item>

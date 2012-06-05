@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">Показывать баланс на виджете</string>
   <string name="attach_picture">Прикрепить фото</string>
   <string name="new_picture">Сфотографировать</string>
-  <string name="report_by_sub_category">По под-категориям</string>
-  <string name="report_by_sub_category_summary">Отчёт по под-категориям</string>
   <string name="credits">Благодарность</string>
   <string name="sort_by_title">Сортировать по заголовкам</string>
   <string name="sort_all_by_title">Сортировать все по заголовкам</string>
@@ -657,7 +655,12 @@
   <string name="rate_not_available_on_date_error" formatted="false">Не указан обменный курс на %s чтобы вычислить сумму между %s и %s</string>
   <string name="rate_not_available_error" formatted="false">Не указан обменный курс между %s и %s</string>
   <string name="collapse_blotter_buttons">Объединить кнопки Блоттера</string>
-  <string name="collapse_blotter_buttons_summary">Объеденить кнопки Новая транзакция/перевод/шаблон вместе (требует перезагрузки)</string>
+  <string name="collapse_blotter_buttons_summary">Объединить кнопки Новая транзакция/перевод/шаблон вместе (требует перезагрузки)</string>
+  <string name="is_active">Активно</string>
+  <string name="report_income_expense_both">Доходы/расходы</string>
+  <string name="report_income_expense_income">Доход</string>
+  <string name="report_income_expense_expense">Расходы</string>
+  <string name="report_income_expense_summary">Сумма</string>
   <string-array name="attribute_types">
     <item>Текст</item>
     <item>Число</item>
@@ -714,5 +717,4 @@
     <item>10 минут</item>
     <item>15 минут</item>
   </string-array>
-  <string name="is_active">Активный</string>
 </resources>

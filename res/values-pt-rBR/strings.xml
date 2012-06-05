@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">Mostrar total da conta no widget</string>
   <string name="attach_picture">Adicionar foto</string>
   <string name="new_picture">Tirar foto</string>
-  <string name="report_by_sub_category">Por Sub-categoria</string>
-  <string name="report_by_sub_category_summary">Transações listadas por sub-categoria</string>
   <string name="credits">Créditos</string>
   <string name="sort_by_title">Ordenar por título</string>
   <string name="sort_all_by_title">Ordenar tudo por título</string>
@@ -644,20 +642,25 @@
   <string name="hierarchical_category_selector_select_child_immediately">Confirmar automaticamente</string>
   <string name="hierarchical_category_selector_select_child_immediately_summary">Confirmar seleção de categoria filho automaticamente</string>
   <string name="hierarchical_category_selector_income_expense">Receita/Despesa</string>
-  <string name="hierarchical_category_selector_income_expense_summary">Grupo de categorias receitas e despesas juntos</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Agrupar categorias receitas e despesas juntos</string>
   <string name="totals">Totais</string>
   <string name="account_total_in_currency">Todas as %s contas</string>
   <string name="blotter_total_in_currency">Todas as %s transações</string>
-  <string name="budget_total_in_currency">Todas os %s orçamentos</string>
+  <string name="budget_total_in_currency">Todos os %s orçamentos</string>
   <string name="home_currency_total">Total em moeda local</string>
   <string name="total_rate">Taxa: %0.5f</string>
   <string name="home_currency">Moeda local</string>
-  <string name="upload_to_dropbox">Upload para o\nDropbox</string>
+  <string name="upload_to_dropbox">Upload para \nDropbox</string>
   <string name="not_available">N/D</string>
   <string name="rate_not_available_on_date_error" formatted="false">Nenhuma taxa de câmbio especificada em %s para calcular entre %s e %s</string>
   <string name="rate_not_available_error" formatted="false">Nenhuma taxa de câmbio especificada entre %s e %s</string>
   <string name="collapse_blotter_buttons">Reduzir botões de Registro</string>
   <string name="collapse_blotter_buttons_summary">Agrupar os botões Nova(o) Transação/Transferência/Modelo (requer reinicialização)</string>
+  <string name="is_active">Ativo</string>
+  <string name="report_income_expense_both">Receitas/Despesas</string>
+  <string name="report_income_expense_income">Receitas</string>
+  <string name="report_income_expense_expense">Despesas</string>
+  <string name="report_income_expense_summary">Sumário</string>
   <string-array name="attribute_types">
     <item>Texto</item>
     <item>Número</item>

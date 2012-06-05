@@ -126,7 +126,7 @@
   <string name="overall">全體</string>
   <string name="report_by_period">以期間統計</string>
   <string name="report_by_period_summary">以期間分別統計的交易報告</string>
-  <string name="report_by_category">以分類統計</string>
+  <string name="report_by_category">By Category</string>
   <string name="report_by_category_summary">在同一層列出所有分類的交易報告</string>
   <string name="report_by_location">以地點統計</string>
   <string name="report_by_location_summary">以地點分別統計的交易報告</string>
@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">在小工具顯示帳戶總額</string>
   <string name="attach_picture">附加照片</string>
   <string name="new_picture">拍攝照片</string>
-  <string name="report_by_sub_category">以樹狀分類統計</string>
-  <string name="report_by_sub_category_summary">將各分類依階層顯示的交易報告</string>
   <string name="credits">信用額度</string>
   <string name="sort_by_title">根據標題排序</string>
   <string name="sort_all_by_title">全部根據標題排序</string>
@@ -658,6 +656,11 @@
   <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
   <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
   <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
+  <string name="is_active">Is active</string>
+  <string name="report_income_expense_both">Income/Expenses</string>
+  <string name="report_income_expense_income">Income</string>
+  <string name="report_income_expense_expense">Expenses</string>
+  <string name="report_income_expense_summary">Summary</string>
   <string-array name="attribute_types">
     <item>文字</item>
     <item>數值</item>

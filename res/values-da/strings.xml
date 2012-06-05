@@ -126,7 +126,7 @@
   <string name="overall">I alt</string>
   <string name="report_by_period">Efter Periode</string>
   <string name="report_by_period_summary">Transaktionsrapport efter periode</string>
-  <string name="report_by_category">Efter Kategori</string>
+  <string name="report_by_category">By Category</string>
   <string name="report_by_category_summary">Transaktionsrapport efter kategori</string>
   <string name="report_by_location">Efter Lokation</string>
   <string name="report_by_location_summary">Transaktionsrapport efter lokation</string>
@@ -477,8 +477,6 @@
   <string name="enable_widget_summary">Vis konto total widget</string>
   <string name="attach_picture">Tilføj billede</string>
   <string name="new_picture">Tag et billede</string>
-  <string name="report_by_sub_category">Efter Underkategori</string>
-  <string name="report_by_sub_category_summary">Transaktionsrapport efter underkategori</string>
   <string name="credits">Kreditter</string>
   <string name="sort_by_title">Sorter efter titel</string>
   <string name="sort_all_by_title">Sorter alt efter titel</string>
@@ -658,6 +656,11 @@
   <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
   <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
   <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
+  <string name="is_active">Is active</string>
+  <string name="report_income_expense_both">Income/Expenses</string>
+  <string name="report_income_expense_income">Income</string>
+  <string name="report_income_expense_expense">Expenses</string>
+  <string name="report_income_expense_summary">Summary</string>
   <string-array name="attribute_types">
     <item>Tekst</item>
     <item>Nummer</item>
