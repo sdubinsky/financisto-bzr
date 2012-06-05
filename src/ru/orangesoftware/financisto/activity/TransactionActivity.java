@@ -49,7 +49,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	private static final int MENU_TURN_GPS_ON = Menu.FIRST;
     private static final int SPLIT_REQUEST = 5001;
 
-    private long idSequence = 0;
+    private long idSequence = 0;   
     private final IdentityHashMap<View, Transaction> viewToSplitMap = new IdentityHashMap<View, Transaction>();
 
     private AutoCompleteTextView payeeText;
@@ -147,9 +147,16 @@ public class TransactionActivity extends AbstractTransactionActivity {
     private void unsplitAdjustLast() {
         long unsplitAmount = calculateUnsplitAmount();
         if (unsplitAmount != 0) {
-            List<Transaction> splits = new ArrayList<Transaction>(viewToSplitMap.values());
-            SplitAdjuster.adjustLast(splits, unsplitAmount);
-            updateSplits();
+            Transaction latestTransaction = null;
+            for (Transaction t : viewToSplitMap.values()) {
+                if (latestTransaction == null || latestTransaction.id > t.id) {
+                    latestTransaction = t;
+                }
+            }
+            if (latestTransaction != null) {
+                SplitAdjuster.adjustSplit(latestTransaction, unsplitAmount);
+                updateSplits();
+            }
         }
     }
 

@@ -33,7 +33,11 @@ public class SplitAdjuster {
         if (noSplits(splits)) {
             return;
         }
-        splits.get(splits.size()-1).fromAmount += unsplitAmount;
+        adjustSplit(splits.get(splits.size()-1), unsplitAmount);
+    }
+
+    public static void adjustSplit(Transaction split, long unsplitAmount) {
+        split.fromAmount += unsplitAmount;
     }
 
     private static boolean noSplits(List<Transaction> splits) {
