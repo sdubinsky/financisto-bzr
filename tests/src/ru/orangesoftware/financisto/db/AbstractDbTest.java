@@ -38,13 +38,13 @@ public abstract class AbstractDbTest extends AndroidTestCase {
 
     public void assertAccountTotal(Account account, long total) {
         Account a = db.em().getAccount(account.id);
-        assertEquals(total, a.totalAmount);
+        assertEquals("Account "+account.id+" total", total, a.totalAmount);
     }
 
-    public void assertFinalBalanceForAccount(Account a, long expectedBalance) {
+    public void assertFinalBalanceForAccount(Account account, long expectedBalance) {
         long balance = DatabaseUtils.rawFetchLongValue(db, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
-                new String[]{String.valueOf(a.id)});
-        assertEquals(expectedBalance, balance);
+                new String[]{String.valueOf(account.id)});
+        assertEquals("Account "+account.id+" final balance", expectedBalance, balance);
     }
 
     public void assertAccountBalanceForTransaction(Transaction t, Account a, long expectedBalance) {

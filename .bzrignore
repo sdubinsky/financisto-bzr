@@ -10,3 +10,4 @@ GreenDroid/GreenDroid.eml
 .idea/tasks.xml
 local.properties
 tests/coverage.em
+tests/coverage

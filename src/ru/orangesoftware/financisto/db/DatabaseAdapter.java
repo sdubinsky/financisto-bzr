@@ -75,7 +75,8 @@ public class DatabaseAdapter {
 								TransactionColumns.from_account_id +"="+TransactionColumns.to_account_id +", "+
 								TransactionColumns.from_amount +"="+TransactionColumns.to_amount +", "+
 								TransactionColumns.to_account_id +"=0, "+
-								TransactionColumns.to_amount +"=0 "+
+								TransactionColumns.to_amount +"=0, "+
+                                TransactionColumns.parent_id +"=0 "+
 								"WHERE "+TransactionColumns.from_account_id +"=? AND "+
 										 TransactionColumns.to_account_id +">0";
 	
@@ -1743,6 +1744,7 @@ public class DatabaseAdapter {
             db.beginTransaction();
             try {
                 Transaction newTransaction = createTransactionFromNearest(account, nearestTransactionId);
+                breakSplitTransactions(account, date);
                 deleteOldTransactions(account, date);
                 insertWithoutUpdatingBalance(newTransaction);
                 db.execSQL(INSERT_RUNNING_BALANCE, new Object[]{account.id, newTransaction.id, newTransaction.dateTime, newTransaction.fromAmount});
@@ -1763,12 +1765,28 @@ public class DatabaseAdapter {
         return newTransaction;
     }
 
+    private static final String BREAK_SPLIT_TRANSACTIONS_1 = UPDATE_ORPHAN_TRANSACTIONS_1+" "+
+            "AND "+TransactionColumns.datetime+"<=?";
+    private static final String BREAK_SPLIT_TRANSACTIONS_2 = UPDATE_ORPHAN_TRANSACTIONS_2+" "+
+            "AND "+TransactionColumns.datetime+"<=?";
+
+    private void breakSplitTransactions(Account account, long date) {
+        SQLiteDatabase db = db();
+        long dayEnd = DateUtils.atDayEnd(date);
+        db.execSQL(BREAK_SPLIT_TRANSACTIONS_1, new Object[]{account.id, dayEnd});
+        db.execSQL(BREAK_SPLIT_TRANSACTIONS_2, new Object[]{account.id, dayEnd});
+        db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID
+                + " in (SELECT _id from " + TRANSACTION_TABLE + " where " + TransactionColumns.datetime + "<=?)",
+                new String[]{String.valueOf(dayEnd)});
+    }
+
     public void deleteOldTransactions(Account account, long date) {
         SQLiteDatabase db = db();
+        long dayEnd = DateUtils.atDayEnd(date);
         db.delete("transactions", "from_account_id=? and datetime<=? and is_template=0",
-                new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))});
+                new String[]{String.valueOf(account.id), String.valueOf(dayEnd)});
         db.delete("running_balance", "account_id=? and datetime<=?",
-                new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))});
+                new String[]{String.valueOf(account.id), String.valueOf(dayEnd)});
     }
 
     public long getAccountBalanceForTransaction(Account a, Transaction t) {
@@ -1780,6 +1798,12 @@ public class DatabaseAdapter {
         return DatabaseUtils.rawFetchId(this,
                 "select _id from v_blotter where from_account_id=? and datetime<=? order by datetime desc limit 1",
                 new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))});
+    }
+
+    public Transaction findNearestOlderTransaction(Account account, long date) {
+        return getTransaction(DatabaseUtils.rawFetchId(this,
+                "select _id from v_blotter where from_account_id=? and datetime<=? order by datetime desc limit 1",
+                new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))}));
     }
 
 }
