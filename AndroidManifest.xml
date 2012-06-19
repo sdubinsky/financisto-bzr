@@ -223,6 +223,8 @@
         <activity android:name=".activity.BudgetListTotalsDetailsActivity" android:label="@string/totals"
                   android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
 
+        <activity android:name=".activity.PurgeAccountActivity" android:label="@string/delete_old_transactions"/>
+
         <activity android:name="org.achartengine.GraphicalActivity"/>
 
         <activity android:name="com.dropbox.client2.android.AuthActivity"

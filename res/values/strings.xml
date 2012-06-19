@@ -764,4 +764,7 @@
 
     <string name="csv_import_inprogress_update">Importing data from CSV: %s%%...</string>
 
+    <string name="delete_old_transactions">Delete old transactions</string>
+    <string name="purge_account_backup_database">Do database backup before deleting transactions</string>
+
 </resources>

@@ -47,9 +47,12 @@ public class AccountListActivity extends AbstractListActivity {
 
     public static final int EDIT_ACCOUNT_REQUEST = 2;
     private static final int VIEW_ACCOUNT_REQUEST = 3;
-	private static final int MENU_UPDATE_BALANCE = MENU_ADD+1;
+    private static final int PURGE_ACCOUNT_REQUEST = 4;
 
+	private static final int MENU_UPDATE_BALANCE = MENU_ADD+1;
     private static final int MENU_CLOSE_OPEN_ACCOUNT = MENU_ADD+2;
+    private static final int MENU_PURGE_ACCOUNT = MENU_ADD+3;
+
     private QuickActionWidget accountActionGrid;
 
     public AccountListActivity() {
@@ -169,8 +172,9 @@ public class AccountListActivity extends AbstractListActivity {
 		List<MenuItemInfo> menus = super.createContextMenus(id);
 		Account a = em.getAccount(id);
 		if (a != null && a.isActive) {
-			menus.add(new MenuItemInfo(MENU_UPDATE_BALANCE, R.string.update_balance));		
-			menus.add(new MenuItemInfo(MENU_CLOSE_OPEN_ACCOUNT, R.string.close_account));
+			menus.add(new MenuItemInfo(MENU_UPDATE_BALANCE, R.string.update_balance));
+            menus.add(new MenuItemInfo(MENU_PURGE_ACCOUNT, R.string.delete_old_transactions));
+            menus.add(new MenuItemInfo(MENU_CLOSE_OPEN_ACCOUNT, R.string.close_account));
 		} else {
 			menus.add(new MenuItemInfo(MENU_CLOSE_OPEN_ACCOUNT, R.string.reopen_account));
 		}
@@ -184,6 +188,11 @@ public class AccountListActivity extends AbstractListActivity {
 			case MENU_UPDATE_BALANCE: {
 				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
                 updateAccountBalance(mi.id);
+                return true;
+            }
+            case MENU_PURGE_ACCOUNT: {
+                Intent intent = new Intent(this, PurgeAccountActivity.class);
+                startActivityForResult(intent, PURGE_ACCOUNT_REQUEST);
                 return true;
             }
 			case MENU_CLOSE_OPEN_ACCOUNT: {
