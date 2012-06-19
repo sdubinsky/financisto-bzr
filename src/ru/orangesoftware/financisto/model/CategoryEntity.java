@@ -46,8 +46,14 @@ public class CategoryEntity<T extends CategoryEntity<T>> extends MyEntity {
         category.type = this.type;
 		children.add(category);
 	}
-	
-	public boolean hasChildren() {
+
+    public void removeChild(T category) {
+        if (children != null) {
+            children.remove(category);
+        }
+    }
+
+    public boolean hasChildren() {
 		return children != null && !children.isEmpty();
 	}
 

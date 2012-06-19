@@ -547,40 +547,67 @@ public class DatabaseAdapter {
 		}
 	}
 
-	private long insertCategory(Category category) {	
-		long parentId = category.getParentId();
-		String categoryTitle = category.title;
-		List<Category> subordinates = getSubordinates(parentId);
-		if (subordinates.isEmpty()) {
-			return insertChildCategory(parentId, category);
-		} else {
-			long mateId = -1;
-			for (Category c : subordinates) {
-				if (categoryTitle.compareTo(c.title) <= 0) {
-					break;
-				}
-				mateId = c.id;
-			}
-			if (mateId == -1) {
-				return insertChildCategory(parentId, category);
-			} else {
-				return insertMateCategory(mateId, category);
-			}
-		}
+	private long insertCategory(Category category) {
+        CategoryTree<Category> tree = getCategoriesTree(false);
+        long parentId = category.getParentId();
+        if (parentId == Category.NO_CATEGORY_ID) {
+            if (!tree.isEmpty()) {
+                return insertAsLast(category, tree);
+            }
+        } else {
+            Map<Long, Category> map = tree.asMap();
+            Category parent = map.get(parentId);
+            if (parent != null && parent.hasChildren()) {
+                CategoryTree<Category> children = parent.children;
+                return insertAsLast(category, children);
+            }
+        }
+        return insertChildCategory(parentId, category);
 	}
 
-	private long updateCategory(Category category) {
-		Category oldCategory = getCategory(category.id);
-		if (oldCategory.getParentId() == category.getParentId()) {
-			updateCategory(category.id, category.title, category.type);
+    private long insertAsLast(Category category, CategoryTree<Category> tree) {
+        long mateId = tree.getAt(tree.size()-1).id;
+        return insertMateCategory(mateId, category);
+    }
+
+    private long updateCategory(Category category) {
+        Category oldCategory = getCategory(category.id);
+        if (oldCategory.getParentId() == category.getParentId()) {
+            updateCategory(category.id, category.title, category.type);
             updateChildCategoriesType(category.type, category.left, category.right);
-		} else {
-			moveCategory(category.id, category.getParentId(), category.title, category.type);
-		}
-		return category.id;
-	}
+        } else {
+            moveCategory(category);
+        }
+        return category.id;
+    }
 
-	private static final String GET_PARENT_SQL = "(SELECT "
+    private void moveCategory(Category category) {
+        CategoryTree<Category> tree = getCategoriesTree(false);
+        Map<Long, Category> map = tree.asMap();
+        Category oldCategory = map.get(category.id);
+        if (oldCategory != null) {
+            Category oldParent = map.get(oldCategory.getParentId());
+            if (oldParent != null) {
+                oldParent.removeChild(oldCategory);
+            } else {
+                tree.remove(oldCategory);
+            }
+            Category newParent = map.get(category.getParentId());
+            int newCategoryType = category.type;
+            if (newParent != null) {
+                newParent.addChild(oldCategory);
+                newCategoryType = newParent.type;
+            } else {
+                tree.add(oldCategory);
+            }
+            tree.reIndex();
+            updateCategoryTreeInTransaction(tree);
+            updateCategory(category.id, category.title, newCategoryType);
+        }
+    }
+
+
+    private static final String GET_PARENT_SQL = "(SELECT "
 		+ "parent."+CategoryColumns._id+" AS "+CategoryColumns._id
 		+ " FROM "
 		+ CATEGORY_TABLE+" AS node"+","
@@ -623,38 +650,6 @@ public class DatabaseAdapter {
 		}
 	}
 
-	public Category getCategoryByTitle(String title) {
-        SQLiteDatabase db = db();
-		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
-				CategoryViewColumns.title+"=?", new String[]{String.valueOf(title)}, null, null, null);
-		try {
-			if (c.moveToNext()) {				
-				Category cat = new Category();
-				cat.id = c.getInt(CategoryViewColumns._id.ordinal());
-				cat.title = title;
-				cat.level = c.getInt(CategoryViewColumns.level.ordinal());
-				cat.left = c.getInt(CategoryViewColumns.left.ordinal());
-				cat.right = c.getInt(CategoryViewColumns.right.ordinal());
-                cat.type = c.getInt(CategoryViewColumns.type.ordinal());
-				String s = String.valueOf(cat.id);
-				Cursor c2 = db.query(GET_PARENT_SQL, new String[]{CategoryColumns._id.name()}, null, new String[]{s,s},
-						null, null, null, "1");
-				try {
-					if (c2.moveToFirst()) {
-						cat.parent = new Category(c2.getLong(0));
-					}
-				} finally {
-					c2.close();
-				}
-				return cat;
-			} else {
-				return null;
-			}
-		} finally {
-			c.close();
-		}
-	}
-	
 	public Category getCategoryByLeft(long left) {
         SQLiteDatabase db = db();
 		Cursor c = db.query(V_CATEGORY, CategoryViewColumns.NORMAL_PROJECTION,
@@ -820,52 +815,6 @@ public class DatabaseAdapter {
         db().execSQL(CATEGORY_UPDATE_CHILDREN_TYPES, new Object[]{type, left, right});
     }
 
-    private static final String V_SUBORDINATES = "(SELECT "
-	+"node."+CategoryColumns._id+" as "+CategoryViewColumns._id+", "
-	+"node."+CategoryColumns.title+" as "+CategoryViewColumns.title+", "
-	+"(COUNT(parent."+CategoryColumns._id+") - (sub_tree.depth + 1)) AS "+CategoryViewColumns.level
-	+" FROM "
-	+CATEGORY_TABLE+" AS node, "
-	+CATEGORY_TABLE+" AS parent, "
-	+CATEGORY_TABLE+" AS sub_parent, "
-	+"("
-		+"SELECT node."+CategoryColumns._id+" as "+CategoryColumns._id+", "
-		+"(COUNT(parent."+CategoryColumns._id+") - 1) AS depth"
-		+" FROM "
-		+CATEGORY_TABLE+" AS node, "
-		+CATEGORY_TABLE+" AS parent "
-		+" WHERE node."+CategoryColumns.left+" BETWEEN parent."+CategoryColumns.left+" AND parent."+CategoryColumns.right
-		+" AND node."+CategoryColumns._id+"=?"
-		+" GROUP BY node."+CategoryColumns._id
-		+" ORDER BY node."+CategoryColumns.left
-	+") AS sub_tree "
-	+" WHERE node."+CategoryColumns.left+" BETWEEN parent."+CategoryColumns.left+" AND parent."+CategoryColumns.right
-	+" AND node."+CategoryColumns.left+" BETWEEN sub_parent."+CategoryColumns.left+" AND sub_parent."+CategoryColumns.right
-	+" AND sub_parent."+CategoryColumns._id+" = sub_tree."+CategoryColumns._id
-	+" GROUP BY node."+CategoryColumns._id
-	+" HAVING "+CategoryViewColumns.level+"=1"
-	+" ORDER BY node."+CategoryColumns.left
-	+")";
-	
-	public List<Category> getSubordinates(long parentId) {
-		List<Category> list = new LinkedList<Category>();
-		Cursor c = db().query(V_SUBORDINATES, new String[]{CategoryViewColumns._id.name(), CategoryViewColumns.title.name(), CategoryViewColumns.level.name()}, null,
-				new String[]{String.valueOf(parentId)}, null, null, null);
-		try {
-			while (c.moveToNext()) {
-				long id = c.getLong(0);
-				String title = c.getString(1);
-				Category cat = new Category();
-				cat.id = id;
-				cat.title = title;
-				list.add(cat);
-			}
-		} finally {
-			c.close();
-		}
-		return list;
-	}
-	
 	private static final String DELETE_CATEGORY_UPDATE1 = "UPDATE "+TRANSACTION_TABLE
 		+" SET "+TransactionColumns.category_id +"=0 WHERE "
 		+TransactionColumns.category_id +" IN ("
@@ -979,102 +928,6 @@ public class DatabaseAdapter {
         sid[0] = String.valueOf(Category.NO_CATEGORY_ID);
         db().update(CATEGORY_TABLE, values, WHERE_CATEGORY_ID, sid);
 	}
-
-	public void moveCategory(long id, long newParentId, String title, int type) {
-        updateCategory(id, title, type);
-
-        SQLiteDatabase db = db();
-        long originLft, originRgt;
-        Cursor c = db.query(CATEGORY_TABLE, new String[]{CategoryColumns.left.name(), CategoryColumns.right.name()},
-                CategoryColumns._id+"=?", new String[]{String.valueOf(id)}, null, null, null);
-        try {
-            if (c.moveToFirst()) {
-                originLft = c.getLong(0);
-                originRgt = c.getLong(1);
-            } else {
-                return;
-            }
-        } finally {
-            c.close();
-        }
-
-        c = db.query(CATEGORY_TABLE, new String[]{CategoryColumns.right.name(), CategoryColumns.type.name()},
-                CategoryColumns._id+"=?", new String[]{String.valueOf(newParentId)}, null, null, null);
-        long newParentRgt;
-        int newParentType;
-        try {
-            if (c.moveToFirst()) {
-                newParentRgt = c.getLong(0);
-                newParentType = c.getInt(1);
-            } else {
-                return;
-            }
-        } finally {
-            c.close();
-        }
-
-        db.execSQL("UPDATE "+CATEGORY_TABLE+" SET "
-            +CategoryColumns.left+" = "+CategoryColumns.left+" + CASE "
-            +" WHEN "+newParentRgt+" < "+originLft
-            +" THEN CASE "
-            +" WHEN "+CategoryColumns.left+" BETWEEN "+originLft+" AND "+originRgt
-            +" THEN "+newParentRgt+" - "+originLft
-            +" WHEN "+CategoryColumns.left+" BETWEEN "+newParentRgt+" AND "+(originLft-1)
-            +" THEN "+(originRgt-originLft+1)
-            +" ELSE 0 END "
-            +" WHEN "+newParentRgt+" > "+originRgt
-            +" THEN CASE "
-            +" WHEN "+CategoryColumns.left+" BETWEEN "+originLft+" AND "+originRgt
-            +" THEN "+(newParentRgt-originRgt-1)
-            +" WHEN "+CategoryColumns.left+" BETWEEN "+(originRgt+1)+" AND "+(newParentRgt-1)
-            +" THEN "+(originLft - originRgt - 1)
-            +" ELSE 0 END "
-            +" ELSE 0 END,"
-            +CategoryColumns.right+" = "+CategoryColumns.right+" + CASE "
-            +" WHEN "+newParentRgt+" < "+originLft
-            +" THEN CASE "
-            +" WHEN "+CategoryColumns.right+" BETWEEN "+originLft+" AND "+originRgt
-            +" THEN "+(newParentRgt-originLft)
-            +" WHEN "+CategoryColumns.right+" BETWEEN "+newParentRgt+" AND "+(originLft - 1)
-            +" THEN "+(originRgt-originLft+1)
-            +" ELSE 0 END "
-            +" WHEN "+newParentRgt+" > "+originRgt
-            +" THEN CASE "
-            +" WHEN "+CategoryColumns.right+" BETWEEN "+originLft+" AND "+originRgt
-            +" THEN "+(newParentRgt-originRgt-1)
-            +" WHEN "+CategoryColumns.right+" BETWEEN "+(originRgt+1)+" AND "+(newParentRgt-1)
-            +" THEN "+(originLft-originRgt-1)
-            +" ELSE 0 END "
-            +" ELSE 0 END");
-
-        c = db.query(CATEGORY_TABLE, new String[]{CategoryColumns.left.name(), CategoryColumns.right.name()},
-                CategoryColumns._id+"=?", new String[]{String.valueOf(id)}, null, null, null);
-        int newLeft, newRight;
-        try {
-            if (c.moveToFirst()) {
-                newLeft = c.getInt(0);
-                newRight = c.getInt(1);
-            } else {
-                return;
-            }
-        } finally {
-            c.close();
-        }
-
-        int newType = type;
-        if (newParentId > 0) {
-            updateCategoryType(id, newParentType);
-            newType = newParentType;
-        }
-        updateChildCategoriesType(newType, newLeft, newRight);
-	}
-
-    private static final String UPDATE_CATEGORY_TYPE = "UPDATE "+CATEGORY_TABLE+" SET "+CategoryColumns.type+"=? WHERE "+CategoryColumns._id+"=?";
-
-    private void updateCategoryType(long id, int type) {
-        SQLiteDatabase db = db();
-        db.execSQL(UPDATE_CATEGORY_TYPE, new Object[]{type, id});
-    }
 
     // ===================================================================
 	// ATTRIBUTES

@@ -37,7 +37,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 2.2 Google APIs" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Financisto" />
+    <orderEntry type="module" module-name="Financisto" scope="PROVIDED" />
   </component>
 </module>
 

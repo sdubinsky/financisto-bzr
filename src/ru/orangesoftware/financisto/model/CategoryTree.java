@@ -54,15 +54,15 @@ public class CategoryTree<T extends CategoryEntity<T>> implements Iterable<T> {
     }
 
     public static interface NodeCreator<T> {
-		T createNode(Cursor c);
-	}
-	
+
+        T createNode(Cursor c);
+    }
 	public Map<Long, T> asMap() {
 		Map<Long, T> map = new HashMap<Long, T>();
 		initializeMap(map, this);
 		return map;
 	}
-	
+
 	private void initializeMap(Map<Long, T> map, CategoryTree<T> tree) {
 		for (T c : tree) {
 			map.put(c.id, c);
@@ -80,10 +80,14 @@ public class CategoryTree<T extends CategoryEntity<T>> implements Iterable<T> {
 	public boolean isEmpty() {
 		return roots.isEmpty();
 	}
-	
+
 	public void add(T child) {
 		roots.add(child);
 	}
+
+    public void remove(T category) {
+        roots.remove(category);
+    }
 
 	public int indexOf(T child) {
 		return roots.indexOf(child);

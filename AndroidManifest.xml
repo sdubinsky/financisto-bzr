@@ -10,12 +10,37 @@
       Denis Solonenko - initial API and implementation
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="ru.orangesoftware.financisto" android:versionName="1.5.9" android:versionCode="75"
+	package="ru.orangesoftware.financisto" android:versionName="1.5.9u1" android:versionCode="76"
     android:installLocation="auto">
-	<application
+
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="5"/>
+
+    <supports-screens
+            android:smallScreens="true"
+            android:normalScreens="true"
+            android:largeScreens="true"
+            android:anyDensity="true"/>
+
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <uses-feature android:name="android.hardware.location.network" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application
             android:theme="@style/Theme.GreenDroid"
             android:icon="@drawable/icon" android:label="@string/app_name"
-		    android:description="@string/app_description" android:debuggable="false">
+		    android:description="@string/app_description">
 		
 		<uses-library android:name="com.google.android.maps" android:required="false" />
 		
@@ -240,29 +265,5 @@
         </activity>
 
 	</application>
-	
-	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="5"/>
-	
-	<supports-screens 
-		android:smallScreens="true"
-		android:normalScreens="true"
-		android:largeScreens="true"
-		android:anyDensity="true"/>
 
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-	<uses-feature android:name="android.hardware.camera" android:required="false" />
-    <uses-feature android:name="android.hardware.location" android:required="false" />
-    <uses-feature android:name="android.hardware.location.network" android:required="false" />
-    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
-
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-	<uses-permission android:name="android.permission.CAMERA" /> 
-	<uses-permission android:name="android.permission.INTERNET"/>
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />	
-	<uses-permission android:name="android.permission.VIBRATE"/>
-	<uses-permission android:name="android.permission.WAKE_LOCK"/>
-	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>	
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-	
 </manifest> 
