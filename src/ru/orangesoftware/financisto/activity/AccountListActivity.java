@@ -173,7 +173,7 @@ public class AccountListActivity extends AbstractListActivity {
 		Account a = em.getAccount(id);
 		if (a != null && a.isActive) {
 			menus.add(new MenuItemInfo(MENU_UPDATE_BALANCE, R.string.update_balance));
-            menus.add(new MenuItemInfo(MENU_PURGE_ACCOUNT, R.string.delete_old_transactions));
+            //menus.add(new MenuItemInfo(MENU_PURGE_ACCOUNT, R.string.delete_old_transactions));
             menus.add(new MenuItemInfo(MENU_CLOSE_OPEN_ACCOUNT, R.string.close_account));
 		} else {
 			menus.add(new MenuItemInfo(MENU_CLOSE_OPEN_ACCOUNT, R.string.reopen_account));
