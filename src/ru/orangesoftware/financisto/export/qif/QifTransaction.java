@@ -30,6 +30,7 @@ public class QifTransaction {
     public String category;
     public String categoryClass;
     public String toAccount;
+    public String project;
 
     public boolean isSplit = false;
     public List<QifTransaction> splits;
@@ -41,6 +42,7 @@ public class QifTransaction {
         t.amount = c.getLong(BlotterColumns.from_amount.ordinal());
         t.payee = c.getString(BlotterColumns.payee.ordinal());
         t.memo = c.getString(BlotterColumns.note.ordinal());
+        t.project = c.getString(BlotterColumns.project.ordinal());
         Category category = getCategoryFromCursor(c, categoriesMap);
         if (category != null) {
             QifCategory qifCategory = QifCategory.fromCategory(category);
@@ -67,8 +69,12 @@ public class QifTransaction {
         qifWriter.write("T").write(Utils.amountToString(options.currency, amount)).newLine();
         if (toAccount != null) {
             qifWriter.write("L[").write(toAccount).write("]").newLine();
+        } else if (category != null && project != null) {
+            qifWriter.write("L").write(category).write("/").write(project).newLine();
         } else if (category != null) {
             qifWriter.write("L").write(category).newLine();
+        } else if (project != null) {
+            qifWriter.write("L/").write(project).newLine();
         }
         if (Utils.isNotEmpty(payee)) {
             qifWriter.write("P").write(payee).newLine();

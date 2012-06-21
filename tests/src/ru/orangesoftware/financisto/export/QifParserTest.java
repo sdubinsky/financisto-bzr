@@ -325,12 +325,16 @@ public class QifParserTest extends AndroidTestCase {
                 "D01/01/2011\n" +
                 "T-67.80\n" +
                 "LP1:c1/Class1:Subclass1\n" +
+                "^\n" +
+                "D01/01/2010\n" +
+                "T-1.20\n" +
+                "L/Class2\n" +
                 "^\n");
 
         assertEquals(1, p.accounts.size());
 
         QifAccount a = p.accounts.get(0);
-        assertEquals(3, a.transactions.size());
+        assertEquals(4, a.transactions.size());
 
         QifTransaction t = a.transactions.get(0);
         assertEquals(DateTime.date(2011, 2, 8).atMidnight().asDate(), t.date);
@@ -350,7 +354,12 @@ public class QifParserTest extends AndroidTestCase {
         assertEquals("P1:c1", t.category);
         assertEquals("Class1:Subclass1", t.categoryClass);
 
-        assertEquals(2, p.classes.size());
+        t = a.transactions.get(3);
+        assertEquals(DateTime.date(2010, 1, 1).atMidnight().asDate(), t.date);
+        assertEquals(-120, t.amount);
+        assertEquals("Class2", t.categoryClass);
+
+        assertEquals(3, p.classes.size());
     }
 
     public void test_should_parse_transfers() throws Exception {

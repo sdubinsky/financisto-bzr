@@ -101,8 +101,8 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
         Account a = createFirstAccount();
         Category p1 = createExpenseCategory("P1");
         Category c1 = createCategory(p1, "c1");
-        TransactionBuilder.withDb(db).account(a).amount(1000).category(p1).dateTime(date(2011, 2, 8)).create();
-        TransactionBuilder.withDb(db).account(a).amount(-2056).category(c1).payee("Payee 1").note("Some note here...").dateTime(date(2011, 2, 7)).create();
+        TransactionBuilder.withDb(db).account(a).amount(1000).category(p1).project("PP1").dateTime(date(2011, 2, 8)).create();
+        TransactionBuilder.withDb(db).account(a).amount(-2056).category(c1).payee("Payee 1").project("PP2").note("Some note here...").dateTime(date(2011, 2, 7)).create();
         assertEquals(
                 "!Type:Cat\n"+
                 "NP1\n"+
@@ -118,11 +118,11 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
                 "!Type:Cash\n"+
                 "D08/02/2011\n"+
                 "T10.00\n"+
-                "LP1\n"+
+                "LP1/PP1\n"+
                 "^\n"+
                 "D07/02/2011\n"+
                 "T-20.56\n"+
-                "LP1:c1\n"+
+                "LP1:c1/PP2\n"+
                 "PPayee 1\n"+
                 "MSome note here...\n"+
                 "^\n",
