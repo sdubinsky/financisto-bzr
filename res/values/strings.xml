@@ -766,5 +766,11 @@
 
     <string name="delete_old_transactions">Delete old transactions</string>
     <string name="purge_account_backup_database">Do database backup before deleting transactions</string>
+    <string name="purge_account_date_summary">Delete transactions prior to AND including the specified date. Account balance will not be affected.</string>
+    <string name="purge_account_confirm_title">Confirm</string>
+    <string name="purge_account_confirm_message" formatted="false">Delete transactions from account %s prior to AND including %s.</string>
+    <string name="purge_account_payee">Previous period</string>
+    <string name="purge_account_in_progress">Deleting old transactions...</string>
+    <string name="purge_account_unable_to_do_backup">Unable to do database backup, aborting...</string>
 
 </resources>

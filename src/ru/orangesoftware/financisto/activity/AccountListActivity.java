@@ -173,7 +173,7 @@ public class AccountListActivity extends AbstractListActivity {
 		Account a = em.getAccount(id);
 		if (a != null && a.isActive) {
 			menus.add(new MenuItemInfo(MENU_UPDATE_BALANCE, R.string.update_balance));
-            //menus.add(new MenuItemInfo(MENU_PURGE_ACCOUNT, R.string.delete_old_transactions));
+            menus.add(new MenuItemInfo(MENU_PURGE_ACCOUNT, R.string.delete_old_transactions));
             menus.add(new MenuItemInfo(MENU_CLOSE_OPEN_ACCOUNT, R.string.close_account));
 		} else {
 			menus.add(new MenuItemInfo(MENU_CLOSE_OPEN_ACCOUNT, R.string.reopen_account));
@@ -184,19 +184,19 @@ public class AccountListActivity extends AbstractListActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		super.onContextItemSelected(item);
-		switch (item.getItemId()) {
+        AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        switch (item.getItemId()) {
 			case MENU_UPDATE_BALANCE: {
-				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
                 updateAccountBalance(mi.id);
                 return true;
             }
             case MENU_PURGE_ACCOUNT: {
                 Intent intent = new Intent(this, PurgeAccountActivity.class);
+                intent.putExtra(PurgeAccountActivity.ACCOUNT_ID, mi.id);
                 startActivityForResult(intent, PURGE_ACCOUNT_REQUEST);
                 return true;
             }
 			case MENU_CLOSE_OPEN_ACCOUNT: {
-				AdapterView.AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 				Account a = em.getAccount(mi.id);
 				a.isActive = !a.isActive;
 				em.saveAccount(a);
@@ -294,7 +294,7 @@ public class AccountListActivity extends AbstractListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == VIEW_ACCOUNT_REQUEST) {
+		if (requestCode == VIEW_ACCOUNT_REQUEST || requestCode == PURGE_ACCOUNT_REQUEST) {
 			recreateCursor();
 		}
 	}

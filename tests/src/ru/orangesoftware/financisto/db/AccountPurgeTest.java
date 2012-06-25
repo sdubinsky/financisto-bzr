@@ -9,11 +9,10 @@
 package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
+import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.*;
 
 import java.util.Arrays;
@@ -114,7 +113,7 @@ public class AccountPurgeTest extends AbstractDbTest {
         assertAccounts();
         //when purged one, balance should stay
         db.purgeAccountAtDate(a1, date(2012, 5, 22).asLong());
-        assertOldestTransaction(a1, date(2012, 5, 22).atDayEnd(), -10);
+        assertArchiveTransaction(a1, date(2012, 5, 22).atDayEnd(), -10);
         assertAccountBlotter(a1, 10, -20, -100, 100, 10, 200, -150, -10);
         assertAccountRunningBalance(a1, 40, 30, 50, 150, 50, 40, -160, -10);
         assertAccountBlotter(a2, 20, -50, -20, 10);
@@ -122,7 +121,7 @@ public class AccountPurgeTest extends AbstractDbTest {
         assertAccounts();
         //when purged split, then transfers should be restored
         db.purgeAccountAtDate(a1, date(2012, 5, 23).asLong());
-        assertOldestTransaction(a1, date(2012, 5, 23).atDayEnd(), -160);
+        assertArchiveTransaction(a1, date(2012, 5, 23).atDayEnd(), -160);
         assertAccountBlotter(a1, 10, -20, -100, 100, 10, 200, -160);
         assertAccountRunningBalance(a1, 40, 30, 50, 150, 50, 40, -160);
         assertAccountBlotter(a2, 20, -50, -20, 10);
@@ -130,7 +129,7 @@ public class AccountPurgeTest extends AbstractDbTest {
         assertAccounts();
         //when purged 2 transactions together
         db.purgeAccountAtDate(a1, date(2012, 5, 24).asLong());
-        assertOldestTransaction(a1, date(2012, 5, 24).atDayEnd(), 40);
+        assertArchiveTransaction(a1, date(2012, 5, 24).atDayEnd(), 40);
         assertAccountBlotter(a1, 10, -20, -100, 100, 10, 40);
         assertAccountRunningBalance(a1, 40, 30, 50, 150, 50, 40);
         assertAccountBlotter(a2, 20, -50, -20, 10);
@@ -138,7 +137,7 @@ public class AccountPurgeTest extends AbstractDbTest {
         assertAccounts();
         //when purged a transfer
         db.purgeAccountAtDate(a1, date(2012, 5, 27).asLong());
-        assertOldestTransaction(a1, date(2012, 5, 27).atDayEnd(), 50);
+        assertArchiveTransaction(a1, date(2012, 5, 27).atDayEnd(), 50);
         assertAccountBlotter(a1, 10, -20, 50);
         assertAccountRunningBalance(a1, 40, 30, 50);
         assertAccountBlotter(a2, 20, -50, -20, 10);
@@ -146,7 +145,7 @@ public class AccountPurgeTest extends AbstractDbTest {
         assertAccounts();
         //when everything
         db.purgeAccountAtDate(a1, date(2012, 5, 29).asLong());
-        assertOldestTransaction(a1, date(2012, 5, 29).atDayEnd(), 40);
+        assertArchiveTransaction(a1, date(2012, 5, 29).atDayEnd(), 40);
         assertAccountBlotter(a1, 40);
         assertAccountRunningBalance(a1, 40);
         assertAccountBlotter(a2, 20, -50, -20, 10);
@@ -191,12 +190,20 @@ public class AccountPurgeTest extends AbstractDbTest {
         assertTrue(expectedVsActual, Arrays.equals(expectedAmounts, amounts));
     }
 
-    private void assertOldestTransaction(Account account, DateTime date, long expectedAmount) {
+    private Transaction assertOldestTransaction(Account account, DateTime date, long expectedAmount) {
         Transaction t = getOldestTransaction(account);
         assertEquals(date.asLong(), t.dateTime);
         assertEquals(expectedAmount, t.fromAmount);
         // this is the very first transaction, so running balance == amount
         assertAccountBalanceForTransaction(t, account, expectedAmount);
+        return t;
+    }
+
+    private void assertArchiveTransaction(Account account, DateTime date, long expectedAmount) {
+        Transaction t = assertOldestTransaction(account, date, expectedAmount);
+        Payee payee = em.get(Payee.class, t.payeeId);
+        assertEquals(getContext().getString(R.string.purge_account_payee), payee.title);
+        assertEquals(TransactionStatus.CL, t.status);
     }
 
     private Transaction getOldestTransaction(Account account) {

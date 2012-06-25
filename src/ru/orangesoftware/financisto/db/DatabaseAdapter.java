@@ -17,6 +17,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
+import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.*;
@@ -1615,6 +1616,9 @@ public class DatabaseAdapter {
         newTransaction.fromAccountId = account.id;
         newTransaction.dateTime = DateUtils.atDayEnd(nearestTransaction.dateTime);
         newTransaction.fromAmount = balance;
+        Payee payee = em().insertPayee(context.getString(R.string.purge_account_payee));
+        newTransaction.payeeId = payee != null ? payee.id : 0;
+        newTransaction.status = TransactionStatus.CL;
         return newTransaction;
     }
 
