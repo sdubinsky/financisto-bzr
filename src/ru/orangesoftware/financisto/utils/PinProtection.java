@@ -32,8 +32,9 @@ public class PinProtection {
         public LockState unlock(Context c) {
             if (MyPreferences.isPinProtected(c)) {
                 askForPin(c);
+                return this;
             }
-            return this;
+            return UNLOCKED;
         }
     };
 
