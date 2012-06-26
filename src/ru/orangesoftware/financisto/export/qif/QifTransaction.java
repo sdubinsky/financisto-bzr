@@ -42,7 +42,10 @@ public class QifTransaction {
         t.amount = c.getLong(BlotterColumns.from_amount.ordinal());
         t.payee = c.getString(BlotterColumns.payee.ordinal());
         t.memo = c.getString(BlotterColumns.note.ordinal());
-        t.project = c.getString(BlotterColumns.project.ordinal());
+        long projectId = c.getLong(BlotterColumns.project_id.ordinal());
+        if (projectId > 0) {
+            t.project = c.getString(BlotterColumns.project.ordinal());
+        }
         Category category = getCategoryFromCursor(c, categoriesMap);
         if (category != null) {
             QifCategory qifCategory = QifCategory.fromCategory(category);

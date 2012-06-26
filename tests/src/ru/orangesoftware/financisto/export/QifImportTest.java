@@ -109,13 +109,13 @@ public class QifImportTest extends AbstractDbTest {
         doImport();
 
         List<Project> projects = em.getAllProjectsList(false);
-        assertEquals(2, projects.size());
+        assertEquals(3, projects.size());
 
         List<Account> accounts = em.getAllAccountsList();
         assertEquals(1, accounts.size());
 
         List<TransactionInfo> transactions = em.getTransactionsForAccount(accounts.get(0).id);
-        assertEquals(3, transactions.size());
+        assertEquals(4, transactions.size());
 
         TransactionInfo t = transactions.get(0);
         assertEquals(DateTime.date(2011, 2, 8).atMidnight().asLong(), t.dateTime);
@@ -134,6 +134,11 @@ public class QifImportTest extends AbstractDbTest {
         assertEquals(-6780, t.fromAmount);
         assertEquals("c1", t.category.title);
         assertEquals("Class1:Subclass1", t.project.title);
+
+        t = transactions.get(3);
+        assertEquals(DateTime.date(2010, 1, 1).atMidnight().asLong(), t.dateTime);
+        assertEquals(-120, t.fromAmount);
+        assertEquals("Class2", t.project.title);
     }
 
     public void test_should_import_account_with_a_couple_of_transactions() throws Exception {
