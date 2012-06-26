@@ -604,6 +604,7 @@ public class DatabaseAdapter {
             tree.reIndex();
             updateCategoryTreeInTransaction(tree);
             updateCategory(category.id, category.title, newCategoryType);
+            updateChildCategoriesType(newCategoryType, oldCategory.left, oldCategory.right);
         }
     }
 
