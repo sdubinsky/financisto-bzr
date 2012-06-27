@@ -10,7 +10,6 @@ package ru.orangesoftware.financisto.export.qif;
 
 import android.content.Context;
 import android.util.Log;
-import ru.orangesoftware.financisto.backup.Backup;
 import ru.orangesoftware.financisto.backup.FullDatabaseImport;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.CategoryCache;
@@ -42,10 +41,11 @@ public class QifImport extends FullDatabaseImport {
     }
 
     @Override
-    protected String[] tablesToClean() {
-        List<String> backupTables = new ArrayList<String>(Arrays.asList(Backup.BACKUP_TABLES));
+    protected List<String> tablesToClean() {
+        List<String> backupTables = super.tablesToClean();
         backupTables.remove("currency");
-        return backupTables.toArray(new String[backupTables.size()]);
+        backupTables.remove("currency_exchange_rate");
+        return backupTables;
     }
 
     @Override

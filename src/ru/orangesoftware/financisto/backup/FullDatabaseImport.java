@@ -16,6 +16,9 @@ import ru.orangesoftware.financisto.service.RecurrenceScheduler;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static ru.orangesoftware.financisto.backup.Backup.tableHasSystemIds;
@@ -70,7 +73,11 @@ public abstract class FullDatabaseImport {
         return false;
     }
 
-    protected abstract String[] tablesToClean();
+    protected List<String> tablesToClean() {
+        List<String> list = new ArrayList<String>(Arrays.asList(Backup.BACKUP_TABLES));
+        list.add("running_balance");
+        return list;
+    }
 
     private void scheduleAll() {
         RecurrenceScheduler scheduler = new RecurrenceScheduler(dbAdapter);

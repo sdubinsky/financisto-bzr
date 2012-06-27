@@ -53,11 +53,6 @@ public class DatabaseImport extends FullDatabaseImport {
 	}
 
     @Override
-    protected String[] tablesToClean() {
-        return Backup.BACKUP_TABLES;
-    }
-
-    @Override
     protected void restoreDatabase() throws IOException {
         InputStream s = decompressStream(backupStream);
         InputStreamReader isr = new InputStreamReader(s, "UTF-8");
