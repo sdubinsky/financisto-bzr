@@ -145,6 +145,7 @@ public class Transaction implements Serializable, Cloneable {
         intent.putExtra(TransactionColumns.to_amount.name(), toAmount);
         intent.putExtra(TransactionColumns.category_id.name(), categoryId);
         intent.putExtra(TransactionColumns.payee_id.name(), payeeId);
+        intent.putExtra(TransactionColumns.project_id.name(), projectId);
         intent.putExtra(TransactionColumns.note.name(), note);
         intent.putExtra(TransactionColumns.last_recurrence.name(), unsplitAmount);
     }
@@ -158,6 +159,7 @@ public class Transaction implements Serializable, Cloneable {
         t.toAmount = intent.getLongExtra(TransactionColumns.to_amount.name(), 0);
         t.categoryId = intent.getLongExtra(TransactionColumns.category_id.name(), 0);
         t.payeeId = intent.getLongExtra(TransactionColumns.payee_id.name(), 0);
+        t.projectId = intent.getLongExtra(TransactionColumns.project_id.name(), 0);
         t.note = intent.getStringExtra(TransactionColumns.note.name());
         t.unsplitAmount = intent.getLongExtra(TransactionColumns.last_recurrence.name(), 0);
 		return t;

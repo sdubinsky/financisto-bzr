@@ -53,9 +53,9 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
 
     @Override
     protected void updateUI() {
+        super.updateUI();
         selectCategory(split.categoryId);
         setAmount(split.fromAmount);
-        setNote(split.note);
     }
 
     @Override
@@ -83,6 +83,7 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
 
     @Override
     protected void onClick(View v, int id) {
+        super.onClick(v, id);
         if (id == R.id.category) {
             if (!CategorySelectorActivity.pickCategory(this, split.categoryId, false)) {
                 x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter,

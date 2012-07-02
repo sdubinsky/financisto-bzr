@@ -11,6 +11,8 @@
 package ru.orangesoftware.financisto.report;
 
 import android.content.Context;
+import ru.orangesoftware.financisto.activity.BlotterActivity;
+import ru.orangesoftware.financisto.activity.SplitsBlotterActivity;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
@@ -34,6 +36,11 @@ public class ProjectsReport extends Report {
 	@Override
 	public Criteria getCriteriaForId(DatabaseAdapter db, long id) {
 		return Criteria.eq(BlotterFilter.PROJECT_ID, String.valueOf(id));
-	}		
-	
+	}
+
+    @Override
+    protected Class<? extends BlotterActivity> getBlotterActivityClass() {
+        return SplitsBlotterActivity.class;
+    }
+
 }

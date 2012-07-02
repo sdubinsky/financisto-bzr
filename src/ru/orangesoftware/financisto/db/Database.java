@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.db;
 public interface Database {
 	
 	String DATABASE_NAME = "financisto.db";
-	
-	int DATABASE_VERSION = 192;
+
+	int DATABASE_VERSION = 193;
+
 }

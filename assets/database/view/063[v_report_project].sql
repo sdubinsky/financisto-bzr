@@ -18,5 +18,5 @@ select
        t.payee_id as payee_id,
        t.status as status
 from project p
-inner join v_blotter_for_account t on t.project_id=p._id
+inner join v_blotter_for_account_with_splits t on t.project_id=p._id
 where p._id != 0 and from_account_is_include_into_totals=1;

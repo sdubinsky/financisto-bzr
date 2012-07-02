@@ -52,11 +52,11 @@ public class SplitTransferActivity extends AbstractSplitActivity {
 
     @Override
     protected void updateUI() {
+        super.updateUI();
         selectFromAccount(split.fromAccountId);
         selectToAccount(split.toAccountId);
         setFromAmount(split.fromAmount);
         setToAmount(split.toAmount);
-        setNote(split.note);
     }
 
     @Override
@@ -92,6 +92,7 @@ public class SplitTransferActivity extends AbstractSplitActivity {
 
     @Override
     protected void onClick(View v, int id) {
+        super.onClick(v, id);
         if (id == R.id.account) {
             x.select(this, R.id.account, R.string.account_to, accountCursor, accountAdapter,
                     DatabaseHelper.AccountColumns.ID, split.toAccountId);

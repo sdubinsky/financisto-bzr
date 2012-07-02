@@ -32,6 +32,8 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
     protected Utils utils;
     protected Transaction split;
 
+    private ProjectSelector projectSelector;
+
     private final int layoutId;
 
     protected AbstractSplitActivity(int layoutId) {
@@ -46,6 +48,8 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
         setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.ic_dialog_currency);
 
         fetchData();
+        projectSelector = new ProjectSelector(this, em, x);
+        projectSelector.fetchProjects();
 
         utils  = new Utils(this);
         split = Transaction.fromIntentAsSplit(getIntent());
@@ -65,6 +69,8 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
 
         noteText = new EditText(this);
         x.addEditNode(layout, R.string.note, noteText);
+
+        projectSelector.createNode(layout);
 
         Button bSave = (Button) findViewById(R.id.bSave);
 		bSave.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +94,22 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
 
     protected abstract void createUI(LinearLayout layout);
 
+    @Override
+    protected void onClick(View v, int id) {
+        projectSelector.onClick(id);
+    }
+
+    @Override
+    public void onSelectedPos(int id, int selectedPos) {
+        projectSelector.onSelectedPos(id, selectedPos);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        projectSelector.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void saveAndFinish() {
         Intent data = new Intent();
         updateFromUI();
@@ -98,11 +120,15 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
 
     protected void updateFromUI() {
         split.note = text(noteText);
+        split.projectId = projectSelector.getSelectedProjectId();
     }
 
-    protected abstract void updateUI();
+    protected void updateUI() {
+        projectSelector.selectProject(split.projectId);
+        setNote(split.note);
+    }
 
-    protected void setNote(String note) {
+    private void setNote(String note) {
         noteText.setText(note);
     }
 

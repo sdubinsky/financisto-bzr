@@ -58,7 +58,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
     public static final String DATETIME_EXTRA = "dateTimeExtra";
 
 	private static final int NEW_CATEGORY_REQUEST = 4000;
-	private static final int NEW_PROJECT_REQUEST = 4001;
 	private static final int NEW_LOCATION_REQUEST = 4002;
 	private static final int RECURRENCE_REQUEST = 4003;
 	private static final int NOTIFICATION_REQUEST = 4004;
@@ -77,10 +76,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected Cursor categoryCursor;
 	protected ListAdapter categoryAdapter;
 	
-	protected TextView projectText;
-	protected ArrayList<Project> projects;
-	protected ListAdapter projectAdapter;
-
 	protected TextView locationText;
 	protected Cursor locationCursor;
 	protected ListAdapter locationAdapter;
@@ -101,7 +96,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	
 	protected long selectedAccountId = -1;
 	protected long selectedCategoryId = 0;
-	protected long selectedProjectId = 0;
 	protected long selectedLocationId = 0;
 	protected String recurrence;
 	protected String notificationOptions;
@@ -113,6 +107,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	
 	private LinearLayout attributesLayout;
 	private boolean setCurrentLocation;
+
+    protected ProjectSelector projectSelector;
 	
 	protected boolean isRememberLastAccount;
 	protected boolean isRememberLastCategory;
@@ -120,7 +116,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected boolean isRememberLastProject;
 	protected boolean isShowLocation;
 	protected boolean isShowNote;
-	protected boolean isShowProject;
     protected boolean isShowTakePicture;
 
 	protected AttributeView deleteAfterExpired;
@@ -153,7 +148,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		isRememberLastProject = isRememberLastCategory && MyPreferences.isRememberProject(this);
 		isShowLocation = MyPreferences.isShowLocation(this);
 		isShowNote = MyPreferences.isShowNote(this);
-		isShowProject = MyPreferences.isShowProject(this);
         isShowTakePicture = MyPreferences.isShowTakePicture(this);
 
 		amountInput = new AmountInput(this);
@@ -163,9 +157,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		startManagingCursor(categoryCursor);
 		categoryAdapter = TransactionUtils.createCategoryAdapter(db, this, categoryCursor);
 
-		if (isShowProject) {
-            fetchProjects();
-		}
+        projectSelector = new ProjectSelector(this, em, x);
+        projectSelector.fetchProjects();
 
 		if (isShowLocation) {
 			locationCursor = em.getAllLocations(true);
@@ -310,7 +303,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
                 }
             }
 			if (!isRememberLastProject) {
-				selectProject(0);
+				projectSelector.selectProject(0);
 			}
 			if (!isRememberLastLocation) {
 				selectCurrentLocation(false);
@@ -323,11 +316,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		long t1 = System.currentTimeMillis();
 		Log.i("TransactionActivity", "onCreate "+(t1-t0)+"ms");
 	}
-
-    private void fetchProjects() {
-        projects = em.getActiveProjectsList(true);
-        projectAdapter = TransactionUtils.createProjectAdapter(this, projects);
-    }
 
     protected abstract Cursor fetchCategories();
 
@@ -526,10 +514,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				}
 			}
 			if (i == projectOrder) {
-				if (isShowProject) {
-					//project
-					projectText = x.addListNodePlus(layout, R.id.project, R.id.project_add, R.string.project, R.string.no_project);
-				}
+                projectSelector.createNode(layout);
 			}
 		}
 		if (isShowTakePicture && transaction.isNotTemplateLike()) {
@@ -549,6 +534,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
 	@Override
 	protected void onClick(View v, int id) {
+        projectSelector.onClick(id);
 		switch(id) {
 			case R.id.account:				
 				x.select(this, R.id.account, R.string.account, accountCursor, accountAdapter, 
@@ -566,15 +552,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				startActivityForResult(intent, NEW_CATEGORY_REQUEST);				
 				break;
 			} 
-			case R.id.project:
-				int selectedProjectPos = MyEntity.indexOf(projects, selectedProjectId);
-				x.selectPosition(this, R.id.project, R.string.project,  projectAdapter, selectedProjectPos);
-				break;
-			case R.id.project_add: {
-				Intent intent = new Intent(this, ProjectActivity.class);
-				startActivityForResult(intent, NEW_PROJECT_REQUEST);				
-				break;
-			}
 			case R.id.location: {
 				x.select(this, R.id.location, R.string.location, locationCursor, locationAdapter, "_id", selectedLocationId);
 				break;
@@ -619,11 +596,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
 	@Override
 	public void onSelectedPos(int id, int selectedPos) {
+        projectSelector.onSelectedPos(id, selectedPos);
 		switch(id) {
-			case R.id.project:
-				Project p = projects.get(selectedPos);
-				selectProject(p);
-				break;
 			case R.id.status:
 				selectStatus(statuses[selectedPos]);
 				break;
@@ -683,9 +657,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 				selectLocation(category.lastLocationId);
 			}
 			if (selectLast && isRememberLastProject) {
-				selectProject(category.lastProjectId);
+                projectSelector.selectProject(category.lastProjectId);
 			}
-		}
+            projectSelector.setProjectNodeVisible(categoryId != Category.SPLIT_CATEGORY_ID);
+        }
 	}
 
     protected void addOrRemoveSplits() {
@@ -712,20 +687,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
     protected void switchIncomeExpenseButton(Category category) {
 
     }
-
-    protected void selectProject(long projectId) {
-		if (isShowProject) {
-			Project p = MyEntity.find(projects, projectId);
-			selectProject(p);
-		}
-	}
-
-	protected void selectProject(Project p) {
-		if (isShowProject && p != null) {
-			projectText.setText(p.title);				
-			selectedProjectId = p.id;
-		}
-	}
 
 	private void selectLocation(long locationId) {
 		if (locationId == 0) {
@@ -769,6 +730,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+        projectSelector.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
 			if (amountInput.processActivityResult(requestCode, data)) {
 				return;
@@ -787,14 +749,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
                     selectCategory(categoryId);
                     break;
                 }
-				case NEW_PROJECT_REQUEST:
-                    fetchProjects();
-                    long projectId = data.getLongExtra(EntityColumns.ID, -1);
-                    if (projectId != -1) {
-						selectProject(projectId);
-					}
-					break;
-				case NEW_LOCATION_REQUEST:					
+				case NEW_LOCATION_REQUEST:
 					locationCursor.requery();
 					long locationId = data.getLongExtra(LocationActivity.LOCATION_ID_EXTRA, -1);
 					if (locationId != -1) {
@@ -868,7 +823,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected void commonEditTransaction(Transaction transaction) {
 		selectStatus(transaction.status);
 		selectCategory(transaction.categoryId, false);
-		selectProject(transaction.projectId);
+		projectSelector.selectProject(transaction.projectId);
 		setDateTime(transaction.dateTime);		
 		if (transaction.locationId > 0) {
 			selectLocation(transaction.locationId);
@@ -918,7 +873,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
 	protected void updateTransactionFromUI(Transaction transaction) {
 		transaction.categoryId = selectedCategoryId;
-		transaction.projectId = selectedProjectId;
+		transaction.projectId = projectSelector.getSelectedProjectId();
 		if (transaction.isScheduled()) {
 			DateUtils.zeroSeconds(dateTime);
 		}

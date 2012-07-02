@@ -160,7 +160,9 @@ public class ActivityLayout {
 	public TextView addListNodePlus(LinearLayout layout, int id, int plusId, int labelId, int defaultValueResId) {
 		ListBuilder b = inflater.new ListBuilder(layout, R.layout.select_entry_plus);
 		View v = b.withButtonId(plusId, listener).withId(id, listener).withLabel(labelId).withData(defaultValueResId).create();
-		return (TextView)v.findViewById(R.id.data);
+        TextView textView = (TextView) v.findViewById(R.id.data);
+        textView.setTag(v);
+        return textView;
 	}
 
     public TextView addListNodeCategory(LinearLayout layout) {
