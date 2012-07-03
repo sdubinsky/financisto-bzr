@@ -128,10 +128,12 @@ public class ProjectSelector {
     }
 
     public void setProjectNodeVisible(boolean visible) {
-        setVisibility(projectNode, visible ? View.VISIBLE : View.GONE);
+        if (isShowProject) {
+            setVisibility(projectNode, visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     public long getSelectedProjectId() {
-        return projectNode.getVisibility() == View.GONE ? 0 : selectedProjectId;
+        return projectNode == null || projectNode.getVisibility() == View.GONE ? 0 : selectedProjectId;
     }
 }
