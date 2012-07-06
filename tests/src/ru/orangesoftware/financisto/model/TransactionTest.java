@@ -6,8 +6,12 @@ import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static ru.orangesoftware.financisto.test.AttributeBuilder.attributeValue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,6 +56,53 @@ public class TransactionTest extends AbstractDbTest {
         assertEquals(a2.id, split3.toAccountId);
         assertEquals(100, split3.fromAmount);
         assertEquals(50, split3.toAmount);
+    }
+
+    public void test_should_insert_and_update_attributes() {
+        //given
+        Category aa1 = categories.get("AA1");
+        Attribute attr1 = aa1.attributes.get(0);
+        Attribute attr2 = aa1.attributes.get(1);
+        //when inserted
+        Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).category(aa1)
+                .withAttributes(attributeValue(attr1, "value1"), attributeValue(attr2, "value2"))
+                .create();
+        Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000)
+                .withSplit(aa1, 600, "Note1", attributeValue(attr1, "value11"))
+                .withSplit(aa1, 1400, "Note2", attributeValue(attr2, "value21"))
+                .create();
+        //then
+        assertAttributes(t1, attributeValue(attr1, "value1"), attributeValue(attr2, "value2"));
+        List<Transaction> splits = em.getSplitsForTransaction(t2.id);
+        assertAttributes(splits.get(0), attributeValue(attr1, "value11"));
+        assertAttributes(splits.get(1), attributeValue(attr2, "value21"));
+        //when modified
+        db.insertOrUpdate(t1, Arrays.asList(attributeValue(attr2, "value3")));
+        splits.get(0).categoryAttributes = asMap(attributeValue(attr1, "value111"), attributeValue(attr2, "value222"));
+        splits.get(1).categoryAttributes = asMap(attributeValue(attr1, "value333"));
+        t2.splits = splits;
+        db.insertOrUpdate(t2);
+        //then
+        assertAttributes(t1, attributeValue(attr2, "value3"));
+        splits = em.getSplitsForTransaction(t2.id);
+        assertAttributes(splits.get(0), attributeValue(attr1, "value111"), attributeValue(attr2, "value222"));
+        assertAttributes(splits.get(1), attributeValue(attr1, "value333"));
+    }
+
+    private Map<Long, String> asMap(TransactionAttribute...values) {
+        Map<Long, String> map = new HashMap<Long, String>();
+        for (TransactionAttribute value : values) {
+            map.put(value.attributeId, value.value);
+        }
+        return map;
+    }
+
+    private void assertAttributes(Transaction t, TransactionAttribute...values) {
+        Map<Long, String> attributes = db.getAllAttributesForTransaction(t.id);
+        assertEquals(values.length, attributes.size());
+        for (TransactionAttribute value : values) {
+            assertEquals(value.value, attributes.get(value.attributeId));
+        }
     }
 
     public void test_should_duplicate_splits() {

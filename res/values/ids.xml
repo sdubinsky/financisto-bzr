@@ -72,4 +72,5 @@
     <item type="id" name="unsplit_action"/>
     <item type="id" name="category_split"/>
     <item type="id" name="backup"/>
+    <item type="id" name="category_pick"/>
 </resources>

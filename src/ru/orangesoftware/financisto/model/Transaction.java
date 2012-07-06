@@ -22,11 +22,14 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "transactions")
 public class Transaction implements Serializable, Cloneable {
-	
+
+    private static final String SPLIT_BLOB = "SPLIT_BLOB";
+
 	@Id
 	@Column(name = "_id")
 	public long id = -1;
@@ -104,6 +107,9 @@ public class Transaction implements Serializable, Cloneable {
 	public EnumMap<SystemAttribute, String> systemAttributes;
 
     @Transient
+    public Map<Long, String> categoryAttributes;
+
+    @Transient
     public List<Transaction> splits;
 
     @Transient
@@ -138,32 +144,16 @@ public class Transaction implements Serializable, Cloneable {
 	}
 
     public void toIntentAsSplit(Intent intent) {
-        intent.putExtra(TransactionColumns._id.name(), id);
-        intent.putExtra(TransactionColumns.from_account_id.name(), fromAccountId);
-        intent.putExtra(TransactionColumns.to_account_id.name(), toAccountId);
-        intent.putExtra(TransactionColumns.from_amount.name(), fromAmount);
-        intent.putExtra(TransactionColumns.to_amount.name(), toAmount);
-        intent.putExtra(TransactionColumns.category_id.name(), categoryId);
-        intent.putExtra(TransactionColumns.payee_id.name(), payeeId);
-        intent.putExtra(TransactionColumns.project_id.name(), projectId);
-        intent.putExtra(TransactionColumns.note.name(), note);
-        intent.putExtra(TransactionColumns.last_recurrence.name(), unsplitAmount);
+        intent.putExtra(SPLIT_BLOB, this);
     }
 
     public static Transaction fromIntentAsSplit(Intent intent) {
-        Transaction t = new Transaction();
-        t.id = intent.getLongExtra(TransactionColumns._id.name(), -1);
-        t.fromAccountId = intent.getLongExtra(TransactionColumns.from_account_id.name(), -1);
-        t.toAccountId = intent.getLongExtra(TransactionColumns.to_account_id.name(), -1);
-        t.fromAmount = intent.getLongExtra(TransactionColumns.from_amount.name(), 0);
-        t.toAmount = intent.getLongExtra(TransactionColumns.to_amount.name(), 0);
-        t.categoryId = intent.getLongExtra(TransactionColumns.category_id.name(), 0);
-        t.payeeId = intent.getLongExtra(TransactionColumns.payee_id.name(), 0);
-        t.projectId = intent.getLongExtra(TransactionColumns.project_id.name(), 0);
-        t.note = intent.getStringExtra(TransactionColumns.note.name());
-        t.unsplitAmount = intent.getLongExtra(TransactionColumns.last_recurrence.name(), 0);
-		return t;
+        return (Transaction)intent.getSerializableExtra(SPLIT_BLOB);
 	}
+
+    public List<TransactionAttribute> createAttributes() {
+        return null;
+    }
 
 	public static Transaction fromBlotterCursor(Cursor c) {
 		long id = c.getLong(BlotterColumns._id.ordinal());
@@ -193,8 +183,8 @@ public class Transaction implements Serializable, Cloneable {
 		t.isCCardPayment = c.getInt(BlotterColumns.is_ccard_payment.ordinal());
 		t.lastRecurrence = c.getLong(BlotterColumns.last_recurrence.ordinal());
 		return t;
-	}		
-	
+	}
+
 	public boolean isTransfer() {
 		return toAccountId > 0;
 	}

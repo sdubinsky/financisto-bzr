@@ -13,7 +13,6 @@ package ru.orangesoftware.financisto.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -35,7 +34,6 @@ import ru.orangesoftware.financisto.widget.AmountInput.OnAmountChangedListener;
 import java.io.*;
 import java.util.*;
 
-import static ru.orangesoftware.financisto.model.Category.isSplit;
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 import static ru.orangesoftware.financisto.utils.Utils.text;
@@ -170,12 +168,8 @@ public class TransactionActivity extends AbstractTransactionActivity {
     }
 
     @Override
-    protected Cursor fetchCategories() {
-        if (isUpdateBalanceMode) {
-            return db.getCategories(true);
-        } else {
-            return db.getAllCategories();
-        }
+    protected void fetchCategories() {
+        categorySelector.fetchCategories(!isUpdateBalanceMode);
     }
 
     @Override
@@ -208,8 +202,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
             x.addEditNode(layout, R.string.payee, payeeText);
         }
 		//category
-		categoryText = x.addListNodeCategory(layout);
-        categoryText.setText(R.string.no_category);
+        categorySelector.createNode(layout, true);
 		//amount
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
@@ -249,7 +242,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
     private void selectLastCategoryForPayee(long id) {
         Payee p = em.get(Payee.class, id);
         if (p != null) {
-            selectCategory(p.lastCategoryId, true);
+            categorySelector.selectCategory(p.lastCategoryId);
         }
     }
 
@@ -264,7 +257,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
         if (splitsLayout == null) {
             return;
         }
-        if (selectedCategoryId == Category.SPLIT_CATEGORY_ID) {
+        if (categorySelector.isSplitCategorySelected()) {
             View v = x.addNodeUnsplit(splitsLayout);
             unsplitAmountText = (TextView)v.findViewById(R.id.data);
             updateUnsplitAmount();
@@ -321,7 +314,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	}
 
     private boolean checkUnsplitAmount() {
-        if (selectedCategoryId == Category.SPLIT_CATEGORY_ID) {
+        if (categorySelector.isSplitCategorySelected()) {
             long unsplitAmount = calculateUnsplitAmount();
             if (unsplitAmount != 0) {
                 Toast.makeText(this, R.string.unsplit_amount_greater_than_zero, Toast.LENGTH_LONG).show();
@@ -343,6 +336,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
     private void fetchSplits() {
         List<Transaction> splits = em.getSplitsForTransaction(transaction.id);
         for (Transaction split : splits) {
+            split.categoryAttributes = db.getAllAttributesForTransaction(split.id);
             addOrEditSplit(split);
         }
     }
@@ -358,7 +352,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 			amount -= currentBalance;
 		}
 		transaction.fromAmount = amount;
-        if (isSplit(selectedCategoryId)) {
+        if (categorySelector.isSplitCategorySelected()) {
             transaction.splits = new LinkedList<Transaction>(viewToSplitMap.values());
         } else {
             transaction.splits = null;
@@ -370,7 +364,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
         Account a = super.selectAccount(accountId, selectLast);
         if (a != null) {
             if (selectLast && !isShowPayee && isRememberLastCategory) {
-                selectCategory(a.lastCategoryId, true);
+                categorySelector.selectCategory(a.lastCategoryId);
             }
         }
         return a;
@@ -430,9 +424,6 @@ public class TransactionActivity extends AbstractTransactionActivity {
                 View parentView = (View)v.getParent();
                 deleteSplit(parentView);
                 break;
-            case R.id.category_split:
-                selectCategory(Category.SPLIT_CATEGORY_ID);
-                break;
         }
         Transaction split = viewToSplitMap.get(v);
         if (split != null) {
@@ -483,10 +474,10 @@ public class TransactionActivity extends AbstractTransactionActivity {
         super.onSaveInstanceState(outState);
         Log.d("Financisto", "onSaveInstanceState");
         try {
-            if (selectedCategoryId == Category.SPLIT_CATEGORY_ID) {
+            if (categorySelector.isSplitCategorySelected()) {
                 Log.d("Financisto", "Saving splits...");
                 ActivityState state = new ActivityState();
-                state.categoryId = selectedCategoryId;
+                state.categoryId = categorySelector.getSelectedCategoryId();
                 state.idSequence = idSequence;
                 state.splits = new ArrayList<Transaction>(viewToSplitMap.values());
                 ByteArrayOutputStream s = new ByteArrayOutputStream();
@@ -519,7 +510,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
                         viewToSplitMap.clear();
                         splitsLayout.removeAllViews();
                         idSequence = state.idSequence;
-                        selectCategory(state.categoryId);
+                        categorySelector.selectCategory(state.categoryId);
                         for (Transaction split : state.splits) {
                             addOrEditSplit(split);
                         }

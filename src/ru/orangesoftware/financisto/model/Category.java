@@ -19,7 +19,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "category")
@@ -42,7 +42,7 @@ public class Category extends CategoryEntity<Category> {
 	public int level;
 	
 	@Transient
-	public ArrayList<Attribute> attributes;
+	public List<Attribute> attributes;
 
     @Transient
     public String tag;
@@ -132,4 +132,5 @@ public class Category extends CategoryEntity<Category> {
     public boolean isSplit() {
         return id == SPLIT_CATEGORY_ID;
     }
+
 }

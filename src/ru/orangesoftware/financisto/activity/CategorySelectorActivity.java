@@ -1,12 +1,10 @@
 package ru.orangesoftware.financisto.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -29,7 +27,6 @@ import java.util.*;
  */
 public class CategorySelectorActivity extends AbstractListActivity {
 
-    public static final int PICK_CATEGORY_REQUEST = 11111;
     public static final String SELECTED_CATEGORY_ID = "SELECTED_CATEGORY_ID";
     public static final String INCLUDE_SPLIT_CATEGORY = "INCLUDE_SPLIT_CATEGORY";
 
@@ -37,6 +34,7 @@ public class CategorySelectorActivity extends AbstractListActivity {
     private int expenseColor;
 
     private CategoryTreeNavigator navigator;
+    private Map<Long, String> attributes;
 
     private Button bBack;
 
@@ -55,6 +53,7 @@ public class CategorySelectorActivity extends AbstractListActivity {
         if (MyPreferences.isSeparateIncomeExpense(this)) {
             navigator.separateIncomeAndExpense();
         }
+        attributes = db.getAllAttributesMap();
 
         bBack = (Button)findViewById(R.id.bBack);
         bBack.setOnClickListener(new View.OnClickListener() {
@@ -132,7 +131,7 @@ public class CategorySelectorActivity extends AbstractListActivity {
             Intent intent = new Intent(activity, CategorySelectorActivity.class);
             intent.putExtra(CategorySelectorActivity.SELECTED_CATEGORY_ID, selectedCategoryId);
             intent.putExtra(CategorySelectorActivity.INCLUDE_SPLIT_CATEGORY, includeSplitCategory);
-            activity.startActivityForResult(intent, PICK_CATEGORY_REQUEST);
+            activity.startActivityForResult(intent, R.id.category_pick);
             return true;
         }
         return false;
@@ -181,9 +180,14 @@ public class CategorySelectorActivity extends AbstractListActivity {
             }
             v.bottomView.setText(c.tag);
             v.indicator.setBackgroundColor(c.isIncome() ? incomeColor : expenseColor);
-            v.rightView.setVisibility(View.INVISIBLE);
             v.rightCenterView.setVisibility(View.INVISIBLE);
             v.iconView.setVisibility(View.INVISIBLE);
+            if (attributes != null && attributes.containsKey(c.id)) {
+                v.rightView.setText(attributes.get(c.id));
+                v.rightView.setVisibility(View.VISIBLE);
+            } else {
+                v.rightView.setVisibility(View.GONE);
+            }
             v.topView.setVisibility(View.INVISIBLE);
             if (navigator.isSelected(c.id)) {
                 v.layout.setBackgroundResource(R.drawable.list_selector_background_focus);

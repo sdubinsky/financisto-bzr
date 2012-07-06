@@ -11,8 +11,8 @@
 package ru.orangesoftware.financisto.adapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -33,7 +33,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 
 	private final LayoutInflater inflater;
 	private CategoryTree<Category> categories;
-	private HashMap<Long, String> attributes;
+	private Map<Long, String> attributes;
 
 	private final ArrayList<Category> list = new ArrayList<Category>();
 	private final HashSet<Long> state = new HashSet<Long>();
@@ -180,7 +180,7 @@ public class CategoryListAdapter2 extends BaseAdapter {
 		recreatePlainList();
 	}
 
-	public void setAttributes(HashMap<Long, String> attributes) {
+	public void setAttributes(Map<Long, String> attributes) {
 		this.attributes = attributes;	
 	}
 

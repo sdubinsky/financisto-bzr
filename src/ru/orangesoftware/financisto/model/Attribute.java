@@ -21,15 +21,14 @@ public class Attribute {
 	public static final int TYPE_LIST = 3;
 	public static final int TYPE_CHECKBOX = 4;
 	
-	public final long id;
+	public long id = -1;
 	public String name;
 	public int type;
 	public String listValues;
 	public String defaultValue;
 	
-	public Attribute(long id) {
-		this.id = id;
-	}
+	public Attribute() {
+    }
 	
 	public String getDefaultValue() {
 		if (type == TYPE_CHECKBOX) {
@@ -45,9 +44,9 @@ public class Attribute {
 	}
 	
 	public static Attribute fromCursor(Cursor c) {
-		long id = c.getLong(AttributeColumns.Indicies.ID);
-		Attribute a = new Attribute(id);		
-		a.name = c.getString(AttributeColumns.Indicies.NAME);
+		Attribute a = new Attribute();
+        a.id = c.getLong(AttributeColumns.Indicies.ID);
+        a.name = c.getString(AttributeColumns.Indicies.NAME);
 		a.type = c.getInt(AttributeColumns.Indicies.TYPE);
 		a.listValues = c.getString(AttributeColumns.Indicies.LIST_VALUES);
 		a.defaultValue = c.getString(AttributeColumns.Indicies.DEFAULT_VALUE);

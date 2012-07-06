@@ -11,9 +11,7 @@
 package ru.orangesoftware.financisto.activity;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,8 +46,8 @@ public class TransferActivity extends AbstractTransactionActivity {
 		}
 	}
 
-    protected Cursor fetchCategories() {
-        return db.getCategories(true);
+    protected void fetchCategories() {
+        categorySelector.fetchCategories(false);
     }
 
 	protected int getLayoutId() {
@@ -65,10 +63,9 @@ public class TransferActivity extends AbstractTransactionActivity {
         rateView.createUI();
 		//category
         if (MyPreferences.isShowCategoryInTransferScreen(this)) {
-		    categoryText = x.addListNodePlus(layout, R.id.category, R.id.category_add, R.string.category, R.string.select_category);
-            categoryText.setText(R.string.no_category);
+            categorySelector.createNode(layout, false);
         } else {
-            categoryText = new EditText(this);
+            categorySelector.createDummyNode();
         }
 	}
 	

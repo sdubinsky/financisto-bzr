@@ -250,7 +250,7 @@ public class DatabaseAdapter {
 				transaction.toAmount *= multiplier;
 			}
 			long transactionId = insertTransaction(transaction);
-            HashMap<Long, String> attributesMap = getAllAttributesForTransaction(id);
+            Map<Long, String> attributesMap = getAllAttributesForTransaction(id);
             LinkedList<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();
             for (long attributeId : attributesMap.keySet()) {
                 TransactionAttribute ta = new TransactionAttribute();
@@ -331,6 +331,19 @@ public class DatabaseAdapter {
 		}
 	}
 
+    private void insertAttributes(long transactionId, Map<Long, String> categoryAttributes) {
+        if (categoryAttributes != null && categoryAttributes.size() > 0) {
+            List<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();
+            for (Map.Entry<Long, String> e : categoryAttributes.entrySet()) {
+                TransactionAttribute a = new TransactionAttribute();
+                a.attributeId = e.getKey();
+                a.value = e.getValue();
+                attributes.add(a);
+            }
+            insertAttributes(transactionId, attributes);
+        }
+    }
+
     private void insertSplits(Transaction parent) {
         List<Transaction> splits = parent.splits;
         if (splits != null) {
@@ -342,7 +355,8 @@ public class DatabaseAdapter {
                 split.payeeId = parent.payeeId;
                 split.isTemplate = parent.isTemplate;
                 split.status = parent.status;
-                insertTransaction(split);
+                long splitId = insertTransaction(split);
+                insertAttributes(splitId, split.categoryAttributes);
             }
         }
     }
@@ -433,12 +447,15 @@ public class DatabaseAdapter {
 
     private void deleteSplitsForParentTransaction(long parentId) {
         List<Transaction> splits = em().getSplitsForTransaction(parentId);
+        SQLiteDatabase db = db();
         for (Transaction split : splits) {
             if (split.isTransfer()) {
                 revertToAccountBalance(split);
             }
+            db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID + "=?",
+                    new String[]{String.valueOf(split.id)});
         }
-        db().delete(TRANSACTION_TABLE, TransactionColumns.parent_id+"=?", new String[]{String.valueOf(parentId)});
+        db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id + "=?", new String[]{String.valueOf(parentId)});
     }
 
     private void revertFromAccountBalance(Transaction t) {
@@ -540,12 +557,14 @@ public class DatabaseAdapter {
 	private void addAttributes(long categoryId, List<Attribute> attributes) {
         SQLiteDatabase db = db();
 		db.delete(CATEGORY_ATTRIBUTE_TABLE, CategoryAttributeColumns.CATEGORY_ID+"=?", new String[]{String.valueOf(categoryId)});
-		ContentValues values = new ContentValues();
-		values.put(CategoryAttributeColumns.CATEGORY_ID, categoryId);
-		for (Attribute a : attributes) {
-			values.put(CategoryAttributeColumns.ATTRIBUTE_ID, a.id);
-			db.insert(CATEGORY_ATTRIBUTE_TABLE, null, values);
-		}
+        if (attributes != null) {
+            ContentValues values = new ContentValues();
+            values.put(CategoryAttributeColumns.CATEGORY_ID, categoryId);
+            for (Attribute a : attributes) {
+                values.put(CategoryAttributeColumns.ATTRIBUTE_ID, a.id);
+                db.insert(CATEGORY_ATTRIBUTE_TABLE, null, values);
+            }
+        }
 	}
 
 	private long insertCategory(Category category) {
@@ -986,7 +1005,7 @@ public class DatabaseAdapter {
 		} finally {
 			c.close();
 		}
-		return new Attribute(-1); 
+		return new Attribute();
 	}
 
 	public long insertOrUpdate(Attribute attribute) {
@@ -1027,7 +1046,7 @@ public class DatabaseAdapter {
 				AttributeColumns.ID+">0", null, null, null, AttributeColumns.NAME);
 	}
 
-	public HashMap<Long, String> getAllAttributesMap() {
+	public Map<Long, String> getAllAttributesMap() {
 		Cursor c = db().query(V_ATTRIBUTES, AttributeViewColumns.NORMAL_PROJECTION, null, null, null, null,
 				AttributeViewColumns.CATEGORY_ID+", "+AttributeViewColumns.NAME);
 		try {
@@ -1061,7 +1080,7 @@ public class DatabaseAdapter {
 		}
 	}
 
-	public HashMap<Long, String> getAllAttributesForTransaction(long transactionId) {
+	public Map<Long, String> getAllAttributesForTransaction(long transactionId) {
 		Cursor c = db().query(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.NORMAL_PROJECTION,
 				TransactionAttributeColumns.TRANSACTION_ID+"=? AND "+TransactionAttributeColumns.ATTRIBUTE_ID+">=0", 
 				new String[]{String.valueOf(transactionId)}, 

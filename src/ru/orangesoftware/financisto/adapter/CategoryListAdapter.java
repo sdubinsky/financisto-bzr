@@ -10,7 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -25,7 +25,7 @@ import android.widget.TextView;
 public class CategoryListAdapter extends ResourceCursorAdapter {
 	
 	private final DatabaseAdapter db;
-	private HashMap<Long, String> attributes;
+	private Map<Long, String> attributes;
 	
 	public CategoryListAdapter(DatabaseAdapter db, Context context, int layout, Cursor c) {
 		super(context, layout, c);

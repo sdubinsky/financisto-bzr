@@ -25,7 +25,7 @@ import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryTree;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 public class CategoryListActivity2 extends AbstractListActivity {
 	
@@ -39,7 +39,7 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	}
 
 	private CategoryTree<Category> categories;
-	private HashMap<Long, String> attributes;
+	private Map<Long, String> attributes;
 	
 	@Override
 	protected void internalOnCreate(Bundle savedInstanceState) {

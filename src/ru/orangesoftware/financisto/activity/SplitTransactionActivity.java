@@ -1,29 +1,27 @@
 package ru.orangesoftware.financisto.activity;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.utils.TransactionUtils;
+import ru.orangesoftware.financisto.model.TransactionAttribute;
 import ru.orangesoftware.financisto.widget.AmountInput;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
  * Date: 4/21/11 7:17 PM
  */
-public class SplitTransactionActivity extends AbstractSplitActivity {
+public class SplitTransactionActivity extends AbstractSplitActivity implements CategorySelector.CategorySelectorListener {
 
-    protected AmountInput amountInput;
+    private AmountInput amountInput;
 
-    protected TextView categoryText;
-    protected Cursor categoryCursor;
-    protected ListAdapter categoryAdapter;
+    private CategorySelector categorySelector;
 
     public SplitTransactionActivity() {
         super(R.layout.split_fixed);
@@ -31,7 +29,7 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
 
     @Override
     protected void createUI(LinearLayout layout) {
-        categoryText = x.addListNode(layout, R.id.category, R.string.category, R.string.select_category);
+        categorySelector.createNode(layout, false);
 
         amountInput = new AmountInput(this);
         amountInput.setOwner(this);
@@ -42,19 +40,20 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
             }
         });
         x.addEditNode(layout, R.string.amount, amountInput);
+        categorySelector.createAttributesLayout(layout);
     }
 
     @Override
     protected void fetchData() {
-        categoryCursor = db.getCategories(true);
-        startManagingCursor(categoryCursor);
-        categoryAdapter = TransactionUtils.createCategoryAdapter(db, this, categoryCursor);
+        categorySelector = new CategorySelector(this, db, x);
+        categorySelector.setListener(this);
+        categorySelector.fetchCategories(false);
     }
 
     @Override
     protected void updateUI() {
         super.updateUI();
-        selectCategory(split.categoryId);
+        categorySelector.selectCategory(split.categoryId);
         setAmount(split.fromAmount);
     }
 
@@ -62,19 +61,27 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
     protected void updateFromUI() {
         super.updateFromUI();
         split.fromAmount = amountInput.getAmount();
+        split.categoryAttributes = getAttributes();
     }
 
-    private void selectCategory(long categoryId) {
-        Category category = em.getCategory(categoryId);
-        if (category != null) {
-            categoryText.setText(Category.getTitle(category.title, category.level));
-            if (category.isIncome()) {
-                amountInput.setIncome();
-            } else {
-                amountInput.setExpense();
-            }
-            split.categoryId = categoryId;
+    private Map<Long, String> getAttributes() {
+        List<TransactionAttribute> attributeList = categorySelector.getAttributes();
+        Map<Long, String> attributes = new HashMap<Long, String>();
+        for (TransactionAttribute ta : attributeList) {
+            attributes.put(ta.attributeId, ta.value);
         }
+        return attributes;
+    }
+
+    @Override
+    public void onCategorySelected(Category category, boolean selectLast) {
+        if (category.isIncome()) {
+            amountInput.setIncome();
+        } else {
+            amountInput.setExpense();
+        }
+        split.categoryId = category.id;
+        categorySelector.addAttributes(split);
     }
 
     private void setAmount(long amount) {
@@ -84,32 +91,20 @@ public class SplitTransactionActivity extends AbstractSplitActivity {
     @Override
     protected void onClick(View v, int id) {
         super.onClick(v, id);
-        if (id == R.id.category) {
-            if (!CategorySelectorActivity.pickCategory(this, split.categoryId, false)) {
-                x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter,
-                        DatabaseHelper.CategoryViewColumns._id.name(), split.categoryId);
-            }
-        }
+        categorySelector.onClick(id);
     }
 
     @Override
     public void onSelectedId(int id, long selectedId) {
-        switch(id) {
-            case R.id.category:
-                selectCategory(selectedId);
-                break;
-        }
+        categorySelector.onSelectedId(id, selectedId);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        categorySelector.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             amountInput.processActivityResult(requestCode, data);
-            if (requestCode == CategorySelectorActivity.PICK_CATEGORY_REQUEST) {
-                long categoryId = data.getLongExtra(CategorySelectorActivity.SELECTED_CATEGORY_ID, 0);
-                selectCategory(categoryId);
-            }
         }
     }
 

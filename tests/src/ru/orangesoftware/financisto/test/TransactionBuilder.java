@@ -3,7 +3,7 @@ package ru.orangesoftware.financisto.test;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.*;
 
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,6 +14,7 @@ public class TransactionBuilder {
 
     private final DatabaseAdapter db;
     private final Transaction t = new Transaction();
+    private List<TransactionAttribute> attributes;
 
     public static TransactionBuilder withDb(DatabaseAdapter db) {
         return new TransactionBuilder(db);
@@ -96,14 +97,23 @@ public class TransactionBuilder {
     }
 
     public TransactionBuilder withSplit(Category category, long amount) {
-        return withSplit(category, amount, null);
+        return withSplit(category, amount, null, null);
     }
 
     public TransactionBuilder withSplit(Category category, long amount, String note) {
+        return withSplit(category, amount, note, null);
+    }
+
+    public TransactionBuilder withSplit(Category category, long amount, String note, TransactionAttribute a) {
         Transaction split = new Transaction();
         split.categoryId = category.id;
         split.fromAmount = amount;
         split.note = note;
+        if (a != null) {
+            Map<Long, String> map = new HashMap<Long, String>();
+            map.put(a.attributeId, a.value);
+            split.categoryAttributes = map;
+        }
         t.splits.add(split);
         t.categoryId = Category.SPLIT_CATEGORY_ID;
         return this;
@@ -124,9 +134,13 @@ public class TransactionBuilder {
         return this;
     }
 
+    public TransactionBuilder withAttributes(TransactionAttribute...attributes) {
+        this.attributes = Arrays.asList(attributes);
+        return this;
+    }
+
     public Transaction create() {
-        t.id = db.insertOrUpdate(t);
+        t.id = db.insertOrUpdate(t, attributes);
         return t;
     }
-    
 }

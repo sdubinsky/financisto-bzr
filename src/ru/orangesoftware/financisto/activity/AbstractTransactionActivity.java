@@ -30,9 +30,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.*;
-import android.widget.LinearLayout.LayoutParams;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.DatabaseHelper.*;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
@@ -49,7 +47,7 @@ import java.util.*;
 import static ru.orangesoftware.financisto.utils.ThumbnailUtil.*;
 import static ru.orangesoftware.financisto.utils.Utils.text;
 
-public abstract class AbstractTransactionActivity extends AbstractActivity {
+public abstract class AbstractTransactionActivity extends AbstractActivity implements CategorySelector.CategorySelectorListener {
 	
 	public static final String TRAN_ID_EXTRA = "tranId";
 	public static final String ACCOUNT_ID_EXTRA = "accountId";
@@ -57,7 +55,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	public static final String TEMPLATE_EXTRA = "isTemplate";
     public static final String DATETIME_EXTRA = "dateTimeExtra";
 
-	private static final int NEW_CATEGORY_REQUEST = 4000;
 	private static final int NEW_LOCATION_REQUEST = 4002;
 	private static final int RECURRENCE_REQUEST = 4003;
 	private static final int NOTIFICATION_REQUEST = 4004;
@@ -71,10 +68,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected TextView accountText;	
 	protected Cursor accountCursor;
 	protected ListAdapter accountAdapter;
-	
-	protected TextView categoryText;
-	protected Cursor categoryCursor;
-	protected ListAdapter categoryAdapter;
 	
 	protected TextView locationText;
 	protected Cursor locationCursor;
@@ -95,7 +88,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	private CheckBox ccardPayment;
 	
 	protected long selectedAccountId = -1;
-	protected long selectedCategoryId = 0;
 	protected long selectedLocationId = 0;
 	protected String recurrence;
 	protected String notificationOptions;
@@ -105,12 +97,12 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
     protected boolean isDuplicate = false;
 	
-	private LinearLayout attributesLayout;
 	private boolean setCurrentLocation;
 
     protected ProjectSelector projectSelector;
-	
-	protected boolean isRememberLastAccount;
+    protected CategorySelector categorySelector;
+
+    protected boolean isRememberLastAccount;
 	protected boolean isRememberLastCategory;
 	protected boolean isRememberLastLocation;
 	protected boolean isRememberLastProject;
@@ -152,10 +144,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
-		
-		categoryCursor = fetchCategories();
-		startManagingCursor(categoryCursor);
-		categoryAdapter = TransactionUtils.createCategoryAdapter(db, this, categoryCursor);
+
+        categorySelector = new CategorySelector(this, db, x);
+        categorySelector.setListener(this);
+        fetchCategories();
 
         projectSelector = new ProjectSelector(this, em, x);
         projectSelector.fetchProjects();
@@ -175,6 +167,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
             transaction.dateTime = intent.getLongExtra(DATETIME_EXTRA, System.currentTimeMillis());
 			if (transactionId != -1) {
 				transaction = db.getTransaction(transactionId);
+                transaction.categoryAttributes = db.getAllAttributesForTransaction(transactionId);
 				isDuplicate = intent.getBooleanExtra(DUPLICATE_EXTRA, false);
 				if (isDuplicate) {
 					transaction.id = -1;
@@ -248,14 +241,14 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		}
 		
 		createListNodes(layout);		
-		createAttributesLayout(layout);
+		categorySelector.createAttributesLayout(layout);
 		createCommonNodes(layout);
 		
 		if (transaction.isScheduled()) {
 			recurText = x.addListNode(layout, R.id.recurrence_pattern, R.string.recur, R.string.recur_interval_no_recur);
 			notificationText = x.addListNode(layout, R.id.notification, R.string.notification, R.string.notification_options_default);
 			Attribute sa = db.getSystemAttribute(SystemAttribute.DELETE_AFTER_EXPIRED);
-			deleteAfterExpired = inflateAttribute(sa);
+			deleteAfterExpired = AttributeViewFactory.createViewForAttribute(this, sa);
 			String value = transaction.getSystemAttribute(SystemAttribute.DELETE_AFTER_EXPIRED);
 			deleteAfterExpired.inflateView(layout, value != null ? value : sa.defaultValue);
 		}
@@ -293,7 +286,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 			editTransaction(transaction);
 		} else {
             setDateTime(transaction.dateTime);
-            selectCategory(0);
+            categorySelector.selectCategory(0);
             if (accountId != -1) {
                 selectAccount(accountId);
             } else {
@@ -317,7 +310,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 		Log.i("TransactionActivity", "onCreate "+(t1-t0)+"ms");
 	}
 
-    protected abstract Cursor fetchCategories();
+    protected abstract void fetchCategories();
 
     private boolean saveAndFinish() {
         long id = save();
@@ -342,6 +335,15 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
             return id;
         }
         return -1;
+    }
+
+    private List<TransactionAttribute> getAttributes() {
+        List<TransactionAttribute> attributes = categorySelector.getAttributes();
+        if (deleteAfterExpired != null) {
+            TransactionAttribute ta = deleteAfterExpired.newTransactionAttribute();
+            attributes.add(ta);
+        }
+        return attributes;
     }
 
     protected void internalOnCreate() {
@@ -375,35 +377,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
         		locationText.setText(R.string.no_fix);
         	}
         }
-	}
-
-	private void createAttributesLayout(LinearLayout layout) {
-		attributesLayout = new LinearLayout(this);
-		attributesLayout.setOrientation(LinearLayout.VERTICAL);
-		layout.addView(attributesLayout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-	}
-
-	protected LinkedList<TransactionAttribute> getAttributes() {
-		LinkedList<TransactionAttribute> list = new LinkedList<TransactionAttribute>();
-		long count = attributesLayout.getChildCount();
-		for (int i=0; i<count; i++) {
-			View v = attributesLayout.getChildAt(i);
-			Object o = v.getTag();
-			if (o instanceof AttributeView) {
-				AttributeView av = (AttributeView)o;
-				TransactionAttribute ta = av.newTransactionAttribute();
-				list.add(ta);
-			}
-		}
-		if (deleteAfterExpired != null) {
-			TransactionAttribute ta = deleteAfterExpired.newTransactionAttribute();
-			list.add(ta);
-		}
-		return list;
-	}
-
-	private AttributeView inflateAttribute(Attribute attribute) {
-		return AttributeViewFactory.createViewForAttribute(this, attribute);
 	}
 
 	private void connectGps(boolean forceUseGps) {
@@ -535,23 +508,12 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	@Override
 	protected void onClick(View v, int id) {
         projectSelector.onClick(id);
+        categorySelector.onClick(id);
 		switch(id) {
 			case R.id.account:				
 				x.select(this, R.id.account, R.string.account, accountCursor, accountAdapter, 
 						AccountColumns.ID, selectedAccountId);
 				break;
-			case R.id.category: {
-                if (!CategorySelectorActivity.pickCategory(this, selectedCategoryId, true)) {
-                    x.select(this, R.id.category, R.string.category, categoryCursor, categoryAdapter,
-                            DatabaseHelper.CategoryViewColumns._id.name(), selectedCategoryId);
-                }
-				break;
-            }
-			case R.id.category_add: {
-				Intent intent = new Intent(this, CategoryActivity.class);
-				startActivityForResult(intent, NEW_CATEGORY_REQUEST);				
-				break;
-			} 
 			case R.id.location: {
 				x.select(this, R.id.location, R.string.location, locationCursor, locationAdapter, "_id", selectedLocationId);
 				break;
@@ -606,12 +568,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
  
 	@Override
 	public void onSelectedId(int id, long selectedId) {
+        categorySelector.onSelectedId(id, selectedId);
 		switch(id) {
 			case R.id.account:				
 				selectAccount(selectedId);
-				break;
-			case R.id.category:
-				selectCategory(selectedId);				
 				break;
 			case R.id.location:
 				selectLocation(selectedId);
@@ -638,50 +598,21 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
         return a;
 	}
 
-	protected void selectCategory(long categoryId) {
-		selectCategory(categoryId, true);
-	}
-
-	protected void selectCategory(long categoryId, boolean selectLast) {
-        if (selectedCategoryId == categoryId) {
-            return;
+    @Override
+    public void onCategorySelected(Category category, boolean selectLast) {
+        addOrRemoveSplits();
+        categorySelector.addAttributes(transaction);
+        switchIncomeExpenseButton(category);
+        if (selectLast && isRememberLastLocation) {
+            selectLocation(category.lastLocationId);
         }
-        Category category = em.getCategory(categoryId);
-		if (category != null) {
-			categoryText.setText(Category.getTitle(category.title, category.level));
-			selectedCategoryId = categoryId;
-            addOrRemoveSplits();
-			addAttributes();
-            switchIncomeExpenseButton(category);
-			if (selectLast && isRememberLastLocation) {
-				selectLocation(category.lastLocationId);
-			}
-			if (selectLast && isRememberLastProject) {
-                projectSelector.selectProject(category.lastProjectId);
-			}
-            projectSelector.setProjectNodeVisible(categoryId != Category.SPLIT_CATEGORY_ID);
+        if (selectLast && isRememberLastProject) {
+            projectSelector.selectProject(category.lastProjectId);
         }
-	}
-
-    protected void addOrRemoveSplits() {
+        projectSelector.setProjectNodeVisible(!category.isSplit());
     }
 
-    private void addAttributes() {
-        attributesLayout.removeAllViews();
-        ArrayList<Attribute> attributes = db.getAllAttributesForCategory(selectedCategoryId);
-        HashMap<Long, String> values = null;
-        if (transaction.id > 0) {
-            values = db.getAllAttributesForTransaction(transaction.id);
-        }
-        for (Attribute a : attributes) {
-            AttributeView av = inflateAttribute(a);
-            String value = values != null ? values.get(a.id) : null;
-            if (value == null) {
-                value = a.defaultValue;
-            }
-            View v = av.inflateView(attributesLayout, value);
-            v.setTag(av);
-        }
+    protected void addOrRemoveSplits() {
     }
 
     protected void switchIncomeExpenseButton(Category category) {
@@ -731,24 +662,12 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
         projectSelector.onActivityResult(requestCode, resultCode, data);
+        categorySelector.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
 			if (amountInput.processActivityResult(requestCode, data)) {
 				return;
 			}
 			switch (requestCode) {
-				case NEW_CATEGORY_REQUEST: {
-					categoryCursor.requery();
-					long categoryId = data.getLongExtra(CategoryColumns._id.name(), -1);
-					if (categoryId != -1) {
-						selectCategory(categoryId);
-					}
-					break;
-                }
-                case CategorySelectorActivity.PICK_CATEGORY_REQUEST: {
-                    long categoryId = data.getLongExtra(CategorySelectorActivity.SELECTED_CATEGORY_ID, 0);
-                    selectCategory(categoryId);
-                    break;
-                }
 				case NEW_LOCATION_REQUEST:
 					locationCursor.requery();
 					long locationId = data.getLongExtra(LocationActivity.LOCATION_ID_EXTRA, -1);
@@ -822,7 +741,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 
 	protected void commonEditTransaction(Transaction transaction) {
 		selectStatus(transaction.status);
-		selectCategory(transaction.categoryId, false);
+		categorySelector.selectCategory(transaction.categoryId, false);
 		projectSelector.selectProject(transaction.projectId);
 		setDateTime(transaction.dateTime);		
 		if (transaction.locationId > 0) {
@@ -872,7 +791,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity {
 	}
 
 	protected void updateTransactionFromUI(Transaction transaction) {
-		transaction.categoryId = selectedCategoryId;
+		transaction.categoryId = categorySelector.getSelectedCategoryId();
 		transaction.projectId = projectSelector.getSelectedProjectId();
 		if (transaction.isScheduled()) {
 			DateUtils.zeroSeconds(dateTime);

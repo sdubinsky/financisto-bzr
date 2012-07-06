@@ -40,7 +40,7 @@ public class AttributeActivity extends Activity implements OnItemSelectedListene
 	private EditText defaultValueTextView;
 	private CheckBox defaultValueCheckBox;
 	
-	private Attribute attribute = new Attribute(-1);
+	private Attribute attribute = new Attribute();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

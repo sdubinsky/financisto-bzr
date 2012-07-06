@@ -4,10 +4,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Category;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,16 +26,26 @@ public class CategoryBuilder {
     public static Map<String, Category> createDefaultHierarchy(DatabaseAdapter db) {
         Category a = new CategoryBuilder(db).withTitle("A").create();
         Category a1 = new CategoryBuilder(db).withParent(a).withTitle("A1").create();
-        new CategoryBuilder(db).withParent(a1).withTitle("AA1").create();
+        new CategoryBuilder(db).withParent(a1).withTitle("AA1")
+                .withAttributes(
+                        AttributeBuilder.withDb(db).createTextAttribute("attr1"),
+                        AttributeBuilder.withDb(db).createNumberAttribute("attr2")
+                ).create();
         new CategoryBuilder(db).withParent(a).withTitle("A2").create();
         new CategoryBuilder(db).withTitle("B").income().create();
         return allCategoriesAsMap(db);
+    }
+
+    private CategoryBuilder withAttributes(Attribute...attributes) {
+        category.attributes = Arrays.asList(attributes);
+        return this;
     }
 
     private static Map<String, Category> allCategoriesAsMap(DatabaseAdapter db) {
         HashMap<String, Category> map = new HashMap<String, Category>();
         List<Category> categories = db.getAllCategoriesList();
         for (Category category : categories) {
+            category.attributes = db.getAttributesForCategory(category.id);
             map.put(category.title, category);
         }
         return map;
@@ -72,7 +79,7 @@ public class CategoryBuilder {
     }
 
     public Category create() {
-        category.id = db.insertOrUpdate(category, Collections.<Attribute>emptyList());
+        category.id = db.insertOrUpdate(category, category.attributes);
         return category;
     }
 
