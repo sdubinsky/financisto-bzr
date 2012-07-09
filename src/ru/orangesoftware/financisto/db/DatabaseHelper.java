@@ -160,8 +160,9 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String PAYMENT_DAY = "payment_day";
         public static final String IS_INCLUDE_INTO_TOTALS = "is_include_into_totals";
         public static final String IS_ACTIVE = "is_active";
+        public static final String LAST_TRANSACTION_DATE = "last_transaction_date";
 
-		private AccountColumns() {}
+        private AccountColumns() {}
 
 	}
 	

@@ -20,6 +20,7 @@ import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.CardIssuer;
 import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.orb.EntityManager;
 
@@ -30,11 +31,13 @@ public class AccountListAdapter2 extends ResourceCursorAdapter {
 	
 	private final Utils u;
 	private DateFormat df;
-	
+    private boolean isShowAccountLastTransactionDate;
+
 	public AccountListAdapter2(Context context, Cursor c) {
 		super(context, R.layout.generic_list_item_2, c);
 		this.u = new Utils(context);
 		this.df = DateUtils.getShortDateFormat(context);
+        this.isShowAccountLastTransactionDate = MyPreferences.isShowAccountLastTransactionDate(context);
 	}		
 
 	@Override
@@ -76,8 +79,11 @@ public class AccountListAdapter2 extends ResourceCursorAdapter {
 			sb.append(context.getString(type.titleId));
 		}
 		v.topView.setText(sb.toString());
-		
-		long date = a.creationDate;
+
+        long date = a.creationDate;
+        if (isShowAccountLastTransactionDate && a.lastTransactionDate > 0) {
+            date = a.lastTransactionDate;
+        }
 		v.bottomView.setText(df.format(new Date(date)));
 		
 		long amount = a.totalAmount;			
@@ -98,7 +104,7 @@ public class AccountListAdapter2 extends ResourceCursorAdapter {
 			v.progressText.setVisibility(View.GONE);
 		}
 	}
-	
-	
-	
+
+
+
 }

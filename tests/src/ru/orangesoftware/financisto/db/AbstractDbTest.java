@@ -6,6 +6,7 @@ import android.test.RenamingDelegatingContext;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.test.DateTime;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,6 +40,11 @@ public abstract class AbstractDbTest extends AndroidTestCase {
     public void assertAccountTotal(Account account, long total) {
         Account a = db.em().getAccount(account.id);
         assertEquals("Account "+account.id+" total", total, a.totalAmount);
+    }
+
+    public void assertLastTransactionDate(Account account, DateTime dateTime) {
+        Account a = db.em().getAccount(account.id);
+        assertEquals("Account "+account.id+" last transaction date", dateTime.asLong(), a.lastTransactionDate);
     }
 
     public void assertFinalBalanceForAccount(Account account, long expectedBalance) {

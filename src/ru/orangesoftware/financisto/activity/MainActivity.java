@@ -187,7 +187,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
             if (MyPreferences.shouldRebuildRunningBalance(this)) {
                 db.rebuildRunningBalance();
             }
-		} finally {
+            if (MyPreferences.shouldUpdateAccountsLastTransactionDate(this)) {
+                db.updateAccountsLastTransactionDate();
+            }
+        } finally {
 			db.close();
 		}
 		long t4 = System.currentTimeMillis();

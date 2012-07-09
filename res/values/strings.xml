@@ -239,7 +239,9 @@
 		<item>By Sort Order (Asc)</item>
 		<item>By Sort Order (Desc)</item>
 		<item>By Name</item>
-	</string-array>
+        <item>By Last Transaction (Asc)</item>
+        <item>By Last Transaction (Desc)</item>
+    </string-array>
 	<string name="sort_locations">Sort locations</string>
 	<string name="sort_locations_summary">Define sort order for locations list</string>
 	<string-array name="sort_locations_entities">
@@ -772,5 +774,8 @@
     <string name="purge_account_payee">Previous period</string>
     <string name="purge_account_in_progress">Deleting old transactions...</string>
     <string name="purge_account_unable_to_do_backup">Unable to do database backup, aborting...</string>
+
+    <string name="show_account_last_transaction_date">Last transaction date</string>
+    <string name="show_account_last_transaction_date_summary">Show last transaction date for on accounts list screen (requires restart)</string>
 
 </resources>

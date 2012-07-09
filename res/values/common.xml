@@ -111,7 +111,9 @@
 		<item>SORT_ORDER_ASC</item>
 		<item>SORT_ORDER_DESC</item>
 		<item>NAME</item>
-	</string-array>
+        <item>LAST_TRANSACTION_ASC</item>
+        <item>LAST_TRANSACTION_DESC</item>
+    </string-array>
 	<string-array name="sort_locations_values">
 		<item>NAME</item>
 		<item>FREQUENCY</item>

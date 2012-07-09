@@ -8,7 +8,6 @@
 
 package ru.orangesoftware.financisto.db;
 
-import android.database.Cursor;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Transaction;
@@ -195,6 +194,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t2, a1, 500);
         assertAccountBalanceForTransaction(t3, a1, 250);
         assertFinalBalanceForAccount(a1, 250);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000
         // t2 | 11:05 | -500   | +500
@@ -206,6 +206,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t3, a1, 250);
         assertAccountBalanceForTransaction(t4, a1, 350);
         assertFinalBalanceForAccount(a1, 350);
+        assertLastTransactionDate(a1, DateTime.today().at(13,20,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000
         // t2 | 11:05 | -500   | +500
@@ -219,6 +220,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t3, a1, 200);
         assertAccountBalanceForTransaction(t4, a1, 300);
         assertFinalBalanceForAccount(a1, 300);
+        assertLastTransactionDate(a1, DateTime.today().at(13,20,0,0));
         // *  | time  | amount | balance
         // t6 | 10:00 | +150   | +150 <- insert at the top
         // t1 | 11:00 | +1000  | +1150
@@ -234,6 +236,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t3, a1, 350);
         assertAccountBalanceForTransaction(t4, a1, 450);
         assertFinalBalanceForAccount(a1, 450);
+        assertLastTransactionDate(a1, DateTime.today().at(13,20,0,0));
     }
 
 
@@ -250,6 +253,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t2, a1, 500);
         assertAccountBalanceForTransaction(t3, a1, 250);
         assertFinalBalanceForAccount(a1, 250);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000
         // t2 | 11:05 | -500   | +500
@@ -260,6 +264,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t2, a1, 500);
         assertAccountBalanceForTransaction(t3, a1, 150);
         assertFinalBalanceForAccount(a1, 150);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000
         // t2 | 11:05 | -400   | +600 <- update in the middle
@@ -270,6 +275,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t2, a1, 600);
         assertAccountBalanceForTransaction(t3, a1, 250);
         assertFinalBalanceForAccount(a1, 250);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1200  | +1200 <- update at the top
         // t2 | 11:05 | -400   | +800
@@ -280,6 +286,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t2, a1, 800);
         assertAccountBalanceForTransaction(t3, a1, 450);
         assertFinalBalanceForAccount(a1, 450);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
     }
 
     public void test_should_update_running_balance_when_updating_datetime_on_existing_transaction() {
@@ -295,6 +302,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t2, a1, 500);
         assertAccountBalanceForTransaction(t3, a1, 250);
         assertFinalBalanceForAccount(a1, 250);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000
         // t3 | 11:01 | -250   | +750 <- move up
@@ -305,6 +313,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t3, a1, 750);
         assertAccountBalanceForTransaction(t2, a1, 250);
         assertFinalBalanceForAccount(a1, 250);
+        assertLastTransactionDate(a1, DateTime.today().at(11,5,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000
         // t2 | 11:05 | -500   | +500
@@ -315,6 +324,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t2, a1, 500);
         assertAccountBalanceForTransaction(t3, a1, 250);
         assertFinalBalanceForAccount(a1, 250);
+        assertLastTransactionDate(a1, DateTime.today().at(12,5,0,0));
     }
 
     public void test_should_update_running_balance_when_updating_account_on_existing_transaction() {
@@ -331,6 +341,8 @@ public class RunningBalanceTest extends AbstractDbTest {
         db.rebuildRunningBalance();
         assertFinalBalanceForAccount(a1, 500);
         assertFinalBalanceForAccount(a2, 800);
+        assertLastTransactionDate(a1, DateTime.today().at(11,5,0,0));
+        assertLastTransactionDate(a2, DateTime.today().at(13,0,0,0));
         // A1  | time  | amount | balance
         // t11 | 11:00 | +1000  | +1000
         // t12 | 11:05 | -500   | +500
@@ -345,6 +357,8 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertFinalBalanceForAccount(a1, 400);
         assertAccountBalanceForTransaction(t21, a2, 900);
         assertFinalBalanceForAccount(a2, 900);
+        assertLastTransactionDate(a1, DateTime.today().at(13,0,0,0));
+        assertLastTransactionDate(a2, DateTime.today().at(11,0,0,0));
     }
 
     public void test_should_update_running_balance_when_deleting_existing_transaction() {
@@ -363,6 +377,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t3, a1, 250);
         assertAccountBalanceForTransaction(t4, a1, 200);
         assertFinalBalanceForAccount(a1, 200);
+        assertLastTransactionDate(a1, DateTime.today().at(13,0,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000
         // t2 | 11:05 | -500   | +500
@@ -373,6 +388,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t2, a1, 500);
         assertAccountBalanceForTransaction(t3, a1, 250);
         assertFinalBalanceForAccount(a1, 250);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | +1000  | +1000
         // t2 | 11:05 | *      | * <- delete in the middle
@@ -381,12 +397,14 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t1, a1, 1000);
         assertAccountBalanceForTransaction(t3, a1, 750);
         assertFinalBalanceForAccount(a1, 750);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
         // *  | time  | amount | balance
         // t1 | 11:00 | *      | * <- delete at the top
         // t3 | 12:00 | -250   | -250
         db.deleteTransaction(t1.id);
         assertAccountBalanceForTransaction(t3, a1, -250);
         assertFinalBalanceForAccount(a1, -250);
+        assertLastTransactionDate(a1, DateTime.today().at(12,0,0,0));
     }
 
     public void test_should_update_running_balance_when_inserting_new_transfer() {
@@ -591,5 +609,22 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertFinalBalanceForAccount(a3, 200);
     }
 
+    public void test_should_update_accounts_last_transaction_date() {
+        TransactionBuilder.withDb(db).account(a1).amount(1000).dateTime(DateTime.today().at(11,0,0,0)).create();
+        TransactionBuilder.withDb(db).account(a1).amount(-500).dateTime(DateTime.today().at(11,5,0,0)).create();
+        TransactionBuilder.withDb(db).account(a2).amount(900).dateTime(DateTime.today().at(11,0,0,0)).create();
+        TransactionBuilder.withDb(db).account(a2).amount(-100).dateTime(DateTime.today().at(13,0,0,0)).create();
+        resetLastTransaction(a1);
+        resetLastTransaction(a2);
+        assertLastTransactionDate(a1, DateTime.NULL_DATE);
+        assertLastTransactionDate(a2, DateTime.NULL_DATE);
+        db.updateAccountsLastTransactionDate();
+        assertLastTransactionDate(a1, DateTime.today().at(11,5,0,0));
+        assertLastTransactionDate(a2, DateTime.today().at(13,0,0,0));
+    }
+
+    private void resetLastTransaction(Account a) {
+        db.db().execSQL("update account set last_transaction_date=0 where _id=?", new String[]{String.valueOf(a.id)});
+    }
 
 }

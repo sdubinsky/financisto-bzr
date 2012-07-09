@@ -310,6 +310,8 @@ public class DatabaseAdapter {
         }
         transaction.id = transactionId;
         insertSplits(transaction);
+        updateAccountLastTransactionDate(transaction.fromAccountId);
+        updateAccountLastTransactionDate(transaction.toAccountId);
         return transactionId;
     }
 
@@ -400,18 +402,23 @@ public class DatabaseAdapter {
     }
 
     private void updateTransaction(Transaction t) {
+        Transaction oldT = null;
 		if (t.isNotTemplateLike()) {
-			Transaction oldT = getTransaction(t.id);
+			oldT = getTransaction(t.id);
 			updateAccountBalance(oldT.fromAccountId, oldT.fromAmount, t.fromAccountId, t.fromAmount);
 			updateAccountBalance(oldT.toAccountId, oldT.toAmount, t.toAccountId, t.toAmount);
             updateRunningBalance(oldT, t);
-			if (oldT.locationId != t.locationId) {
+            if (oldT.locationId != t.locationId) {
 				updateLocationCount(oldT.locationId, -1);
 				updateLocationCount(t.locationId, 1);
 			}
 		}
 		db().update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
-				new String[]{String.valueOf(t.id)});		
+				new String[]{String.valueOf(t.id)});
+        if (oldT != null) {
+            updateAccountLastTransactionDate(oldT.fromAccountId);
+            updateAccountLastTransactionDate(oldT.toAccountId);
+        }
 	}
 
     public void updateTransactionStatus(long id, TransactionStatus status) {
@@ -436,6 +443,8 @@ public class DatabaseAdapter {
         if (t.isNotTemplateLike()) {
             revertFromAccountBalance(t);
             revertToAccountBalance(t);
+            updateAccountLastTransactionDate(t.fromAccountId);
+            updateAccountLastTransactionDate(t.toAccountId);
             updateLocationCount(t.locationId, -1);
         }
         String[] sid = new String[]{String.valueOf(id)};
@@ -556,7 +565,7 @@ public class DatabaseAdapter {
 	
 	private void addAttributes(long categoryId, List<Attribute> attributes) {
         SQLiteDatabase db = db();
-		db.delete(CATEGORY_ATTRIBUTE_TABLE, CategoryAttributeColumns.CATEGORY_ID+"=?", new String[]{String.valueOf(categoryId)});
+		db.delete(CATEGORY_ATTRIBUTE_TABLE, CategoryAttributeColumns.CATEGORY_ID + "=?", new String[]{String.valueOf(categoryId)});
         if (attributes != null) {
             ContentValues values = new ContentValues();
             values.put(CategoryAttributeColumns.CATEGORY_ID, categoryId);
@@ -1349,6 +1358,7 @@ public class DatabaseAdapter {
             } finally {
                 c.close();
             }
+            updateAccountLastTransactionDate(account.id);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -1378,7 +1388,7 @@ public class DatabaseAdapter {
             try {
                 while (accountsCursor.moveToNext()) {
                     long accountId = accountsCursor.getLong(0);
-                    recalculateAccountsBalances(accountId);
+                    recalculateAccountBalances(accountId);
                 }
             } finally {
                 accountsCursor.close();
@@ -1389,7 +1399,7 @@ public class DatabaseAdapter {
         }
     }
 
-    private void recalculateAccountsBalances(long accountId) {
+    private void recalculateAccountBalances(long accountId) {
         long amount = fetchAccountBalance(accountId);
         ContentValues values = new ContentValues();
         values.put(AccountColumns.TOTAL_AMOUNT, amount);
@@ -1677,10 +1687,28 @@ public class DatabaseAdapter {
                 new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))});
     }
 
-    public Transaction findNearestOlderTransaction(Account account, long date) {
-        return getTransaction(DatabaseUtils.rawFetchId(this,
-                "select _id from v_blotter where from_account_id=? and datetime<=? order by datetime desc limit 1",
-                new String[]{String.valueOf(account.id), String.valueOf(DateUtils.atDayEnd(date))}));
+    public long findLatestTransactionDate(long accountId) {
+        return DatabaseUtils.rawFetchLongValue(this,
+                "select datetime from running_balance where account_id=? order by datetime desc limit 1",
+                new String[]{String.valueOf(accountId)});
+    }
+
+    private static final String ACCOUNT_LAST_TRANSACTION_DATE_UPDATE = "UPDATE "+ACCOUNT_TABLE
+            +" SET "+AccountColumns.LAST_TRANSACTION_DATE+"=? WHERE "+AccountColumns.ID+"=?";
+
+    private void updateAccountLastTransactionDate(long accountId) {
+        if (accountId <= 0) {
+            return;
+        }
+        long lastTransactionDate = findLatestTransactionDate(accountId);
+        db().execSQL(ACCOUNT_LAST_TRANSACTION_DATE_UPDATE, new Object[]{lastTransactionDate, accountId});
+    }
+
+    public void updateAccountsLastTransactionDate() {
+        List<Account> accounts = em.getAllAccountsList();
+        for (Account account : accounts) {
+            updateAccountLastTransactionDate(account.id);
+        }
     }
 
 }

@@ -23,7 +23,10 @@ public class Account extends MyEntity {
 	@Column(name = "creation_date")
 	public long creationDate = System.currentTimeMillis();
 
-	@JoinColumn(name = "currency_id")
+    @Column(name = "last_transaction_date")
+    public long lastTransactionDate = System.currentTimeMillis();
+
+    @JoinColumn(name = "currency_id")
 	public Currency currency;
 
 	@Column(name = "type")

@@ -168,6 +168,27 @@ public class DatabaseAdapterTest extends AbstractDbTest {
         assertTransactionsCount(a2, 0);
     }
 
+    public void test_should_find_latest_transaction_date_for_an_account() {
+        //given
+        Account a2 = AccountBuilder.createDefault(db);
+        Account a3 = AccountBuilder.createDefault(db);
+        Account a4 = AccountBuilder.createDefault(db);
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 25).at(17, 30, 45, 0)).account(a2).amount(-234).create(); //L2
+        TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2012, 5, 23).at(0, 0, 0, 45)).account(a1).amount(100).create();
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 23).at(23, 59, 59, 999)).account(a1).amount(10).create(); //L1
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 22).at(12, 30, 0, 0)).account(a1).amount(-100)
+                .withSplit(categoriesMap.get("A1"), -50)
+                .withTransferSplit(a3, -50, 50) //L3
+                .create();
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 21).at(12, 0, 12, 345)).account(a2).amount(10).makeTemplate().create();
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2012, 5, 20).at(0, 0, 0, 0)).account(a2).amount(-20).create();
+        //then
+        assertEquals(DateTime.date(2012, 5, 23).at(23, 59, 59, 999).asLong(), db.findLatestTransactionDate(a1.id));
+        assertEquals(DateTime.date(2012, 5, 25).at(17, 30, 45, 0).asLong(), db.findLatestTransactionDate(a2.id));
+        assertEquals(DateTime.date(2012, 5, 22).at(12, 30, 0, 0).asLong(), db.findLatestTransactionDate(a3.id));
+        assertEquals(0, db.findLatestTransactionDate(a4.id));
+    }
+
     private String fetchFirstPayee(String s) {
         Cursor c = em.getAllPayeesLike(s);
         try {

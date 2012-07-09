@@ -16,9 +16,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.preference.PreferenceManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import com.dropbox.client2.session.AccessTokenPair;
 import ru.orangesoftware.financisto.export.Export;
@@ -39,7 +37,9 @@ public class MyPreferences {
     public static enum AccountSortOrder {
 		SORT_ORDER_ASC("sortOrder", true),
 		SORT_ORDER_DESC("sortOrder", false),
-		NAME("title", true);
+		NAME("title", true),
+        LAST_TRANSACTION_ASC("lastTransactionDate", true),
+        LAST_TRANSACTION_DESC("lastTransactionDate", false);
 
 		public final String property;
 		public final boolean asc;
@@ -425,6 +425,10 @@ public class MyPreferences {
         return getOneTimeFlag(context, "should_update_home_currency");
     }
 
+    public static boolean shouldUpdateAccountsLastTransactionDate(Context context) {
+        return getOneTimeFlag(context, "should_update_accounts_last_transaction_date");
+    }
+
     private static boolean getOneTimeFlag(Context context, String name) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean result = sharedPreferences.getBoolean(name, true);
@@ -504,6 +508,10 @@ public class MyPreferences {
 
     public static boolean isSeparateIncomeExpense(Context context) {
         return getBoolean(context, "hierarchical_category_selector_income_expense", false);
+    }
+
+    public static boolean isShowAccountLastTransactionDate(Context context) {
+        return getBoolean(context, "show_account_last_transaction_date", true);
     }
 
     public static AccessTokenPair getDropboxKeys(Context context) {
