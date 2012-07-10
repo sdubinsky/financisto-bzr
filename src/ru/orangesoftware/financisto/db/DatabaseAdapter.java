@@ -1711,5 +1711,15 @@ public class DatabaseAdapter {
         }
     }
 
+    public void restoreNoCategory() {
+        Category c = em.get(Category.class, Category.NO_CATEGORY_ID);
+        if (c == null) {
+            db().execSQL("INSERT INTO category (_id, title, left, right) VALUES (0, '<NO_CATEGORY>', 1, 2)");
+        }
+        CategoryTree<Category> tree = getCategoriesTree(false);
+        tree.reIndex();
+        updateCategoryTree(tree);
+    }
+
 }
 

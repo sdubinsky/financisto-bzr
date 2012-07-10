@@ -189,6 +189,18 @@ public class DatabaseAdapterTest extends AbstractDbTest {
         assertEquals(0, db.findLatestTransactionDate(a4.id));
     }
 
+    public void test_should_restore_no_category() {
+        //given
+        db.db().execSQL("delete from category where _id=0");
+        assertNull(em.get(Category.class, Category.NO_CATEGORY_ID));
+        //when
+        db.restoreNoCategory();
+        //then
+        Category c = em.get(Category.class, Category.NO_CATEGORY_ID);
+        assertNotNull(c);
+        assertEquals("<NO_CATEGORY>", c.title);
+    }
+
     private String fetchFirstPayee(String s) {
         Cursor c = em.getAllPayeesLike(s);
         try {

@@ -783,5 +783,6 @@
     <string name="blotter_screen_summary">Preferences for blotter screen</string>
     <string name="hide_closed_accounts">Hide closed accounts</string>
     <string name="hide_closed_accounts_summary">Hide or show closed accounts in the accounts list (requires restart)</string>
+    <string name="re_index_categories">Re-index</string>
 
 </resources>

@@ -54,6 +54,9 @@ public abstract class FullDatabaseImport {
         dbAdapter.rebuildRunningBalance();
         long t2 = System.currentTimeMillis();
         Log.i("Financisto", "Import: Updating running balances done in " + TimeUnit.MILLISECONDS.toSeconds(t2 - t1) + "s");
+        dbAdapter.restoreNoCategory();
+        long t3 = System.currentTimeMillis();
+        Log.i("Financisto", "Import: Restoring system entities done in " + TimeUnit.MILLISECONDS.toSeconds(t3 - t2) + "s");
         scheduleAll();
     }
 

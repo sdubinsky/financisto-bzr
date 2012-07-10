@@ -33,8 +33,9 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	private static final int EDIT_CATEGORY_REQUEST = 2;
 	
 	private static final int MENU_SORT_BY_TITLE = Menu.FIRST;
+    private static final int MENU_RE_INDEX = Menu.FIRST+1;
 
-	public CategoryListActivity2() {
+    public CategoryListActivity2() {
 		super(R.layout.category_list);
 	}
 
@@ -173,20 +174,27 @@ public class CategoryListActivity2 extends AbstractListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuItem menuItem = menu.add(0, MENU_SORT_BY_TITLE, 0, R.string.sort_all_by_title);
 		menuItem.setIcon(android.R.drawable.ic_menu_sort_alphabetically);
-		return true;
+        menuItem = menu.add(0, MENU_RE_INDEX, 0, R.string.re_index_categories);
+        menuItem.setIcon(R.drawable.ic_menu_rotate);
+        return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case MENU_SORT_BY_TITLE:
-			if (categories.sortByTitle()) {
-				db.updateCategoryTree(categories);
-				notifyDataSetChanged();				
-			}
-		}
-		return true;
-	}
+        switch (item.getItemId()) {
+            case MENU_SORT_BY_TITLE:
+                if (categories.sortByTitle()) {
+                    db.updateCategoryTree(categories);
+                    recreateCursor();
+                }
+                break;
+            case MENU_RE_INDEX:
+                db.restoreNoCategory();
+                recreateCursor();
+                break;
+        }
+        return true;
+    }
 
 	protected void notifyDataSetChanged() {
 		((CategoryListAdapter2)adapter).notifyDataSetChanged();
