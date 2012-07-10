@@ -34,6 +34,7 @@ import ru.orangesoftware.financisto.dialog.AccountInfoDialog;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
@@ -165,7 +166,11 @@ public class AccountListActivity extends AbstractListActivity {
 
 	@Override
 	protected Cursor createCursor() {
-        return em.getAllAccounts();
+        if (MyPreferences.isHideClosedAccounts(this)) {
+            return em.getAllActiveAccounts();
+        } else {
+            return em.getAllAccounts();
+        }
 	}
 
 	protected List<MenuItemInfo> createContextMenus(long id) {

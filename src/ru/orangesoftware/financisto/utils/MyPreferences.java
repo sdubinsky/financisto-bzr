@@ -514,6 +514,10 @@ public class MyPreferences {
         return getBoolean(context, "show_account_last_transaction_date", true);
     }
 
+    public static boolean isHideClosedAccounts(Context context) {
+        return getBoolean(context, "hide_closed_accounts", false);
+    }
+
     public static AccessTokenPair getDropboxKeys(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String authKey = sharedPreferences.getString(DROPBOX_AUTH_KEY, null);
