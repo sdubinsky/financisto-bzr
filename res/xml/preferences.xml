@@ -14,6 +14,11 @@
                         android:title="@string/ui_language" android:summary="@string/ui_language_summary"
                         android:entries="@array/ui_language_entities" android:entryValues="@array/ui_language_values"
                         android:defaultValue="default"/>
+        <ListPreference android:key="startup_screen"
+                        android:title="@string/startup_screen" android:summary="@string/startup_screen_summary"
+                        android:entries="@array/startup_screen_entities"
+                        android:entryValues="@array/startup_screen_values"
+                        android:defaultValue="ACCOUNTS"/>
         <PreferenceScreen android:title="@string/accounts_list_screen"
                           android:summary="@string/accounts_list_screen_summary">
             <CheckBoxPreference android:key="quick_menu_account_enabled"

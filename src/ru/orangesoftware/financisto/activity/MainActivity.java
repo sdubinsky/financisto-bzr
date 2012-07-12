@@ -108,8 +108,11 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		setupBlotterTab(tabHost);
 		setupBudgetsTab(tabHost);
 		setupReportsTab(tabHost);
-		
-		started.put("accounts", Boolean.TRUE);
+
+        MyPreferences.StartupScreen screen = MyPreferences.getStartupScreen(this);
+		started.put(screen.tag, Boolean.TRUE);
+        tabHost.setCurrentTabByTag(screen.tag);
+
 		tabHost.setOnTabChangedListener(this);		
     }
 

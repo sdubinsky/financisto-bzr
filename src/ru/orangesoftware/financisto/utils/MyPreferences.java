@@ -63,6 +63,19 @@ public class MyPreferences {
 		}
 	}
 
+    public static enum StartupScreen {
+        ACCOUNTS("accounts"),
+        BLOTTER("blotter"),
+        BUDGETS("budgets"),
+        REPORTS("reports");
+
+        public final String tag;
+
+        private StartupScreen(String tag) {
+            this.tag = tag;
+        }
+    }
+
     private static Method hasSystemFeatureMethod;
 
     static {
@@ -516,6 +529,12 @@ public class MyPreferences {
 
     public static boolean isHideClosedAccounts(Context context) {
         return getBoolean(context, "hide_closed_accounts", false);
+    }
+
+    public static StartupScreen getStartupScreen(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String screen = sharedPreferences.getString("startup_screen", StartupScreen.ACCOUNTS.name());
+        return StartupScreen.valueOf(screen);
     }
 
     public static AccessTokenPair getDropboxKeys(Context context) {
