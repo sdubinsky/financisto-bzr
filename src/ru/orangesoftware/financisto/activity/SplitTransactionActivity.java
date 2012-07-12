@@ -47,6 +47,7 @@ public class SplitTransactionActivity extends AbstractSplitActivity implements C
     protected void fetchData() {
         categorySelector = new CategorySelector(this, db, x);
         categorySelector.setListener(this);
+        categorySelector.doNotShowSplitCategory();
         categorySelector.fetchCategories(false);
     }
 

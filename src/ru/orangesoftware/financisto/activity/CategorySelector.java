@@ -49,6 +49,7 @@ public class CategorySelector {
 
     private long selectedCategoryId = 0;
     private CategorySelectorListener listener;
+    private boolean showSplitCategory = true;
 
     public CategorySelector(Activity activity, DatabaseAdapter db, ActivityLayout x) {
         this.activity = activity;
@@ -59,6 +60,10 @@ public class CategorySelector {
 
     public void setListener(CategorySelectorListener listener) {
         this.listener = listener;
+    }
+
+    public void doNotShowSplitCategory() {
+        this.showSplitCategory = false;
     }
 
     public void fetchCategories(boolean fetchAllCategories) {
@@ -87,7 +92,7 @@ public class CategorySelector {
     public void onClick(int id) {
         switch (id) {
             case R.id.category: {
-                if (!CategorySelectorActivity.pickCategory(activity, selectedCategoryId, true)) {
+                if (!CategorySelectorActivity.pickCategory(activity, selectedCategoryId, showSplitCategory)) {
                     x.select(activity, R.id.category, R.string.category, categoryCursor, categoryAdapter,
                             DatabaseHelper.CategoryViewColumns._id.name(), selectedCategoryId);
                 }
