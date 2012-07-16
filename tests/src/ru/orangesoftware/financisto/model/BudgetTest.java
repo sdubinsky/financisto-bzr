@@ -17,6 +17,7 @@ public class BudgetTest extends AbstractDbTest {
 
     Budget budgetOne;
     Account account;
+    Project project;
     Map<String, Category> categoriesMap;
     Map<Long, Category> categories;
     Map<Long, Project> projects;
@@ -27,6 +28,9 @@ public class BudgetTest extends AbstractDbTest {
         account = AccountBuilder.createDefault(db);
         categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
         categories = MyEntity.asMap(db.getCategoriesList(true));
+        project = new Project();
+        project.title = "P1";
+        em.saveOrUpdate(project);
         projects = MyEntity.asMap(em.getAllProjectsList(true));
         createBudget();
     }
@@ -36,6 +40,8 @@ public class BudgetTest extends AbstractDbTest {
         budgetOne.currencyId = account.currency.id;
         budgetOne.amount = 1000;
         budgetOne.categories = String.valueOf(categoriesMap.get("A").id);
+        budgetOne.projects = String.valueOf(project.id);
+        budgetOne.expanded = true;
         budgetOne.includeSubcategories = true;
         budgetOne.startDate = DateTime.date(2011, 4, 1).atMidnight().asLong();
         budgetOne.endDate = DateTime.date(2011, 4, 30).at(23, 59, 59, 999).asLong();
@@ -73,10 +79,11 @@ public class BudgetTest extends AbstractDbTest {
                 .amount(-100)
                 .category(CategoryBuilder.split(db))
                 .withSplit(categoriesMap.get("A1"), -60)
-                .withSplit(categoriesMap.get("B"), -40)
+                .withSplit(categoriesMap.get("B"), -30)
+                .withSplit(categoriesMap.get("B"), project, -10)
                 .create();
         spent = db.fetchBudgetBalance(categories, projects, budgetOne);
-        assertEquals(-60, spent);
+        assertEquals(-70, spent);
         // back to zero when split gets deleted
         db.deleteTransaction(t.id);
         spent = db.fetchBudgetBalance(categories, projects, budgetOne);

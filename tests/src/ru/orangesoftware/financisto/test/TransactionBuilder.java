@@ -97,18 +97,25 @@ public class TransactionBuilder {
     }
 
     public TransactionBuilder withSplit(Category category, long amount) {
-        return withSplit(category, amount, null, null);
+        return withSplit(category, amount, null, null, null);
+    }
+
+    public TransactionBuilder withSplit(Category category, Project project, long amount) {
+        return withSplit(category, amount, null, project, null);
     }
 
     public TransactionBuilder withSplit(Category category, long amount, String note) {
-        return withSplit(category, amount, note, null);
+        return withSplit(category, amount, note, null, null);
     }
 
-    public TransactionBuilder withSplit(Category category, long amount, String note, TransactionAttribute a) {
+    public TransactionBuilder withSplit(Category category, long amount, String note, Project p, TransactionAttribute a) {
         Transaction split = new Transaction();
         split.categoryId = category.id;
         split.fromAmount = amount;
         split.note = note;
+        if (p != null) {
+            split.projectId = p.id;
+        }
         if (a != null) {
             Map<Long, String> map = new HashMap<Long, String>();
             map.put(a.attributeId, a.value);

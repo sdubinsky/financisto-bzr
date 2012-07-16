@@ -68,8 +68,8 @@ public class TransactionTest extends AbstractDbTest {
                 .withAttributes(attributeValue(attr1, "value1"), attributeValue(attr2, "value2"))
                 .create();
         Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000)
-                .withSplit(aa1, 600, "Note1", attributeValue(attr1, "value11"))
-                .withSplit(aa1, 1400, "Note2", attributeValue(attr2, "value21"))
+                .withSplit(aa1, 600, "Note1", null, attributeValue(attr1, "value11"))
+                .withSplit(aa1, 1400, "Note2", null, attributeValue(attr2, "value21"))
                 .create();
         //then
         assertAttributes(t1, attributeValue(attr1, "value1"), attributeValue(attr2, "value2"));
