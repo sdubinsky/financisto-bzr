@@ -41,6 +41,28 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertFinalBalanceForAccount(a1, 2234);
     }
 
+    public void test_should_update_running_balance_for_single_account_with_transactions_having_exactly_the_same_datetime() {
+        DateTime dt = DateTime.fromTimestamp(System.currentTimeMillis());
+        Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).dateTime(dt).create();
+        Transaction t2 = TransactionBuilder.withDb(db).account(a1).amount(2000).dateTime(dt).create();
+        Transaction t3 = TransactionBuilder.withDb(db).account(a1).amount(3000).dateTime(dt).create();
+        Transaction t4 = TransactionBuilder.withDb(db).account(a1).amount(4000).dateTime(dt).create();
+        Transaction t5 = TransactionBuilder.withDb(db).account(a1).amount(5000).dateTime(dt).create();
+        assertFinalBalanceForAccount(a1, 15000);
+        assertAccountBalanceForTransaction(t1, a1, 1000);
+        assertAccountBalanceForTransaction(t2, a1, 3000);
+        assertAccountBalanceForTransaction(t3, a1, 6000);
+        assertAccountBalanceForTransaction(t4, a1, 10000);
+        assertAccountBalanceForTransaction(t5, a1, 15000);
+        db.rebuildRunningBalanceForAccount(a1);
+        assertFinalBalanceForAccount(a1, 15000);
+        assertAccountBalanceForTransaction(t1, a1, 1000);
+        assertAccountBalanceForTransaction(t2, a1, 3000);
+        assertAccountBalanceForTransaction(t3, a1, 6000);
+        assertAccountBalanceForTransaction(t4, a1, 10000);
+        assertAccountBalanceForTransaction(t5, a1, 15000);
+    }
+
     public void test_should_not_duplicate_running_balance_with_splits() {
         // add new transaction before split
         Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(2000).create();

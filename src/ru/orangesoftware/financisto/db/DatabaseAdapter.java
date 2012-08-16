@@ -151,8 +151,14 @@ public class DatabaseAdapter {
 	private String getBlotterSortOrder(WhereFilter filter) {
 		String sortOrder = filter.getSortOrder();
 		if (sortOrder == null || sortOrder.length() == 0) {
-			sortOrder = BlotterFilter.SORT_NEWER_TO_OLDER;
-		}
+			sortOrder = BlotterFilter.SORT_NEWER_TO_OLDER+","+BlotterFilter.SORT_NEWER_TO_OLDER_BY_ID;
+		} else {
+            if (sortOrder.contains(BlotterFilter.SORT_NEWER_TO_OLDER)) {
+                sortOrder += ","+BlotterFilter.SORT_NEWER_TO_OLDER_BY_ID;
+            } else {
+                sortOrder += ","+BlotterFilter.SORT_OLDER_TO_NEWER_BY_ID;
+            }
+        }
 		return sortOrder;
 	}
 

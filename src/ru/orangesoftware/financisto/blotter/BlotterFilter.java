@@ -30,4 +30,7 @@ public interface BlotterFilter {
 	String SORT_NEWER_TO_OLDER = BlotterColumns.datetime+" desc";
 	String SORT_OLDER_TO_NEWER = BlotterColumns.datetime+" asc";
 
+    String SORT_NEWER_TO_OLDER_BY_ID = "_id desc";
+    String SORT_OLDER_TO_NEWER_BY_ID = "_id asc";
+
 }
