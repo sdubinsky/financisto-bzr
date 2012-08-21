@@ -14,6 +14,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -181,6 +182,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
         if (isShowPayee) {
             payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
             payeeText = new AutoCompleteTextView(this);
+            payeeText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
             payeeText.setThreshold(1);
             payeeText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
