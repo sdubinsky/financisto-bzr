@@ -10,8 +10,10 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-public interface RecreateCursorSupportedActivity {
+public interface RefreshSupportedActivity {
 
 	void recreateCursor();
-	
+
+    void integrityCheck();
+
 }

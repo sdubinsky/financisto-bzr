@@ -81,7 +81,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t3, a1, 1500);
         assertFinalBalanceForAccount(a1, 1500);
         // rebuild balance
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertAccountBalanceForTransaction(t1, a1, 2000);
         assertAccountBalanceForTransaction(t2, a1, 3000);
         assertAccountBalanceForTransaction(t3, a1, 1500);
@@ -92,7 +92,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
         Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();
         Transaction t3 = TransferBuilder.withDb(db).fromAccount(a1).fromAmount(-500).toAccount(a2).toAmount(500).create();
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertAccountBalanceForTransaction(t1, a1, 1000);
         assertAccountBalanceForTransaction(t2, a2, 2000);
         assertAccountBalanceForTransaction(t3, a1, 500);
@@ -104,7 +104,7 @@ public class RunningBalanceTest extends AbstractDbTest {
     public void test_should_update_running_balance_for_two_accounts_with_transfer_split() {
         Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
         Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         Transaction t3 = TransactionBuilder.withDb(db).account(a1).amount(-100)
                 .withTransferSplit(a2, -100, 50).create();
         assertAccountBalanceForTransaction(t1, a1, 1000);
@@ -116,7 +116,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(splits.get(0), a2, 2050);
         assertFinalBalanceForAccount(a1, 900);
         assertFinalBalanceForAccount(a2, 2050);
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertAccountBalanceForTransaction(splits.get(0), a2, 2050);
         assertFinalBalanceForAccount(a1, 900);
         assertFinalBalanceForAccount(a2, 2050);
@@ -126,7 +126,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         TransactionBuilder.withDb(db).account(a1).amount(2000).create();
         TransactionBuilder.withDb(db).account(a2).amount(3000).create();
         TransactionBuilder.withDb(db).account(a3).amount(4000).create();
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         Transaction t4 = TransactionBuilder.withDb(db).account(a1).amount(-1000)
                 .withTransferSplit(a2, -100, 50)
                 .withTransferSplit(a2, -200, 60)
@@ -144,7 +144,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(splits.get(2), a2, 3180);
         assertAccountBalanceForTransaction(splits.get(3), a3, 4080);
         assertAccountBalanceForTransaction(splits.get(4), a3, 4170);
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertFinalBalanceForAccount(a1, 1000);
         assertFinalBalanceForAccount(a2, 3180);
         assertFinalBalanceForAccount(a3, 4170);
@@ -161,7 +161,7 @@ public class RunningBalanceTest extends AbstractDbTest {
                 .withTransferSplit(a2, -100, 50).create();
         Transaction t4 = TransactionBuilder.withDb(db).account(a1).amount(-100).create();
         Transaction t5 = TransactionBuilder.withDb(db).account(a2).amount(-100).create();
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertFinalBalanceForAccount(a1, 800);
         assertFinalBalanceForAccount(a2, 1950);
         // update split -100 -> +50 >>> -200 -> +100
@@ -178,7 +178,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertAccountBalanceForTransaction(t5, a2, 2000);
         assertFinalBalanceForAccount(a1, 700);
         assertFinalBalanceForAccount(a2, 2000);
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertFinalBalanceForAccount(a1, 700);
         assertFinalBalanceForAccount(a2, 2000);
     }
@@ -186,7 +186,7 @@ public class RunningBalanceTest extends AbstractDbTest {
     public void test_should_update_running_balance_when_deleting_transfer_split() {
         Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
         Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertFinalBalanceForAccount(a1, 1000);
         assertFinalBalanceForAccount(a2, 2000);
         Transaction t3 = TransactionBuilder.withDb(db).account(a1).amount(-200)
@@ -196,7 +196,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         db.deleteTransaction(t3.id);
         assertFinalBalanceForAccount(a1, 1000);
         assertFinalBalanceForAccount(a2, 2000);
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertFinalBalanceForAccount(a1, 1000);
         assertFinalBalanceForAccount(a2, 2000);
         assertAccountBalanceForTransaction(t1, a1, 1000);
@@ -360,7 +360,7 @@ public class RunningBalanceTest extends AbstractDbTest {
         Transaction t12 = TransactionBuilder.withDb(db).account(a1).amount(-500).dateTime(DateTime.today().at(11,5,0,0)).create();
         Transaction t21 = TransactionBuilder.withDb(db).account(a2).amount(900).dateTime(DateTime.today().at(11,0,0,0)).create();
         Transaction t22 = TransactionBuilder.withDb(db).account(a2).amount(-100).dateTime(DateTime.today().at(13,0,0,0)).create();
-        db.rebuildRunningBalance();
+        db.rebuildRunningBalances();
         assertFinalBalanceForAccount(a1, 500);
         assertFinalBalanceForAccount(a2, 800);
         assertLastTransactionDate(a1, DateTime.today().at(11,5,0,0));

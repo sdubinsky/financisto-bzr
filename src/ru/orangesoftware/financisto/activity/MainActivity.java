@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -88,8 +89,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int MENU_DONATE = Menu.FIRST+10;
     private static final int MENU_IMPORT_EXPORT = Menu.FIRST+11;
     private static final int MENU_BACKUP_TO = Menu.FIRST+12;
+    private static final int MENU_INTEGRITY_FIX = Menu.FIRST+13;
 
-	private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
+    private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +115,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		started.put(screen.tag, Boolean.TRUE);
         tabHost.setCurrentTabByTag(screen.tag);
 
-		tabHost.setOnTabChangedListener(this);		
+		tabHost.setOnTabChangedListener(this);
     }
 
     @Override
@@ -188,7 +190,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			CurrencyCache.initialize(db.em());
             t3 = System.currentTimeMillis();
             if (MyPreferences.shouldRebuildRunningBalance(this)) {
-                db.rebuildRunningBalance();
+                db.rebuildRunningBalances();
             }
             if (MyPreferences.shouldUpdateAccountsLastTransactionDate(this)) {
                 db.updateAccountsLastTransactionDate();
@@ -207,20 +209,26 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	@Override
 	public void onTabChanged(String tabId) {
 		if (started.containsKey(tabId)) {
-			Context c = getTabHost().getCurrentView().getContext();
-			if (c instanceof RecreateCursorSupportedActivity) {
-                Log.d("Financisto", "About to change tab ro "+tabId);
-				long t0 = System.currentTimeMillis();
-				((RecreateCursorSupportedActivity)c).recreateCursor();
-				long t1 = System.currentTimeMillis();
-				Log.d("Financisto", "Tab changed to "+tabId+" in "+(t1-t0)+"ms");
-			}
-		} else {
+            Log.d("Financisto", "About to update tab " + tabId);
+            long t0 = System.currentTimeMillis();
+            refreshCurrentTab();
+            long t1 = System.currentTimeMillis();
+            Log.d("Financisto", "Tab " + tabId + " updated in " + (t1 - t0) + "ms");
+        } else {
 			started.put(tabId, Boolean.TRUE);
 		}
 	}
 
-	private void setupAccountsTab(TabHost tabHost) {
+    private void refreshCurrentTab() {
+        Context c = getTabHost().getCurrentView().getContext();
+        if (c instanceof RefreshSupportedActivity) {
+            RefreshSupportedActivity activity = (RefreshSupportedActivity) c;
+            activity.recreateCursor();
+            activity.integrityCheck();
+        }
+    }
+
+    private void setupAccountsTab(TabHost tabHost) {
         tabHost.addTab(tabHost.newTabSpec("accounts")
                 .setIndicator(getString(R.string.accounts), getResources().getDrawable(R.drawable.ic_tab_accounts))
                 .setContent(new Intent(this, AccountListActivity.class)));
@@ -265,6 +273,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
         menu.addSubMenu(0, MENU_BACKUP_TO, 0, R.string.backup_database_to);
 		menu.addSubMenu(0, MENU_IMPORT_EXPORT, 0, R.string.import_export);
+        menu.addSubMenu(0, MENU_INTEGRITY_FIX, 0, R.string.integrity_fix);
         menu.addSubMenu(0, MENU_DONATE, 0, R.string.donate);
 		menu.addSubMenu(0, MENU_ABOUT, 0, R.string.about);
 		return true;
@@ -323,9 +332,16 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		case MENU_RESTORE_GDOCS:
 			doImportFromGoogleDocs();
 			break;
-		}
+        case MENU_INTEGRITY_FIX:
+            doIntegrityFix();
+            break;
+        }
 		return false;
 	}
+
+    private void doIntegrityFix() {
+        new IntegrityFixTask().execute();
+    }
 
     private void openBrowser(String url) {
         try {
@@ -637,6 +653,30 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
             return iconId;
         }
 
+    }
+
+    private class IntegrityFixTask extends AsyncTask {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(MainActivity.this, null, getString(R.string.integrity_fix_in_progress), true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            refreshCurrentTab();
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected Object doInBackground(Object... objects) {
+            DatabaseAdapter db = new DatabaseAdapter(MainActivity.this);
+            new IntegrityFix(db).fix();
+            return null;
+        }
     }
 
 }

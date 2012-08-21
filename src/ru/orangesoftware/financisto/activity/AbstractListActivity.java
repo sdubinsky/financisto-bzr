@@ -32,7 +32,7 @@ import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-public abstract class AbstractListActivity extends ListActivity implements RecreateCursorSupportedActivity {
+public abstract class AbstractListActivity extends ListActivity implements RefreshSupportedActivity {
 	
 	protected static final int MENU_VIEW = Menu.FIRST+1;
 	protected static final int MENU_EDIT = Menu.FIRST+2;
@@ -198,7 +198,12 @@ public abstract class AbstractListActivity extends ListActivity implements Recre
         }
 	}
 
-	@Override
+    @Override
+    public void integrityCheck() {
+        new IntegrityCheckTask(this).execute();
+    }
+
+    @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
 			recreateCursor();

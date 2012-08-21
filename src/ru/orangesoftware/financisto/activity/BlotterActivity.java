@@ -48,7 +48,7 @@ public class BlotterActivity extends AbstractListActivity {
 	
 	public static final String SAVE_FILTER = "saveFilter";
 	public static final String EXTRA_FILTER_ACCOUNTS = "filterAccounts";
-	
+
 	private static final int NEW_TRANSACTION_REQUEST = 1;
 	private static final int NEW_TRANSFER_REQUEST = 3;
 	private static final int NEW_TRANSACTION_FROM_TEMPLATE_REQUEST = 5;
@@ -113,7 +113,8 @@ public class BlotterActivity extends AbstractListActivity {
 		super.onCreate(savedInstanceState);
 		LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater = new NodeInflater(layoutInflater);
-	}
+        integrityCheck();
+    }
 
     @Override
 	protected void internalOnCreate(Bundle savedInstanceState) {
@@ -570,5 +571,5 @@ public class BlotterActivity extends AbstractListActivity {
         }
 
     }
-	
+
 }

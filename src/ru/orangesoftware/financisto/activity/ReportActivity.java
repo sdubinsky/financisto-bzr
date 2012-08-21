@@ -47,7 +47,7 @@ import java.math.BigDecimal;
 
 import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
 
-public class ReportActivity extends ListActivity implements RecreateCursorSupportedActivity {
+public class ReportActivity extends ListActivity implements RefreshSupportedActivity {
 
     protected static final int FILTER_REQUEST = 1;
 
@@ -242,7 +242,11 @@ public class ReportActivity extends ListActivity implements RecreateCursorSuppor
 		selectReport();
 	}
 
-	@Override
+    @Override
+    public void integrityCheck() {
+    }
+
+    @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == FILTER_REQUEST) {
 			if (resultCode == RESULT_FIRST_USER) {

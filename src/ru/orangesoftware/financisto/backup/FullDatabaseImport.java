@@ -9,11 +9,11 @@ package ru.orangesoftware.financisto.backup;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.service.RecurrenceScheduler;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.IntegrityFix;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,16 +47,7 @@ public abstract class FullDatabaseImport {
             db.endTransaction();
         }
         CurrencyCache.initialize(em);
-        long t0 = System.currentTimeMillis();
-        dbAdapter.recalculateAccountsBalances();
-        long t1 = System.currentTimeMillis();
-        Log.i("Financisto", "Import: Recalculating balances done in " + TimeUnit.MILLISECONDS.toSeconds(t1 - t0) + "s");
-        dbAdapter.rebuildRunningBalance();
-        long t2 = System.currentTimeMillis();
-        Log.i("Financisto", "Import: Updating running balances done in " + TimeUnit.MILLISECONDS.toSeconds(t2 - t1) + "s");
-        dbAdapter.restoreNoCategory();
-        long t3 = System.currentTimeMillis();
-        Log.i("Financisto", "Import: Restoring system entities done in " + TimeUnit.MILLISECONDS.toSeconds(t3 - t2) + "s");
+        new IntegrityFix(dbAdapter).fix();
         scheduleAll();
     }
 

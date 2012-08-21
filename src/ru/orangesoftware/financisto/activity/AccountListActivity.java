@@ -65,6 +65,7 @@ public class AccountListActivity extends AbstractListActivity {
 		super.onCreate(savedInstanceState);
 		calculateTotals();
         prepareAccountActionGrid();
+        integrityCheck();
 	}
 
     protected void prepareAccountActionGrid() {

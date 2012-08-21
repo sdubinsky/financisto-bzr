@@ -329,11 +329,11 @@ public class QifExportTest extends AbstractExportTest<QifExport, QifExportOption
                 "$-4,200.12\n"+
                 "^\n"+
                 "D12/07/2011\n"+
-                "T500.25\n"+
+                "T620.00\n"+
                 "L[My Cash Account]\n"+
                 "^\n"+
                 "D12/07/2011\n"+
-                "T620.00\n"+
+                "T500.25\n"+
                 "L[My Cash Account]\n"+
                 "^\n",
                 exportAsString());

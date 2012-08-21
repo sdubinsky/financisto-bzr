@@ -1319,7 +1319,7 @@ public class DatabaseAdapter {
     /**
      * Re-populates running_balance table for all accounts
      */
-    public void rebuildRunningBalance() {
+    public void rebuildRunningBalances() {
         List<Account> accounts = em.getAllAccountsList();
         for (Account account : accounts) {
             rebuildRunningBalanceForAccount(account);
@@ -1727,5 +1727,9 @@ public class DatabaseAdapter {
         updateCategoryTree(tree);
     }
 
+    public long getLastRunningBalanceForAccount(Account account) {
+        return DatabaseUtils.rawFetchLongValue(this, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
+                new String[]{String.valueOf(account.id)});
+    }
 }
 

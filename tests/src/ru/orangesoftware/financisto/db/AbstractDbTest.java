@@ -48,8 +48,7 @@ public abstract class AbstractDbTest extends AndroidTestCase {
     }
 
     public void assertFinalBalanceForAccount(Account account, long expectedBalance) {
-        long balance = DatabaseUtils.rawFetchLongValue(db, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
-                new String[]{String.valueOf(account.id)});
+        long balance = db.getLastRunningBalanceForAccount(account);
         assertEquals("Account "+account.id+" final balance", expectedBalance, balance);
     }
 
