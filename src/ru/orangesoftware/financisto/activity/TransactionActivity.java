@@ -182,7 +182,9 @@ public class TransactionActivity extends AbstractTransactionActivity {
         if (isShowPayee) {
             payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
             payeeText = new AutoCompleteTextView(this);
-            payeeText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+            payeeText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS |
+                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+                    InputType.TYPE_TEXT_VARIATION_FILTER);
             payeeText.setThreshold(1);
             payeeText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
