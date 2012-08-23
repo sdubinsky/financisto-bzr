@@ -795,6 +795,6 @@
 
     <string name="integrity_error">Running balances look out of sync, please do Menu -> More -> Integrity Fix</string>
     <string name="integrity_fix">Integrity Fix</string>
-    <string name="integrity_fix_in_progress">Fixing...</string>
+    <string name="integrity_fix_in_progress">Checking and fixing if necessary...</string>
 
 </resources>
