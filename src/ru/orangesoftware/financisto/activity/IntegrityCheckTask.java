@@ -30,17 +30,25 @@ public class IntegrityCheckTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... objects) {
-        DatabaseAdapter db = new DatabaseAdapter(activity);
-        IntegrityCheck check = new IntegrityCheck(db);
-        return check.isBroken();
+        View textView = getResultView();
+        if (textView != null) {
+            DatabaseAdapter db = new DatabaseAdapter(activity);
+            IntegrityCheck check = new IntegrityCheck(db);
+            return check.isBroken();
+        }
+        return false;
     }
 
     @Override
     protected void onPostExecute(Boolean result) {
-        View textView = activity.findViewById(R.id.integrity_error);
+        View textView = getResultView();
         if (textView != null) {
             textView.setVisibility(result != null && result ? View.VISIBLE : View.GONE);
         }
+    }
+
+    private View getResultView() {
+        return activity.findViewById(R.id.integrity_error);
     }
 
 }
