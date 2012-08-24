@@ -37,7 +37,10 @@ public class IntegrityCheckTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-        activity.findViewById(R.id.integrity_error).setVisibility(result != null && result ? View.VISIBLE : View.GONE);
+        View textView = activity.findViewById(R.id.integrity_error);
+        if (textView != null) {
+            textView.setVisibility(result != null && result ? View.VISIBLE : View.GONE);
+        }
     }
 
 }
