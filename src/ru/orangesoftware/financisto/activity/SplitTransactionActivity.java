@@ -59,10 +59,11 @@ public class SplitTransactionActivity extends AbstractSplitActivity implements C
     }
 
     @Override
-    protected void updateFromUI() {
+    protected boolean updateFromUI() {
         super.updateFromUI();
         split.fromAmount = amountInput.getAmount();
         split.categoryAttributes = getAttributes();
+        return true;
     }
 
     private Map<Long, String> getAttributes() {

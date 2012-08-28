@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.model.Account;
@@ -60,10 +61,15 @@ public class SplitTransferActivity extends AbstractSplitActivity {
     }
 
     @Override
-    protected void updateFromUI() {
+    protected boolean updateFromUI() {
         super.updateFromUI();
         split.fromAmount = rateView.getFromAmount();
         split.toAmount = rateView.getToAmount();
+        if (split.fromAccountId == split.toAccountId) {
+            Toast.makeText(this, R.string.select_to_account_differ_from_to_account, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     private void selectFromAccount(long accountId) {

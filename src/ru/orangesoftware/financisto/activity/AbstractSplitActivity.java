@@ -112,15 +112,17 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
 
     private void saveAndFinish() {
         Intent data = new Intent();
-        updateFromUI();
-        split.toIntentAsSplit(data);
-        setResult(Activity.RESULT_OK, data);
-        finish();
+        if (updateFromUI()) {
+            split.toIntentAsSplit(data);
+            setResult(Activity.RESULT_OK, data);
+            finish();
+        }
     }
 
-    protected void updateFromUI() {
+    protected boolean updateFromUI() {
         split.note = text(noteText);
         split.projectId = projectSelector.getSelectedProjectId();
+        return true;
     }
 
     protected void updateUI() {
