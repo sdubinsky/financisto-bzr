@@ -464,7 +464,7 @@ public class RecurUtils {
 		RecurPeriod period = recur.period;
 		if (interval == RecurInterval.NO_RECUR) {
 			if (period != RecurPeriod.STOPS_ON_DATE) {
-                return new Period[]{DateUtils.thisMonth()};
+                return new Period[]{PeriodType.THIS_MONTH.calculatePeriod()};
 			}
 			return new Period[]{new Period(PeriodType.CUSTOM, recur.startDate, recur.periodParam)};
 		} else {

@@ -13,6 +13,7 @@ package ru.orangesoftware.financisto.activity;
 import java.text.DateFormat;
 import java.util.Calendar;
 
+import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
@@ -27,14 +28,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.Spinner;
-import android.widget.TimePicker;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import static ru.orangesoftware.financisto.utils.DateUtils.is24HourFormat;
+import static ru.orangesoftware.financisto.utils.EnumUtils.createSpinnerAdapter;
 
 public class DateFilterActivity extends Activity {
 	
@@ -61,31 +58,17 @@ public class DateFilterActivity extends Activity {
 		df = DateUtils.getShortDateFormat(this);
 		
 		spinnerPeriodType = (Spinner)findViewById(R.id.period);
+        final PeriodType[] periods = PeriodType.values();
+        spinnerPeriodType.setAdapter(createSpinnerAdapter(this, periods));
 		spinnerPeriodType.setOnItemSelectedListener(new OnItemSelectedListener(){
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				switch(position) {
-				case 0:
-					selectToday();
-					break;
-				case 1:
-					selectYesterday();
-					break;
-				case 2:
-					selectThisWeek();
-					break;
-				case 3:
-					selectThisMonth();
-					break;
-				case 4:
-					selectLastWeek();
-					break;
-				case 5:
-					selectLastMonth();
-					break;
-				default:
-					selectCustom();
-				}
+                PeriodType period = periods[position];
+                if (period == PeriodType.CUSTOM) {
+                    selectCustom();
+                } else {
+                    selectPeriod(period);
+                }
 			}
 
 			@Override
@@ -113,7 +96,6 @@ public class DateFilterActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent data = new Intent();
-				PeriodType[] periods = PeriodType.values();
 				PeriodType period = periods[spinnerPeriodType.getSelectedItemPosition()];
 				data.putExtra(EXTRA_FILTER_PERIOD_TYPE, period.name());
 				data.putExtra(EXTRA_FILTER_PERIOD_FROM, cFrom.getTimeInMillis());
@@ -164,16 +146,6 @@ public class DateFilterActivity extends Activity {
 	private void selectPeriod(Period p) {
 		spinnerPeriodType.setSelection(p.type.ordinal());
 	}
-
-	public static int selectPeriodType(String s) {
-		PeriodType[] periods = PeriodType.values(); 
-		for (PeriodType p : periods) {
-			if (p.name().equals(s)) {
-				return p.ordinal();
-			}
-		}
-		return -1;
-	}		
 
 	private void selectPeriod(long from, long to) {
 		cFrom.setTimeInMillis(from);
@@ -252,35 +224,10 @@ public class DateFilterActivity extends Activity {
 		buttonPeriodTo.setText(df.format(cTo.getTime()));
 	}
 
-	protected void selectToday() {
-		disableButtons();
-		updateDate(DateUtils.today());
-	}
-
-	protected void selectYesterday() {
-		disableButtons();
-		updateDate(DateUtils.yesterday());
-	}
-
-	protected void selectThisWeek() {
-		disableButtons();
-		updateDate(DateUtils.thisWeek());
-	}
-
-	protected void selectThisMonth() {
-		disableButtons();
-		updateDate(DateUtils.thisMonth());
-	}
-
-	protected void selectLastWeek() {
-		disableButtons();
-		updateDate(DateUtils.lastWeek());
-	}
-
-	protected void selectLastMonth() {
-		disableButtons();
-		updateDate(DateUtils.lastMonth());
-	}
+    private void selectPeriod(PeriodType periodType) {
+        disableButtons();
+        updateDate(periodType.calculatePeriod());
+    }
 
 	protected void selectCustom() {
 		updateDate();
