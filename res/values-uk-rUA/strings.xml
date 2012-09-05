@@ -352,7 +352,7 @@
   <string name="report_include_no_filter_summary">Включати транзакції з незаповненими категоріями, проектами та з поточним місцезнаходженням</string>
   <string name="report_reference_month">Звітний місяць</string>
   <string name="report_reference_month_summary">Вкажіть звітний місяць, який вказує на кінець періоду в звіті.</string>
-  <string name="report_last_quarter">За останні квартал</string>
+  <string name="report_last_quarter">За останній квартал</string>
   <string name="report_last_half_year">За останні пів-року</string>
   <string name="report_last_9_months">За останні 9 місяців</string>
   <string name="report_last_year">За останній рік</string>
