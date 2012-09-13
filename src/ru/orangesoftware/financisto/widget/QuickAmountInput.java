@@ -78,7 +78,7 @@ public class QuickAmountInput extends Activity {
         });
         layout2.addView(bOK, lpWrapWrap);
         Button bClear = new Button(this);
-        bClear.setText(R.string.clear);
+        bClear.setText(R.string.reset);
         bClear.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {

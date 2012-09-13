@@ -8,7 +8,8 @@
   <string name="budgets">Budgets</string>
   <string name="projects">Projekte</string>
   <string name="ok">OK</string>
-  <string name="clear">Löschen</string>
+  <string name="reset">Löschen</string>
+  <string name="clear">Bezahlt</string>
   <string name="save">Speichern</string>
   <string name="cancel">Abbrechen</string>
   <string name="close">Schließen</string>
