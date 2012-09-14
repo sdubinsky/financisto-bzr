@@ -25,6 +25,7 @@ import ru.orangesoftware.financisto.activity.BlotterOperations;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.info.TransactionAttributeInfo;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.Recurrence;
 import ru.orangesoftware.financisto.utils.ThumbnailUtil;

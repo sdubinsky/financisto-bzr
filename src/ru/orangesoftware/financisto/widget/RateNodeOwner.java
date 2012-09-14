@@ -9,6 +9,7 @@
 package ru.orangesoftware.financisto.widget;
 
 import android.app.Activity;
+import ru.orangesoftware.financisto.model.Currency;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,7 +25,7 @@ public interface RateNodeOwner {
 
     Activity getActivity();
 
-    String getCurrencyFrom();
-    String getCurrencyTo();
+    Currency getCurrencyFrom();
+    Currency getCurrencyTo();
 
 }

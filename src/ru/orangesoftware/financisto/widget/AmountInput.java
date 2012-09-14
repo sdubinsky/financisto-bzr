@@ -47,7 +47,6 @@ public class AmountInput extends LinearLayout {
 	private int decimals;
 
     private ToggleButton toggleView;
-	private TextView currencyView;
 	private EditText primary;
 	private EditText secondary;
 	
@@ -140,7 +139,6 @@ public class AmountInput extends LinearLayout {
 				startInputActivity(CalculatorInput.class);
 			}
 		});
-        currencyView = (TextView) findViewById(R.id.currency);
 		toggleView = (ToggleButton) findViewById(R.id.toggle);
         toggleView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
@@ -263,7 +261,6 @@ public class AmountInput extends LinearLayout {
 
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
-        currencyView.setText(currency != null ? currency.symbol : "");
 	}
 
 	public void setOwner(Activity owner) {

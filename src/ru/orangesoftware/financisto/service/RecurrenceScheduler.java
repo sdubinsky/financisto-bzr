@@ -19,7 +19,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.RestoredTransaction;
 import ru.orangesoftware.financisto.model.SystemAttribute;
-import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
+import ru.orangesoftware.financisto.model.info.TransactionAttributeInfo;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.DateRecurrenceIterator;
 import ru.orangesoftware.financisto.recur.Recurrence;

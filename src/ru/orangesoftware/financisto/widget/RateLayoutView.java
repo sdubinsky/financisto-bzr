@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.AbstractActivity;
 import ru.orangesoftware.financisto.activity.ActivityLayout;
-import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Currency;
 
 import static ru.orangesoftware.financisto.activity.AbstractActivity.setVisibility;
 
@@ -26,12 +27,16 @@ public class RateLayoutView implements RateNodeOwner {
     private AmountInput amountInputTo;
 
     private RateNode rateNode;
+    private View amountInputFromNode;
     private View amountInputToNode;
+    private int amountFromTitleId;
+    private int amountToTitleId;
 
     private AmountInput.OnAmountChangedListener amountFromChangeListener;
     private AmountInput.OnAmountChangedListener amountToChangeListener;
-    private Account selectedAccountFrom;
-    private Account selectedAccountTo;
+
+    private Currency currencyFrom;
+    private Currency currencyTo;
 
     public RateLayoutView(AbstractActivity activity, ActivityLayout x, LinearLayout layout) {
         this.activity = activity;
@@ -47,19 +52,19 @@ public class RateLayoutView implements RateNodeOwner {
         this.amountToChangeListener = amountToChangeListener;
     }
 
-    public void createUI() {
+    private void createUI(int fromAmountTitleId, int toAmountTitleId) {
         //amount from
         amountInputFrom = new AmountInput(activity);
         amountInputFrom.setOwner(activity);
         amountInputFrom.setExpense();
-        amountInputFrom.disableIncomeExpenseButton();
-        x.addEditNode(layout, R.string.amount_from, amountInputFrom);
+        amountFromTitleId = fromAmountTitleId;
+        amountInputFromNode = x.addEditNode(layout, fromAmountTitleId, amountInputFrom);
         //amount to & rate
         amountInputTo = new AmountInput(activity);
         amountInputTo.setOwner(activity);
         amountInputTo.setIncome();
-        amountInputTo.disableIncomeExpenseButton();
-        amountInputToNode = x.addEditNode(layout, R.string.amount_to, amountInputTo);
+        amountToTitleId = toAmountTitleId;
+        amountInputToNode = x.addEditNode(layout, toAmountTitleId, amountInputTo);
         amountInputTo.setOnAmountChangedListener(onAmountToChangedListener);
         amountInputFrom.setOnAmountChangedListener(onAmountFromChangedListener);
         setVisibility(amountInputToNode, View.GONE);
@@ -67,16 +72,48 @@ public class RateLayoutView implements RateNodeOwner {
         setVisibility(rateNode.rateInfoNode, View.GONE);
     }
 
-    public void selectFromAccount(Account account) {
-        selectedAccountFrom = account;
-        amountInputFrom.setCurrency(account.currency);
+    public void createTransferUI() {
+        createUI(R.string.amount_from, R.string.amount_to);
+        amountInputFrom.disableIncomeExpenseButton();
+        amountInputTo.disableIncomeExpenseButton();
+    }
+
+    public void createTransactionUI() {
+        createUI(R.string.amount, R.string.amount);
+        amountInputTo.disableIncomeExpenseButton();
+    }
+
+    public void setIncome() {
+        amountInputFrom.setIncome();
+        amountInputTo.setIncome();
+    }
+
+    public void setExpense() {
+        amountInputFrom.setExpense();
+        amountInputTo.setExpense();
+    }
+
+    public void selectCurrencyFrom(Currency currency) {
+        currencyFrom = currency;
+        amountInputFrom.setCurrency(currencyFrom);
+        updateTitle(amountInputFromNode, amountFromTitleId, currencyFrom);
         checkNeedRate();
     }
 
-    public void selectToAccount(Account account) {
-        selectedAccountTo = account;
-        amountInputTo.setCurrency(account.currency);
+    public void selectCurrencyTo(Currency currency) {
+        currencyTo = currency;
+        amountInputTo.setCurrency(currencyTo);
+        updateTitle(amountInputToNode, amountToTitleId, currencyTo);
         checkNeedRate();
+    }
+
+    private void updateTitle(View node, int titleId, Currency currency) {
+        TextView title = (TextView) node.findViewById(R.id.label);
+        if (currency != null && currency.id > 0) {
+            title.setText(activity.getString(titleId)+" ("+currency.name+")");
+        } else {
+            title.setText(activity.getString(titleId));
+        }
     }
 
     private void checkNeedRate() {
@@ -113,8 +150,7 @@ public class RateLayoutView implements RateNodeOwner {
     }
 
     private boolean isDifferentCurrencies() {
-        return selectedAccountFrom != null && selectedAccountTo != null &&
-               selectedAccountFrom.currency.id != selectedAccountTo.currency.id;
+        return currencyFrom != null && currencyTo != null && currencyFrom.id != currencyTo.id;
     }
 
     public void onActivityResult(int requestCode, Intent data) {
@@ -150,6 +186,13 @@ public class RateLayoutView implements RateNodeOwner {
                 long amountTo = amountInputTo.getAmount();
                 if (amountFrom > 0) {
                     rateNode.setRate(1.0f * amountTo / amountFrom);
+                }
+            }
+            if (amountInputFrom.isIncomeExpenseEnabled()) {
+                if (amountInputFrom.isExpense()) {
+                    amountInputTo.setExpense();
+                } else {
+                    amountInputTo.setIncome();
                 }
             }
             rateNode.updateRateInfo();
@@ -202,13 +245,13 @@ public class RateLayoutView implements RateNodeOwner {
     }
 
     @Override
-    public String getCurrencyFrom() {
-        return selectedAccountFrom != null ? selectedAccountFrom.currency.name : null;
+    public Currency getCurrencyFrom() {
+        return currencyFrom;
     }
 
     @Override
-    public String getCurrencyTo() {
-        return selectedAccountTo != null ? selectedAccountTo.currency.name : null;
+    public Currency getCurrencyTo() {
+        return currencyTo;
     }
 
     @Override

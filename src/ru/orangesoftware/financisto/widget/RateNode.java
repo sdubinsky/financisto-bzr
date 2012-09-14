@@ -25,6 +25,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.ActivityLayout;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.text.DecimalFormat;
@@ -126,11 +127,11 @@ public class RateNode {
     public void updateRateInfo() {
         double r = getRate();
         StringBuilder sb = new StringBuilder();
-        String currencyFrom = owner.getCurrencyFrom();
-        String currencyTo = owner.getCurrencyTo();
+        Currency currencyFrom = owner.getCurrencyFrom();
+        Currency currencyTo = owner.getCurrencyTo();
         if (currencyFrom != null && currencyTo != null) {
-            sb.append("1").append(currencyFrom).append("=").append(nf.format(r)).append(currencyTo).append(", ");
-            sb.append("1").append(currencyTo).append("=").append(nf.format(1.0/r)).append(currencyFrom);
+            sb.append("1").append(currencyFrom.name).append("=").append(nf.format(r)).append(currencyTo.name).append(", ");
+            sb.append("1").append(currencyTo.name).append("=").append(nf.format(1.0/r)).append(currencyFrom.name);
         }
         rateInfo.setText(sb.toString());
     }
@@ -145,10 +146,10 @@ public class RateNode {
 
         @Override
         protected Float doInBackground(Void... args) {
-            String fromCurrency = getFromCurrency();
-            String toCurrency = getToCurrency();
+            Currency fromCurrency = getFromCurrency();
+            Currency toCurrency = getToCurrency();
             if (fromCurrency != null && toCurrency != null) {
-                HttpGet get = new HttpGet("http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency="+fromCurrency+"&ToCurrency="+toCurrency);
+                HttpGet get = new HttpGet("http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency="+fromCurrency.name+"&ToCurrency="+toCurrency.name);
                 try {
                     Log.i("RateDownload", get.getURI().toString());
                     HttpResponse r = httpClient.execute(get);
@@ -210,11 +211,11 @@ public class RateNode {
             }
         }
 
-        private String getFromCurrency() {
+        private Currency getFromCurrency() {
             return owner.getCurrencyFrom();
         }
 
-        private String getToCurrency() {
+        private Currency getToCurrency() {
             return owner.getCurrencyTo();
         }
 

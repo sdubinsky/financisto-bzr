@@ -44,7 +44,9 @@ public class TransactionsTotalCalculator {
             "from_account_currency_id",
             "from_amount",
             "to_account_currency_id",
-            "to_amount"
+            "to_amount",
+            "original_currency_id",
+            "original_from_amount"
     };
 
     private final DatabaseAdapter db;
@@ -140,11 +142,15 @@ public class TransactionsTotalCalculator {
         long fromCurrencyId = c.getLong(index++);
         long fromAmount = c.getLong(index++);
         long toCurrencyId = c.getLong(index++);
-        long toAmount = c.getLong(index);
+        long toAmount = c.getLong(index++);
+        long originalCurrencyId = c.getLong(index++);
+        long originalAmount = c.getLong(index);
         if (fromCurrencyId == toCurrency.id) {
             return BigDecimal.valueOf(fromAmount);
         } else if (toCurrencyId > 0 && toCurrencyId == toCurrency.id) {
             return BigDecimal.valueOf(-toAmount);
+        } else if (originalCurrencyId > 0 && originalCurrencyId == toCurrency.id) {
+            return BigDecimal.valueOf(originalAmount);
         } else {
             Currency fromCurrency = CurrencyCache.getCurrency(em, fromCurrencyId);
             ExchangeRate exchangeRate = rates.getRate(fromCurrency, toCurrency, datetime);

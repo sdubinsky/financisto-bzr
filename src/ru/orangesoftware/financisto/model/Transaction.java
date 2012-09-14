@@ -72,8 +72,14 @@ public class Transaction implements Serializable, Cloneable {
 
 	@Column(name = "note")
 	public String note;
-	
-	@Column(name = "from_amount")
+
+    @Column(name = "original_currency_id")
+    public long originalCurrencyId;
+
+    @Column(name = "original_from_amount")
+    public long originalFromAmount;
+
+    @Column(name = "from_amount")
 	public long fromAmount;
 	
 	@Column(name = "to_amount")
@@ -132,7 +138,9 @@ public class Transaction implements Serializable, Cloneable {
 		values.put(TransactionColumns.note.name(), note);
 		values.put(TransactionColumns.from_amount.name(), fromAmount);
 		values.put(TransactionColumns.to_amount.name(), toAmount);
-		values.put(TransactionColumns.is_template.name(), isTemplate);
+        values.put(TransactionColumns.original_currency_id.name(), originalCurrencyId);
+        values.put(TransactionColumns.original_from_amount.name(), originalFromAmount);
+        values.put(TransactionColumns.is_template.name(), isTemplate);
 		values.put(TransactionColumns.template_name.name(), templateName);
 		values.put(TransactionColumns.recurrence.name(), recurrence);
 		values.put(TransactionColumns.notification_options.name(), notificationOptions);
@@ -169,7 +177,9 @@ public class Transaction implements Serializable, Cloneable {
 		t.fromAmount = c.getLong(BlotterColumns.from_amount.ordinal());
 		t.toAmount = c.getLong(BlotterColumns.to_amount.ordinal());
 		t.dateTime = c.getLong(BlotterColumns.datetime.ordinal());
-		t.locationId = c.getLong(BlotterColumns.location_id.ordinal());
+        t.originalCurrencyId = c.getLong(BlotterColumns.original_currency_id.ordinal());
+        t.originalFromAmount = c.getLong(BlotterColumns.original_from_amount.ordinal());
+        t.locationId = c.getLong(BlotterColumns.location_id.ordinal());
 //		t.provider = c.getString(BlotterColumns.provider.ordinal());
 //		t.accuracy = c.getFloat(BlotterColumns.accuracy.ordinal());
 //		t.latitude = c.getDouble(BlotterColumns.latitude.ordinal());

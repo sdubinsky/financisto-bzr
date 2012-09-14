@@ -38,7 +38,7 @@ import ru.orangesoftware.financisto.recur.Recurrence;
 import ru.orangesoftware.financisto.utils.*;
 import ru.orangesoftware.financisto.view.AttributeView;
 import ru.orangesoftware.financisto.view.AttributeViewFactory;
-import ru.orangesoftware.financisto.widget.AmountInput;
+import ru.orangesoftware.financisto.widget.RateLayoutView;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -62,9 +62,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 
 	private static final TransactionStatus[] statuses = TransactionStatus.values();
 	
-	protected AmountInput amountInput;
-	
-	protected EditText templateName;	
+    protected RateLayoutView rateView;
+
+    protected EditText templateName;
 	protected TextView accountText;	
 	protected Cursor accountCursor;
 	protected ListAdapter accountAdapter;
@@ -87,7 +87,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 	
 	private CheckBox ccardPayment;
 	
-	protected long selectedAccountId = -1;
+	protected Account selectedAccount;
+
 	protected long selectedLocationId = 0;
 	protected String recurrence;
 	protected String notificationOptions;
@@ -141,9 +142,6 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 		isShowLocation = MyPreferences.isShowLocation(this);
 		isShowNote = MyPreferences.isShowNote(this);
         isShowTakePicture = MyPreferences.isShowTakePicture(this);
-
-		amountInput = new AmountInput(this);
-		amountInput.setOwner(this);
 
         categorySelector = new CategorySelector(this, db, x);
         categorySelector.setListener(this);
@@ -239,8 +237,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 		if (transaction.isTemplate()) {
 			x.addEditNode(layout, R.string.template_name, templateName);
 		}
-		
-		createListNodes(layout);		
+
+        rateView = new RateLayoutView(this, x, layout);
+
+        createListNodes(layout);
 		categorySelector.createAttributesLayout(layout);
 		createCommonNodes(layout);
 		
@@ -511,8 +511,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
         categorySelector.onClick(id);
 		switch(id) {
 			case R.id.account:				
-				x.select(this, R.id.account, R.string.account, accountCursor, accountAdapter, 
-						AccountColumns.ID, selectedAccountId);
+				x.select(this, R.id.account, R.string.account, accountCursor, accountAdapter,
+                        AccountColumns.ID, getSelectedAccountId());
 				break;
 			case R.id.location: {
 				x.select(this, R.id.location, R.string.location, locationCursor, locationAdapter, "_id", selectedLocationId);
@@ -592,11 +592,15 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
         Account a = em.getAccount(accountId);
         if (a != null) {
             accountText.setText(a.title);
-            amountInput.setCurrency(a.currency);
-            selectedAccountId = accountId;
+            rateView.selectCurrencyFrom(a.currency);
+            selectedAccount = a;
         }
         return a;
 	}
+
+    protected long getSelectedAccountId() {
+        return selectedAccount != null ? selectedAccount.id : -1;
+    }
 
     @Override
     public void onCategorySelected(Category category, boolean selectLast) {
@@ -664,9 +668,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
         projectSelector.onActivityResult(requestCode, resultCode, data);
         categorySelector.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
-			if (amountInput.processActivityResult(requestCode, data)) {
-				return;
-			}
+            rateView.onActivityResult(requestCode, data);
 			switch (requestCode) {
 				case NEW_LOCATION_REQUEST:
 					locationCursor.requery();

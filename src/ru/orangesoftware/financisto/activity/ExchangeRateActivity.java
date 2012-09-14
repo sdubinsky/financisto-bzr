@@ -197,13 +197,13 @@ public class ExchangeRateActivity extends AbstractActivity implements RateNodeOw
     }
 
     @Override
-    public String getCurrencyFrom() {
-        return fromCurrency.name;
+    public Currency getCurrencyFrom() {
+        return fromCurrency;
     }
 
     @Override
-    public String getCurrencyTo() {
-        return toCurrency.name;
+    public Currency getCurrencyTo() {
+        return toCurrency;
     }
 
 }

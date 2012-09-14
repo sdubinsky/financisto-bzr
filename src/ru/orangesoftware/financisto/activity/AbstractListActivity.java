@@ -209,4 +209,5 @@ public abstract class AbstractListActivity extends ListActivity implements Refre
 			recreateCursor();
 		}
 	}
+
 }

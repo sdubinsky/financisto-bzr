@@ -19,10 +19,11 @@ import ru.orangesoftware.financisto.adapter.MyEntityAdapter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.db.MyEntityManager;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Payee;
 import ru.orangesoftware.financisto.model.Project;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionUtils {
 
@@ -49,15 +50,19 @@ public class TransactionUtils {
 		return new CategoryListAdapter(db, context, android.R.layout.simple_list_item_multiple_choice, categoryCursor);
 	}
 
-	public static ListAdapter createProjectAdapter(Context context, ArrayList<Project> projects) {
+	public static ListAdapter createProjectAdapter(Context context, List<Project> projects) {
 		return new MyEntityAdapter<Project>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, projects);
 	}
 
-    public static ListAdapter createPayeeAdapter(Context context, ArrayList<Payee> payees) {
+    public static ListAdapter createPayeeAdapter(Context context, List<Payee> payees) {
         return new MyEntityAdapter<Payee>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, payees);
     }
 
-	public static ListAdapter createLocationAdapter(Context context, Cursor cursor) {
+    public static ListAdapter createCurrencyAdapter(Context context, List<Currency> currencies) {
+        return new MyEntityAdapter<Currency>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, currencies);
+    }
+
+    public static ListAdapter createLocationAdapter(Context context, Cursor cursor) {
 		return new SimpleCursorAdapter(context, android.R.layout.simple_spinner_dropdown_item, cursor, 
 				new String[]{"e_name"}, new int[]{android.R.id.text1});
 	}

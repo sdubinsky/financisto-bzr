@@ -35,7 +35,7 @@ public class SplitTransferActivity extends AbstractSplitActivity {
     protected void createUI(LinearLayout layout) {
         accountText = x.addListNode(layout, R.id.account, R.string.account, R.string.select_to_account);
         rateView = new RateLayoutView(this, x, layout);
-        rateView.createUI();
+        rateView.createTransferUI();
         rateView.setAmountFromChangeListener(new AmountInput.OnAmountChangedListener() {
             @Override
             public void onAmountChanged(long oldAmount, long newAmount) {
@@ -75,14 +75,14 @@ public class SplitTransferActivity extends AbstractSplitActivity {
     private void selectFromAccount(long accountId) {
         if (accountId > 0) {
             Account account = em.getAccount(accountId);
-            rateView.selectFromAccount(account);
+            rateView.selectCurrencyFrom(account.currency);
         }
     }
 
     private void selectToAccount(long accountId) {
         if (accountId > 0) {
             Account account = em.getAccount(accountId);
-            rateView.selectToAccount(account);
+            rateView.selectCurrencyTo(account.currency);
             accountText.setText(account.title);
             split.toAccountId = accountId;
         }

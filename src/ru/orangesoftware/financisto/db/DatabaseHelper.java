@@ -80,6 +80,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         from_amount,
         to_amount,
         datetime,
+        original_currency_id,
+        original_from_amount,
         location_id,
         provider,
         accuracy,
@@ -122,7 +124,9 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		from_amount,
 		to_amount,
 		datetime,
-		is_template,
+        original_currency_id,
+        original_from_amount,
+        is_template,
 		template_name,
 		recurrence,
 		notification_options,
@@ -303,9 +307,11 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         public static final String FROM_AMOUNT = "from_amount";
         public static final String TO_ACCOUNT_CURRENCY_ID = "to_account_currency_id";
         public static final String TO_AMOUNT = "to_amount";
-		public static final String IS_TRANSFER = "is_transfer";
+        public static final String ORIGINAL_CURRENCY_ID = "original_currency_id";
+        public static final String ORIGINAL_FROM_AMOUNT = "original_from_amount";
+        public static final String IS_TRANSFER = "is_transfer";
 
-		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, FROM_ACCOUNT_CURRENCY_ID, FROM_AMOUNT, TO_ACCOUNT_CURRENCY_ID, TO_AMOUNT, IS_TRANSFER};
+		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, FROM_ACCOUNT_CURRENCY_ID, FROM_AMOUNT, TO_ACCOUNT_CURRENCY_ID, TO_AMOUNT, ORIGINAL_CURRENCY_ID, ORIGINAL_FROM_AMOUNT, IS_TRANSFER};
 
 	}
 
@@ -314,11 +320,10 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String LEFT = "left";
 		public static final String RIGHT = "right";
 
-		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, FROM_ACCOUNT_CURRENCY_ID, FROM_AMOUNT, TO_ACCOUNT_CURRENCY_ID, TO_AMOUNT, LEFT, RIGHT, IS_TRANSFER};
+		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, FROM_ACCOUNT_CURRENCY_ID, FROM_AMOUNT, TO_ACCOUNT_CURRENCY_ID, TO_AMOUNT, ORIGINAL_CURRENCY_ID, ORIGINAL_FROM_AMOUNT, LEFT, RIGHT, IS_TRANSFER};
 	}
 	
 	public static class LocationColumns {
-		
 		public static final String ID = "_id";
 		public static final String NAME = "name";	
 		public static final String DATETIME = "datetime";
@@ -328,8 +333,6 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String LONGITUDE = "longitude";
 		public static final String IS_PAYEE = "is_payee";
 		public static final String RESOLVED_ADDRESS = "resolved_address";
-		
-		public static String[] NORMAL_PROJECTION = {ID, NAME, DATETIME, PROVIDER, ACCURACY, LATITUDE, LONGITUDE, IS_PAYEE, RESOLVED_ADDRESS};		
 	}
 	
 
