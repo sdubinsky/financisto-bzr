@@ -95,6 +95,10 @@ public class TransactionInfoDialog {
             add(layout, R.string.payee, ti.payee.title);
         }
         add(layout, R.string.category, ti.category.title);
+        if (ti.originalCurrency != null) {
+            TextView amount = add(layout, R.string.original_amount, "");
+            u.setAmountText(amount, ti.originalCurrency, ti.originalFromAmount, true);
+        }
         TextView amount = add(layout, R.string.amount, "");
         u.setAmountText(amount, ti.fromAccount.currency, ti.fromAmount, true);
         if (ti.category.isSplit()) {

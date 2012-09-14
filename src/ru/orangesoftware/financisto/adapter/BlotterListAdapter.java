@@ -150,7 +150,14 @@ public class BlotterListAdapter extends ResourceCursorAdapter {
             long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
             Currency fromCurrency = CurrencyCache.getCurrency(em, fromCurrencyId);
             long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
-            u.setAmountText(sb, v.rightView, fromCurrency, amount, true);
+            long originalCurrencyId = cursor.getLong(BlotterColumns.original_currency_id.ordinal());
+            if (originalCurrencyId > 0) {
+                Currency originalCurrency = CurrencyCache.getCurrency(em, originalCurrencyId);
+                long originalAmount = cursor.getLong(BlotterColumns.original_from_amount.ordinal());
+                u.setAmountText(sb, v.rightView, originalCurrency, originalAmount, fromCurrency, amount, true);
+            } else {
+                u.setAmountText(sb, v.rightView, fromCurrency, amount, true);
+            }
             long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
             if (isSplit(categoryId)) {
                 v.iconView.setImageDrawable(icBlotterSplit);
