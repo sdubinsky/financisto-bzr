@@ -3,8 +3,10 @@ package ru.orangesoftware.financisto.activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.TransactionAttribute;
 import ru.orangesoftware.financisto.widget.AmountInput;
 
@@ -19,6 +21,7 @@ import java.util.Map;
  */
 public class SplitTransactionActivity extends AbstractSplitActivity implements CategorySelector.CategorySelectorListener {
 
+    private TextView amountTitle;
     private AmountInput amountInput;
 
     private CategorySelector categorySelector;
@@ -39,7 +42,8 @@ public class SplitTransactionActivity extends AbstractSplitActivity implements C
                 setUnsplitAmount(split.unsplitAmount - newAmount);
             }
         });
-        x.addEditNode(layout, R.string.amount, amountInput);
+        View v = x.addEditNode(layout, R.string.amount, amountInput);
+        amountTitle = (TextView) v.findViewById(R.id.label);
         categorySelector.createAttributesLayout(layout);
     }
 
@@ -88,6 +92,9 @@ public class SplitTransactionActivity extends AbstractSplitActivity implements C
 
     private void setAmount(long amount) {
         amountInput.setAmount(amount);
+        Currency c = getCurrency();
+        amountInput.setCurrency(c);
+        amountTitle.setText(getString(R.string.amount)+" ("+c.name+")");
     }
 
     @Override

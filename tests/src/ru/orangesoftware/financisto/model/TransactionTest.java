@@ -4,6 +4,7 @@ import android.content.Intent;
 import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
+import ru.orangesoftware.financisto.test.CurrencyBuilder;
 import ru.orangesoftware.financisto.test.TransactionBuilder;
 
 import java.util.Arrays;
@@ -27,8 +28,10 @@ public class TransactionTest extends AbstractDbTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        a1 = AccountBuilder.createDefault(db);
-        a2 = AccountBuilder.createDefault(db);
+        Currency c1 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").create();
+        Currency c2 = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").create();
+        a1 = AccountBuilder.createDefault(db, c1);
+        a2 = AccountBuilder.createDefault(db, c2);
         categories = CategoryBuilder.createDefaultHierarchy(db);
     }
 
@@ -210,6 +213,24 @@ public class TransactionTest extends AbstractDbTest {
         assertEquals(split.toAmount, restored.toAmount);
         assertEquals(split.unsplitAmount, restored.unsplitAmount);
         assertEquals(split.note, restored.note);
+    }
+
+    public void test_should_update_original_amount_for_splits() {
+        Transaction t = TransactionBuilder.withDb(db).account(a1).category(CategoryBuilder.split(db))
+                .amount(120).originalAmount(a2.currency, 100)
+                .withSplit(categories.get("A1"), 60)
+                .withSplit(categories.get("A2"), 40)
+                .create();
+        List<Transaction> splits = db.em().getSplitsForTransaction(t.id);
+        assertEquals(2, splits.size());
+        assertSplit(splits.get(0), t.originalCurrencyId, 60, 72);
+        assertSplit(splits.get(1), t.originalCurrencyId, 40, 48);
+    }
+
+    private void assertSplit(Transaction split, long originalCurrencyId, long originalAmount, long accountAmount) {
+        assertEquals(originalCurrencyId, split.originalCurrencyId);
+        assertEquals(originalAmount, split.originalFromAmount);
+        assertEquals(accountAmount, split.fromAmount);
     }
 
 }

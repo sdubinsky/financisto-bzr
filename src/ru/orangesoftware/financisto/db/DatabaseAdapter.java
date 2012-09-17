@@ -363,10 +363,31 @@ public class DatabaseAdapter {
                 split.payeeId = parent.payeeId;
                 split.isTemplate = parent.isTemplate;
                 split.status = parent.status;
+                updateSplitOriginalAmount(parent, split);
                 long splitId = insertTransaction(split);
                 insertAttributes(splitId, split.categoryAttributes);
             }
         }
+    }
+
+    private void updateSplitOriginalAmount(Transaction parent, Transaction split) {
+        if (parent.originalCurrencyId > 0) {
+            split.originalCurrencyId = parent.originalCurrencyId;
+            split.originalFromAmount = split.fromAmount;
+            split.fromAmount = calculateAmountInAccountCurrency(parent, split.fromAmount);
+        }
+    }
+
+    private long calculateAmountInAccountCurrency(Transaction parent, long amount) {
+        double rate = getRateFromParent(parent);
+        return (long)(rate*amount);
+    }
+
+    private double getRateFromParent(Transaction parent) {
+        if (parent.originalFromAmount != 0) {
+            return Math.abs(1.0*parent.fromAmount/parent.originalFromAmount);
+        }
+        return 0;
     }
 
     public long insertPayee(String payee) {
