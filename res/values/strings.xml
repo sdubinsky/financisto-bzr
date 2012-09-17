@@ -800,5 +800,6 @@
     <string name="split_transfer_not_supported_yet">Split-transfers with a currency differ from account\'s currency are not yet supported</string>
     <string name="show_currency">Show currency</string>
     <string name="show_currency_summary">Show currency selector in new transaction screen</string>
+    <string name="reconcile">Reconcile</string>
 
 </resources>
