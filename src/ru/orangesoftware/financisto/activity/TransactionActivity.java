@@ -209,8 +209,10 @@ public class TransactionActivity extends AbstractTransactionActivity {
 		//category
         categorySelector.createNode(layout, true);
 		//amount
-        if (!isUpdateBalanceMode) {
+        if (!isUpdateBalanceMode && MyPreferences.isShowCurrency(this)) {
             currencyText = x.addListNode(layout, R.id.original_currency, R.string.currency, R.string.original_currency_as_account);
+        } else {
+            currencyText = new TextView(this);
         }
         rateView.createTransactionUI();
 		// difference
