@@ -102,13 +102,13 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
     public void test_should_calculate_blotter_total_in_multiple_currencies() {
         Total[] totals = c.getTransactionsBalance();
         assertEquals(2, totals.length);
-        assertEquals(-600, totals[0].balance);
+        assertEquals(-700, totals[0].balance);
         assertEquals(-230, totals[1].balance);
     }
 
     public void test_should_calculate_blotter_total_in_home_currency() {
-        assertEquals((long)(100f -(1f/ r_c1c2_17th)*100f -(1f/ r_c1c2_18th)*250f -50f +50f -450f -50f -150f +150f), c.getBlotterBalance(c1).balance);
-        assertEquals((long)(r_c1c2_17th *100f -100f -250f -20f +20f - r_c1c2_18th *450f - r_c1c2_18th *50f -100f +100f), c.getBlotterBalance(c2).balance);
+        assertEquals((long)(-100f +100f -(1f/ r_c1c2_17th)*100f -(1f/ r_c1c2_18th)*250f -50f +50f -450f -50f -150f +150f), c.getBlotterBalance(c1).balance);
+        assertEquals((long)(-20f +r_c1c2_17th *100f -100f -250f -20f +20f - r_c1c2_18th *450f - r_c1c2_18th *50f -100f +100f), c.getBlotterBalance(c2).balance);
         assertEquals(c.getBlotterBalance(c1).balance, c.getBlotterBalanceInHomeCurrency().balance);
     }
 
@@ -133,7 +133,7 @@ public class TransactionsTotalCalculatorTest extends AbstractDbTest {
     public void test_should_calculate_account_total_in_home_currency_with_big_amounts() {
         TransactionBuilder.withDb(db).account(a1).dateTime(DateTime.date(2012, 1, 10)).amount(45000000000L).create();
         //no conversion
-        assertEquals(45000000000L+(long) (100f -50f -450f -50f -150f), c.getAccountBalance(c1, a1.id).balance);
+        assertEquals(45000000000L+(long) (-100f +100f -50f -450f -50f -150f), c.getAccountBalance(c1, a1.id).balance);
     }
 
 }
