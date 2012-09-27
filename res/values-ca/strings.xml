@@ -8,6 +8,7 @@
   <string name="budgets">Pressupostos</string>
   <string name="projects">Projectes</string>
   <string name="ok">OK</string>
+  <string name="reset">Restablir</string>
   <string name="clear">Compensar</string>
   <string name="save">Guardar</string>
   <string name="cancel">Cancel·la</string>
@@ -215,25 +216,25 @@
   <string name="restore">Restaurar</string>
   <string name="backup_database">Salvaguardar Dades</string>
   <string name="backup_database_inprogress">Guardant còpia de seguretat de la base de dades...</string>
-  <string name="backup_database_gdocs">Crear Còpia de seguretat a GDocs</string>
+  <string name="backup_database_gdocs">Còpia de seguretat a Google Drive</string>
   <string name="backup_database_gdocs_inprogress">Guardant còpia de seguretat de la base de dades...</string>
   <string name="csv_export">Exportar com a CSV</string>
   <string name="csv_export_inprogress">Exportant base de dades en format CSV...</string>
   <string name="restore_database">Restaurar Dades</string>
   <string name="restore_database_inprogress">Restaurant còpia de seguretat de la base de dades...</string>
-  <string name="restore_database_gdocs">Restaurar des de GDocs</string>
+  <string name="restore_database_gdocs">Restaurar de Google Drive</string>
   <string name="restore_database_inprogress_gdocs">Restaurant còpia de seguretat de la base de dades...</string>
   <string name="restore_database_success">La base de dades ha estat restaurada amb èxit.</string>
-  <string name="gdocs_connection_failed">Ha estat impossible realitzar la connexió amb Google Docs.</string>
-  <string name="gdocs_folder_not_found">No s\'ha trobat cap carpeta de còpia de seguretat a Google Docs.</string>
+  <string name="gdocs_connection_failed">No es pot connectar a Google Drive.</string>
+  <string name="gdocs_folder_not_found">La carpeta de còpia de seguretat de Google Drive no s\'ha trobat.</string>
   <string name="gdocs_credentials_not_configured">Abans has d\'introduir les credencials d\'inici de sessió d\'un compte de Google a Preferències.</string>
-  <string name="gdocs_folder_not_configured">Abans has d\'establir la carpeta de còpia de seguretat de Google Docs a Preferències.</string>
+  <string name="gdocs_folder_not_configured">Si us plau selecciona la carpeta de còpia de seguretat de Google Drive a les Preferències.</string>
   <string name="gdocs_login_failed">Les credencials d\'inici de sessió a Google Docs no són vàlides.</string>
-  <string name="gdocs_backup_failed">Error d\'enviament de la còpia de seguretat a Google Docs.</string>
+  <string name="gdocs_backup_failed">Error enviant còpia de seguretat a Google Drive. Si us plau torna a intentar-ho.</string>
   <string name="gdocs_restore_failed">Error de recuperació de la còpia de seguretat a Google Docs.</string>
-  <string name="gdocs_folder_error">Error d\'accés a la carpeta de còpia de seguretat a Google Docs.</string>
-  <string name="gdocs_service_error">Error de servei amb Google Docs.</string>
-  <string name="gdocs_io_error">Error de connexió amb Google Docs.</string>
+  <string name="gdocs_folder_error">Error accedint a la carpeta de Google Drive.</string>
+  <string name="gdocs_service_error">Servei d\'error no disponible a Google Drive.</string>
+  <string name="gdocs_io_error">Error connectant amb Google Drive.</string>
   <string name="package_info_error">No fou possible accedir a la informació del paquet Financisto.</string>
   <string name="success">Tasca completada!</string>
   <string name="fail">Errada...</string>
@@ -332,13 +333,13 @@
   <string name="calculating">S\'està calculant...</string>
   <string name="budget_mode">Condicions de facilitat</string>
   <string name="budget_mode_summary">Utilitza condicions menys restrictives (categoria O al projecte) per filtrar les transaccions</string>
-  <string name="gdocs_backup">Còpia de seguretat de Google Docs</string>
+  <string name="gdocs_backup">Còpia de Seguretat Google Drive</string>
   <string name="user_login">Inici de sessió</string>
   <string name="user_login_summary">Connexió de compte de Google (nom d\'usuari)</string>
   <string name="user_password">Contrasenya</string>
   <string name="user_password_summary">Contrasenya de compte de Google</string>
-  <string name="backup_folder">Col·lecció de còpia de seguretat</string>
-  <string name="backup_folder_summary">Per emmagatzemar arxius ha de crear una nova col·lecció a Les Meves Col·leccions</string>
+  <string name="backup_folder">Carpeta de còpia de seguretat</string>
+  <string name="backup_folder_summary">Per emmagatzemar arxius de còpia de seguretat crea una nova carpeta a My Drive</string>
   <string name="report_preferences">Preferències d\'informes</string>
   <string name="all_reports_preferences">Preferències generals d\'informe</string>
   <string name="category_by_period_preferences">Propietats per Categoria/Període</string>
@@ -661,20 +662,44 @@
   <string name="report_income_expense_income">Ingressos</string>
   <string name="report_income_expense_expense">Despeses</string>
   <string name="report_income_expense_summary">Resum</string>
+  <string name="csv_import_inprogress_update">Important dades des de CSV: %s%%...</string>
+  <string name="delete_old_transactions">Suprimeix les transaccions antigues</string>
+  <string name="purge_account_backup_database">Fer còpia de seguretat de la base de dades abans de suprimir les transaccions</string>
+  <string name="purge_account_date_summary">Suprimeix les operacions abans i incloent-hi la data especificada. El saldo del compte no es veurà afectat.</string>
+  <string name="purge_account_confirm_title">Confirmar</string>
+  <string name="purge_account_confirm_message" formatted="false">Suprimir les transaccions del compte %s abans de i incloent-hi el %s.</string>
+  <string name="purge_account_payee">Període anterior</string>
+  <string name="purge_account_in_progress">Esborrant transaccions antigues...</string>
+  <string name="purge_account_unable_to_do_backup">Impossible fer còpia de seguretat de la base de dades, avortant...</string>
+  <string name="show_account_last_transaction_date">Data última transacció</string>
+  <string name="show_account_last_transaction_date_summary">Mostra l\'última data de transacció per a la pantalla de llista de comptes (cal reiniciar)</string>
+  <string name="accounts_list_screen">Llista de comptes</string>
+  <string name="accounts_list_screen_summary">Preferències per a pantalla de llista de comptes</string>
+  <string name="blotter_screen">Registres</string>
+  <string name="blotter_screen_summary">Preferències per a pantalla de registres</string>
+  <string name="hide_closed_accounts">Amaga comptes tancats</string>
+  <string name="hide_closed_accounts_summary">Amaga o mostra comptes tancats al llistat de comptes (necessari reiniciar)</string>
+  <string name="re_index_categories">Reindexar</string>
+  <string name="startup_screen">Pantalla d\'inici</string>
+  <string name="startup_screen_summary">Selecciona tabulador que serà seleccionat a l\'inici</string>
+  <string name="integrity_error">Corrent balanços de sincronització, si us plau vés a Menu - &gt; Més - &gt; fixar integritat</string>
+  <string name="integrity_fix">Fixar integritat</string>
+  <string name="integrity_fix_in_progress">Comprovar i fixar si es necessari...</string>
+  <string name="select_to_account_differ_from_to_account">No es pot transferir al mateix compte...</string>
+  <string name="period_this_and_last_week">Aquesta i la setmana passada</string>
+  <string name="period_this_and_last_month">Aquest i el mes passat</string>
+  <string name="period_custom">Personalitzat</string>
+  <string name="original_amount">Quantitat original</string>
+  <string name="original_currency_as_account">Mateix que el compte</string>
+  <string name="split_transfer_not_supported_yet">Traspassos parcials amb una moneda diferent de la moneda del compte encara no són compatibles</string>
+  <string name="show_currency">Mostra moneda</string>
+  <string name="show_currency_summary">Mostra el selector de moneda a la nova pantalla de transacció</string>
+  <string name="reconcile">Conciliar</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Número</item>
     <item>Llista</item>
     <item>Validació</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>Avui</item>
-    <item>Ahir</item>
-    <item>Aquesta setmana</item>
-    <item>Aquest mes</item>
-    <item>Setmana anterior</item>
-    <item>Mes anterior</item>
-    <item>Personalitzada</item>
   </string-array>
   <string-array name="account_types">
     <item>Banc</item>
@@ -685,6 +710,8 @@
     <item>Per Llistat Ascendent (Asc)</item>
     <item>Per Llistat Descendent (Desc)</item>
     <item>Per nom</item>
+    <item>Per Última Transacció (Asc)</item>
+    <item>Per Última Transacció (Desc)</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>Per Nom</item>
@@ -716,5 +743,11 @@
     <item>5 minuts</item>
     <item>10 minuts</item>
     <item>15 minuts</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>Comptes</item>
+    <item>Registres</item>
+    <item>Pressupostos</item>
+    <item>Informes</item>
   </string-array>
 </resources>

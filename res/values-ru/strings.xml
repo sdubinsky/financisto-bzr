@@ -8,6 +8,7 @@
   <string name="budgets">Бюджеты</string>
   <string name="projects">Проекты</string>
   <string name="ok">OK</string>
+  <string name="reset">Сброс</string>
   <string name="clear">Очистить</string>
   <string name="save">Сохранить</string>
   <string name="cancel">Отмена</string>
@@ -215,25 +216,25 @@
   <string name="restore">Восстановить</string>
   <string name="backup_database">Резерв. копия базы</string>
   <string name="backup_database_inprogress">Копирование базы..</string>
-  <string name="backup_database_gdocs">Резерв. копия в Google Docs</string>
+  <string name="backup_database_gdocs">Резерв. копия в Google Drive</string>
   <string name="backup_database_gdocs_inprogress">Копирование базы..</string>
   <string name="csv_export">Экспорт в CSV</string>
   <string name="csv_export_inprogress">Экспортирование базы в CSV..</string>
   <string name="restore_database">Восстановить базу</string>
   <string name="restore_database_inprogress">Восстановление базы...</string>
-  <string name="restore_database_gdocs">Восстановить из Google Docs</string>
+  <string name="restore_database_gdocs">Восстановить из Google Drive</string>
   <string name="restore_database_inprogress_gdocs">Восстановление базы...</string>
   <string name="restore_database_success">База была успешно восстановлена..</string>
-  <string name="gdocs_connection_failed">Нет связи с Google Docs.</string>
-  <string name="gdocs_folder_not_found">Папка резервной копии на Google Docs не найдена.</string>
+  <string name="gdocs_connection_failed">Нет связи с Google Drive.</string>
+  <string name="gdocs_folder_not_found">Папка резервной копии на Google Drive не найдена.</string>
   <string name="gdocs_credentials_not_configured">Пожалуйста, укажите логин и пароль аккаунта Google в Настройках.</string>
-  <string name="gdocs_folder_not_configured">Пожалуйста, укажите папку резервной копии Google Docs в Настройках.</string>
+  <string name="gdocs_folder_not_configured">Укажите папку резервной копии Google Drive.</string>
   <string name="gdocs_login_failed">Логин или пароль аккаунта Google указаны неверно.</string>
-  <string name="gdocs_backup_failed">Ошибка при отправке файла резервной копии в Google Docs. Попробуйте ещё раз.</string>
+  <string name="gdocs_backup_failed">Ошибка при отправке файла резервной копии в Google Drive. Попробуйте ещё раз.</string>
   <string name="gdocs_restore_failed">Ошибка при получении файла резервной копии. Попробуйте ещё раз.</string>
-  <string name="gdocs_folder_error">Ошибка доступа к папке в Google Docs.</string>
-  <string name="gdocs_service_error">Системная ошибка Google Docs.</string>
-  <string name="gdocs_io_error">Ошибка связи с Google Docs.</string>
+  <string name="gdocs_folder_error">Ошибка доступа к папке в Google Drive.</string>
+  <string name="gdocs_service_error">Системная ошибка Google Drive.</string>
+  <string name="gdocs_io_error">Ошибка связи с Google Drive.</string>
   <string name="package_info_error">Не удалось получить информацию о пакете Financisto.</string>
   <string name="success">Успешно!</string>
   <string name="fail">Неудачно..</string>
@@ -332,13 +333,13 @@
   <string name="calculating">Рассчитываю...</string>
   <string name="budget_mode">Смягчить условия</string>
   <string name="budget_mode_summary">Использовать менее ограничительные условия (категория ИЛИ проект) для фильтрации транзакций</string>
-  <string name="gdocs_backup">Резерв. копии на Google Docs</string>
+  <string name="gdocs_backup">Резерв. копия на Google Drive</string>
   <string name="user_login">Логин</string>
   <string name="user_login_summary">Логин (имя пользователя) аккаунта Google</string>
   <string name="user_password">Пароль</string>
   <string name="user_password_summary">Пароль аккаунта Google</string>
-  <string name="backup_folder">Коллекция для резервн. копии</string>
-  <string name="backup_folder_summary">Создайте новую коллекцию для резерных копий в Мои Коллекции</string>
+  <string name="backup_folder">Папка для резервн. копии</string>
+  <string name="backup_folder_summary">Создайте новую папку для резерных копий в Мой диск</string>
   <string name="report_preferences">Настройки отчетов</string>
   <string name="all_reports_preferences">Основные настройки отчетов</string>
   <string name="category_by_period_preferences">Настройки для отчетав по категориям</string>
@@ -661,20 +662,44 @@
   <string name="report_income_expense_income">Доход</string>
   <string name="report_income_expense_expense">Расходы</string>
   <string name="report_income_expense_summary">Сумма</string>
+  <string name="csv_import_inprogress_update">Импортирование данных из CSV: %s%%...</string>
+  <string name="delete_old_transactions">Удаление старых транзакций</string>
+  <string name="purge_account_backup_database">Сделайте резервную копию перед удалением транзакций</string>
+  <string name="purge_account_date_summary">Удалить тразакции до и включая указанную дату. Балансы счетов не изменятся.</string>
+  <string name="purge_account_confirm_title">Подтвердить</string>
+  <string name="purge_account_confirm_message" formatted="false">Удаление транзакций со счета %s до и включая %s.</string>
+  <string name="purge_account_payee">Предыдущий период</string>
+  <string name="purge_account_in_progress">Удаление старых транзакций...</string>
+  <string name="purge_account_unable_to_do_backup">Не получилось сделать резервн. копию базы, отмена...</string>
+  <string name="show_account_last_transaction_date">Дата последней транзакции</string>
+  <string name="show_account_last_transaction_date_summary">Показывать дату последней транзакции в списке счетов (требует перезагрузки)</string>
+  <string name="accounts_list_screen">Список счетов</string>
+  <string name="accounts_list_screen_summary">Настройки для списка счетов</string>
+  <string name="blotter_screen">Журнал</string>
+  <string name="blotter_screen_summary">Настройки для Журнала</string>
+  <string name="hide_closed_accounts">Скрывать закрытые счета</string>
+  <string name="hide_closed_accounts_summary">Скрывать или показывать закрытые счета в списке счетов (требует перезагрузки)</string>
+  <string name="re_index_categories">Переиндексация</string>
+  <string name="startup_screen">Экран запуска</string>
+  <string name="startup_screen_summary">Выберите вкладку, которая будет выбрана при старте</string>
+  <string name="integrity_error">Текущий баланс не корректен, пожалуйста вызовите Меню -&gt; Ещё -&gt; Корректировка данных</string>
+  <string name="integrity_fix">Корректировка данных</string>
+  <string name="integrity_fix_in_progress">Проверка и исправление при необходимости...</string>
+  <string name="select_to_account_differ_from_to_account">Перевод в тот же самый счет не возможен...</string>
+  <string name="period_this_and_last_week">Текущая и прошлая неделя</string>
+  <string name="period_this_and_last_month">Текущий и прошлый месяц</string>
+  <string name="period_custom">Пользовательский</string>
+  <string name="original_amount">Первоначальная сумма</string>
+  <string name="original_currency_as_account">Валюта счёта</string>
+  <string name="split_transfer_not_supported_yet">Сплит-перевод в валюте отличающейся от валюты счета пока не поддерживаются</string>
+  <string name="show_currency">Показать валюту</string>
+  <string name="show_currency_summary">Показать выбор валюты при вводе новой транзакции</string>
+  <string name="reconcile">Выверено</string>
   <string-array name="attribute_types">
     <item>Текст</item>
     <item>Число</item>
     <item>Список</item>
     <item>Флажок</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>Сегодня</item>
-    <item>Вчера</item>
-    <item>Текущая неделя</item>
-    <item>Текущий месяц</item>
-    <item>Прошлая неделя</item>
-    <item>Прошлый месяц</item>
-    <item>Заданный</item>
   </string-array>
   <string-array name="account_types">
     <item>Банк</item>
@@ -685,6 +710,8 @@
     <item>По увеличению порядка сортировки</item>
     <item>По уменьшению порядка сортировки</item>
     <item>По имени</item>
+    <item>По последней транзакции (по возрастанию)</item>
+    <item>По последней транзакции (по убыванию)</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>По имени</item>
@@ -716,5 +743,11 @@
     <item>5 минут</item>
     <item>10 минут</item>
     <item>15 минут</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>Счета</item>
+    <item>Журнал</item>
+    <item>Бюджеты</item>
+    <item>Отчёты</item>
   </string-array>
 </resources>
