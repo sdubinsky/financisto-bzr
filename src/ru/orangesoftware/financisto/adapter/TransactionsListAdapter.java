@@ -62,6 +62,7 @@ public class TransactionsListAdapter extends BlotterListAdapter {
         }
         String text = generateTransactionTitle(sb, payee, note, location, categoryId, category);
         v.centerView.setText(text);
+        sb.setLength(0);
 
         long currencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
         Currency c = CurrencyCache.getCurrency(em, currencyId);
