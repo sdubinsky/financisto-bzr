@@ -802,4 +802,6 @@
     <string name="show_currency_summary">Show currency selector in new transaction screen</string>
     <string name="reconcile">Reconcile</string>
 
+    <string name="file_import_utf8_warning">Please make sure that the file is in UTF-8</string>
+
 </resources>
