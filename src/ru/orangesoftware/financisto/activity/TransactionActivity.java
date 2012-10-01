@@ -498,25 +498,32 @@ public class TransactionActivity extends AbstractTransactionActivity {
         selectedOriginCurrencyId = selectedId;
         if (selectedId == -1) {
             if (selectedAccount != null) {
-                rateView.selectCurrencyFrom(selectedAccount.currency);
-                rateView.selectCurrencyTo(selectedAccount.currency);
-            } else {
-                rateView.selectCurrencyFrom(Currency.EMPTY);
-                rateView.selectCurrencyTo(Currency.EMPTY);
+                if (selectedAccount.currency.id == rateView.getCurrencyToId()) {
+                    rateView.setFromAmount(rateView.getToAmount());
+                }
             }
-            currencyText.setText(R.string.original_currency_as_account);
+            selectAccountCurrency();
         } else {
+            long toAmount = rateView.getToAmount();
             Currency currency = CurrencyCache.getCurrency(em, selectedId);
             rateView.selectCurrencyFrom(currency);
             if (selectedAccount != null) {
                 if (selectedId == selectedAccount.currency.id) {
-                    selectOriginalCurrency(-1);
+                    if (selectedId == rateView.getCurrencyToId()) {
+                        rateView.setFromAmount(toAmount);
+                    }
+                    selectAccountCurrency();
                     return;
                 }
                 rateView.selectCurrencyTo(selectedAccount.currency);
             }
             currencyText.setText(currency.name);
         }
+    }
+
+    private void selectAccountCurrency() {
+        rateView.selectSameCurrency(selectedAccount != null ? selectedAccount.currency : Currency.EMPTY);
+        currencyText.setText(R.string.original_currency_as_account);
     }
 
     private void showQuickActionsDialog() {

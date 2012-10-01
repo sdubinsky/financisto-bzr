@@ -254,6 +254,10 @@ public class RateLayoutView implements RateNodeOwner {
         return currencyTo;
     }
 
+    public long getCurrencyToId() {
+        return currencyTo != null ? currencyTo.id : 0;
+    }
+
     @Override
     public void onAfterRateDownload() {
         amountInputFrom.setEnabled(true);
@@ -274,6 +278,11 @@ public class RateLayoutView implements RateNodeOwner {
     @Override
     public Activity getActivity() {
         return activity;
+    }
+
+    public void selectSameCurrency(Currency currency) {
+        selectCurrencyFrom(currency);
+        selectCurrencyTo(currency);
     }
 
 }
