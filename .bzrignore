@@ -11,3 +11,4 @@ GreenDroid/GreenDroid.eml
 local.properties
 tests/coverage.em
 tests/coverage
+robotium_tests/local.properties
