@@ -386,6 +386,9 @@ public class TransactionActivity extends AbstractTransactionActivity {
             transaction.originalCurrencyId = selectedOriginCurrencyId;
             transaction.originalFromAmount = rateView.getFromAmount();
             transaction.fromAmount = rateView.getToAmount();
+        } else {
+            transaction.originalCurrencyId = 0;
+            transaction.originalFromAmount = 0;
         }
     }
 
