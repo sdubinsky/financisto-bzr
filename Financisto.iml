@@ -71,7 +71,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/dropbox-android-sdk-1.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/libs/dropbox-android-sdk-1.5.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
