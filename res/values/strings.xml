@@ -803,5 +803,8 @@
     <string name="reconcile">Reconcile</string>
 
     <string name="file_import_utf8_warning">Please make sure that the file is in UTF-8</string>
+    
+    <string name="show_is_ccard_payment">Show \'Credit Card Payment\'</string>
+    <string name="show_is_ccard_payment_summary">Show checkbox to mark credit card payments</string>
 
 </resources>
