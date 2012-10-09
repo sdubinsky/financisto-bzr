@@ -109,7 +109,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 	protected boolean isRememberLastProject;
 	protected boolean isShowLocation;
 	protected boolean isShowNote;
-    protected boolean isShowTakePicture;
+	protected boolean isShowTakePicture;
+	protected boolean isShowIsCCardPayment;
 
 	protected AttributeView deleteAfterExpired;
 	
@@ -141,7 +142,8 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 		isRememberLastProject = isRememberLastCategory && MyPreferences.isRememberProject(this);
 		isShowLocation = MyPreferences.isShowLocation(this);
 		isShowNote = MyPreferences.isShowNote(this);
-        isShowTakePicture = MyPreferences.isShowTakePicture(this);
+		isShowTakePicture = MyPreferences.isShowTakePicture(this);
+		isShowIsCCardPayment = MyPreferences.isShowIsCCardPayment(this);
 
         categorySelector = new CategorySelector(this, db, x);
         categorySelector.setListener(this);
@@ -493,12 +495,12 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 		if (isShowTakePicture && transaction.isNotTemplateLike()) {
 			pictureView = x.addPictureNodeMinus(this, layout, R.id.attach_picture, R.id.delete_picture, R.string.attach_picture, R.string.new_picture);
 		}
-		// checkbox to register if the transaction is a credit card payment. 
-		// this will be used to exclude from totals in bill preview
-		ccardPayment = x.addCheckboxNode(layout,
-				R.id.is_ccard_payment, R.string.is_ccard_payment,
-				R.string.is_ccard_payment_summary, false);
-		
+		if (isShowIsCCardPayment) {
+			// checkbox to register if the transaction is a credit card payment. 
+			// this will be used to exclude from totals in bill preview
+			ccardPayment = x.addCheckboxNode(layout, R.id.is_ccard_payment,
+					R.string.is_ccard_payment, R.string.is_ccard_payment_summary, false);
+		}
 	}
 
     protected abstract void createListNodes(LinearLayout layout);
@@ -761,10 +763,12 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 			setRecurrence(transaction.recurrence);
 			setNotification(transaction.notificationOptions);
 		}
-        if (isShowTakePicture) {
-		    selectPicture(transaction.attachedPicture);
-        }
-		setIsCCardPayment(transaction.isCCardPayment);
+		if (isShowTakePicture) {
+			selectPicture(transaction.attachedPicture);
+		}
+		if (isShowIsCCardPayment) {
+			setIsCCardPayment(transaction.isCCardPayment);
+		}
 	}
 
 	private void setIsCCardPayment(int isCCardPaymentValue) {

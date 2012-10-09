@@ -132,6 +132,10 @@
                                     android:title="@string/show_picture"
                                     android:summary="@string/show_picture_summary"
                                     android:defaultValue="true"/>
+                <CheckBoxPreference android:key="ntsl_show_is_ccard_payment"
+                                    android:title="@string/show_is_ccard_payment"
+                                    android:summary="@string/show_is_ccard_payment_summary"
+                                    android:defaultValue="true"/>                
                 <CheckBoxPreference android:key="ntsl_show_category_in_transfer"
                                     android:title="@string/show_category_in_transfer"
                                     android:summary="@string/show_category_in_transfer_summary"
