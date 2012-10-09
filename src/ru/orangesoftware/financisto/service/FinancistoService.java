@@ -28,7 +28,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.TransactionStatus;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 

@@ -8,7 +8,7 @@
  * Contributors:
  *     Denis Solonenko - initial API and implementation
  ******************************************************************************/
-package ru.orangesoftware.financisto.model.info;
+package ru.orangesoftware.financisto.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +17,6 @@ import javax.persistence.Table;
 
 import ru.orangesoftware.financisto.R;
 import android.content.Context;
-import ru.orangesoftware.financisto.model.Attribute;
 
 @Entity
 @Table(name = "V_TRANSACTION_ATTRIBUTES")

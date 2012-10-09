@@ -15,7 +15,7 @@ import ru.orangesoftware.financisto.export.csv.CsvImportOptions;
 import ru.orangesoftware.financisto.export.csv.CsvTransaction;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
 

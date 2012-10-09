@@ -1,7 +1,7 @@
 package ru.orangesoftware.financisto.service;
 
 import android.test.AndroidTestCase;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 
 import java.util.Arrays;
 import java.util.Calendar;

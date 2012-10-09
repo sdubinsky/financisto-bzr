@@ -19,7 +19,7 @@ import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.utils.MonthlyViewPlanner;
 import ru.orangesoftware.financisto.utils.PinProtection;
 import ru.orangesoftware.financisto.utils.Utils;
@@ -346,7 +346,7 @@ public class MonthlyViewActivity extends ListActivity {
         @Override
         protected MonthlyPreviewReport doInBackground(Void... voids) {
             MonthlyViewPlanner planner = new MonthlyViewPlanner(dbAdapter, accountId, open, close, now);
-            List<Transaction> transactions;
+            List<TransactionInfo> transactions;
             if (isStatementPreview) {
                 transactions = planner.getCreditCardStatement();
             } else {
@@ -358,14 +358,14 @@ public class MonthlyViewActivity extends ListActivity {
 
         @Override
         protected void onPostExecute(MonthlyPreviewReport monthlyPreviewReport) {
-            List<Transaction> transactions = monthlyPreviewReport.transactions;
+            List<TransactionInfo> transactions = monthlyPreviewReport.transactions;
             long total = monthlyPreviewReport.total;
             if (transactions == null || transactions.isEmpty()) {
                 displayNoTransactions();
             } else { // display data
 
                 // Mapping data to view
-                CreditCardStatementAdapter expenses = new CreditCardStatementAdapter(dbAdapter, MonthlyViewActivity.this, R.layout.credit_card_transaction, transactions, currency, accountId);
+                CreditCardStatementAdapter expenses = new CreditCardStatementAdapter(MonthlyViewActivity.this, R.layout.credit_card_transaction, transactions, currency, accountId);
                 expenses.setStatementPreview(isStatementPreview);
                 setListAdapter(expenses);
 
@@ -390,10 +390,10 @@ public class MonthlyViewActivity extends ListActivity {
 
     private static class MonthlyPreviewReport {
 
-        public final List<Transaction> transactions;
+        public final List<TransactionInfo> transactions;
         public final long total;
 
-        public MonthlyPreviewReport(List<Transaction> transactions, long total) {
+        public MonthlyPreviewReport(List<TransactionInfo> transactions, long total) {
             this.transactions = transactions;
             this.total = total;
         }
@@ -421,28 +421,28 @@ public class MonthlyViewActivity extends ListActivity {
         setListAdapter(null);
     }
 
-	private long calculateTotal(List<Transaction> transactions) {
+	private long calculateTotal(List<TransactionInfo> transactions) {
 		long total = 0;
 		if (isStatementPreview) {
 			// exclude payments
-            for (Transaction t : transactions) {
+            for (TransactionInfo t : transactions) {
                 if (!t.isCreditCardPayment()) {
                     total += getAmount(t);
                 }
             }
 		} else {
 			// consider all transactions
-            for (Transaction t : transactions) {
+            for (TransactionInfo t : transactions) {
                 total += getAmount(t);
             }
 		}
 		return total;		
 	}
 
-    private long getAmount(Transaction t) {
-        if (t.fromAccountId == accountId) {
+    private long getAmount(TransactionInfo t) {
+        if (t.fromAccount.id == accountId) {
             return t.fromAmount;
-        } else if (t.toAccountId == accountId) {
+        } else if (t.isTransfer() && t.toAccount.id == accountId) {
             return t.toAmount;
         }
         return 0;

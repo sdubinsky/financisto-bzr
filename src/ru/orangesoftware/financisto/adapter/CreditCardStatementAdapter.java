@@ -11,24 +11,21 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 
 import static ru.orangesoftware.financisto.utils.MonthlyViewPlanner.*;
 
 public class CreditCardStatementAdapter extends BaseAdapter implements Filterable {
 
-    private final DatabaseAdapter dba;
     private final Context context;
     private final int layout;
-    private final List<Transaction> transactions;
+    private final List<TransactionInfo> transactions;
 
     private final Utils u;
     private final Currency currency;
@@ -44,8 +41,6 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
 
     private boolean isStatementPreview = false;
 
-    private final HashMap<Long, String> locationCache = new HashMap<Long, String>();
-
     /**
      * Create an adapter to display the expenses list of a credit card bill.
      *
@@ -53,8 +48,7 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
      * @param layout  The layout id.
      * @param cur     The credit card base currency.
      */
-    public CreditCardStatementAdapter(DatabaseAdapter dba, Context context, int layout, List<Transaction> transactions, Currency cur, long account) {
-        this.dba = dba;
+    public CreditCardStatementAdapter(Context context, int layout, List<TransactionInfo> transactions, Currency cur, long account) {
         this.context = context;
         this.layout = layout;
         this.transactions = transactions;
@@ -81,7 +75,7 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
     }
 
     @Override
-    public Transaction getItem(int i) {
+    public TransactionInfo getItem(int i) {
         return transactions.get(i);
     }
 
@@ -113,7 +107,7 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
     }
 
     private void updateListItem(Holder h, int i) {
-        Transaction t = getItem(i);
+        TransactionInfo t = getItem(i);
 
         if (isHeader(t)) {
             drawGroupTitle(context.getResources().getString(getHeaderTitle(t)), h);
@@ -123,7 +117,7 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
         // get amount of expense
         long value = t.fromAmount;
         // to consider correct value from transfers
-        if (t.toAccountId == account) {
+        if (t.isTransfer() && t.toAccount.id == account) {
             value = t.toAmount;
         }
 
@@ -133,8 +127,6 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
         // get columns values or needed parameters
         long date = t.dateTime;
         String note = t.note;
-        long locId = t.locationId;
-        String location = null;
         String desc = "";
         boolean future = date > Calendar.getInstance().getTimeInMillis();
 
@@ -145,12 +137,11 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
                * b) otherwise, show description as note
                *    - "Note"
                */
-        if (locId > 0) {
-            location = getLocationName(locId);
+        if (t.location != null && t.location.id > 0) {
             if (note != null && note.length() > 0) {
-                desc = location + " (" + note + ")";
+                desc = t.location.name + " (" + note + ")";
             } else {
-                desc = location;
+                desc = t.location.name;
             }
         } else {
             desc = note;
@@ -199,7 +190,7 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
         }
     }
 
-    private int getHeaderTitle(Transaction t) {
+    private int getHeaderTitle(TransactionInfo t) {
         if (t == CREDITS_HEADER) {
             return R.string.header_credits;
         } else if (t == EXPENSES_HEADER) {
@@ -209,17 +200,8 @@ public class CreditCardStatementAdapter extends BaseAdapter implements Filterabl
         }
     }
 
-    private boolean isHeader(Transaction t) {
+    private boolean isHeader(TransactionInfo t) {
         return t == CREDITS_HEADER || t == EXPENSES_HEADER || t == PAYMENTS_HEADER;
-    }
-
-    private String getLocationName(Long locId) {
-        String name = locationCache.get(locId);
-        if (name == null) {
-            name = dba.getLocationName(locId);
-            locationCache.put(locId, name);
-        }
-        return name;
     }
 
     private void drawGroupTitle(String title, Holder h) {

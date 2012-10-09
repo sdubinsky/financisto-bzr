@@ -15,7 +15,7 @@ import ru.orangesoftware.financisto.export.qif.QifImportOptions;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.test.DateTime;
 
 import java.io.File;

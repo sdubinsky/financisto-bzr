@@ -20,7 +20,7 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ScheduledListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.service.RecurrenceScheduler;
 
 import java.util.ArrayList;

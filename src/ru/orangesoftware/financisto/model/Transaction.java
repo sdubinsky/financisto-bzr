@@ -18,7 +18,6 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
@@ -26,16 +25,9 @@ import java.util.Map;
 
 @Entity
 @Table(name = "transactions")
-public class Transaction implements Serializable, Cloneable {
+public class Transaction extends TransactionBase {
 
     private static final String SPLIT_BLOB = "SPLIT_BLOB";
-
-	@Id
-	@Column(name = "_id")
-	public long id = -1;
-
-    @Column(name = "parent_id")
-    public long parentId;
 
 	@Column(name = "category_id")
 	public long categoryId;
@@ -43,23 +35,8 @@ public class Transaction implements Serializable, Cloneable {
 	@Column(name = "project_id")
 	public long projectId;
 	
-	@Column(name = "datetime")
-	public long dateTime = System.currentTimeMillis();
-	
 	@Column(name = "location_id")
 	public long locationId;
-	
-	@Column(name = "provider")
-	public String provider;
-	
-	@Column(name = "accuracy")
-	public float accuracy;
-	
-	@Column(name = "longitude")
-	public double longitude;
-	
-	@Column(name = "latitude")
-	public double latitude;
 	
 	@Column(name = "from_account_id")
 	public long fromAccountId;
@@ -70,44 +47,8 @@ public class Transaction implements Serializable, Cloneable {
     @Column(name = "payee_id")
     public long payeeId;
 
-	@Column(name = "note")
-	public String note;
-
     @Column(name = "original_currency_id")
     public long originalCurrencyId;
-
-    @Column(name = "original_from_amount")
-    public long originalFromAmount;
-
-    @Column(name = "from_amount")
-	public long fromAmount;
-	
-	@Column(name = "to_amount")
-	public long toAmount;
-	
-	@Column(name = "is_template")
-	public int isTemplate;
-	
-	@Column(name = "template_name")
-	public String templateName;
-
-	@Column(name = "recurrence")
-	public String recurrence;	
-	
-	@Column(name = "notification_options")
-	public String notificationOptions;		
-	
-	@Column(name = "status")
-	public TransactionStatus status = TransactionStatus.UR;	
-	
-	@Column(name = "attached_picture")
-	public String attachedPicture;
-	
-	@Column(name = "is_ccard_payment")
-	public int isCCardPayment;
-
-	@Column(name = "last_recurrence")
-	public long lastRecurrence;
 
 	@Transient
 	public EnumMap<SystemAttribute, String> systemAttributes;
@@ -159,10 +100,6 @@ public class Transaction implements Serializable, Cloneable {
         return (Transaction)intent.getSerializableExtra(SPLIT_BLOB);
 	}
 
-    public List<TransactionAttribute> createAttributes() {
-        return null;
-    }
-
 	public static Transaction fromBlotterCursor(Cursor c) {
 		long id = c.getLong(BlotterColumns._id.ordinal());
 		Transaction t = new Transaction();
@@ -199,40 +136,8 @@ public class Transaction implements Serializable, Cloneable {
 		return toAccountId > 0;
 	}
 
-	public boolean isTemplate() {
-		return isTemplate == 1;
-	}
-
-    public void setAsTemplate() {
-        this.isTemplate = 1;
-    }
-
-    public boolean isScheduled() {
-		return isTemplate == 2;
-	}
-
-    public void setAsScheduled() {
-        this.isTemplate = 2;
-    }
-
-	public boolean isTemplateLike() {
-		return isTemplate > 0;
-	}
-
-	public boolean isNotTemplateLike() {
-		return isTemplate == 0;
-	}
-
-	public boolean isCreditCardPayment() {
-		return isCCardPayment == 1;
-	}
-
     public boolean isSplitParent() {
         return categoryId == Category.SPLIT_CATEGORY_ID;
-    }
-
-    public boolean isSplitChild() {
-        return parentId > 0;
     }
 
 	public String getSystemAttribute(SystemAttribute sa) {
@@ -256,4 +161,5 @@ public class Transaction implements Serializable, Cloneable {
         sb.append("TA(").append(toAccountId).append(")->").append(toAmount);
         return sb.toString();
     }
+
 }

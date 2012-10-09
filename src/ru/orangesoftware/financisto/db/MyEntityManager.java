@@ -20,8 +20,8 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.info.TransactionAttributeInfo;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.utils.DateUtils.Period;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.MyPreferences.AccountSortOrder;
@@ -514,6 +514,12 @@ public class MyEntityManager extends EntityManager {
 
     public List<Transaction> getSplitsForTransaction(long transactionId) {
         Query<Transaction> q = createQuery(Transaction.class);
+        q.where(Expressions.eq("parentId", transactionId));
+        return q.list();
+    }
+
+    public List<TransactionInfo> getSplitsInfoForTransaction(long transactionId) {
+        Query<TransactionInfo> q = createQuery(TransactionInfo.class);
         q.where(Expressions.eq("parentId", transactionId));
         return q.list();
     }

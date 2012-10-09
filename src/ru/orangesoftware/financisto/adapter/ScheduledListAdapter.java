@@ -23,7 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.util.ArrayList;

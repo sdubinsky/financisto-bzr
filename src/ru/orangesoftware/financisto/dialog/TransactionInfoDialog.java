@@ -25,8 +25,8 @@ import ru.orangesoftware.financisto.activity.BlotterOperations;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.model.info.TransactionAttributeInfo;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.recur.Recurrence;
 import ru.orangesoftware.financisto.utils.ThumbnailUtil;
 import ru.orangesoftware.financisto.utils.Utils;
@@ -179,11 +179,11 @@ public class TransactionInfoDialog {
         if (ti.isTemplate()) {
             titleLabel.setText(ti.templateName);
         } else {
-            if (ti.isSchedule() && ti.recurrence != null) {
+            if (ti.isScheduled() && ti.recurrence != null) {
                 Recurrence r = Recurrence.parse(ti.recurrence);
                 titleLabel.setText(r.toInfoString(parentActivity));
             } else {
-                int titleId = ti.isSplit()
+                int titleId = ti.isSplitParent()
                         ? R.string.split
                         : (ti.toAccount == null ? R.string.transaction : R.string.transfer);
                 titleLabel.setText(titleId);
@@ -192,7 +192,7 @@ public class TransactionInfoDialog {
                         ti.attachedPicture);
             }
         }
-        TransactionStatus status = TransactionStatus.valueOf(ti.status);
+        TransactionStatus status = ti.status;
         titleData.setText(parentActivity.getString(status.titleId));
         titleIcon.setImageResource(status.iconId);
         return titleView;

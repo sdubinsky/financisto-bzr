@@ -12,7 +12,7 @@ import ru.orangesoftware.financisto.db.AbstractDbTest;
 import ru.orangesoftware.financisto.export.qif.*;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.info.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.test.DateTime;
 import ru.orangesoftware.orb.Expressions;
 import ru.orangesoftware.orb.Query;

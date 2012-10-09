@@ -12,7 +12,7 @@ import android.util.Log;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.test.*;
 import ru.orangesoftware.financisto.utils.MonthlyViewPlanner;
 import ru.orangesoftware.financisto.utils.Utils;
@@ -61,7 +61,7 @@ public class MonthlyViewTest extends AbstractDbTest {
         //2011-08-16 -50            r1
         //2011-08-16 +40            r2
         MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<Transaction> transactions = planner.getAccountMonthlyView();
+        List<TransactionInfo> transactions = planner.getAccountMonthlyView();
         logTransactions(transactions);
         assertTransactions(transactions,
                 DateTime.date(2011, 8, 8), 1000,
@@ -87,7 +87,7 @@ public class MonthlyViewTest extends AbstractDbTest {
     public void test_should_generate_credit_card_statement() {
         prepareData();
         MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<Transaction> transactions = planner.getCreditCardStatement();
+        List<TransactionInfo> transactions = planner.getCreditCardStatement();
         logTransactions(transactions);
         assertTransactions(transactions,
                 //payments
@@ -138,7 +138,7 @@ public class MonthlyViewTest extends AbstractDbTest {
         //2011-09-16 +52  <- a2     r4
         //2011-09-16 +30  <- a2     r6
         MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<Transaction> transactions = planner.getAccountMonthlyView();
+        List<TransactionInfo> transactions = planner.getAccountMonthlyView();
         logTransactions(transactions);
         assertTransactions(transactions,
                 DateTime.date(2011, 9, 1), -50,
@@ -167,7 +167,7 @@ public class MonthlyViewTest extends AbstractDbTest {
         to = DateTime.date(2011, 7, 16).atDayEnd().asDate();
 
         MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<Transaction> transactions = planner.getAccountMonthlyView();
+        List<TransactionInfo> transactions = planner.getAccountMonthlyView();
         logTransactions(transactions);
         assertTransactions(transactions,
                 DateTime.date(2011, 7, 9), 122
@@ -264,16 +264,16 @@ public class MonthlyViewTest extends AbstractDbTest {
                 .create();
     }
 
-    private void logTransactions(List<Transaction> transactions) {
+    private void logTransactions(List<TransactionInfo> transactions) {
         Log.d("MonthlyViewTest", "===== Planned transactions: "+transactions.size()+" =====");
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-        for (Transaction transaction : transactions) {
+        for (TransactionInfo transaction : transactions) {
             Log.d("MonthlyViewTest", df.format(new Date(transaction.dateTime))+" "+ Utils.amountToString(Currency.EMPTY, transaction.fromAmount)+" "+transaction.note);
         }
         Log.d("MonthlyViewTest", "==========");
     }
 
-    private void assertTransactions(List<Transaction> transactions, Object...data) {
+    private void assertTransactions(List<TransactionInfo> transactions, Object...data) {
         int count = data.length/2;
         if (count > transactions.size()) {
             fail("Too few transactions. Expected "+count+", Got "+transactions.size());
@@ -286,7 +286,7 @@ public class MonthlyViewTest extends AbstractDbTest {
         }
     }
 
-    private void assertTransaction(String row, Transaction t, DateTime date, long expectedAmount) {
+    private void assertTransaction(String row, TransactionInfo t, DateTime date, long expectedAmount) {
         assertEquals(row, asDate(date), asDate(t.dateTime));
         assertEquals(row, expectedAmount, t.fromAmount);
     }
