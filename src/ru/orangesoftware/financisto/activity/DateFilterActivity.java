@@ -186,10 +186,9 @@ public class DateFilterActivity extends Activity {
 		DatePicker dp = (DatePicker)dialog.findViewById(R.id.date);
 		dp.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), null);
 		TimePicker tp = (TimePicker)dialog.findViewById(R.id.time);
-		tp.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
-		tp.setCurrentMinute(c.get(Calendar.MINUTE));
         tp.setIs24HourView(is24HourFormat(this));
-		tp.setIs24HourView(true);
+        tp.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
+		tp.setCurrentMinute(c.get(Calendar.MINUTE));
 	}
 
 	private void setDialogResult(Dialog d, Calendar c) {
