@@ -49,6 +49,7 @@ public class PinActivity extends Activity implements PinView.PinListener {
 
 	@Override
 	public void onBackPressed() {
+        moveTaskToBack(true);
 	}
 
 }

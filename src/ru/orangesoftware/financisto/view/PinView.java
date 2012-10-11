@@ -61,7 +61,7 @@ public class PinView implements OnClickListener {
 		LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		v = layoutInflater.inflate(layoutId, null);
 		for (int id : buttons) {
-			((Button)v.findViewById(id)).setOnClickListener(this);
+			v.findViewById(id).setOnClickListener(this);
 		}
 		result = (TextView)v.findViewById(R.id.result1);		
 		switcher = (ViewSwitcher)v.findViewById(R.id.switcher);  
@@ -121,8 +121,7 @@ public class PinView implements OnClickListener {
 	
 	private String pinBase64(String pin) {
 		byte[] a = digest.digest(pin.getBytes());
-		String pinBase64 = new String(Base64Coder.encode(a));
-		return pinBase64;
+        return new String(Base64Coder.encode(a));
 	}
 
 	private Animation inFromRightAnimation() {

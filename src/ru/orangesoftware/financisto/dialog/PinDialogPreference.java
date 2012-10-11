@@ -33,7 +33,7 @@ public class PinDialogPreference extends DialogPreference implements PinView.Pin
 
     protected void showDialog(Bundle state) {
 		Context context = getContext();
-		PinView pinView = new PinView(context, this, R.layout.lock_dialog);
+		PinView pinView = new PinView(context, this, R.layout.lock);
 		dialog = new AlertDialog.Builder(context)
         	.setTitle(R.string.set_pin)
         	.setView(pinView.getView())
