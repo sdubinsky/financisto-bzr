@@ -39,7 +39,7 @@ import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
 
-import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
 import static ru.orangesoftware.financisto.utils.MyPreferences.isQuickMenuEnabledForAccount;
 
 public class AccountListActivity extends AbstractListActivity {
@@ -69,7 +69,7 @@ public class AccountListActivity extends AbstractListActivity {
 	}
 
     protected void prepareAccountActionGrid() {
-        if (isSupportedApiLevel()) {
+        if (isGreenDroidSupported()) {
             accountActionGrid = new QuickActionGrid(this);
             accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.info));
             accountActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_list, R.string.blotter));

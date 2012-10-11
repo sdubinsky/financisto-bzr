@@ -31,7 +31,7 @@ import ru.orangesoftware.financisto.widget.AmountInput;
 import java.io.*;
 import java.util.*;
 
-import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
 import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 import static ru.orangesoftware.financisto.utils.Utils.text;
 
@@ -95,7 +95,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
 	}
 
     private void prepareUnsplitActionGrid() {
-        if (isSupportedApiLevel()) {
+        if (isGreenDroidSupported()) {
             unsplitActionGrid = new QuickActionGrid(this);
             unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_add, R.string.transaction));
             unsplitActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_transfer, R.string.transfer));
@@ -448,7 +448,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
         super.onClick(v, id);
         switch (id) {
             case R.id.unsplit_action:
-                if (isSupportedApiLevel()) {
+                if (isGreenDroidSupported()) {
                     unsplitActionGrid.show(v);
                 } else {
                     showQuickActionsDialog();

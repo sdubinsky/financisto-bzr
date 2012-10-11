@@ -45,7 +45,7 @@ import ru.orangesoftware.financisto.utils.Utils;
 
 import java.math.BigDecimal;
 
-import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
 
 public class ReportActivity extends ListActivity implements RefreshSupportedActivity {
 
@@ -92,7 +92,7 @@ public class ReportActivity extends ListActivity implements RefreshSupportedActi
         });
 
         ImageButton bPieChart = (ImageButton) findViewById(R.id.bPieChart);
-        if (isSupportedApiLevel()) {
+        if (isGreenDroidSupported()) {
             bPieChart.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {

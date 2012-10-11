@@ -40,7 +40,7 @@ import ru.orangesoftware.financisto.view.NodeInflater;
 
 import java.util.List;
 
-import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
 import static ru.orangesoftware.financisto.utils.EnumUtils.showPickOneDialog;
 import static ru.orangesoftware.financisto.utils.MyPreferences.isQuickMenuEnabledForTransaction;
 
@@ -187,7 +187,7 @@ public class BlotterActivity extends AbstractListActivity {
 }
 
     protected void prepareTransactionActionGrid() {
-        if (isSupportedApiLevel()) {
+        if (isGreenDroidSupported()) {
             transactionActionGrid = new QuickActionGrid(this);
             transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_info, R.string.info));
             transactionActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.gd_action_bar_edit, R.string.edit));
@@ -226,7 +226,7 @@ public class BlotterActivity extends AbstractListActivity {
     };
 
     private void prepareAddButtonActionGrid() {
-        if (isSupportedApiLevel()) {
+        if (isGreenDroidSupported()) {
             addButtonActionGrid = new QuickActionGrid(this);
             addButtonActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_add, R.string.transaction));
             addButtonActionGrid.addQuickAction(new MyQuickAction(this, R.drawable.ic_input_transfer, R.string.transfer));
@@ -326,7 +326,7 @@ public class BlotterActivity extends AbstractListActivity {
         if (showAllBlotterButtons) {
             addItem(NEW_TRANSACTION_REQUEST, TransactionActivity.class);
         } else {
-            if (isSupportedApiLevel()) {
+            if (isGreenDroidSupported()) {
                 addButtonActionGrid.show(bAdd);
             } else {
                 showPickOneDialog(this, R.string.add_transaction, TransactionQuickMenuEntities.values(), addButtonActionListener);

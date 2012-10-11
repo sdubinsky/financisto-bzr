@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Locale;
 
-import static ru.orangesoftware.financisto.utils.AndroidUtils.isSupportedApiLevel;
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
 
 public class MyPreferences {
 
@@ -484,11 +484,11 @@ public class MyPreferences {
 	}
 
     public static boolean isQuickMenuEnabledForAccount(Context context) {
-        return getBoolean(context, "quick_menu_account_enabled", true) && isSupportedApiLevel();
+        return getBoolean(context, "quick_menu_account_enabled", true) && isGreenDroidSupported();
     }
 
     public static boolean isQuickMenuEnabledForTransaction(Context context) {
-        return getBoolean(context, "quick_menu_transaction_enabled", true) && isSupportedApiLevel();
+        return getBoolean(context, "quick_menu_transaction_enabled", true) && isGreenDroidSupported();
     }
 
     public static void storeDropboxKeys(Context context, String key, String secret) {

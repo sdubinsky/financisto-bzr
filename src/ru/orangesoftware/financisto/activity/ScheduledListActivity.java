@@ -95,4 +95,9 @@ public class ScheduledListActivity extends BlotterActivity {
         scheduler.cancelPendingIntentForSchedule(this, id);
     }
 
+    @Override
+    public void integrityCheck() {
+        new InstalledOnSdCardCheckTask(this).execute();
+    }
+
 }
