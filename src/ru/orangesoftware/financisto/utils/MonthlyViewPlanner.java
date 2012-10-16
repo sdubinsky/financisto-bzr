@@ -12,18 +12,19 @@ import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
-import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.TransactionInfo;
-import ru.orangesoftware.financisto.recur.Recurrence;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
  * Date: 8/25/11 11:00 PM
  */
-public class MonthlyViewPlanner {
+public class MonthlyViewPlanner extends AbstractPlanner {
 
     public static final TransactionInfo PAYMENTS_HEADER = new TransactionInfo();
     public static final TransactionInfo CREDITS_HEADER = new TransactionInfo();
@@ -35,60 +36,32 @@ public class MonthlyViewPlanner {
         EXPENSES_HEADER.dateTime = 0;
     }
 
-    private final DatabaseAdapter db;
     private final long accountId;
-    private final Date startDate;
-    private final Date endDate;
-    private final Date now;
-    private final MyEntityManager em;
 
     public MonthlyViewPlanner(DatabaseAdapter db, long accountId, Date startDate, Date endDate, Date now) {
-        this.db = db;
-        this.em = db.em();
+        super(db, startDate, endDate, now);
         this.accountId = accountId;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.now = now;
     }
 
-    /**
-     * [Monthly view] Returns all the transactions for a given Account in a given period (month).
-     * @return Transactions of the given Account, from start date to end date.
-     */
-    public List<TransactionInfo> getAccountMonthlyView() {
+    @Override
+    protected Cursor getRegularTransactions() {
         WhereFilter filter = createMonthlyViewFilter();
-        List<TransactionInfo> regularTransactions = asTransactionList(db.getBlotterForAccountWithSplits(filter));
-        List<TransactionInfo> scheduledTransactions = getScheduledTransactions();
-        if (scheduledTransactions.isEmpty()) {
-            return regularTransactions;
-        } else {
-            List<TransactionInfo> allTransactions = new ArrayList<TransactionInfo>();
-            allTransactions.addAll(regularTransactions);
-            allTransactions.addAll(planSchedules(scheduledTransactions));
-            sortTransactions(allTransactions);
-            return allTransactions;
-        }
+        return db.getBlotterForAccountWithSplits(filter);
     }
 
-    private List<TransactionInfo> getScheduledTransactions() {
-        if (now.before(endDate)) {
-            return em.getAllScheduledTransactions();
-        }
-        return Collections.emptyList();
+    @Override
+    protected TransactionInfo prepareScheduledTransaction(TransactionInfo scheduledTransaction) {
+        return inverseTransaction(scheduledTransaction);
     }
 
-    private List<TransactionInfo> planSchedules(List<TransactionInfo> scheduledTransactions) {
-        List<TransactionInfo> plannedTransactions = new ArrayList<TransactionInfo>();
-        for (TransactionInfo scheduledTransaction : scheduledTransactions) {
-            TransactionInfo transaction = inverseTransaction(scheduledTransaction);
-            if (transaction.fromAccount.id == accountId) {
-                List<Date> dates = calculatePlannedDates(transaction);
-                duplicateTransaction(transaction, dates, plannedTransactions);
-            } else if (transaction.isSplitParent()) {
-                planSplitSchedules(transaction, plannedTransactions);
-            }
-        }
-        return plannedTransactions;
+    @Override
+    protected boolean includeScheduledTransaction(TransactionInfo transaction) {
+        return transaction.fromAccount.id == accountId;
+    }
+
+    @Override
+    protected boolean includeScheduledSplitTransaction(TransactionInfo split) {
+        return split.isTransfer() && split.toAccount.id == accountId;
     }
 
     private TransactionInfo inverseTransaction(TransactionInfo transaction) {
@@ -103,72 +76,6 @@ public class MonthlyViewPlanner {
         return transaction;
     }
 
-    private void planSplitSchedules(TransactionInfo scheduledTransaction, List<TransactionInfo> plannedTransactions) {
-        List<Date> dates = calculatePlannedDates(scheduledTransaction);
-        List<TransactionInfo> splits = em.getSplitsInfoForTransaction(scheduledTransaction.id);
-        for (TransactionInfo split : splits) {
-            if (split.isTransfer() && split.toAccount.id == accountId) {
-                TransactionInfo transaction = inverseTransaction(split);
-                duplicateTransaction(transaction, dates, plannedTransactions);
-            }
-        }
-    }
-
-    private List<Date> calculatePlannedDates(TransactionInfo scheduledTransaction) {
-        String recurrence = scheduledTransaction.recurrence;
-        Date calcDate = startDate.before(now) ? now : startDate;
-        if (recurrence == null) {
-            Date scheduledDate = new Date(scheduledTransaction.dateTime);
-            if (insideTheRequiredPeriod(calcDate, endDate, scheduledDate)) {
-                return Collections.singletonList(scheduledDate);
-            }
-        } else {
-            Recurrence r = Recurrence.parse(recurrence);
-            return r.generateDates(calcDate, endDate);
-        }
-        return Collections.emptyList();
-    }
-
-    private boolean insideTheRequiredPeriod(Date startDate, Date endDate, Date date) {
-        return !(date.before(startDate) || date.after(endDate));
-    }
-
-    private void duplicateTransaction(TransactionInfo scheduledTransaction, List<Date> dates, List<TransactionInfo> plannedTransactions) {
-        if (dates.size() == 1) {
-            scheduledTransaction.dateTime = dates.get(0).getTime();
-            scheduledTransaction.isTemplate = 0;
-            plannedTransactions.add(scheduledTransaction);
-        } else {
-            for (Date date : dates) {
-                TransactionInfo t = scheduledTransaction.clone();
-                t.dateTime = date.getTime();
-                t.isTemplate = 0;
-                plannedTransactions.add(t);
-            }
-        }
-    }
-
-    private void sortTransactions(List<TransactionInfo> transactions) {
-        Collections.sort(transactions, new Comparator<TransactionInfo>() {
-            @Override
-            public int compare(TransactionInfo transaction1, TransactionInfo transaction2) {
-                return transaction1.dateTime > transaction2.dateTime ? 1 : (transaction1.dateTime < transaction2.dateTime ? -1 : 0);
-            }
-        });
-    }
-
-    private List<TransactionInfo> asTransactionList(Cursor cursor) {
-        try {
-            List<TransactionInfo> transactions = new ArrayList<TransactionInfo>(cursor.getCount());
-            while (cursor.moveToNext()) {
-                transactions.add(TransactionInfo.fromBlotterCursor(cursor));
-            }
-            return transactions;
-        } finally {
-            cursor.close();
-        }
-    }
-
     private WhereFilter createMonthlyViewFilter() {
         return WhereFilter.empty()
                 .eq(DatabaseHelper.BlotterColumns.from_account_id.name(), String.valueOf(accountId))
@@ -179,7 +86,7 @@ public class MonthlyViewPlanner {
 
 
     public List<TransactionInfo> getCreditCardStatement() {
-        List<TransactionInfo> transactions = getAccountMonthlyView();
+        List<TransactionInfo> transactions = getPlannedTransactions();
         List<TransactionInfo> statement = new ArrayList<TransactionInfo>(transactions.size()+3);
         // add payments
         statement.add(PAYMENTS_HEADER);
@@ -204,4 +111,5 @@ public class MonthlyViewPlanner {
         }
         return statement;
     }
+
 }

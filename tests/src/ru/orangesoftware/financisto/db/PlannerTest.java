@@ -14,6 +14,7 @@ import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.test.*;
+import ru.orangesoftware.financisto.utils.FuturePlanner;
 import ru.orangesoftware.financisto.utils.MonthlyViewPlanner;
 import ru.orangesoftware.financisto.utils.Utils;
 
@@ -22,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class MonthlyViewTest extends AbstractDbTest {
+public class PlannerTest extends AbstractDbTest {
 
     Account a1;
     Account a2;
@@ -43,25 +44,25 @@ public class MonthlyViewTest extends AbstractDbTest {
     public void test_should_generate_monthly_view_for_account() {
         prepareData();
         //a1
-        //2011-08-08 +1000          t1
-        //2011-08-09 -100 -> a2     t2
-        //2011-08-09 +40            r2
-        //2011-08-10 -500           t3
-        //2011-08-10 -50            r1
-        //2011-08-11 -100 -> a2     t4
-        //2011-08-12 +200 <- a2     t5
-        //2011-08-12 +52  <- a2     r4
-        //2011-08-12 -50            r1
-        //2011-08-12 +30  <- a2     r6
-        //2011-08-14 -100           t7
-        //2011-08-14 -50            r1
-        //2011-08-15 +400           t6
-        //2011-08-15 -210 -> a2     r3
-        //2011-08-15 -105 -> a2     r5
-        //2011-08-16 -50            r1
-        //2011-08-16 +40            r2
+        //0  2011-08-08 +1000          t1
+        //1  2011-08-09 -100 -> a2     t2
+        //2  2011-08-09 +40            r2
+        //3  2011-08-10 -500           t3
+        //4  2011-08-10 -50            r1
+        //5  2011-08-11 -100 -> a2     t4
+        //6  2011-08-12 +200 <- a2     t5-s2
+        //7  2011-08-12 +52  <- a2     r4
+        //8  2011-08-12 -50            r1
+        //9  2011-08-12 +30  <- a2     r6-s2
+        //10 2011-08-14 -100           t7
+        //11 2011-08-14 -50            r1
+        //12 2011-08-15 +400           t6
+        //13 2011-08-15 -210 -> a2     r3
+        //14 2011-08-15 -105 -> a2     r5
+        //15 2011-08-16 -50            r1
+        //16 2011-08-16 +40            r2
         MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<TransactionInfo> transactions = planner.getAccountMonthlyView();
+        List<TransactionInfo> transactions = planner.getPlannedTransactions();
         logTransactions(transactions);
         assertTransactions(transactions,
                 DateTime.date(2011, 8, 8), 1000,
@@ -138,7 +139,7 @@ public class MonthlyViewTest extends AbstractDbTest {
         //2011-09-16 +52  <- a2     r4
         //2011-09-16 +30  <- a2     r6
         MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<TransactionInfo> transactions = planner.getAccountMonthlyView();
+        List<TransactionInfo> transactions = planner.getPlannedTransactions();
         logTransactions(transactions);
         assertTransactions(transactions,
                 DateTime.date(2011, 9, 1), -50,
@@ -167,12 +168,71 @@ public class MonthlyViewTest extends AbstractDbTest {
         to = DateTime.date(2011, 7, 16).atDayEnd().asDate();
 
         MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<TransactionInfo> transactions = planner.getAccountMonthlyView();
+        List<TransactionInfo> transactions = planner.getPlannedTransactions();
         logTransactions(transactions);
         assertTransactions(transactions,
                 DateTime.date(2011, 7, 9), 122
         );
 
+    }
+
+    public void test_should_generate_future_preview() {
+        prepareData();
+        now = DateTime.date(2011, 7, 1).atMidnight().asDate();
+        to = DateTime.date(2011, 8, 15).atDayEnd().asDate();
+
+        FuturePlanner planner = new FuturePlanner(db, to, now);
+        List<TransactionInfo> transactions = planner.getPlannedTransactions();
+        logTransactions(transactions);
+        // well, this is going to be impossible to re-test if something breaks
+        assertTransactions2(transactions,
+                 0, DateTime.date(2011, 7, 1),   -50, "x1",
+                 1, DateTime.date(2011, 7, 3),   -50, "x1",
+                 2, DateTime.date(2011, 7, 5),   -50, "x1",
+                 3, DateTime.date(2011, 7, 7),   -50, "x1",
+                 4, DateTime.date(2011, 7, 9),   122, "t0",
+                 5, DateTime.date(2011, 7, 9),   -50, "x1",
+                 6, DateTime.date(2011, 7, 11),  -50, "x1",
+                 7, DateTime.date(2011, 7, 13),  -50, "x1",
+                 8, DateTime.date(2011, 7, 15),  -50, "x1",
+                 9, DateTime.date(2011, 7, 17),  -50, "x1",
+                10, DateTime.date(2011, 7, 19),  -50, "x1",
+                11, DateTime.date(2011, 7, 21),  -50, "x1",
+                12, DateTime.date(2011, 7, 23),  -50, "x1",
+                13, DateTime.date(2011, 7, 25),  -50, "x1",
+                14, DateTime.date(2011, 7, 27),  -50, "x1",
+                15, DateTime.date(2011, 7, 29),  -50, "x1",
+                16, DateTime.date(2011, 7, 31),  -50, "x1",
+                17, DateTime.date(2011, 8, 2),   -50, "r1",
+                18, DateTime.date(2011, 8, 2),   -50, "x1",
+                19, DateTime.date(2011, 8, 2),    40, "r2",
+                20, DateTime.date(2011, 8, 4),   -50, "r1",
+                21, DateTime.date(2011, 8, 4),   -50, "x1",
+                22, DateTime.date(2011, 8, 5),  -600, "r4",
+                23, DateTime.date(2011, 8, 5),  -120, "r6",
+                24, DateTime.date(2011, 8, 6),   -50, "r1",
+                25, DateTime.date(2011, 8, 6),   -50, "x1",
+                26, DateTime.date(2011, 8, 8),  1000, "t1",
+                27, DateTime.date(2011, 8, 8),   -50, "r1",
+                28, DateTime.date(2011, 8, 8),   -50, "x1",
+                29, DateTime.date(2011, 8, 9),  -100, "t2",
+                30, DateTime.date(2011, 8, 9),    40, "r2",
+                31, DateTime.date(2011, 8, 10), -500, "t3",
+                32, DateTime.date(2011, 8, 10),  -50, "r1",
+                33, DateTime.date(2011, 8, 10),  -50, "x1",
+                34, DateTime.date(2011, 8, 11), -100, "t4",
+                35, DateTime.date(2011, 8, 12), -120, "t5",
+                36, DateTime.date(2011, 8, 12), -600, "r4",
+                37, DateTime.date(2011, 8, 12),  -50, "r1",
+                38, DateTime.date(2011, 8, 12),  -50, "x1",
+                39, DateTime.date(2011, 8, 12), -120, "r6",
+                40, DateTime.date(2011, 8, 14), -100, "t7",
+                41, DateTime.date(2011, 8, 14),  -50, "r1",
+                42, DateTime.date(2011, 8, 14),  -50, "x1",
+                43, DateTime.date(2011, 8, 15),  400, "t6",
+                44, DateTime.date(2011, 8, 15), -210, "r3",
+                45, DateTime.date(2011, 8, 15), -105, "r5"
+        );
     }
 
     private void prepareData() {
@@ -231,13 +291,13 @@ public class MonthlyViewTest extends AbstractDbTest {
 
         //this should not be included because the account is differ
         TransactionBuilder.withDb(db).scheduleRecur("2011-07-01T21:40:00~DAILY:interval@2#~INDEFINETELY:null")
-                .account(a2).amount(-50).note("?").create();
+                .account(a2).amount(-50).note("x1").create();
 
         //these should not be included because the date is out of picture
         TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 10, 14).at(13, 0, 0, 0))
-                .account(a1).amount(-500).note("?").create();
+                .account(a1).amount(-500).note("x2?").create();
         TransactionBuilder.withDb(db).scheduleRecur("2011-10-01T21:40:00~DAILY:interval@2#~INDEFINETELY:null")
-                .account(a1).amount(-500).note("?").create();
+                .account(a1).amount(-500).note("x3?").create();
 
         //this is a scheduled transfer which should appear in the monthly view
         //r3
@@ -245,7 +305,7 @@ public class MonthlyViewTest extends AbstractDbTest {
                 .fromAccount(a1).fromAmount(-210).toAccount(a2).toAmount(51).note("r3").create();
         //r4
         TransferBuilder.withDb(db).scheduleRecur("2011-08-02T21:20:00~WEEKLY:days@FRI#interval@1#~INDEFINETELY:null")
-                .fromAccount(a2).fromAmount(-600).toAccount(a1).toAmount(52).note("r3").create();
+                .fromAccount(a2).fromAmount(-600).toAccount(a1).toAmount(52).note("r4").create();
 
         //this is a scheduled split with a transfer which should appear in the monthly view
         //r5
@@ -265,12 +325,12 @@ public class MonthlyViewTest extends AbstractDbTest {
     }
 
     private void logTransactions(List<TransactionInfo> transactions) {
-        Log.d("MonthlyViewTest", "===== Planned transactions: "+transactions.size()+" =====");
+        Log.d("PlannerTest", "===== Planned transactions: "+transactions.size()+" =====");
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         for (TransactionInfo transaction : transactions) {
-            Log.d("MonthlyViewTest", df.format(new Date(transaction.dateTime))+" "+ Utils.amountToString(Currency.EMPTY, transaction.fromAmount)+" "+transaction.note);
+            Log.d("PlannerTest", df.format(new Date(transaction.dateTime))+" "+ Utils.amountToString(Currency.EMPTY, transaction.fromAmount)+" "+transaction.note);
         }
-        Log.d("MonthlyViewTest", "==========");
+        Log.d("PlannerTest", "==========");
     }
 
     private void assertTransactions(List<TransactionInfo> transactions, Object...data) {
@@ -289,6 +349,25 @@ public class MonthlyViewTest extends AbstractDbTest {
     private void assertTransaction(String row, TransactionInfo t, DateTime date, long expectedAmount) {
         assertEquals(row, asDate(date), asDate(t.dateTime));
         assertEquals(row, expectedAmount, t.fromAmount);
+    }
+
+    private void assertTransactions2(List<TransactionInfo> transactions, Object...data) {
+        int count = data.length/4;
+        if (count > transactions.size()) {
+            fail("Too few transactions. Expected "+count+", Got "+transactions.size());
+        }
+        if (count < transactions.size()) {
+            fail("Too many transactions. Expected "+count+", Got "+transactions.size());
+        }
+        for (int i=0; i<count; i++) {
+            assertTransaction2("Row "+i, transactions.get(i), (DateTime)data[i*4+1], (Integer)data[i*4+2], (String)data[i*4+3]);
+        }
+    }
+
+    private void assertTransaction2(String row, TransactionInfo t, DateTime date, long expectedAmount, String note) {
+        assertEquals(row, asDate(date), asDate(t.dateTime));
+        assertEquals(row, expectedAmount, t.fromAmount);
+        assertEquals(row, note, t.note);
     }
 
     private Date asDate(DateTime date) {

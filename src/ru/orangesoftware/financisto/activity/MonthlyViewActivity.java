@@ -350,7 +350,7 @@ public class MonthlyViewActivity extends ListActivity {
             if (isStatementPreview) {
                 transactions = planner.getCreditCardStatement();
             } else {
-                transactions = planner.getAccountMonthlyView();
+                transactions = planner.getPlannedTransactions();
             }
             long total = calculateTotal(transactions);
             return new MonthlyPreviewReport(transactions, total);
