@@ -410,7 +410,7 @@ public class BlotterActivity extends AbstractListActivity {
 				long id = duplicateTransaction(templateId, multiplier);
 				Transaction t = db.getTransaction(id);
 				if (t.fromAmount == 0 || edit) {
-					editItem(null, -1, id);
+					editTransaction(id);
 				} else {
 					AccountWidget.updateWidgets(BlotterActivity.this);
 				}

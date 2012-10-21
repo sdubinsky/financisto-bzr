@@ -204,7 +204,13 @@ public class MyPreferences {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return sharedPreferences.getBoolean("ntsl_show_is_ccard_payment", true);
 	}
-    
+
+	public static boolean isOpenCalculatorForTemplates(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("ntsl_open_calculator_for_template_transactions", true);
+	}
+
+
 	/**
 	 * Get google docs user login registered on preferences
 	 * */

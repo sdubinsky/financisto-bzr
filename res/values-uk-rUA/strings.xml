@@ -757,5 +757,7 @@
 
     <string name="show_is_ccard_payment">Показувати \'Платіж по кредитній карті\'</string>
     <string name="show_is_ccard_payment_summary">Показувати галочку для платежів по кредитній картці</string>
+    <string name="open_calculator_for_template_transactions">Відкривати калькулятор</string>
+    <string name="open_calculator_for_template_transactions_summary">Відкривати калькулятор для транзакцій створених по шаблону</string>
 
 </resources>

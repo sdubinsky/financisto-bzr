@@ -223,7 +223,11 @@ public class Transaction implements Serializable, Cloneable {
 		return isTemplate == 0;
 	}
 
-	public boolean isCreditCardPayment() {
+    public boolean isCreatedFromTemlate() {
+        return !isTemplate() && templateName.length() > 0;
+    }
+
+    public boolean isCreditCardPayment() {
 		return isCCardPayment == 1;
 	}
 

@@ -237,6 +237,11 @@ public class RateLayoutView implements RateNodeOwner {
         amountInputTo.setOnAmountChangedListener(onAmountToChangedListener);
     }
 
+    public void openFromAmountCalculator() {
+        amountInputFrom.openCalculator();
+    }
+
+
     @Override
     public void onBeforeRateDownload() {
         amountInputFrom.setEnabled(false);
