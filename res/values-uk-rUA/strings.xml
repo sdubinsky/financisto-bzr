@@ -89,7 +89,7 @@
   <string name="use_gps_summary">Використовувати GPS для отримання поточного місцезнаходження для транзакції</string>
   <string name="use_my_location">Використовувати \"Моє місцезнаходження\"</string>
   <string name="use_my_location_summary">Використовувати \"Моє місцезнаходження\" для нового місця</string>
-  <string name="select_location">Выбрати місце</string>
+  <string name="select_location">Вибрати місце</string>
   <string name="no_fix">Місцезнаходження невідоме</string>
   <string name="attribute">Атрибут</string>
   <string name="attributes">Атрибути</string>
@@ -149,10 +149,10 @@
   <string name="report_preferences_not_set">Змініть настройки в меню \"Налаштування звітів\" - використовуються значення по-замовчуванню для валюти і періоду.</string>
   <string name="currency_not_set">Валюта не вказана у настройках - використовуються значення по-замовчуванню.</string>
   <string name="period_not_set">Період не вказаний у настройках - використовуються значення по-замовчуванню.</string>
-  <string name="report_no_category">Не знайдені категорії по вказанному фільтру.</string>
-  <string name="report_no_project">Не знайдені проекты по вказанному фільтру.</string>
-  <string name="report_no_account">Не знайдені рахугки по вказанному фільтру.</string>
-  <string name="report_no_location">Не знайдены місцезнаходження по указанному фільтру.</string>
+  <string name="report_no_category">Не знайдено категорії по вказанному фільтру.</string>
+  <string name="report_no_project">Не знайдено проекти по вказанному фільтру.</string>
+  <string name="report_no_account">Не знайдено рахунки по вказанному фільтру.</string>
+  <string name="report_no_location">Не знайдено місцезнаходження по указанному фільтру.</string>
   <string name="no_account">Рахунок не вказаний</string>
   <string name="period_today">Сьогодні</string>
   <string name="period_yesterday">Учора</string>
@@ -245,7 +245,7 @@
   <string name="select_from_account">Виберіть рахунок джерело..</string>
   <string name="select_to_account">Виберіть рахунок отримувач..</string>
   <string name="update_balance">Обновити баланс</string>
-  <string name="close_account">Закрыти рахунок</string>
+  <string name="close_account">Закрити рахунок</string>
   <string name="reopen_account">Перевідкрити рахунок</string>
   <string name="difference">Різниця</string>
   <string name="new_balance">Новий баланс</string>
@@ -341,10 +341,10 @@
   <string name="user_login_summary">Логін (ім\u0027я користувача) акаунта Google</string>
   <string name="user_password">Пароль</string>
   <string name="user_password_summary">Пароль акаунта Google</string>
-  <string name="backup_folder">Колекція для резервн. копії</string>
-  <string name="backup_folder_summary">Створіть нову колекцію для резернмх копій в Мої Колекції</string>
+  <string name="backup_folder">Папка для резервн. копії</string>
+  <string name="backup_folder_summary">Створіть нову папку для резернмх копій в Мої колекції</string>
   <string name="report_preferences">Налаштування звітів</string>
-  <string name="all_reports_preferences">Основные налаштування звітів</string>
+  <string name="all_reports_preferences">Основні налаштування звітів</string>
   <string name="category_by_period_preferences">Налаштування для звітів по категоріях</string>
   <string name="report_include_sub_categories">Включати під-категорії у список</string>
   <string name="report_include_sub_categories_summary">Включати під-категорії у звіті в список всіх категорій.</string>
@@ -498,7 +498,7 @@
   <string name="custom_closing_day">Вказати інший день</string>
   <string name="alert_invalid_closing_day">Неправильне значенне. Вкажіть день розрахунку для звітного місяця.</string>
   <string name="alert_null_closing_day">Вкажіть новмй день розрахунку.</string>
-  <string name="alert_regular_closing_day">Указанный день должен отличаться от регулярного.</string>
+  <string name="alert_regular_closing_day">Вказаний день повинен відрізнятися від звичайного.</string>
   <string name="ccard_statement">Виписка</string>
   <string name="monthly_view">Виписка на місяць</string>
   <string name="credit_card_statement">Виписка по кредитній картці</string>
@@ -606,7 +606,7 @@
   <string name="auto_backup_enabled_summary">Резервна копія бази даних щоденно у вказаний час</string>
   <string name="auto_backup_time">Час авто-бекапу</string>
   <string name="auto_backup_time_summary" formatted="false">Щоденне резервне копіювання о %02d:%02d</string>
-  <string name="select_folder">Выбрати поточну папку</string>
+  <string name="select_folder">Вибрати поточну папку</string>
   <string name="create">Створити</string>
   <string name="create_new_folder">Нова</string>
   <string name="create_new_folder_title">Створити нову папку</string>
