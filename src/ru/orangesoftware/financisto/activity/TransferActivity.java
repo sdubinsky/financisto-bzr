@@ -20,11 +20,9 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.AccountColumns;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.utils.MyPreferences;
-import ru.orangesoftware.financisto.widget.RateLayoutView;
 
 public class TransferActivity extends AbstractTransactionActivity {
 
-    private RateLayoutView rateView;
     private TextView accountFromText;
     private TextView accountToText;
 
@@ -59,8 +57,7 @@ public class TransferActivity extends AbstractTransactionActivity {
         accountFromText = x.addListNode(layout, R.id.account_from, R.string.account_from, R.string.select_account);
         accountToText = x.addListNode(layout, R.id.account_to, R.string.account_to, R.string.select_account);
         // amounts
-        rateView = new RateLayoutView(this, x, layout);
-        rateView.createUI();
+        rateView.createTransferUI();
 		//category
         if (MyPreferences.isShowCategoryInTransferScreen(this)) {
             categorySelector.createNode(layout, false);
@@ -74,7 +71,7 @@ public class TransferActivity extends AbstractTransactionActivity {
         if (transaction.fromAccountId > 0) {
             Account fromAccount = em.getAccount(transaction.fromAccountId);
             selectAccount(fromAccount, accountFromText, false);
-            rateView.selectFromAccount(fromAccount);
+            rateView.selectCurrencyFrom(fromAccount.currency);
             rateView.setFromAmount(transaction.fromAmount);
             selectedAccountFromId = transaction.fromAccountId;
         }
@@ -82,7 +79,7 @@ public class TransferActivity extends AbstractTransactionActivity {
         if (transaction.toAccountId > 0) {
             Account toAccount = em.getAccount(transaction.toAccountId);
             selectAccount(toAccount, accountToText, false);
-            rateView.selectToAccount(toAccount);
+            rateView.selectCurrencyTo(toAccount.currency);
             rateView.setToAmount(transaction.toAmount);
             selectedAccountToId = transaction.toAccountId;
         }
@@ -98,7 +95,11 @@ public class TransferActivity extends AbstractTransactionActivity {
 			Toast.makeText(this, R.string.select_to_account, Toast.LENGTH_SHORT).show();
 			return false;
 		}
-		updateTransferFromUI();
+        if (selectedAccountFromId == selectedAccountToId) {
+            Toast.makeText(this, R.string.select_to_account_differ_from_to_account, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        updateTransferFromUI();
 		return true;
 	}
 
@@ -147,7 +148,7 @@ public class TransferActivity extends AbstractTransactionActivity {
         if (account != null) {
             selectAccount(account, accountToText, false);
             selectedAccountToId = selectedId;
-            rateView.selectToAccount(account);
+            rateView.selectCurrencyTo(account.currency);
         }
 	}
 
@@ -157,7 +158,7 @@ public class TransferActivity extends AbstractTransactionActivity {
         if (account != null) {
             selectAccount(account, accountFromText, selectLast);
             selectedAccountFromId = accountId;
-            rateView.selectFromAccount(account);
+            rateView.selectCurrencyFrom(account.currency);
         }
         return account;
 	}

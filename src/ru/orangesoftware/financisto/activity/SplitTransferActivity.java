@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.model.Account;
@@ -34,7 +35,7 @@ public class SplitTransferActivity extends AbstractSplitActivity {
     protected void createUI(LinearLayout layout) {
         accountText = x.addListNode(layout, R.id.account, R.string.account, R.string.select_to_account);
         rateView = new RateLayoutView(this, x, layout);
-        rateView.createUI();
+        rateView.createTransferUI();
         rateView.setAmountFromChangeListener(new AmountInput.OnAmountChangedListener() {
             @Override
             public void onAmountChanged(long oldAmount, long newAmount) {
@@ -60,23 +61,28 @@ public class SplitTransferActivity extends AbstractSplitActivity {
     }
 
     @Override
-    protected void updateFromUI() {
+    protected boolean updateFromUI() {
         super.updateFromUI();
         split.fromAmount = rateView.getFromAmount();
         split.toAmount = rateView.getToAmount();
+        if (split.fromAccountId == split.toAccountId) {
+            Toast.makeText(this, R.string.select_to_account_differ_from_to_account, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     private void selectFromAccount(long accountId) {
         if (accountId > 0) {
             Account account = em.getAccount(accountId);
-            rateView.selectFromAccount(account);
+            rateView.selectCurrencyFrom(account.currency);
         }
     }
 
     private void selectToAccount(long accountId) {
         if (accountId > 0) {
             Account account = em.getAccount(accountId);
-            rateView.selectToAccount(account);
+            rateView.selectCurrencyTo(account.currency);
             accountText.setText(account.title);
             split.toAccountId = accountId;
         }

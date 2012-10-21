@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.*;
 import ru.orangesoftware.financisto.R;
@@ -187,14 +188,19 @@ public abstract class AbstractListActivity extends ListActivity implements Refre
 
 	public void recreateCursor() {
 		Log.i("AbstractListActivity", "Recreating cursor");
-		if (cursor != null) {
-			stopManagingCursor(cursor);
-			cursor.close();
-		}
-		cursor = createCursor();
-		if (cursor != null) {
-			startManagingCursor(cursor);
-            recreateAdapter();
+        Parcelable state = getListView().onSaveInstanceState();
+        try {
+            if (cursor != null) {
+                stopManagingCursor(cursor);
+                cursor.close();
+            }
+            cursor = createCursor();
+            if (cursor != null) {
+                startManagingCursor(cursor);
+                recreateAdapter();
+            }
+        } finally {
+            getListView().onRestoreInstanceState(state);
         }
 	}
 
@@ -209,4 +215,5 @@ public abstract class AbstractListActivity extends ListActivity implements Refre
 			recreateCursor();
 		}
 	}
+
 }

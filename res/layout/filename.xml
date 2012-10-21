@@ -22,4 +22,7 @@
                      android:src="@drawable/ic_launcher_folder_small" android:id="@+id/btn_browse"
                      android:layout_height="wrap_content"/>
     </LinearLayout>
+    <TextView android:layout_height="wrap_content"
+              android:layout_width="fill_parent" android:layout_marginLeft="3dp"
+              android:text="@string/file_import_utf8_warning" android:textColor="@color/negative_amount"/>
 </merge>

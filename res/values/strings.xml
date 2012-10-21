@@ -20,6 +20,7 @@
 	<string name="budgets">Budgets</string>
 	<string name="projects">Projects</string>
 	<string name="ok">OK</string>
+	<string name="reset">Reset</string>
 	<string name="clear">Clear</string>
 	<string name="save">Save</string>
 	<string name="cancel">Cancel</string>
@@ -180,15 +181,6 @@
 	<string name="period_this_month">This month</string>
 	<string name="period_last_week">Last week</string>
 	<string name="period_last_month">Last month</string>
-	<string-array name="datetime_filter_items">
-		<item>Today</item>
-		<item>Yesterday</item>
-		<item>This week</item>		
-		<item>This month</item>
-		<item>Last week</item>
-		<item>Last month</item>
-		<item>Custom</item>
-	</string-array>
 	<string name="currency_name">Name</string>
 	<string name="currency_symbol">Symbol</string>
 	<string name="currency_code">Code</string>
@@ -796,5 +788,23 @@
     <string name="integrity_error">Running balances look out of sync, please do Menu -> More -> Integrity Fix</string>
     <string name="integrity_fix">Integrity Fix</string>
     <string name="integrity_fix_in_progress">Checking and fixing if necessary...</string>
+
+    <string name="select_to_account_differ_from_to_account">Cannot transfer to the same account...</string>
+
+    <string name="period_this_and_last_week">This and last week</string>
+    <string name="period_this_and_last_month">This and last month</string>
+    <string name="period_custom">Custom</string>
+
+    <string name="original_amount">Original Amount</string>
+    <string name="original_currency_as_account">Same as account</string>
+    <string name="split_transfer_not_supported_yet">Split-transfers with a currency differ from account\'s currency are not yet supported</string>
+    <string name="show_currency">Show currency</string>
+    <string name="show_currency_summary">Show currency selector in new transaction screen</string>
+    <string name="reconcile">Reconcile</string>
+
+    <string name="file_import_utf8_warning">Please make sure that the file is in UTF-8</string>
+    
+    <string name="show_is_ccard_payment">Show \'Credit Card Payment\'</string>
+    <string name="show_is_ccard_payment_summary">Show checkbox to mark credit card payments</string>
 
 </resources>

@@ -53,7 +53,13 @@ public class TransactionInfo {
 	@JoinColumn(name = "location_id", required = false)
 	public MyLocation location;
 
-	@Column(name = "from_amount")
+    @JoinColumn(name = "original_currency_id", required = false)
+    public Currency originalCurrency;
+
+    @Column(name = "original_from_amount")
+    public long originalFromAmount;
+
+    @Column(name = "from_amount")
 	public long fromAmount;
 
 	@Column(name = "to_amount")

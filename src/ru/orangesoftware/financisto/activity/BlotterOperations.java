@@ -91,4 +91,8 @@ public class BlotterOperations {
         db.updateTransactionStatus(targetTransaction.id, TransactionStatus.CL);
     }
 
+    public void reconcileTransaction() {
+        db.updateTransactionStatus(targetTransaction.id, TransactionStatus.RC);
+    }
+
 }

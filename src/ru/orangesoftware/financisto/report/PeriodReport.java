@@ -25,19 +25,21 @@ import ru.orangesoftware.financisto.utils.DateUtils.*;
 import java.util.ArrayList;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_PERIOD;
-import static ru.orangesoftware.financisto.utils.DateUtils.*;
+import static ru.orangesoftware.financisto.utils.DateUtils.PeriodType.*;
 
 public class PeriodReport extends Report {
-	
-	private final Period[] periods = new Period[]{
-			today(), yesterday(), thisWeek(), lastWeek(), thisMonth(), lastMonth()
-	};	
-    
+
+    private final PeriodType[] periodTypes = new PeriodType[]{TODAY, YESTERDAY, THIS_WEEK, LAST_WEEK, THIS_AND_LAST_WEEK, THIS_MONTH, LAST_MONTH, THIS_AND_LAST_MONTH};
+	private final Period[] periods = new Period[periodTypes.length];
+
     private Period currentPeriod;
 
 	public PeriodReport(Context context, Currency currency) {
 		super(ReportType.BY_PERIOD, context, currency);
-	}
+        for (int i=0; i<periodTypes.length; i++) {
+            periods[i] = periodTypes[i].calculatePeriod();
+        }
+    }
 
 	@Override
 	public ReportData getReport(DatabaseAdapter db, WhereFilter filter) {

@@ -25,6 +25,7 @@ import ru.orangesoftware.financisto.activity.BlotterOperations;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.info.TransactionAttributeInfo;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.recur.Recurrence;
 import ru.orangesoftware.financisto.utils.ThumbnailUtil;
@@ -94,6 +95,10 @@ public class TransactionInfoDialog {
             add(layout, R.string.payee, ti.payee.title);
         }
         add(layout, R.string.category, ti.category.title);
+        if (ti.originalCurrency != null) {
+            TextView amount = add(layout, R.string.original_amount, "");
+            u.setAmountText(amount, ti.originalCurrency, ti.originalFromAmount, true);
+        }
         TextView amount = add(layout, R.string.amount, "");
         u.setAmountText(amount, ti.fromAccount.currency, ti.fromAmount, true);
         if (ti.category.isSplit()) {

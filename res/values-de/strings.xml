@@ -7,7 +7,8 @@
   <string name="categories">Kategorien</string>
   <string name="budgets">Budgets</string>
   <string name="projects">Projekte</string>
-  <string name="ok">OK</string>
+  <string name="ok">Ok</string>
+  <string name="reset">Löschen</string>
   <string name="clear">Löschen</string>
   <string name="save">Speichern</string>
   <string name="cancel">Abbrechen</string>
@@ -33,7 +34,7 @@
   <string name="date">Datum</string>
   <string name="time">Zeit</string>
   <string name="parent">Vorgänger</string>
-  <string name="total">Insgesamt:</string>
+  <string name="total">Gesamt:</string>
   <string name="filter">Filter</string>
   <string name="no_filter">Keine Filter</string>
   <string name="transfer">Überweisung</string>
@@ -74,7 +75,7 @@
   <string name="account_to">Nach Account</string>
   <string name="amount_from">Betrag von</string>
   <string name="amount_to">Betrag nach</string>
-  <string name="rate">Bewerten</string>
+  <string name="rate">Wechselkurs</string>
   <string name="no_rate">Keine Rate</string>
   <string name="transaction">Transaktion</string>
   <string name="transaction_title">Neue Transaktion</string>
@@ -126,7 +127,7 @@
   <string name="overall">Gesamt</string>
   <string name="report_by_period">Nach Zeitraum</string>
   <string name="report_by_period_summary">Transaktionsberichte nach Zeitraum</string>
-  <string name="report_by_category">By Category</string>
+  <string name="report_by_category">Nach Kategorie</string>
   <string name="report_by_category_summary">Transaktionsberichte nach Kategorie</string>
   <string name="report_by_location">Nach Ort</string>
   <string name="report_by_location_summary">Transaktionsberichte nach Ort</string>
@@ -215,25 +216,25 @@
   <string name="restore">Wiederherstellen</string>
   <string name="backup_database">Datenbank sichern</string>
   <string name="backup_database_inprogress">Sichere die Datenbank...</string>
-  <string name="backup_database_gdocs">Datenbank in Google Docs sichern</string>
+  <string name="backup_database_gdocs">Sicherung auf Google Drive</string>
   <string name="backup_database_gdocs_inprogress">Sichere die Datenbank...</string>
   <string name="csv_export">CSV Export...</string>
   <string name="csv_export_inprogress">Exportiere die Datenbank nach CSV...</string>
   <string name="restore_database">Datenbank wiederherstellen</string>
   <string name="restore_database_inprogress">Stelle Datenbank wieder her...</string>
-  <string name="restore_database_gdocs">Datenbank aus Google Docs wiederherstellen</string>
+  <string name="restore_database_gdocs">Wiederherstellen von Google Drive</string>
   <string name="restore_database_inprogress_gdocs">Stelle Datenbank wieder her...</string>
   <string name="restore_database_success">Datenbank wurde vollständig wiederhergestellt...</string>
-  <string name="gdocs_connection_failed">Keine Verbindung zu Google Docs.</string>
-  <string name="gdocs_folder_not_found">Ordner für Sicherung in Google Docs nicht gefunden.</string>
+  <string name="gdocs_connection_failed">Keine Google Drive Verbindung möglich.</string>
+  <string name="gdocs_folder_not_found">Der Sicherungsordner auf Google Drive konnte nicht gefunden werden.</string>
   <string name="gdocs_credentials_not_configured">Bitte geben Sie die Google-Zugangsdaten in den Einstellungen an.</string>
   <string name="gdocs_folder_not_configured">Bitte geben Sie einen Ordner für die Sicherung in Google Docs in den Einstellungen an.</string>
   <string name="gdocs_login_failed">Google-Zugangsdaten sind ungültig.</string>
-  <string name="gdocs_backup_failed">Fehler beim Senden der Sicherung zu Google Docs. Bitte versuchen Sie es erneut.</string>
+  <string name="gdocs_backup_failed">Fehler beim Senden der Sicherung zu Google Drive. Bitte versuchen Sie es erneut.</string>
   <string name="gdocs_restore_failed">Fehler beim Empfang der Sicherung von Google Docs. Bitte versuchen Sie es erneut.</string>
-  <string name="gdocs_folder_error">Fehler bei Zugriff auf Ordner in Google Docs.</string>
-  <string name="gdocs_service_error">Fehler: Service nicht verfügbar in Google Docs.</string>
-  <string name="gdocs_io_error">Fehler bei Verbindungsaufbau zu Google Docs.</string>
+  <string name="gdocs_folder_error">Fehler beim Zugriff auf den Ordner in Google Drive.</string>
+  <string name="gdocs_service_error">Service in Google Drive nicht verfügbar.</string>
+  <string name="gdocs_io_error">Fehler beim Verbinden mit Google Drive.</string>
   <string name="package_info_error">Es war nicht möglich, auf die Paketinformationen zu Financisto zuzugreifen.</string>
   <string name="success">Erfolg!</string>
   <string name="fail">Fehlschlag...</string>
@@ -332,13 +333,13 @@
   <string name="calculating">Berechne...</string>
   <string name="budget_mode">Unscharfer Filter</string>
   <string name="budget_mode_summary">Unschärfere Bedingung (Kategorie oder Projekt) zum Filtern der Transaktionen</string>
-  <string name="gdocs_backup">Google Docs Sicherung</string>
+  <string name="gdocs_backup">Google Drive Sicherung</string>
   <string name="user_login">Anmeldung</string>
   <string name="user_login_summary">Google-Login (user@gmail.com)</string>
   <string name="user_password">Passwort</string>
   <string name="user_password_summary">Google Passwort</string>
-  <string name="backup_folder">Backup Collection</string>
-  <string name="backup_folder_summary">Erstelle zum Speichern deiner Backupdateien eine neue Sammlung in \"Meine Sammlungen\"</string>
+  <string name="backup_folder">Backup-Ordner</string>
+  <string name="backup_folder_summary">Zum Speichern von Backup-Dateien einen neuen Ordner in My Drive erstellen</string>
   <string name="report_preferences">Einstellungen für Berichte</string>
   <string name="all_reports_preferences">Allgemeine Einstellungen für Berichte</string>
   <string name="category_by_period_preferences">Berichte nach Kategorie und Zeitraum</string>
@@ -590,13 +591,13 @@
   <string name="import_export">Import/Export</string>
   <string name="qif_import_disclaimer">*WARNUNG* Bitte beachten Sie, dass alle vorhandene Daten gelöscht werden!</string>
   <string name="remember_last_category_for_payee">Letzte Kategorie</string>
-  <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee (or account if payee is disabled)</string>
+  <string name="remember_last_category_for_payee_summary">Letzte Kategorie für gewählten Zahlungsempfänger merken (oder für Konto, falls Empfänger deaktiviert)</string>
   <string name="currency_symbol_format">Symbol-Format</string>
   <string name="use_header_from_file">Header aus Datei verwenden</string>
   <string name="info">Info</string>
   <string name="balance">Saldo</string>
-  <string name="show_category_in_transfer">Transfer Kategorie</string>
-  <string name="show_category_in_transfer_summary">Show category select in New Transfer screen</string>
+  <string name="show_category_in_transfer">Kategorie in Transfer</string>
+  <string name="show_category_in_transfer_summary">Zeige Kategorieauswahl in \'Neuer Transfer\'</string>
   <string name="auto_backup">Automatisches Backup</string>
   <string name="auto_backup_enabled">Automatisches Backup aktivieren</string>
   <string name="auto_backup_enabled_summary">Sichere Datenbank täglich zur angegebenen Zeit</string>
@@ -610,71 +611,95 @@
   <string name="database_backup">Datenbanksicherung</string>
   <string name="database_backup_folder">Ordner für Sicherung</string>
   <string name="database_backup_folder_summary">Aktueller Ordner für Datenbanksicherung: %s</string>
-  <string name="backup_database_to">Send Backup To...</string>
+  <string name="backup_database_to">Sicherung senden zu ...</string>
   <string name="backup_database_to_title">Sende Datenbanksicherung an...</string>
   <string name="license">Lizenz</string>
-  <string name="quick_menu_account_enabled">Accounts quick-menu</string>
-  <string name="quick_menu_account_enabled_summary">Enable one-tap menu in the Accounts</string>
-  <string name="quick_menu_transaction_enabled">Blotter quick-menu</string>
-  <string name="quick_menu_transaction_enabled_summary">Enable one-tap menu in the Blotter</string>
+  <string name="quick_menu_account_enabled">Schnellauswahl-Menü Konten</string>
+  <string name="quick_menu_account_enabled_summary">Schnellauswahl-Menü für Konten aktivieren</string>
+  <string name="quick_menu_transaction_enabled">Schnellauswahl-Menü Protokoll</string>
+  <string name="quick_menu_transaction_enabled_summary">Schnellauswahl-Menü für Protokoll aktivieren</string>
   <string name="dropbox">Dropbox</string>
   <string name="dropbox_authorize">Autorisieren</string>
-  <string name="dropbox_authorize_summary">Allow Financisto to upload files to your Dropbox</string>
-  <string name="dropbox_unlink">Unlink</string>
-  <string name="dropbox_unlink_summary">Prevent Financisto from uploading files to your Dropbox</string>
+  <string name="dropbox_authorize_summary">Financisto das Hochladen von Dateien auf Dropbox erlauben</string>
+  <string name="dropbox_unlink">Verknüpfung aufheben</string>
+  <string name="dropbox_unlink_summary">Hochladen von Dateien auf Dropbox verhindern</string>
   <string name="dropbox_upload_backup">Backups hochladen</string>
-  <string name="dropbox_upload_backup_summary">Upload database backups to Dropbox</string>
+  <string name="dropbox_upload_backup_summary">Hochladen von Datenbank-Backups zu Dropbox</string>
   <string name="dropbox_upload_autobackup">Auto-Backups hochladen</string>
   <string name="dropbox_upload_autobackup_summary">Auto-Datenbankbackups zu Dropbox hochladen</string>
   <string name="dropbox_uploading_file">Datei zu Dropbox hochladen...</string>
   <string name="exchange_rates">Wechselkurse</string>
   <string name="no_exchange_rates">Keine Wechselkurse</string>
   <string name="exchange_rate">Wechselkurs</string>
-  <string name="rate_from_currency">From currency</string>
-  <string name="rate_to_currency">To currency</string>
+  <string name="rate_from_currency">Ursprungs-Währung</string>
+  <string name="rate_to_currency">Zielwährung</string>
   <string name="currency_make_default">Festlegen als Standard</string>
-  <string name="currency_make_default_warning">Please set Default Currency to get correct Total (Menu -&gt; Entities -&gt; Currencies)</string>
-  <string name="back">Back</string>
-  <string name="select">Select</string>
-  <string name="category_selector">Category selector</string>
-  <string name="use_hierarchical_category_selector">Hierarchical selector</string>
-  <string name="use_hierarchical_category_selector_summary">Use hierarchical category selector</string>
-  <string name="hierarchical_category_selector_select_child_immediately">Confirm automatically</string>
-  <string name="hierarchical_category_selector_select_child_immediately_summary">Confirm child category selection automatically</string>
-  <string name="hierarchical_category_selector_income_expense">Income/Expense</string>
-  <string name="hierarchical_category_selector_income_expense_summary">Group income and expense categories together</string>
-  <string name="totals">Totals</string>
-  <string name="account_total_in_currency">All %s accounts</string>
-  <string name="blotter_total_in_currency">All %s transactions</string>
-  <string name="budget_total_in_currency">All %s budgets</string>
-  <string name="home_currency_total">Total in home currency</string>
+  <string name="currency_make_default_warning">Wählen Sie bitte die Standardwährung aus, um Gesamtsumme richtig zu darstellen (Menü - &gt; Instanzen - &gt; Währungen)</string>
+  <string name="back">Zurück</string>
+  <string name="select">Auswählen</string>
+  <string name="category_selector">Kategorieauswahl</string>
+  <string name="use_hierarchical_category_selector">Hierarchische Auswahl</string>
+  <string name="use_hierarchical_category_selector_summary">Verwendung hierarchischer Kategorieauswahl</string>
+  <string name="hierarchical_category_selector_select_child_immediately">Automatisch bestätigen</string>
+  <string name="hierarchical_category_selector_select_child_immediately_summary">Untergeordnete Kategorieauswahl automatisch bestätigen</string>
+  <string name="hierarchical_category_selector_income_expense">Einnahmen/Ausgaben</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Kategorien für Einnahmen und Ausgaben gruppieren</string>
+  <string name="totals">Summen</string>
+  <string name="account_total_in_currency">Alle %s-Konten</string>
+  <string name="blotter_total_in_currency">Alle %s-Transaktionen</string>
+  <string name="budget_total_in_currency">Alle %s Budgets</string>
+  <string name="home_currency_total">Gesamt in Heimatwährung</string>
   <string name="total_rate">Rate: %0.5f</string>
   <string name="home_currency">Heimatwährung</string>
-  <string name="upload_to_dropbox">Upload to\nDropbox</string>
-  <string name="not_available">N/A</string>
-  <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
-  <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
-  <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
-  <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
-  <string name="is_active">Is active</string>
-  <string name="report_income_expense_both">Income/Expenses</string>
-  <string name="report_income_expense_income">Income</string>
-  <string name="report_income_expense_expense">Expenses</string>
-  <string name="report_income_expense_summary">Summary</string>
+  <string name="upload_to_dropbox">Hochladen zu\nDropbox</string>
+  <string name="not_available">nicht verfügbar</string>
+  <string name="rate_not_available_on_date_error" formatted="false">Keinen Wechselkurs für %s angegeben, um von %s zu %s umzurechnen</string>
+  <string name="rate_not_available_error" formatted="false">Keinen Wechselkurs zwischen %s und %s angegeben</string>
+  <string name="collapse_blotter_buttons">Schaltflächen im Protokoll zusammenlegen</string>
+  <string name="collapse_blotter_buttons_summary">Schaltflächen für Neue Transaktion/Transfer/Vorlage zusammenlegen (Neustart erforderlich)</string>
+  <string name="is_active">aktiv</string>
+  <string name="report_income_expense_both">Einnahmen/Ausgaben</string>
+  <string name="report_income_expense_income">Einnahmen</string>
+  <string name="report_income_expense_expense">Ausgaben</string>
+  <string name="report_income_expense_summary">Zusammenfassung</string>
+  <string name="csv_import_inprogress_update">Importiere Daten aus CSV: %s%%</string>
+  <string name="delete_old_transactions">Alte Transaktionionen löschen</string>
+  <string name="purge_account_backup_database">Datanbank-Sicherung vorm Löschen durchführen</string>
+  <string name="purge_account_date_summary">Lösche Transaktionen bis einschließlich zum angegebenen Datum. Kontostand bleibt unverändert.</string>
+  <string name="purge_account_confirm_title">Bestätigen</string>
+  <string name="purge_account_confirm_message" formatted="false">Lösche Transaktionen für Konto %s bis einschließlich %s</string>
+  <string name="purge_account_payee">Vorperiode</string>
+  <string name="purge_account_in_progress">Lösche alte Transaktionen ...</string>
+  <string name="purge_account_unable_to_do_backup">Datenbank-Sicherung nicht mögliche, abbrechen ...</string>
+  <string name="show_account_last_transaction_date">Datum der letzten Transaktion</string>
+  <string name="show_account_last_transaction_date_summary">Zeige Datum der letzten Transaktion in Kontenliste (Neustart erforderlich)</string>
+  <string name="accounts_list_screen">Kontenliste</string>
+  <string name="accounts_list_screen_summary">Einstellungen für Kontenliste</string>
+  <string name="blotter_screen">Protokoll</string>
+  <string name="blotter_screen_summary">Einstellungen für Protokoll</string>
+  <string name="hide_closed_accounts">Verstecke geschlossene Konten</string>
+  <string name="hide_closed_accounts_summary">Ausblenden oder Einblenden von geschlossene Konten in der Kontenliste (Neustart erforderlich)</string>
+  <string name="re_index_categories">Neu indizieren</string>
+  <string name="startup_screen">Startbildschirm</string>
+  <string name="startup_screen_summary">Wählen Sie die Registerkarte, die beim Start angezeigt wird</string>
+  <string name="integrity_error">Laufendes Guthaben scheint nicht korrekt, wählen Sie bitte Menü -&gt; Mehr -&gt; Integritäts-Fix</string>
+  <string name="integrity_fix">Integritäts-Fix</string>
+  <string name="integrity_fix_in_progress">Prüfe und korrigiere bei Bedarf ...</string>
+  <string name="select_to_account_differ_from_to_account">Transfer zum selben Konto nicht möglich</string>
+  <string name="period_this_and_last_week">Diese und vorige Woche</string>
+  <string name="period_this_and_last_month">Diesen und letzten Monat</string>
+  <string name="period_custom">Benutzerdefiniert</string>
+  <string name="original_amount">Ursprungsbetrag</string>
+  <string name="original_currency_as_account">Wie Konto</string>
+  <string name="split_transfer_not_supported_yet">Split-Transfers, bei denen sich die Währung vom Konto unterscheidet, werden noch nicht unterstützt</string>
+  <string name="show_currency">Zeige Währung</string>
+  <string name="show_currency_summary">Währungsauswahl in \'Neue Transaktion\' Bildschirm anzeigen</string>
+  <string name="reconcile">beilegen</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Nummer</item>
     <item>Liste</item>
     <item>Checkbox</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>Heute</item>
-    <item>Gestern</item>
-    <item>Diese Woche</item>
-    <item>Diesen Monat</item>
-    <item>Letzte Woche</item>
-    <item>Letzten Monat</item>
-    <item>Benutzerdefiniert</item>
   </string-array>
   <string-array name="account_types">
     <item>Girokonto</item>
@@ -685,6 +710,8 @@
     <item>Nach Sortierreihenfolge (aufsteigend)</item>
     <item>Nach Sortierreihenfolge (absteigend)</item>
     <item>Nach Name</item>
+    <item>Nach letzter Transaktion (aufsteigend)</item>
+    <item>Nach letzter Transaktion (absteigend)</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>Nach Name</item>
@@ -716,5 +743,11 @@
     <item>5 Minuten</item>
     <item>10 Minuten</item>
     <item>15 Minuten</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>Konten</item>
+    <item>Protokoll</item>
+    <item>Budgets</item>
+    <item>Berichte</item>
   </string-array>
 </resources>

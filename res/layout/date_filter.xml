@@ -12,7 +12,7 @@
 	android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:minWidth="300dp">
 	<Spinner android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:layout_marginLeft="3dp" android:layout_marginRight="3dp" android:id="@+id/period" android:entries="@array/datetime_filter_items" android:prompt="@string/period"/>
+		android:layout_height="wrap_content" android:layout_marginLeft="3dp" android:layout_marginRight="3dp" android:id="@+id/period" android:prompt="@string/period"/>
 	<TextView android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:layout_gravity="center"
 		android:text="@string/period_from" />		

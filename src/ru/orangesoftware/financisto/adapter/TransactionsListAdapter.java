@@ -62,10 +62,18 @@ public class TransactionsListAdapter extends BlotterListAdapter {
         }
         String text = generateTransactionTitle(sb, payee, note, location, categoryId, category);
         v.centerView.setText(text);
+        sb.setLength(0);
 
         long currencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
         Currency c = CurrencyCache.getCurrency(em, currencyId);
-        u.setAmountText(v.rightView, c, fromAmount, true);
+        long originalCurrencyId = cursor.getLong(BlotterColumns.original_currency_id.ordinal());
+        if (originalCurrencyId > 0) {
+            Currency originalCurrency = CurrencyCache.getCurrency(em, originalCurrencyId);
+            long originalAmount = cursor.getLong(BlotterColumns.original_from_amount.ordinal());
+            u.setAmountText(sb, v.rightView, originalCurrency, originalAmount, c, fromAmount, true);
+        } else {
+            u.setAmountText(v.rightView, c, fromAmount, true);
+        }
         if (fromAmount > 0) {
             v.iconView.setImageDrawable(icBlotterIncome);
         } else if (fromAmount < 0) {

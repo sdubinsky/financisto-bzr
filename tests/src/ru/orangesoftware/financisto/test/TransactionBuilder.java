@@ -2,6 +2,7 @@ package ru.orangesoftware.financisto.test;
 
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.Currency;
 
 import java.util.*;
 
@@ -32,6 +33,12 @@ public class TransactionBuilder {
 
     public TransactionBuilder amount(long amount) {
         t.fromAmount = amount;
+        return this;
+    }
+
+    public TransactionBuilder originalAmount(Currency originalCurrency, long originalAmount) {
+        t.originalCurrencyId = originalCurrency.id;
+        t.originalFromAmount = originalAmount;
         return this;
     }
 

@@ -132,8 +132,17 @@ public class Utils {
 		view.setText(amountToString(sb, c, amount, addPlus).toString());
 		view.setTextColor(amount == 0 ? zeroColor : (amount > 0 ? positiveColor : negativeColor));
 	}
-	
-	public int getAmountColor(long amount) {
+
+    public void setAmountText(StringBuilder sb, TextView view, Currency originalCurrency, long originalAmount, Currency currency, long amount, boolean addPlus) {
+        amountToString(sb, originalCurrency, originalAmount, addPlus);
+        sb.append(" (");
+        amountToString(sb, currency, amount, addPlus);
+        sb.append(")");
+        view.setText(sb.toString());
+        view.setTextColor(amount == 0 ? zeroColor : (amount > 0 ? positiveColor : negativeColor));
+    }
+
+    public int getAmountColor(long amount) {
 		return amount == 0 ? zeroColor : (amount > 0 ? positiveColor : negativeColor);
 	}
 

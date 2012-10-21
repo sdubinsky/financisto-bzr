@@ -24,6 +24,8 @@ SELECT
 	t.from_amount as from_amount,
 	t.to_amount as to_amount,
 	t.datetime as datetime,
+	t.original_currency_id as original_currency_id,
+	t.original_from_amount as original_from_amount,
 	t.is_template as is_template,
 	t.template_name as template_name,
 	t.recurrence as recurrence,

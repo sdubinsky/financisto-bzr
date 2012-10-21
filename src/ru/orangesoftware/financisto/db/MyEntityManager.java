@@ -20,6 +20,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.info.TransactionAttributeInfo;
 import ru.orangesoftware.financisto.model.info.TransactionInfo;
 import ru.orangesoftware.financisto.utils.DateUtils.Period;
 import ru.orangesoftware.financisto.utils.MyPreferences;
@@ -310,6 +311,10 @@ public class MyEntityManager extends EntityManager {
 		Query<Currency> q = createQuery(Currency.class);
 		return q.desc("isDefault").asc(sortBy).execute();
 	}
+
+    public List<Currency> getAllCurrenciesList() {
+        return getAllCurrenciesList("name");
+    }
 
     public List<Currency> getAllCurrenciesList(String sortBy) {
         Query<Currency> q = createQuery(Currency.class);

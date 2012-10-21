@@ -363,10 +363,31 @@ public class DatabaseAdapter {
                 split.payeeId = parent.payeeId;
                 split.isTemplate = parent.isTemplate;
                 split.status = parent.status;
+                updateSplitOriginalAmount(parent, split);
                 long splitId = insertTransaction(split);
                 insertAttributes(splitId, split.categoryAttributes);
             }
         }
+    }
+
+    private void updateSplitOriginalAmount(Transaction parent, Transaction split) {
+        if (parent.originalCurrencyId > 0) {
+            split.originalCurrencyId = parent.originalCurrencyId;
+            split.originalFromAmount = split.fromAmount;
+            split.fromAmount = calculateAmountInAccountCurrency(parent, split.fromAmount);
+        }
+    }
+
+    private long calculateAmountInAccountCurrency(Transaction parent, long amount) {
+        double rate = getRateFromParent(parent);
+        return (long)(rate*amount);
+    }
+
+    private double getRateFromParent(Transaction parent) {
+        if (parent.originalFromAmount != 0) {
+            return Math.abs(1.0*parent.fromAmount/parent.originalFromAmount);
+        }
+        return 0;
     }
 
     public long insertPayee(String payee) {
@@ -1347,13 +1368,19 @@ public class DatabaseAdapter {
                 long balance = 0;
                 while (c.moveToNext()) {
                     long parentId = c.getLong(BlotterColumns.parent_id.ordinal());
+                    int isTransfer = c.getInt(BlotterColumns.is_transfer.ordinal());
                     if (parentId > 0) {
-                        int isTransfer = c.getInt(BlotterColumns.is_transfer.ordinal());
                         if (isTransfer >= 0) {
                             // we only interested in the second part of the transfer-split
                             // which is marked with is_transfer=-1 (see v_blotter_for_account_with_splits)
                             continue;
                         }
+                    }
+                    long fromAccountId = c.getLong(BlotterColumns.from_account_id.ordinal());
+                    long toAccountId = c.getLong(BlotterColumns.to_account_id.ordinal());
+                    if (toAccountId > 0 && toAccountId == fromAccountId) {
+                        // weird bug when a transfer is done from an account to the same account
+                        continue;
                     }
                     balance += c.getLong(DatabaseHelper.BlotterColumns.from_amount.ordinal());
                     values[1] = c.getString(DatabaseHelper.BlotterColumns._id.ordinal());
@@ -1683,7 +1710,7 @@ public class DatabaseAdapter {
     }
 
     public long getAccountBalanceForTransaction(Account a, Transaction t) {
-        return DatabaseUtils.rawFetchId(this, "select balance from running_balance where account_id=? and transaction_id=?",
+        return DatabaseUtils.rawFetchLongValue(this, "select balance from running_balance where account_id=? and transaction_id=?",
                 new String[]{String.valueOf(a.id), String.valueOf(t.id)});
     }
 

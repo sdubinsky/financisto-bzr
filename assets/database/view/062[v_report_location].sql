@@ -7,6 +7,8 @@ select
        t.from_amount as from_amount,
        t.to_account_currency_id as to_account_currency_id,
        t.to_amount as to_amount,
+	   t.original_currency_id as original_currency_id,
+	   t.original_from_amount as original_from_amount,
        t.is_transfer as is_transfer,
        t.from_account_id as from_account_id,
        t.to_account_id as to_account_id,

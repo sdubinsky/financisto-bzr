@@ -21,9 +21,9 @@
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:paddingLeft="10dp" android:paddingRight="10dp"/>
 
-	<View android:id="@+id/divider" android:layout_width="1dip"
+	<View android:id="@+id/divider" android:layout_width="2dp"
 		android:layout_toRightOf="@id/icon" android:background="@drawable/divider_vertical_dark"
-		android:layout_height="fill_parent" android:layout_marginRight="10dp" />
+		android:layout_height="fill_parent" android:layout_marginRight="5dp" />
 
 	<TextView android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:singleLine="true"

@@ -13,6 +13,7 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.Utils;
 
@@ -29,6 +30,7 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
     protected TextView unsplitAmountText;
 
     protected Account fromAccount;
+    protected Currency originalCurrency;
     protected Utils utils;
     protected Transaction split;
 
@@ -55,6 +57,9 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
         split = Transaction.fromIntentAsSplit(getIntent());
         if (split.fromAccountId > 0) {
             fromAccount = db.em().getAccount(split.fromAccountId);
+        }
+        if (split.originalCurrencyId > 0) {
+            originalCurrency = CurrencyCache.getCurrency(em, split.originalCurrencyId);
         }
 
         LinearLayout layout = (LinearLayout)findViewById(R.id.list);
@@ -112,15 +117,17 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
 
     private void saveAndFinish() {
         Intent data = new Intent();
-        updateFromUI();
-        split.toIntentAsSplit(data);
-        setResult(Activity.RESULT_OK, data);
-        finish();
+        if (updateFromUI()) {
+            split.toIntentAsSplit(data);
+            setResult(Activity.RESULT_OK, data);
+            finish();
+        }
     }
 
-    protected void updateFromUI() {
+    protected boolean updateFromUI() {
         split.note = text(noteText);
         split.projectId = projectSelector.getSelectedProjectId();
+        return true;
     }
 
     protected void updateUI() {
@@ -133,8 +140,12 @@ public abstract class AbstractSplitActivity extends AbstractActivity {
     }
 
     protected void setUnsplitAmount(long amount) {
-        Currency currency = fromAccount != null ? fromAccount.currency : Currency.defaultCurrency();
+        Currency currency = getCurrency();
         utils.setAmountText(unsplitAmountText, currency, amount, false);
+    }
+
+    protected Currency getCurrency() {
+        return originalCurrency != null ? originalCurrency : (fromAccount != null ? fromAccount.currency : Currency.defaultCurrency());
     }
 
     @Override

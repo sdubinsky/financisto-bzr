@@ -101,6 +101,18 @@ public class RunningBalanceTest extends AbstractDbTest {
         assertFinalBalanceForAccount(a2, 2500);
     }
 
+    public void test_should_update_running_balance_for_account_which_has_transfer_to_the_same_account() {
+        Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
+        Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();
+        Transaction t3 = TransferBuilder.withDb(db).fromAccount(a1).fromAmount(-500).toAccount(a1).toAmount(500).create();
+        db.rebuildRunningBalances();
+        assertAccountBalanceForTransaction(t1, a1, 1000);
+        assertAccountBalanceForTransaction(t2, a2, 2000);
+        assertAccountBalanceForTransaction(t3, a1, 0);
+        assertFinalBalanceForAccount(a1, 1000);
+        assertFinalBalanceForAccount(a2, 2000);
+    }
+
     public void test_should_update_running_balance_for_two_accounts_with_transfer_split() {
         Transaction t1 = TransactionBuilder.withDb(db).account(a1).amount(1000).create();
         Transaction t2 = TransactionBuilder.withDb(db).account(a2).amount(2000).create();

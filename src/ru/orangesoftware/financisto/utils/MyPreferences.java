@@ -180,6 +180,11 @@ public class MyPreferences {
         return sharedPreferences.getBoolean("ntsl_show_payee", true);
     }
 
+    public static boolean isShowCurrency(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("ntsl_show_currency", true);
+    }
+
     public static int getPayeeOrder(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return Integer.parseInt(sharedPreferences.getString("ntsl_show_payee_order", "1"));
@@ -194,7 +199,12 @@ public class MyPreferences {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		return Integer.parseInt(sharedPreferences.getString("ntsl_show_location_order", "1"));
 	}
-	
+
+	public static boolean isShowIsCCardPayment(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return sharedPreferences.getBoolean("ntsl_show_is_ccard_payment", true);
+	}
+    
 	/**
 	 * Get google docs user login registered on preferences
 	 * */
