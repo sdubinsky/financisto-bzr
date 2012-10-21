@@ -160,6 +160,10 @@
   <string name="period_this_month">Цього місяця</string>
   <string name="period_last_week">Минулого тижня</string>
   <string name="period_last_month">Минулого місяця</string>
+  <string name="period_this_and_last_week">Цього та попереднього тижня</string>
+  <string name="period_this_and_last_month">Цього та попереднього місяця</string>
+  <string name="period_custom">Вибрати</string>
+
   <string name="currency_name">Назва</string>
   <string name="currency_symbol">Символ</string>
   <string name="currency_code">Код</string>
@@ -739,5 +743,19 @@
     <string name="integrity_error">Баланс розсинхронізований, будь-ласка виконайте команду Меню -> More -> Перевірка цілісності</string>
     <string name="integrity_fix">Перевірка цілісності</string>
     <string name="integrity_fix_in_progress">Перевірка і виправлення за необхідності...</string>
+
+    <string name="select_to_account_differ_from_to_account">Неможна переводити на той самий рахунок...</string>
+
+    <string name="original_amount">Оригінальне значення</string>
+    <string name="original_currency_as_account">Валюта рахунка</string>
+    <string name="split_transfer_not_supported_yet">Спліт-перекази у валюті відмінної від валюти рахунку наразі не підтримуються</string>
+    <string name="show_currency">Показувати валюту</string>
+    <string name="show_currency_summary">Показувати вибір валюти на екрані введення нової транзакції</string>
+    <string name="reconcile">Узгодити</string>
+
+    <string name="file_import_utf8_warning">Будь-ласка перевірте чи файл у UTF-8 форматі</string>
+
+    <string name="show_is_ccard_payment">Показувати \'Платіж по кредитній карті\'</string>
+    <string name="show_is_ccard_payment_summary">Показувати галочку для платежів по кредитній картці</string>
 
 </resources>
