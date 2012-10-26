@@ -809,4 +809,6 @@
 
     <string name="installed_on_sd_card_warning">Scheduled transactions might NOT work as expected when Financisto installed on SD card. Please move it to phone memory.</string>
 
+    <string name="planner">Planner</string>
+
 </resources>

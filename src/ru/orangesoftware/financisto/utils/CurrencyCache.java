@@ -10,24 +10,20 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.utils;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import android.database.Cursor;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.orb.EntityManager;
 import ru.orangesoftware.orb.Query;
-import android.database.Cursor;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Collection;
 
 public class CurrencyCache {
 
-	private static TLongObjectHashMap<Currency> CURRENCIES = new TLongObjectHashMap<Currency>();
+    //@ProtectedBy("this")
+	private static final TLongObjectHashMap<Currency> CURRENCIES = new TLongObjectHashMap<Currency>();
 	
 	public static synchronized Currency getCurrency(EntityManager em, long currencyId) {
 		Currency cachedCurrency = CURRENCIES.get(currencyId);
@@ -58,7 +54,7 @@ public class CurrencyCache {
 		} finally {
 			c.close();
 		}
-		CURRENCIES = currencies;
+		CURRENCIES.putAll(currencies);
 	}
 	
 	public static DecimalFormat createCurrencyFormat(Currency c) {

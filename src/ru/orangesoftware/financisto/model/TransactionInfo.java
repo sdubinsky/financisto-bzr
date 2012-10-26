@@ -127,11 +127,14 @@ public class TransactionInfo extends TransactionBase {
         fromAccount.currency = CurrencyCache.getCurrencyOrEmpty(c.getLong(DatabaseHelper.BlotterColumns.from_account_currency_id.ordinal()));
         t.fromAccount = fromAccount;
 
-        Account toAccount = new Account();
-        toAccount.id = c.getLong(DatabaseHelper.BlotterColumns.to_account_id.ordinal());
-        toAccount.title = c.getString(DatabaseHelper.BlotterColumns.to_account_title.ordinal());
-        toAccount.currency = CurrencyCache.getCurrencyOrEmpty(c.getLong(DatabaseHelper.BlotterColumns.to_account_currency_id.ordinal()));
-        t.toAccount = toAccount;
+        long toAccountId = c.getLong(DatabaseHelper.BlotterColumns.to_account_id.ordinal());
+        if (toAccountId > 0) {
+            Account toAccount = new Account();
+            toAccount.id = toAccountId;
+            toAccount.title = c.getString(DatabaseHelper.BlotterColumns.to_account_title.ordinal());
+            toAccount.currency = CurrencyCache.getCurrencyOrEmpty(c.getLong(DatabaseHelper.BlotterColumns.to_account_currency_id.ordinal()));
+            t.toAccount = toAccount;
+        }
 
         Category category = new Category();
         category.id = c.getLong(DatabaseHelper.BlotterColumns.category_id.ordinal());
@@ -161,6 +164,7 @@ public class TransactionInfo extends TransactionBase {
         t.attachedPicture = c.getString(DatabaseHelper.BlotterColumns.attached_picture.ordinal());
         t.isCCardPayment = c.getInt(DatabaseHelper.BlotterColumns.is_ccard_payment.ordinal());
         t.lastRecurrence = c.getLong(DatabaseHelper.BlotterColumns.last_recurrence.ordinal());
+
         return t;
     }
 

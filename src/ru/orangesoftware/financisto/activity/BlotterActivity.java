@@ -465,8 +465,8 @@ public class BlotterActivity extends AbstractListActivity {
 	}
 
     private void showTransactionInfo(long id) {
-        TransactionInfoDialog transactionInfoView = new TransactionInfoDialog(this, id, db, inflater);
-        transactionInfoView.show();
+        TransactionInfoDialog transactionInfoView = new TransactionInfoDialog(this, db, inflater);
+        transactionInfoView.show(this, id);
     }
 
     @Override

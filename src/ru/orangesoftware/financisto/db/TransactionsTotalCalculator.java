@@ -14,6 +14,7 @@ import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.TotalError;
+import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.model.rates.ExchangeRate;
 import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
@@ -145,6 +146,25 @@ public class TransactionsTotalCalculator {
         long toAmount = c.getLong(index++);
         long originalCurrencyId = c.getLong(index++);
         long originalAmount = c.getLong(index);
+        return getConvertedAmount(em, toCurrency, rates, datetime, fromCurrencyId, fromAmount, toCurrencyId, toAmount, originalCurrencyId, originalAmount);
+    }
+
+    public static BigDecimal getAmountFromTransaction(MyEntityManager em, Currency toCurrency, TransactionInfo ti, ExchangeRateProvider rates)
+            throws UnableToCalculateRateException {
+        long datetime = ti.dateTime;
+        long fromCurrencyId = ti.fromAccount.currency.id;
+        long fromAmount = ti.fromAmount;
+        long toCurrencyId = ti.toAccount != null ? ti.toAccount.currency.id : 0;
+        long toAmount = ti.toAmount;
+        long originalCurrencyId = ti.originalCurrency != null ? ti.originalCurrency.id : 0;
+        long originalAmount = ti.originalFromAmount;
+        return getConvertedAmount(em, toCurrency, rates, datetime, fromCurrencyId, fromAmount, toCurrencyId, toAmount, originalCurrencyId, originalAmount);
+    }
+
+    private static BigDecimal getConvertedAmount(MyEntityManager em, Currency toCurrency, ExchangeRateProvider rates, long datetime,
+                                                 long fromCurrencyId, long fromAmount,
+                                                 long toCurrencyId, long toAmount,
+                                                 long originalCurrencyId, long originalAmount) throws UnableToCalculateRateException {
         if (fromCurrencyId == toCurrency.id) {
             return BigDecimal.valueOf(fromAmount);
         } else if (toCurrencyId > 0 && toCurrencyId == toCurrency.id) {
@@ -158,7 +178,7 @@ public class TransactionsTotalCalculator {
                 throw new UnableToCalculateRateException(fromCurrency, toCurrency, datetime);
             } else {
                 double rate = exchangeRate.rate;
-                return BigDecimal.valueOf(rate*fromAmount);
+                return BigDecimal.valueOf(fromAmount).multiply(BigDecimal.valueOf(rate));
             }
         }
     }

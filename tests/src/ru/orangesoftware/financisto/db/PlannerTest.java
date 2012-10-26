@@ -16,6 +16,7 @@ import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.test.*;
 import ru.orangesoftware.financisto.utils.FuturePlanner;
 import ru.orangesoftware.financisto.utils.MonthlyViewPlanner;
+import ru.orangesoftware.financisto.utils.TransactionList;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -23,15 +24,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static ru.orangesoftware.financisto.test.DateTime.date;
+
 public class PlannerTest extends AbstractDbTest {
 
     Account a1;
     Account a2;
     Map<String, Category> categoriesMap;
 
-    Date from = DateTime.date(2011, 8, 1).atMidnight().asDate();
-    Date to = DateTime.date(2011, 8, 16).atDayEnd().asDate();
-    Date now = DateTime.date(2011, 8, 8).at(23, 20, 0, 0).asDate();
+    Date from = date(2011, 8, 1).atMidnight().asDate();
+    Date to = date(2011, 8, 16).atDayEnd().asDate();
+    Date now = date(2011, 8, 8).at(23, 20, 0, 0).asDate();
 
     @Override
     public void setUp() throws Exception {
@@ -65,23 +68,23 @@ public class PlannerTest extends AbstractDbTest {
         List<TransactionInfo> transactions = planner.getPlannedTransactions();
         logTransactions(transactions);
         assertTransactions(transactions,
-                DateTime.date(2011, 8, 8), 1000,
-                DateTime.date(2011, 8, 9), -100,
-                DateTime.date(2011, 8, 9), 40,
-                DateTime.date(2011, 8, 10), -500,
-                DateTime.date(2011, 8, 10), -50,
-                DateTime.date(2011, 8, 11), -100,
-                DateTime.date(2011, 8, 12), 200,
-                DateTime.date(2011, 8, 12), 52,
-                DateTime.date(2011, 8, 12), -50,
-                DateTime.date(2011, 8, 12), 30,
-                DateTime.date(2011, 8, 14), -100,
-                DateTime.date(2011, 8, 14), -50,
-                DateTime.date(2011, 8, 15), 400,
-                DateTime.date(2011, 8, 15), -210,
-                DateTime.date(2011, 8, 15), -105,
-                DateTime.date(2011, 8, 16), -50,
-                DateTime.date(2011, 8, 16), 40
+                date(2011, 8, 8), 1000,
+                date(2011, 8, 9), -100,
+                date(2011, 8, 9), 40,
+                date(2011, 8, 10), -500,
+                date(2011, 8, 10), -50,
+                date(2011, 8, 11), -100,
+                date(2011, 8, 12), 200,
+                date(2011, 8, 12), 52,
+                date(2011, 8, 12), -50,
+                date(2011, 8, 12), 30,
+                date(2011, 8, 14), -100,
+                date(2011, 8, 14), -50,
+                date(2011, 8, 15), 400,
+                date(2011, 8, 15), -210,
+                date(2011, 8, 15), -105,
+                date(2011, 8, 16), -50,
+                date(2011, 8, 16), 40
         );
     }
 
@@ -93,34 +96,34 @@ public class PlannerTest extends AbstractDbTest {
         assertTransactions(transactions,
                 //payments
                 DateTime.NULL_DATE, 0,
-                DateTime.date(2011, 8, 15), 400,
+                date(2011, 8, 15), 400,
                 //credits
                 DateTime.NULL_DATE, 0,
-                DateTime.date(2011, 8, 8), 1000,
-                DateTime.date(2011, 8, 9), 40,
-                DateTime.date(2011, 8, 12), 200,
-                DateTime.date(2011, 8, 12), 52,
-                DateTime.date(2011, 8, 12), 30,
-                DateTime.date(2011, 8, 16), 40,
+                date(2011, 8, 8), 1000,
+                date(2011, 8, 9), 40,
+                date(2011, 8, 12), 200,
+                date(2011, 8, 12), 52,
+                date(2011, 8, 12), 30,
+                date(2011, 8, 16), 40,
                 //expenses
                 DateTime.NULL_DATE, 0,
-                DateTime.date(2011, 8, 9), -100,
-                DateTime.date(2011, 8, 10), -500,
-                DateTime.date(2011, 8, 10), -50,
-                DateTime.date(2011, 8, 11), -100,
-                DateTime.date(2011, 8, 12), -50,
-                DateTime.date(2011, 8, 14), -100,
-                DateTime.date(2011, 8, 14), -50,
-                DateTime.date(2011, 8, 15), -210,
-                DateTime.date(2011, 8, 15), -105,
-                DateTime.date(2011, 8, 16), -50
+                date(2011, 8, 9), -100,
+                date(2011, 8, 10), -500,
+                date(2011, 8, 10), -50,
+                date(2011, 8, 11), -100,
+                date(2011, 8, 12), -50,
+                date(2011, 8, 14), -100,
+                date(2011, 8, 14), -50,
+                date(2011, 8, 15), -210,
+                date(2011, 8, 15), -105,
+                date(2011, 8, 16), -50
         );
     }
 
     public void test_should_generate_monthly_preview_for_the_next_month_correctly(){
         prepareData();
-        from = DateTime.date(2011, 9, 1).atMidnight().asDate();
-        to = DateTime.date(2011, 9, 16).atDayEnd().asDate();
+        from = date(2011, 9, 1).atMidnight().asDate();
+        to = date(2011, 9, 16).atDayEnd().asDate();
 
         //2011-09-02 -50            r1
         //2011-09-02 +52  <- a2     r4
@@ -142,116 +145,124 @@ public class PlannerTest extends AbstractDbTest {
         List<TransactionInfo> transactions = planner.getPlannedTransactions();
         logTransactions(transactions);
         assertTransactions(transactions,
-                DateTime.date(2011, 9, 1), -50,
-                DateTime.date(2011, 9, 2), 52,
-                DateTime.date(2011, 9, 2), 30,
-                DateTime.date(2011, 9, 3), -50,
-                DateTime.date(2011, 9, 5), -50,
-                DateTime.date(2011, 9, 6), 40,
-                DateTime.date(2011, 9, 7), -50,
-                DateTime.date(2011, 9, 9), 52,
-                DateTime.date(2011, 9, 9), -50,
-                DateTime.date(2011, 9, 9), 30,
-                DateTime.date(2011, 9, 11), -50,
-                DateTime.date(2011, 9, 13), -50,
-                DateTime.date(2011, 9, 13), 40,
-                DateTime.date(2011, 9, 15), -50,
-                DateTime.date(2011, 9, 16), 52,
-                DateTime.date(2011, 9, 16), 30
+                date(2011, 9, 1), -50,
+                date(2011, 9, 2), 52,
+                date(2011, 9, 2), 30,
+                date(2011, 9, 3), -50,
+                date(2011, 9, 5), -50,
+                date(2011, 9, 6), 40,
+                date(2011, 9, 7), -50,
+                date(2011, 9, 9), 52,
+                date(2011, 9, 9), -50,
+                date(2011, 9, 9), 30,
+                date(2011, 9, 11), -50,
+                date(2011, 9, 13), -50,
+                date(2011, 9, 13), 40,
+                date(2011, 9, 15), -50,
+                date(2011, 9, 16), 52,
+                date(2011, 9, 16), 30
         );
 
     }
 
     public void test_should_generate_monthly_preview_for_the_previous_month_correctly(){
         prepareData();
-        from = DateTime.date(2011, 7, 1).atMidnight().asDate();
-        to = DateTime.date(2011, 7, 16).atDayEnd().asDate();
+        from = date(2011, 7, 1).atMidnight().asDate();
+        to = date(2011, 7, 16).atDayEnd().asDate();
 
         MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
         List<TransactionInfo> transactions = planner.getPlannedTransactions();
         logTransactions(transactions);
         assertTransactions(transactions,
-                DateTime.date(2011, 7, 9), 122
+                date(2011, 7, 9), 122
         );
 
     }
 
     public void test_should_generate_future_preview() {
         prepareData();
-        now = DateTime.date(2011, 7, 1).atMidnight().asDate();
-        to = DateTime.date(2011, 8, 15).atDayEnd().asDate();
-
-        FuturePlanner planner = new FuturePlanner(db, to, now);
-        List<TransactionInfo> transactions = planner.getPlannedTransactions();
-        logTransactions(transactions);
+        TransactionList transactions = planTransactions(date(2011, 7, 1), date(2011, 7, 19));
         // well, this is going to be impossible to re-test if something breaks
-        assertTransactions2(transactions,
-                 0, DateTime.date(2011, 7, 1),   -50, "x1",
-                 1, DateTime.date(2011, 7, 3),   -50, "x1",
-                 2, DateTime.date(2011, 7, 5),   -50, "x1",
-                 3, DateTime.date(2011, 7, 7),   -50, "x1",
-                 4, DateTime.date(2011, 7, 9),   122, "t0",
-                 5, DateTime.date(2011, 7, 9),   -50, "x1",
-                 6, DateTime.date(2011, 7, 11),  -50, "x1",
-                 7, DateTime.date(2011, 7, 13),  -50, "x1",
-                 8, DateTime.date(2011, 7, 15),  -50, "x1",
-                 9, DateTime.date(2011, 7, 17),  -50, "x1",
-                10, DateTime.date(2011, 7, 19),  -50, "x1",
-                11, DateTime.date(2011, 7, 21),  -50, "x1",
-                12, DateTime.date(2011, 7, 23),  -50, "x1",
-                13, DateTime.date(2011, 7, 25),  -50, "x1",
-                14, DateTime.date(2011, 7, 27),  -50, "x1",
-                15, DateTime.date(2011, 7, 29),  -50, "x1",
-                16, DateTime.date(2011, 7, 31),  -50, "x1",
-                17, DateTime.date(2011, 8, 2),   -50, "r1",
-                18, DateTime.date(2011, 8, 2),   -50, "x1",
-                19, DateTime.date(2011, 8, 2),    40, "r2",
-                20, DateTime.date(2011, 8, 4),   -50, "r1",
-                21, DateTime.date(2011, 8, 4),   -50, "x1",
-                22, DateTime.date(2011, 8, 5),  -600, "r4",
-                23, DateTime.date(2011, 8, 5),  -120, "r6",
-                24, DateTime.date(2011, 8, 6),   -50, "r1",
-                25, DateTime.date(2011, 8, 6),   -50, "x1",
-                26, DateTime.date(2011, 8, 8),  1000, "t1",
-                27, DateTime.date(2011, 8, 8),   -50, "r1",
-                28, DateTime.date(2011, 8, 8),   -50, "x1",
-                29, DateTime.date(2011, 8, 9),  -100, "t2",
-                30, DateTime.date(2011, 8, 9),    40, "r2",
-                31, DateTime.date(2011, 8, 10), -500, "t3",
-                32, DateTime.date(2011, 8, 10),  -50, "r1",
-                33, DateTime.date(2011, 8, 10),  -50, "x1",
-                34, DateTime.date(2011, 8, 11), -100, "t4",
-                35, DateTime.date(2011, 8, 12), -120, "t5",
-                36, DateTime.date(2011, 8, 12), -600, "r4",
-                37, DateTime.date(2011, 8, 12),  -50, "r1",
-                38, DateTime.date(2011, 8, 12),  -50, "x1",
-                39, DateTime.date(2011, 8, 12), -120, "r6",
-                40, DateTime.date(2011, 8, 14), -100, "t7",
-                41, DateTime.date(2011, 8, 14),  -50, "r1",
-                42, DateTime.date(2011, 8, 14),  -50, "x1",
-                43, DateTime.date(2011, 8, 15),  400, "t6",
-                44, DateTime.date(2011, 8, 15), -210, "r3",
-                45, DateTime.date(2011, 8, 15), -105, "r5"
-        );
+        assertTransactions2(transactions.transactions,
+                 0, date(2011, 7, 1),   -50, "x1",
+                 1, date(2011, 7, 3),   -50, "x1",
+                 2, date(2011, 7, 5),   -50, "x1",
+                 3, date(2011, 7, 7),   -50, "x1",
+                 4, date(2011, 7, 9),   122, "t0",
+                 5, date(2011, 7, 9),   -50, "x1",
+                 6, date(2011, 7, 11),  -50, "x1",
+                 7, date(2011, 7, 13),  -50, "x1",
+                 8, date(2011, 7, 15),  -50, "x1",
+                 9, date(2011, 7, 17),  -50, "x1",
+                10, date(2011, 7, 19),  -50, "x1");
+
+        transactions = planTransactions(date(2011, 7, 20), date(2011, 8, 4));
+        assertTransactions2(transactions.transactions,
+                11, date(2011, 7, 21),  -50, "x1",
+                12, date(2011, 7, 23),  -50, "x1",
+                13, date(2011, 7, 25),  -50, "x1",
+                14, date(2011, 7, 27),  -50, "x1",
+                15, date(2011, 7, 29),  -50, "x1",
+                16, date(2011, 7, 31),  -50, "x1",
+                17, date(2011, 8, 2),   -50, "r1",
+                18, date(2011, 8, 2),   -50, "x1",
+                19, date(2011, 8, 2),    40, "r2",
+                20, date(2011, 8, 4),   -50, "r1",
+                21, date(2011, 8, 4),   -50, "x1");
+
+/*                22, date(2011, 8, 5),  -600, "r4",
+                23, date(2011, 8, 5),  -120, "r6",
+                24, date(2011, 8, 6),   -50, "r1",
+                25, date(2011, 8, 6),   -50, "x1",
+                26, date(2011, 8, 8),  1000, "t1",
+                27, date(2011, 8, 8),   -50, "r1",
+                28, date(2011, 8, 8),   -50, "x1",
+                29, date(2011, 8, 9),  -100, "t2",
+                30, date(2011, 8, 9),    40, "r2",
+                31, date(2011, 8, 10), -500, "t3",
+                32, date(2011, 8, 10),  -50, "r1",
+                33, date(2011, 8, 10),  -50, "x1",
+                34, date(2011, 8, 11), -100, "t4",
+                35, date(2011, 8, 12), -120, "t5",
+                36, date(2011, 8, 12), -600, "r4",
+                37, date(2011, 8, 12),  -50, "r1",
+                38, date(2011, 8, 12),  -50, "x1",
+                39, date(2011, 8, 12), -120, "r6",
+                40, date(2011, 8, 14), -100, "t7",
+                41, date(2011, 8, 14),  -50, "r1",
+                42, date(2011, 8, 14),  -50, "x1",
+                43, date(2011, 8, 15),  400, "t6",
+                44, date(2011, 8, 15), -210, "r3",
+                45, date(2011, 8, 15), -105, "r5"
+        );*/
+    }
+
+    private TransactionList planTransactions(DateTime start, DateTime end) {
+        now = start.atMidnight().asDate();
+        to = end.atDayEnd().asDate();
+        FuturePlanner planner = new FuturePlanner(db, to, now);
+        TransactionList data = planner.getPlannedTransactionsWithTotals();
+        logTransactions(data.transactions);
+        return data;
     }
 
     private void prepareData() {
         // regular transactions and transfers
         //t0
-        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 7, 9).atNoon())
+        TransactionBuilder.withDb(db).dateTime(date(2011, 7, 9).atNoon())
                 .account(a1).amount(122).note("t0").create();
         //t1
-        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 8).atNoon())
+        TransactionBuilder.withDb(db).dateTime(date(2011, 8, 8).atNoon())
                 .account(a1).amount(1000).note("t1").create();
 
         // regular transfer
         //t2
-        TransferBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 9).atNoon())
+        TransferBuilder.withDb(db).dateTime(date(2011, 8, 9).atNoon())
                 .fromAccount(a1).fromAmount(-100).toAccount(a2).toAmount(50).note("t2").create();
 
         // regular split
         //t3
-        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 10).atNoon())
+        TransactionBuilder.withDb(db).dateTime(date(2011, 8, 10).atNoon())
                 .account(a1).amount(-500)
                 .withSplit(categoriesMap.get("A1"), -200, "t3-s1")
                 .withSplit(categoriesMap.get("A1"), -300, "t3-s2")
@@ -260,13 +271,13 @@ public class PlannerTest extends AbstractDbTest {
 
         // transfer split
         //t4
-        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 11).atNoon())
+        TransactionBuilder.withDb(db).dateTime(date(2011, 8, 11).atNoon())
                 .account(a1).amount(-100)
                 .withTransferSplit(a2, -100, 20, "t4-s1")
                 .note("t4")
                 .create();
         //t5
-        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 12).atNoon())
+        TransactionBuilder.withDb(db).dateTime(date(2011, 8, 12).atNoon())
                 .account(a2).amount(-120)
                 .withSplit(categoriesMap.get("B"), -20, "t5-s1")
                 .withTransferSplit(a1, -100, 200, "t5-s2")
@@ -275,11 +286,11 @@ public class PlannerTest extends AbstractDbTest {
 
         // payment
         //t6
-        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 15).atNoon()).account(a1).amount(400).ccPayment().note("t6").create();
+        TransactionBuilder.withDb(db).dateTime(date(2011, 8, 15).atNoon()).account(a1).amount(400).ccPayment().note("t6").create();
 
         //scheduled once
         //t7
-        TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 8, 14).atNoon()).account(a1).amount(-100).note("t7").create();
+        TransactionBuilder.withDb(db).scheduleOnce(date(2011, 8, 14).atNoon()).account(a1).amount(-100).note("t7").create();
 
         //scheduled recur
         //r1
@@ -294,14 +305,14 @@ public class PlannerTest extends AbstractDbTest {
                 .account(a2).amount(-50).note("x1").create();
 
         //these should not be included because the date is out of picture
-        TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 10, 14).at(13, 0, 0, 0))
+        TransactionBuilder.withDb(db).scheduleOnce(date(2011, 10, 14).at(13, 0, 0, 0))
                 .account(a1).amount(-500).note("x2?").create();
         TransactionBuilder.withDb(db).scheduleRecur("2011-10-01T21:40:00~DAILY:interval@2#~INDEFINETELY:null")
                 .account(a1).amount(-500).note("x3?").create();
 
         //this is a scheduled transfer which should appear in the monthly view
         //r3
-        TransferBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 8, 15).at(13, 0, 0, 0))
+        TransferBuilder.withDb(db).scheduleOnce(date(2011, 8, 15).at(13, 0, 0, 0))
                 .fromAccount(a1).fromAmount(-210).toAccount(a2).toAmount(51).note("r3").create();
         //r4
         TransferBuilder.withDb(db).scheduleRecur("2011-08-02T21:20:00~WEEKLY:days@FRI#interval@1#~INDEFINETELY:null")
@@ -309,7 +320,7 @@ public class PlannerTest extends AbstractDbTest {
 
         //this is a scheduled split with a transfer which should appear in the monthly view
         //r5
-        TransactionBuilder.withDb(db).scheduleOnce(DateTime.date(2011, 8, 15).at(14, 0, 0, 0))
+        TransactionBuilder.withDb(db).scheduleOnce(date(2011, 8, 15).at(14, 0, 0, 0))
                 .account(a1).amount(-105)
                 .withSplit(categoriesMap.get("A1"), -5, "r5-s1")
                 .withTransferSplit(a2, -100, 22, "r5-s2")
@@ -360,14 +371,14 @@ public class PlannerTest extends AbstractDbTest {
             fail("Too many transactions. Expected "+count+", Got "+transactions.size());
         }
         for (int i=0; i<count; i++) {
-            assertTransaction2("Row "+i, transactions.get(i), (DateTime)data[i*4+1], (Integer)data[i*4+2], (String)data[i*4+3]);
+            assertTransaction2("Row " + (i+(Integer)data[i*4]), transactions.get(i), (DateTime) data[i * 4 + 1], (Integer) data[i * 4 + 2], (String) data[i * 4 + 3]);
         }
     }
 
     private void assertTransaction2(String row, TransactionInfo t, DateTime date, long expectedAmount, String note) {
-        assertEquals(row, asDate(date), asDate(t.dateTime));
-        assertEquals(row, expectedAmount, t.fromAmount);
-        assertEquals(row, note, t.note);
+        assertEquals(row+":"+note, asDate(date), asDate(t.dateTime));
+        assertEquals(row+":"+note, expectedAmount, t.fromAmount);
+        assertEquals(row+":"+note, note, t.note);
     }
 
     private Date asDate(DateTime date) {

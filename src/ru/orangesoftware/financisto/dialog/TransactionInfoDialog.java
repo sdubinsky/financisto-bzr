@@ -38,8 +38,7 @@ import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 public class TransactionInfoDialog {
 
-    private final BlotterActivity parentActivity;
-    private final long transactionId;
+    private final Context context;
     private final DatabaseAdapter db;
     private final MyEntityManager em;
     private final NodeInflater inflater;
@@ -47,22 +46,20 @@ public class TransactionInfoDialog {
     private final int splitPadding;
     private final Utils u;
 
-    public TransactionInfoDialog(BlotterActivity parentActivity, long transactionId,
-                                 DatabaseAdapter db, NodeInflater inflater) {
-        this.parentActivity = parentActivity;
-        this.transactionId = transactionId;
+    public TransactionInfoDialog(Context context, DatabaseAdapter db, NodeInflater inflater) {
+        this.context = context;
         this.db = db;
         this.em = db.em();
         this.inflater = inflater;
-        this.layoutInflater = (LayoutInflater) parentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.splitPadding = parentActivity.getResources().getDimensionPixelSize(R.dimen.transaction_icon_padding);
-        this.u = new Utils(parentActivity);
+        this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.splitPadding = context.getResources().getDimensionPixelSize(R.dimen.transaction_icon_padding);
+        this.u = new Utils(context);
     }
 
-    public void show() {
+    public void show(BlotterActivity blotterActivity, long transactionId) {
         TransactionInfo ti = em.getTransactionInfo(transactionId);
         if (ti == null) {
-            Toast t = Toast.makeText(parentActivity, R.string.no_transaction_found, Toast.LENGTH_LONG);
+            Toast t = Toast.makeText(blotterActivity, R.string.no_transaction_found, Toast.LENGTH_LONG);
             t.show();
             return;
         }
@@ -76,7 +73,7 @@ public class TransactionInfoDialog {
         createMainInfoNodes(ti, layout);
         createAdditionalInfoNodes(ti, layout);
 
-        showDialog(v, titleView);
+        showDialog(blotterActivity, transactionId, v, titleView);
     }
 
     private void createMainInfoNodes(TransactionInfo ti, LinearLayout layout) {
@@ -148,7 +145,7 @@ public class TransactionInfoDialog {
     private void createAdditionalInfoNodes(TransactionInfo ti, LinearLayout layout) {
         List<TransactionAttributeInfo> attributes = em.getAttributesForTransaction(ti.id);
         for (TransactionAttributeInfo tai : attributes) {
-            String value = tai.getValue(parentActivity);
+            String value = tai.getValue(context);
             if (isNotEmpty(value)) {
                 add(layout, tai.name, value);
             }
@@ -181,25 +178,25 @@ public class TransactionInfoDialog {
         } else {
             if (ti.isScheduled() && ti.recurrence != null) {
                 Recurrence r = Recurrence.parse(ti.recurrence);
-                titleLabel.setText(r.toInfoString(parentActivity));
+                titleLabel.setText(r.toInfoString(context));
             } else {
                 int titleId = ti.isSplitParent()
                         ? R.string.split
                         : (ti.toAccount == null ? R.string.transaction : R.string.transfer);
                 titleLabel.setText(titleId);
-                add(layout, R.string.date, DateUtils.formatDateTime(parentActivity, ti.dateTime,
+                add(layout, R.string.date, DateUtils.formatDateTime(context, ti.dateTime,
                         DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_YEAR),
                         ti.attachedPicture);
             }
         }
         TransactionStatus status = ti.status;
-        titleData.setText(parentActivity.getString(status.titleId));
+        titleData.setText(context.getString(status.titleId));
         titleIcon.setImageResource(status.iconId);
         return titleView;
     }
 
-    private void showDialog(final View v, View titleView) {
-        final Dialog d = new AlertDialog.Builder(parentActivity)
+    private void showDialog(final BlotterActivity blotterActivity, final long transactionId, final View v, View titleView) {
+        final Dialog d = new AlertDialog.Builder(blotterActivity)
                 .setCustomTitle(titleView)
                 .setView(v)
                 .create();
@@ -210,7 +207,7 @@ public class TransactionInfoDialog {
             @Override
             public void onClick(View arg0) {
                 d.dismiss();
-                new BlotterOperations(parentActivity, db, transactionId).editTransaction();
+                new BlotterOperations(blotterActivity, db, transactionId).editTransaction();
             }
         });
 
@@ -239,7 +236,7 @@ public class TransactionInfoDialog {
     private void add(LinearLayout layout, int labelId, String data, String pictureFileName) {
         Bitmap thumb = ThumbnailUtil.loadThumbnail(pictureFileName);
         View v = inflater.new PictureBuilder(layout)
-                .withPicture(parentActivity, thumb)
+                .withPicture(context, thumb)
                 .withLabel(labelId)
                 .withData(data).create();
         v.setClickable(false);

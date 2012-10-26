@@ -28,6 +28,7 @@ import ru.orangesoftware.financisto.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static ru.orangesoftware.financisto.utils.TransactionTitleUtils.generateTransactionTitle;
 
@@ -36,7 +37,6 @@ public class ScheduledListAdapter extends BaseAdapter {
 	private final StringBuilder sb = new StringBuilder();
 	private final Date dt = new Date();
 	private final int transferColor;
-	private final int futureColor;
 	private final int scheduledColor;
 	private final Drawable icBlotterIncome;
 	private final Drawable icBlotterExpense;
@@ -47,13 +47,12 @@ public class ScheduledListAdapter extends BaseAdapter {
 	private final LayoutInflater inflater;
 	
 	private Date now = new Date();
-	private ArrayList<TransactionInfo> transactions;
+	private List<TransactionInfo> transactions;
 
-	public ScheduledListAdapter(Context context, ArrayList<TransactionInfo> transactions) {
+	public ScheduledListAdapter(Context context, List<TransactionInfo> transactions) {
 		this.context = context;
 		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.transferColor = context.getResources().getColor(R.color.transfer_color);
-		this.futureColor = context.getResources().getColor(R.color.future_color);
 		this.scheduledColor = context.getResources().getColor(R.color.scheduled);
 		this.icBlotterIncome = context.getResources().getDrawable(R.drawable.ic_blotter_income);
 		this.icBlotterExpense = context.getResources().getDrawable(R.drawable.ic_blotter_expense);
@@ -172,12 +171,6 @@ public class ScheduledListAdapter extends BaseAdapter {
 				dt.setTime(date);
 				v.bottomView.setText(DateUtils.formatDateTime(context, dt.getTime(), 
 						DateUtils.FORMAT_SHOW_DATE|DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_ABBREV_MONTH));
-				
-				if (t.isTemplate == 0 && date > System.currentTimeMillis()) {
-					v.bottomView.setTextColor(futureColor);
-				} else {
-					v.bottomView.setTextColor(v.topView.getTextColors().getDefaultColor());
-				}
 			}
 		}
 		return convertView;
