@@ -99,10 +99,10 @@ public class Recurrence {
                 now = startDate.getTime();
             }
             Calendar c = Calendar.getInstance();
-            c.setTime(now);
-            c.set(Calendar.HOUR_OF_DAY, startDate.get(Calendar.HOUR_OF_DAY));
-            c.set(Calendar.MINUTE, startDate.get(Calendar.MINUTE));
-            c.set(Calendar.SECOND, startDate.get(Calendar.SECOND));
+            c.setTime(startDate.getTime());
+            //c.set(Calendar.HOUR_OF_DAY, startDate.get(Calendar.HOUR_OF_DAY));
+            //c.set(Calendar.MINUTE, startDate.get(Calendar.MINUTE));
+            //c.set(Calendar.SECOND, startDate.get(Calendar.SECOND));
             c.set(Calendar.MILLISECOND, 0);
             return DateRecurrenceIterator.create(rrule, now, c.getTime());
         } catch (ParseException e) {
