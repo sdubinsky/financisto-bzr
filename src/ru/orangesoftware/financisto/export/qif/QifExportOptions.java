@@ -10,7 +10,7 @@ package ru.orangesoftware.financisto.export.qif;
 
 import android.content.Intent;
 import ru.orangesoftware.financisto.activity.QifExportActivity;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.utils.CurrencyExportPreferences;
 

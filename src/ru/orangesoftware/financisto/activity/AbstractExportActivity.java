@@ -17,12 +17,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.filter.DateTimeCriteria;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import ru.orangesoftware.financisto.utils.PinProtection;
-import ru.orangesoftware.financisto.utils.DateUtils.Period;
-import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
+import ru.orangesoftware.financisto.datetime.Period;
+import ru.orangesoftware.financisto.datetime.PeriodType;
 
 import java.text.DateFormat;
 import java.util.Date;

@@ -9,11 +9,10 @@
 package ru.orangesoftware.financisto.utils;
 
 import android.database.Cursor;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.TransactionInfo;
 
-import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -23,14 +22,14 @@ import java.util.Date;
  */
 public class FuturePlanner extends AbstractPlanner {
 
-    public FuturePlanner(DatabaseAdapter db, Date endDate, Date now) {
-        super(db, now, endDate, now);
+    public FuturePlanner(DatabaseAdapter db, WhereFilter filter, Date now) {
+        super(db, filter, now);
     }
 
     @Override
     protected Cursor getRegularTransactions() {
-        WhereFilter filter = createMonthlyViewFilter();
-        return db.getBlotter(filter);
+        WhereFilter blotterFilter = WhereFilter.copyOf(filter);
+        return db.getBlotter(blotterFilter);
     }
 
     @Override
@@ -58,11 +57,11 @@ public class FuturePlanner extends AbstractPlanner {
         };
     } */
 
-    private WhereFilter createMonthlyViewFilter() {
-        return WhereFilter.empty()
-                .btw("datetime", String.valueOf(startDate.getTime()), String.valueOf(endDate.getTime()))
-                .desc("datetime");
-    }
-
-
+//    private WhereFilter createMonthlyViewFilter() {
+//        return WhereFilter.empty()
+//                .btw("datetime", String.valueOf(startDate.getTime()), String.valueOf(endDate.getTime()))
+//                .desc("datetime");
+//    }
+//
+//
 }

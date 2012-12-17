@@ -23,7 +23,7 @@ import ru.orangesoftware.financisto.recur.RecurrencePeriod;
 import ru.orangesoftware.financisto.recur.RecurrenceUntil;
 import ru.orangesoftware.financisto.recur.RecurrenceView;
 import ru.orangesoftware.financisto.recur.RecurrenceViewFactory;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -44,8 +44,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
-import com.google.ical.values.RRule;
 
 public class RecurrenceActivity extends AbstractActivity {
 	

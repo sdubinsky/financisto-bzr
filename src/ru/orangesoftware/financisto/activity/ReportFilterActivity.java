@@ -16,12 +16,13 @@ import android.view.Window;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.filter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.utils.DateUtils;
-import ru.orangesoftware.financisto.utils.DateUtils.Period;
+import ru.orangesoftware.financisto.datetime.DateUtils;
+import ru.orangesoftware.financisto.datetime.Period;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
 
@@ -126,7 +127,7 @@ public class ReportFilterActivity extends AbstractActivity {
     }
 
     private void updateLocationFromFilter() {
-        WhereFilter.Criteria c = filter.get(BlotterFilter.LOCATION_ID);
+        Criteria c = filter.get(BlotterFilter.LOCATION_ID);
         if (c != null) {
             MyLocation loc = em.get(MyLocation.class, c.getLongValue1());
             location.setText(loc != null ? loc.name : filterValueNotFound);
@@ -146,7 +147,7 @@ public class ReportFilterActivity extends AbstractActivity {
     }
 
     private void updateCategoryFromFilter() {
-        WhereFilter.Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
+        Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
         if (c != null) {
             Category cat = db.getCategoryByLeft(c.getLongValue1());
             if (cat.id > 0) {
@@ -187,7 +188,7 @@ public class ReportFilterActivity extends AbstractActivity {
     }
 
     private void updateStatusFromFilter() {
-        WhereFilter.Criteria c = filter.get(BlotterFilter.STATUS);
+        Criteria c = filter.get(BlotterFilter.STATUS);
         if (c != null) {
             TransactionStatus s = TransactionStatus.valueOf(c.getStringValue());
             status.setText(getString(s.titleId));
@@ -199,7 +200,7 @@ public class ReportFilterActivity extends AbstractActivity {
     }
 
     private <T extends MyEntity> void updateEntityFromFilter(String filterCriteriaName, Class<T> entityClass, TextView filterView) {
-        WhereFilter.Criteria c = filter.get(filterCriteriaName);
+        Criteria c = filter.get(filterCriteriaName);
         if (c != null) {
             T e = em.get(entityClass, c.getLongValue1());
             if (e != null) {
@@ -229,7 +230,7 @@ public class ReportFilterActivity extends AbstractActivity {
                 Cursor cursor = em.getAllAccounts();
                 startManagingCursor(cursor);
                 ListAdapter adapter = TransactionUtils.createAccountAdapter(this, cursor);
-                WhereFilter.Criteria c = filter.get(BlotterFilter.FROM_ACCOUNT_ID);
+                Criteria c = filter.get(BlotterFilter.FROM_ACCOUNT_ID);
                 long selectedId = c != null ? c.getLongValue1() : -1;
                 x.select(this, R.id.account, R.string.account, cursor, adapter, "_id", selectedId);
             } break;
@@ -240,7 +241,7 @@ public class ReportFilterActivity extends AbstractActivity {
                 Cursor cursor = em.getAllCurrencies("name");
                 startManagingCursor(cursor);
                 ListAdapter adapter = TransactionUtils.createCurrencyAdapter(this, cursor);
-                WhereFilter.Criteria c = filter.get(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID);
+                Criteria c = filter.get(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID);
                 long selectedId = c != null ? c.getLongValue1() : -1;
                 x.select(this, R.id.currency, R.string.currency, cursor, adapter, "_id", selectedId);
             } break;
@@ -251,7 +252,7 @@ public class ReportFilterActivity extends AbstractActivity {
                 Cursor cursor = db.getCategories(false);
                 startManagingCursor(cursor);
                 ListAdapter adapter = TransactionUtils.createCategoryAdapter(db, this, cursor);
-                WhereFilter.Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
+                Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
                 long selectedId = c != null ? c.getLongValue1() : -1;
                 x.select(this, R.id.category, R.string.category, cursor, adapter, DatabaseHelper.CategoryViewColumns.left.name(), selectedId);
             } break;
@@ -261,7 +262,7 @@ public class ReportFilterActivity extends AbstractActivity {
             case R.id.project: {
                 ArrayList<Project> projects = em.getActiveProjectsList(false);
                 ListAdapter adapter = TransactionUtils.createProjectAdapter(this, projects);
-                WhereFilter.Criteria c = filter.get(BlotterFilter.PROJECT_ID);
+                Criteria c = filter.get(BlotterFilter.PROJECT_ID);
                 long selectedId = c != null ? c.getLongValue1() : -1;
                 int selectedPos = MyEntity.indexOf(projects, selectedId);
                 x.selectItemId(this, R.id.project, R.string.project, adapter, selectedPos);
@@ -272,7 +273,7 @@ public class ReportFilterActivity extends AbstractActivity {
             case R.id.payee: {
                 ArrayList<Payee> payees = em.getAllPayeeList();
                 ListAdapter adapter = TransactionUtils.createPayeeAdapter(this, payees);
-                WhereFilter.Criteria c = filter.get(BlotterFilter.PAYEE_ID);
+                Criteria c = filter.get(BlotterFilter.PAYEE_ID);
                 long selectedId = c != null ? c.getLongValue1() : -1;
                 int selectedPos = MyEntity.indexOf(payees, selectedId);
                 x.selectItemId(this, R.id.payee, R.string.payee, adapter, selectedPos);
@@ -284,7 +285,7 @@ public class ReportFilterActivity extends AbstractActivity {
                 Cursor cursor = em.getAllLocations(false);
                 startManagingCursor(cursor);
                 ListAdapter adapter = TransactionUtils.createLocationAdapter(this, cursor);
-                WhereFilter.Criteria c = filter.get(BlotterFilter.LOCATION_ID);
+                Criteria c = filter.get(BlotterFilter.LOCATION_ID);
                 long selectedId = c != null ? c.getLongValue1() : -1;
                 x.select(this, R.id.location, R.string.location, cursor, adapter, "_id", selectedId);
             } break;
@@ -293,7 +294,7 @@ public class ReportFilterActivity extends AbstractActivity {
                 break;
             case R.id.status: {
                 ArrayAdapter<String> adapter = EnumUtils.createDropDownAdapter(this, statuses);
-                WhereFilter.Criteria c = filter.get(BlotterFilter.STATUS);
+                Criteria c = filter.get(BlotterFilter.STATUS);
                 int selectedPos = c != null ? TransactionStatus.valueOf(c.getStringValue()).ordinal() : -1;
                 x.selectPosition(this, R.id.status, R.string.transaction_status, adapter, selectedPos);
             } break;
@@ -313,28 +314,28 @@ public class ReportFilterActivity extends AbstractActivity {
     public void onSelectedId(int id, long selectedId) {
         switch (id) {
             case R.id.account:
-                filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(selectedId)));
+                filter.put(Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(selectedId)));
                 updateAccountFromFilter();
                 break;
             case R.id.currency:
-                filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID, String.valueOf(selectedId)));
+                filter.put(Criteria.eq(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID, String.valueOf(selectedId)));
                 updateCurrencyFromFilter();
                 break;
             case R.id.category:
                 Category cat = db.getCategoryByLeft(selectedId);
-                filter.put(WhereFilter.Criteria.btw(BlotterFilter.CATEGORY_LEFT, String.valueOf(cat.left), String.valueOf(cat.right)));
+                filter.put(Criteria.btw(BlotterFilter.CATEGORY_LEFT, String.valueOf(cat.left), String.valueOf(cat.right)));
                 updateCategoryFromFilter();
                 break;
             case R.id.project:
-                filter.put(WhereFilter.Criteria.eq(BlotterFilter.PROJECT_ID, String.valueOf(selectedId)));
+                filter.put(Criteria.eq(BlotterFilter.PROJECT_ID, String.valueOf(selectedId)));
                 updateProjectFromFilter();
                 break;
             case R.id.payee:
-                filter.put(WhereFilter.Criteria.eq(BlotterFilter.PAYEE_ID, String.valueOf(selectedId)));
+                filter.put(Criteria.eq(BlotterFilter.PAYEE_ID, String.valueOf(selectedId)));
                 updatePayeeFromFilter();
                 break;
             case R.id.location:
-                filter.put(WhereFilter.Criteria.eq(BlotterFilter.LOCATION_ID, String.valueOf(selectedId)));
+                filter.put(Criteria.eq(BlotterFilter.LOCATION_ID, String.valueOf(selectedId)));
                 updateLocationFromFilter();
                 break;
         }
@@ -344,7 +345,7 @@ public class ReportFilterActivity extends AbstractActivity {
     public void onSelectedPos(int id, int selectedPos) {
         switch (id) {
             case R.id.status:
-                filter.put(WhereFilter.Criteria.eq(BlotterFilter.STATUS, statuses[selectedPos].name()));
+                filter.put(Criteria.eq(BlotterFilter.STATUS, statuses[selectedPos].name()));
                 updateStatusFromFilter();
                 break;
         }

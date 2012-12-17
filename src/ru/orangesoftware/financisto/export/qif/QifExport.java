@@ -14,10 +14,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.Export;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.CategoryTree;
@@ -141,7 +142,7 @@ public class QifExport extends Export {
 
     private Cursor getBlotterForAccount(Account account) {
         WhereFilter accountFilter = WhereFilter.copyOf(options.filter);
-        accountFilter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
+        accountFilter.put(Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
         return db.getBlotterForAccount(accountFilter);
     }
 

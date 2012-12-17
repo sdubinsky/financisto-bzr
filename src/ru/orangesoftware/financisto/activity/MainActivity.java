@@ -235,9 +235,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	}
 
     private void setupBlotterTab(TabHost tabHost) {
-    	Intent intent = new Intent(this, BlotterActivity.class);
+    	Intent intent = new Intent(this, PlannerActivity.class);
     	intent.putExtra(BlotterActivity.SAVE_FILTER, true);
-    	intent.putExtra(BlotterActivity.EXTRA_FILTER_ACCOUNTS, true);    	
+    	intent.putExtra(BlotterActivity.EXTRA_FILTER_ACCOUNTS, true);
         tabHost.addTab(tabHost.newTabSpec("blotter")
                 .setIndicator(getString(R.string.blotter), getResources().getDrawable(R.drawable.ic_tab_blotter))
                 .setContent(intent));

@@ -23,7 +23,7 @@ import ru.orangesoftware.financisto.activity.ActivityLayout;
 import ru.orangesoftware.financisto.activity.ActivityLayoutListener;
 import ru.orangesoftware.financisto.activity.RecurrenceActivity;
 import ru.orangesoftware.financisto.model.MultiChoiceItem;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.LocalizableEnum;
 import ru.orangesoftware.financisto.utils.Utils;

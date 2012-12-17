@@ -8,7 +8,7 @@
 
 package ru.orangesoftware.financisto.export;
 
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.export.csv.CsvExport;
 import ru.orangesoftware.financisto.export.csv.CsvExportOptions;
 import ru.orangesoftware.financisto.model.Account;

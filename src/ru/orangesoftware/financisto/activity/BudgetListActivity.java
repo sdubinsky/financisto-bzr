@@ -28,12 +28,13 @@ import android.widget.Toast;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.BudgetListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.filter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.BudgetsTotalCalculator;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.Budget;
 import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
+import ru.orangesoftware.financisto.datetime.PeriodType;
 import ru.orangesoftware.financisto.utils.RecurUtils;
 import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
 import ru.orangesoftware.financisto.utils.RecurUtils.RecurInterval;
@@ -232,7 +233,7 @@ public class BudgetListActivity extends AbstractListActivity {
 	protected void viewItem(View v, int position, long id) {
         Budget b = em.load(Budget.class, id);
 		Intent intent = new Intent(this, BudgetBlotterActivity.class);
-		WhereFilter.Criteria.eq(BlotterFilter.BUDGET_ID, String.valueOf(id))
+		Criteria.eq(BlotterFilter.BUDGET_ID, String.valueOf(id))
 			.toIntent(b.title, intent);
 		startActivityForResult(intent, VIEW_BUDGET_REQUEST);
 	}	

@@ -10,7 +10,8 @@ package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Total;
@@ -139,7 +140,7 @@ public class AccountBlotterTest extends AbstractDbTest {
 
     private WhereFilter createBlotterForAccountFilter(Account account) {
         WhereFilter filter = WhereFilter.empty();
-        filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
+        filter.put(Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(account.id)));
         return filter;
     }
 

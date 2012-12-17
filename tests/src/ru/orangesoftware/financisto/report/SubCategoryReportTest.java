@@ -1,6 +1,6 @@
 package ru.orangesoftware.financisto.report;
 
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.test.DateTime;
 import ru.orangesoftware.financisto.test.RateBuilder;

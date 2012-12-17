@@ -17,7 +17,7 @@ import android.view.View;
 import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.EntityListAdapter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.MyEntity;
 
 import java.util.ArrayList;
@@ -95,11 +95,11 @@ public abstract class MyEntityListActivity<T extends MyEntity> extends AbstractL
 	protected void viewItem(View v, int position, long id) {
 		T e = em.load(clazz, id);
 		Intent intent = new Intent(this, BlotterActivity.class);
-        WhereFilter.Criteria blotterFilter = createBlotterCriteria(e);
+        Criteria blotterFilter = createBlotterCriteria(e);
         blotterFilter.toIntent(e.title, intent);
 		startActivity(intent);
 	}
 
-    protected abstract WhereFilter.Criteria createBlotterCriteria(T e);
+    protected abstract Criteria createBlotterCriteria(T e);
 
 }

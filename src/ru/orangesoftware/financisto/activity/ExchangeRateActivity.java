@@ -20,7 +20,7 @@ import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.rates.ExchangeRate;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 import ru.orangesoftware.financisto.widget.RateNode;
 import ru.orangesoftware.financisto.widget.RateNodeOwner;

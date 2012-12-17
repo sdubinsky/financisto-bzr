@@ -15,7 +15,7 @@ import java.util.*;
 
 import android.util.Log;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import android.content.Context;
 
 import com.google.ical.values.RRule;

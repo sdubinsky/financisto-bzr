@@ -11,6 +11,7 @@ import android.content.Context;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.TransactionsTotalCalculator;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.model.Total;
 
 public class BlotterTotalCalculationTask extends TotalCalculationTask {

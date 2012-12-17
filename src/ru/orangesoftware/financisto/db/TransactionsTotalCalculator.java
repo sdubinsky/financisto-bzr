@@ -10,7 +10,8 @@ package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
 import android.util.Log;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.TotalError;
@@ -105,7 +106,7 @@ public class TransactionsTotalCalculator {
 
     private WhereFilter selectedAccountOnly(WhereFilter filter, long accountId) {
         WhereFilter copy = enhanceFilterForAccountBlotter(filter);
-        copy.put(WhereFilter.Criteria.eq("from_account_id", String.valueOf(accountId)));
+        copy.put(Criteria.eq("from_account_id", String.valueOf(accountId)));
         return copy;
     }
 

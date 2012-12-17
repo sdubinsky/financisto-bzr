@@ -19,12 +19,13 @@ import android.database.sqlite.SQLiteException;
 import android.util.Log;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.rates.*;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.math.BigDecimal;
@@ -127,7 +128,7 @@ public class DatabaseAdapter {
 
     public static WhereFilter enhanceFilterForAccountBlotter(WhereFilter filter) {
         WhereFilter accountFilter = WhereFilter.copyOf(filter);
-        accountFilter.put(WhereFilter.Criteria.raw(BlotterColumns.parent_id+"=0 OR "+ BlotterColumns.is_transfer+"=-1"));
+        accountFilter.put(Criteria.raw(BlotterColumns.parent_id + "=0 OR " + BlotterColumns.is_transfer + "=-1"));
         return accountFilter;
     }
 
@@ -1358,7 +1359,7 @@ public class DatabaseAdapter {
             String accountId = String.valueOf(account.getId());
             db.execSQL("delete from running_balance where account_id=?", new Object[]{accountId});
             WhereFilter filter = new WhereFilter("");
-            filter.put(WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, accountId));
+            filter.put(Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, accountId));
             filter.asc("datetime");
             filter.asc("_id");
             Cursor c = getBlotterForAccountWithSplits(filter);

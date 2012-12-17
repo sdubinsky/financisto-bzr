@@ -24,7 +24,7 @@ import ru.orangesoftware.financisto.activity.AccountWidget;
 import ru.orangesoftware.financisto.activity.MassOpActivity;
 import ru.orangesoftware.financisto.backup.DatabaseExport;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.TransactionStatus;

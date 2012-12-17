@@ -12,9 +12,8 @@ package ru.orangesoftware.financisto.activity;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.Payee;
-import ru.orangesoftware.financisto.model.Project;
 
 import java.util.ArrayList;
 
@@ -40,8 +39,8 @@ public class PayeeListActivity extends MyEntityListActivity<Payee> {
     }
 
     @Override
-    protected WhereFilter.Criteria createBlotterCriteria(Payee p) {
-        return WhereFilter.Criteria.eq(BlotterFilter.PAYEE_ID, String.valueOf(p.id));
+    protected Criteria createBlotterCriteria(Payee p) {
+        return Criteria.eq(BlotterFilter.PAYEE_ID, String.valueOf(p.id));
     }
 
 }

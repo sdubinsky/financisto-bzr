@@ -9,15 +9,14 @@
 package ru.orangesoftware.financisto.db;
 
 import android.util.Log;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.filter.DateTimeCriteria;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.test.*;
-import ru.orangesoftware.financisto.utils.FuturePlanner;
-import ru.orangesoftware.financisto.utils.MonthlyViewPlanner;
-import ru.orangesoftware.financisto.utils.TransactionList;
-import ru.orangesoftware.financisto.utils.Utils;
+import ru.orangesoftware.financisto.utils.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -240,7 +239,9 @@ public class PlannerTest extends AbstractDbTest {
     private TransactionList planTransactions(DateTime start, DateTime end) {
         now = start.atMidnight().asDate();
         to = end.atDayEnd().asDate();
-        FuturePlanner planner = new FuturePlanner(db, to, now);
+        WhereFilter filter = WhereFilter.empty();
+        filter.put(new DateTimeCriteria(now.getTime(), to.getTime()));
+        FuturePlanner planner = new FuturePlanner(db, filter, now);
         TransactionList data = planner.getPlannedTransactionsWithTotals();
         logTransactions(data.transactions);
         return data;

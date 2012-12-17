@@ -12,7 +12,7 @@ package ru.orangesoftware.financisto.recur;
 
 import com.google.ical.util.TimeUtils;
 import com.google.ical.values.*;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 
 import java.text.ParseException;
 import java.util.Calendar;

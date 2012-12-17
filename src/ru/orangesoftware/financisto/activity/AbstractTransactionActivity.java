@@ -31,6 +31,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import ru.orangesoftware.financisto.db.DatabaseHelper.*;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.recur.NotificationOptions;

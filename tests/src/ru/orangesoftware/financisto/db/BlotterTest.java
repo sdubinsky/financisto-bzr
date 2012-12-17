@@ -10,7 +10,7 @@ package ru.orangesoftware.financisto.db;
 
 import android.database.Cursor;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Transaction;
 import ru.orangesoftware.financisto.test.AccountBuilder;

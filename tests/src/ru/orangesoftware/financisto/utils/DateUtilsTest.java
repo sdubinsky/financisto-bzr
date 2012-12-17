@@ -9,10 +9,12 @@
 package ru.orangesoftware.financisto.utils;
 
 import android.test.AndroidTestCase;
+import ru.orangesoftware.financisto.datetime.Period;
+import ru.orangesoftware.financisto.datetime.PeriodType;
 import ru.orangesoftware.financisto.test.DateTime;
 
 import static ru.orangesoftware.financisto.test.DateTime.date;
-import static ru.orangesoftware.financisto.utils.DateUtils.PeriodType.*;
+import static ru.orangesoftware.financisto.datetime.PeriodType.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,8 +41,8 @@ public class DateUtilsTest extends AndroidTestCase {
         refTime = dateTime.asLong();
     }
 
-    private void assertPeriod(DateUtils.PeriodType periodType, DateTime start, DateTime end) {
-        DateUtils.Period period = periodType.calculatePeriod(refTime);
+    private void assertPeriod(PeriodType periodType, DateTime start, DateTime end) {
+        Period period = periodType.calculatePeriod(refTime);
         assertEquals(start.atMidnight().asLong(), period.start);
         assertEquals(end.atDayEnd().asLong(), period.end);
     }

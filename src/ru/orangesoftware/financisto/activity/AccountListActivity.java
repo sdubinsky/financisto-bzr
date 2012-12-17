@@ -29,8 +29,8 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.AccountListAdapter2;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.blotter.TotalCalculationTask;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
 import ru.orangesoftware.financisto.dialog.AccountInfoDialog;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.MenuItemInfo;
@@ -285,7 +285,7 @@ public class AccountListActivity extends AbstractListActivity {
         Account account = em.getAccount(id);
         if (account != null) {
             Intent intent = new Intent(AccountListActivity.this, BlotterActivity.class);
-            WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(id))
+            Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(id))
                 .toIntent(account.title, intent);
             intent.putExtra(BlotterFilterActivity.IS_ACCOUNT_FILTER, true);
             startActivityForResult(intent, VIEW_ACCOUNT_REQUEST);

@@ -14,7 +14,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import ru.orangesoftware.financisto.utils.LocalizableEnum;
 import ru.orangesoftware.financisto.utils.PinProtection;
 import ru.orangesoftware.financisto.utils.RecurUtils;

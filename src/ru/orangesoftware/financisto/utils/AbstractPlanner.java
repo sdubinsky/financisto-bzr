@@ -9,6 +9,7 @@
 package ru.orangesoftware.financisto.utils;
 
 import android.database.Cursor;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.model.Total;
@@ -27,15 +28,13 @@ public abstract class AbstractPlanner {
     protected final DatabaseAdapter db;
     protected final MyEntityManager em;
 
-    protected final Date startDate;
-    protected final Date endDate;
+    protected final WhereFilter filter;
     protected final Date now;
 
-    public AbstractPlanner(DatabaseAdapter db, Date startDate, Date endDate, Date now) {
+    public AbstractPlanner(DatabaseAdapter db, WhereFilter filter, Date now) {
         this.db = db;
         this.em = db.em();
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.filter = filter;
         this.now = now;
     }
 
@@ -66,10 +65,7 @@ public abstract class AbstractPlanner {
     protected abstract Cursor getRegularTransactions();
 
     private List<TransactionInfo> getScheduledTransactions() {
-        if (now.before(endDate)) {
-            return em.getAllScheduledTransactions();
-        }
-        return Collections.emptyList();
+        return em.getAllScheduledTransactions();
     }
 
     private List<TransactionInfo> planSchedules(List<TransactionInfo> scheduledTransactions) {
@@ -104,6 +100,8 @@ public abstract class AbstractPlanner {
 
     private List<Date> calculatePlannedDates(TransactionInfo scheduledTransaction) {
         String recurrence = scheduledTransaction.recurrence;
+        Date startDate = getStartDateFromFilter();
+        Date endDate = getEndDateFromFilter();
         Date calcDate = startDate.before(now) ? now : startDate;
         if (recurrence == null) {
             Date scheduledDate = new Date(scheduledTransaction.dateTime);
@@ -115,6 +113,14 @@ public abstract class AbstractPlanner {
             return r.generateDates(calcDate, endDate);
         }
         return Collections.emptyList();
+    }
+
+    private Date getStartDateFromFilter() {
+        return new Date(filter.getDateTime().getPeriod().start);
+    }
+
+    private Date getEndDateFromFilter() {
+        return new Date(filter.getDateTime().getPeriod().end);
     }
 
     private boolean insideTheRequiredPeriod(Date startDate, Date endDate, Date date) {

@@ -17,15 +17,15 @@ import java.util.Date;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
-import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.filter.Criteria;
+import ru.orangesoftware.financisto.filter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 import ru.orangesoftware.financisto.utils.EnumUtils;
 import ru.orangesoftware.financisto.utils.TransactionUtils;
-import ru.orangesoftware.financisto.utils.DateUtils.Period;
+import ru.orangesoftware.financisto.datetime.Period;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -105,7 +105,7 @@ public class BlotterFilterActivity extends AbstractActivity {
 			public void onClick(View v) {
                 if (isAccountFilter()) {
                     Intent data = new Intent();
-                    WhereFilter.Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(accountId))
+                    Criteria.eq(BlotterFilter.FROM_ACCOUNT_ID, String.valueOf(accountId))
                         .toIntent(filter.getTitle(), data);
                     setResult(RESULT_OK, data);
                     finish();

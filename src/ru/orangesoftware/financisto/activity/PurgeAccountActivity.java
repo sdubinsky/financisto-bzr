@@ -23,7 +23,7 @@ import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.backup.DatabaseExport;
 import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.datetime.DateUtils;
 
 import java.text.DateFormat;
 import java.util.Calendar;

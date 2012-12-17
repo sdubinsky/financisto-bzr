@@ -9,13 +9,14 @@
 package ru.orangesoftware.financisto.utils;
 
 import android.database.Cursor;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.filter.Criteria;
+import ru.orangesoftware.financisto.filter.DateTimeCriteria;
 import ru.orangesoftware.financisto.model.TransactionInfo;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -39,14 +40,23 @@ public class MonthlyViewPlanner extends AbstractPlanner {
     private final long accountId;
 
     public MonthlyViewPlanner(DatabaseAdapter db, long accountId, Date startDate, Date endDate, Date now) {
-        super(db, startDate, endDate, now);
+        super(db, createMonthlyViewFilter(startDate, endDate, accountId), now);
         this.accountId = accountId;
     }
 
     @Override
     protected Cursor getRegularTransactions() {
-        WhereFilter filter = createMonthlyViewFilter();
-        return db.getBlotterForAccountWithSplits(filter);
+        WhereFilter blotterFilter = WhereFilter.copyOf(filter);
+        return db.getBlotterForAccountWithSplits(blotterFilter);
+    }
+
+    private static WhereFilter createMonthlyViewFilter(Date startDate, Date endDate, long accountId) {
+        WhereFilter filter = WhereFilter.empty();
+        filter.put(new DateTimeCriteria(startDate.getTime(), endDate.getTime()));
+        filter.eq(DatabaseHelper.BlotterColumns.from_account_id.name(), String.valueOf(accountId));
+        filter.eq(Criteria.raw("(" + DatabaseHelper.TransactionColumns.parent_id + "=0 OR " + DatabaseHelper.BlotterColumns.is_transfer + "=-1)"));
+        filter.asc(DatabaseHelper.BlotterColumns.datetime.name());
+        return filter;
     }
 
     @Override
@@ -74,14 +84,6 @@ public class MonthlyViewPlanner extends AbstractPlanner {
             return inverse;
         }
         return transaction;
-    }
-
-    private WhereFilter createMonthlyViewFilter() {
-        return WhereFilter.empty()
-                .eq(DatabaseHelper.BlotterColumns.from_account_id.name(), String.valueOf(accountId))
-                .btw(DatabaseHelper.BlotterColumns.datetime.name(), String.valueOf(startDate.getTime()), String.valueOf(endDate.getTime()))
-                .eq(WhereFilter.Criteria.raw("("+ DatabaseHelper.TransactionColumns.parent_id+"=0 OR "+ DatabaseHelper.BlotterColumns.is_transfer+"=-1)"))
-                .asc(DatabaseHelper.BlotterColumns.datetime.name());
     }
 
 

@@ -11,7 +11,7 @@ package ru.orangesoftware.financisto.db;
 import android.database.Cursor;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.*;
 

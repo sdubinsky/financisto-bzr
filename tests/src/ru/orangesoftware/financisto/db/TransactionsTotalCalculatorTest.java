@@ -8,7 +8,7 @@
 
 package ru.orangesoftware.financisto.db;
 
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.*;
 

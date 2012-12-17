@@ -14,7 +14,7 @@ import android.widget.ListAdapter;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.BlotterListAdapter;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;

@@ -12,20 +12,21 @@ package ru.orangesoftware.financisto.report;
 
 import android.content.Context;
 import android.database.Cursor;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
-import ru.orangesoftware.financisto.blotter.WhereFilter.Criteria;
-import ru.orangesoftware.financisto.blotter.WhereFilter.DateTimeCriteria;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.datetime.Period;
+import ru.orangesoftware.financisto.datetime.PeriodType;
+import ru.orangesoftware.financisto.filter.Criteria;
+import ru.orangesoftware.financisto.filter.DateTimeCriteria;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper.ReportColumns;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.utils.DateUtils.*;
 
 import java.util.ArrayList;
 
 import static ru.orangesoftware.financisto.db.DatabaseHelper.V_REPORT_PERIOD;
-import static ru.orangesoftware.financisto.utils.DateUtils.PeriodType.*;
+import static ru.orangesoftware.financisto.datetime.PeriodType.*;
 
 public class PeriodReport extends Report {
 

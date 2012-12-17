@@ -10,7 +10,7 @@ package ru.orangesoftware.financisto.activity;
 
 import android.content.Intent;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.BudgetsTotalCalculator;
 import ru.orangesoftware.financisto.model.Budget;
 import ru.orangesoftware.financisto.model.Total;

@@ -9,7 +9,7 @@
 package ru.orangesoftware.financisto.export;
 
 import android.util.Log;
-import ru.orangesoftware.financisto.blotter.WhereFilter;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.export.csv.CsvImport;
 import ru.orangesoftware.financisto.export.csv.CsvImportOptions;
 import ru.orangesoftware.financisto.export.csv.CsvTransaction;

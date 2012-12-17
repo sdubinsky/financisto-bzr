@@ -15,7 +15,7 @@ import android.view.View;
 import android.widget.TimePicker;
 import ru.orangesoftware.financisto.R;
 
-import static ru.orangesoftware.financisto.utils.DateUtils.is24HourFormat;
+import static ru.orangesoftware.financisto.datetime.DateUtils.is24HourFormat;
 
 /**
  * Created by IntelliJ IDEA.

@@ -8,19 +8,17 @@
  * Contributors:
  *     Denis Solonenko - initial API and implementation
  ******************************************************************************/
-package ru.orangesoftware.financisto.blotter;
+package ru.orangesoftware.financisto.filter;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import ru.orangesoftware.financisto.activity.DateFilterActivity;
-import ru.orangesoftware.financisto.utils.DateUtils;
+import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.utils.Utils;
-import ru.orangesoftware.financisto.utils.DateUtils.Period;
-import ru.orangesoftware.financisto.utils.DateUtils.PeriodType;
+import ru.orangesoftware.financisto.datetime.PeriodType;
 import ru.orangesoftware.orb.Expression;
 import ru.orangesoftware.orb.Expressions;
 import android.content.Intent;
@@ -30,14 +28,14 @@ import android.os.Bundle;
 
 public class WhereFilter {
 	
-	private static final String TITLE_EXTRA = "title";
-	private static final String FILTER_EXTRA = "filter";
-	private static final String SORT_ORDER_EXTRA = "sort_order";
-	
-	private static final String FILTER_TITLE_PREF = "filterTitle";
-	private static final String FILTER_LENGTH_PREF = "filterLength";	
-	private static final String FILTER_CRITERIA_PREF = "filterCriteria";
-	private static final String FILTER_SORT_ORDER_PREF = "filterSortOrder";
+	public static final String TITLE_EXTRA = "title";
+    public static final String FILTER_EXTRA = "filter";
+    public static final String SORT_ORDER_EXTRA = "sort_order";
+
+    public static final String FILTER_TITLE_PREF = "filterTitle";
+    public static final String FILTER_LENGTH_PREF = "filterLength";
+    public static final String FILTER_CRITERIA_PREF = "filterCriteria";
+    public static final String FILTER_SORT_ORDER_PREF = "filterSortOrder";
 
 	private final String title;
 	private final LinkedList<Criteria> criterias = new LinkedList<Criteria>();
@@ -193,10 +191,9 @@ public class WhereFilter {
 		WhereFilter filter = new WhereFilter(title);
 		String[] a = bundle.getStringArray(FILTER_EXTRA);
 		if (a != null) {
-			int count = a.length;
-			for (int i=0; i<count; i++) {
-				filter.put(Criteria.fromStringExtra(a[i]));
-			}
+            for (String s : a) {
+                filter.put(Criteria.fromStringExtra(s));
+            }
 		}
 		String sortOrder = bundle.getString(SORT_ORDER_EXTRA);
 		if (sortOrder != null) {
@@ -319,220 +316,7 @@ public class WhereFilter {
 		}		
 	}
 
-	public static class Criteria {
-		
-		public static Criteria eq(String column, String value) {
-			return new Criteria(column, Operation.EQ, value);
-		}
-
-        public static Criteria neq(String column, String value) {
-            return new Criteria(column, Operation.NEQ, value);
-        }
-
-		public static Criteria btw(String column, String value1, String value2) {
-			return new Criteria(column, Operation.BTW, value1, value2);
-		}		
-			
-		public static Criteria gt(String column, String value) {
-			return new Criteria(column, Operation.GT, value);
-		}		
-
-		public static Criteria gte(String column, String value) {
-			return new Criteria(column, Operation.GTE, value);
-		}		
-
-		public static Criteria lt(String column, String value) {
-			return new Criteria(column, Operation.LT, value);
-		}		
-
-		public static Criteria lte(String column, String value) {
-			return new Criteria(column, Operation.LTE, value);
-		}		
-
-        public static Criteria raw(String text) {
-            return new Criteria("("+text+")", Operation.NOPE);
-        }
-
-		protected final String columnName;
-		protected final Operation operation;
-		protected final String[] values;
-		
-	    private Criteria(String columnName, Operation operation, String...values) {
-			this.columnName = columnName;
-			this.operation = operation;
-			this.values = values;
-		}
-	    
-		public Expression toWhereExpression() {
-			switch (operation) {
-			case EQ:
-				return Expressions.eq(columnName, getLongValue1());
-			case GT:
-				return Expressions.gt(columnName, getLongValue1());
-			case GTE:
-				return Expressions.gte(columnName, getLongValue1());
-			case LT:
-				return Expressions.lt(columnName, getLongValue1());
-			case LTE:
-				return Expressions.lte(columnName, getLongValue1());
-			case BTW:
-				return Expressions.btw(columnName, getLongValue1(), getLongValue2());
-			}
-			throw new IllegalArgumentException();
-		}
-
-	    public String toStringExtra() {
-	    	StringBuilder sb = new StringBuilder();
-	    	sb.append(columnName).append(",");
-	    	sb.append(operation.name()).append(",");
-	    	String[] values = this.values;
-	    	for (int i=0; i<values.length; i++) {
-	    		if (i > 0) {
-	    			sb.append(",");
-	    		}
-	    		sb.append(values[i]);
-	    	}
-	    	return sb.toString();
-	    }
-	    
-		public static Criteria fromStringExtra(String extra) {
-	    	String[] a = extra.split(",");
-	    	if (BlotterFilter.DATETIME.equals(a[0])) {
-	    		return DateTimeCriteria.fromStringExtra(extra);
-	    	} else {
-		    	String[] values = new String[a.length-2];
-		    	System.arraycopy(a, 2, values, 0, values.length);
-	    		return new Criteria(a[0], Operation.valueOf(a[1]), values);
-	    	}
-	    }
-	    
-	    public String getColumn() {
-	    	return columnName;
-	    }
-	    
-	    public String getStringValue() {
-	    	return values[0];
-	    }
-
-	    public int getIntValue() {
-	    	return Integer.parseInt(values[0]);
-	    }
-
-	    public long getLongValue1() {
-	    	return Long.parseLong(values[0]);
-	    }
-	    
-	    public long getLongValue2() {
-	    	return Long.parseLong(values[1]);
-	    }
-	    
-		public Operation getOperation() {
-	    	return operation;
-	    }
-	    
-	    public String getSelection() {
-	    	return columnName+" "+operation.op;
-	    }
-	    
-	    public int size() {
-	    	return values != null ? values.length : 0;
-	    }
-	    
-	    public String[] getSelectionArgs() {
-	    	return values;
-	    }
-	    
-	    public void toIntent(String title, Intent intent) {
-	    	intent.putExtra(TITLE_EXTRA, title);
-	    	intent.putExtra(FILTER_EXTRA, new String[]{toStringExtra()});
-	    }
-
-	}
-
-	public static class DateTimeCriteria extends Criteria {
-		
-		public static final long START_OF_ERA;
-		public static final long END_OF_ERA;
-		
-		static {
-			Calendar c = Calendar.getInstance();
-			c.set(Calendar.YEAR, 1970);
-			c.set(Calendar.MONTH, 1);
-			c.set(Calendar.DAY_OF_MONTH, 1);
-			c.set(Calendar.HOUR_OF_DAY, 0);
-			c.set(Calendar.MINUTE, 0);
-			c.set(Calendar.SECOND, 0);
-			c.set(Calendar.MILLISECOND, 0);
-			START_OF_ERA = c.getTimeInMillis();
-			c.set(Calendar.YEAR, 2025);
-			c.set(Calendar.MONTH, 12);
-			c.set(Calendar.DAY_OF_MONTH, 31);
-			c.set(Calendar.HOUR_OF_DAY, 23);
-			c.set(Calendar.MINUTE, 59);
-			c.set(Calendar.SECOND, 59);
-			c.set(Calendar.MILLISECOND, 999);
-			END_OF_ERA = c.getTimeInMillis();
-		}
-				
-		private final Period period;
-
-		public DateTimeCriteria(Period period) {
-			super(BlotterFilter.DATETIME, Operation.BTW, new String[]{String.valueOf(period.start), String.valueOf(period.end)});
-			this.period = period;
-		}
-
-		public DateTimeCriteria(PeriodType period) {
-			this(DateUtils.getPeriod(period));
-		}
-
-		public DateTimeCriteria(long start, long end) {
-			this(new Period(PeriodType.CUSTOM, start, end));
-		}
-
-		public String toStringExtra() {
-	    	StringBuilder sb = new StringBuilder();
-	    	sb.append(BlotterFilter.DATETIME).append(",#,");
-	    	sb.append(period.type.name());
-	    	if (period.isCustom()) {
-	    		sb.append(",");
-	    		sb.append(period.start).append(",");
-	    		sb.append(period.end);
-	    	}
-	    	return sb.toString();
-	    }
-	    
-		public static Criteria fromStringExtra(String extra) {
-	    	String[] a = extra.split(",");
-	    	if ("#".equals(a[1])) {
-	    		// new format support
-	    		PeriodType period = PeriodType.valueOf(a[2]);
-	    		if (period == PeriodType.CUSTOM) {
-	    			return new DateTimeCriteria(new Period(PeriodType.CUSTOM, Long.parseLong(a[3]), Long.parseLong(a[4])));
-	    		} else {
-	    			return new DateTimeCriteria(DateUtils.getPeriod(period));
-	    		}
-	    	} else {
-	    		// legacy support
-	    		Operation op = Operation.valueOf(a[1]);
-	    		if (op == Operation.GTE) {
-	    			return new DateTimeCriteria(new Period(PeriodType.CUSTOM, Long.parseLong(a[2]), END_OF_ERA));
-	    		} else if (op == Operation.LTE) {
-	    			return new DateTimeCriteria(new Period(PeriodType.CUSTOM, START_OF_ERA, Long.parseLong(a[2])));
-	    		} else if (a.length > 3) {
-	    			return new DateTimeCriteria(new Period(PeriodType.CUSTOM, Long.parseLong(a[2]), Long.parseLong(a[3])));
-	    		} else {
-	    			return new DateTimeCriteria(DateUtils.getPeriod(PeriodType.THIS_MONTH));
-	    		}
-	    	}
-	    }
-
-		public Period getPeriod() {
-			return period;
-		}		
-		
-	}
-
-	public void clearDateTime() {
+    public void clearDateTime() {
 		remove(BlotterFilter.DATETIME);
 	}
 	

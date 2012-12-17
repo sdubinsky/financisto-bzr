@@ -20,11 +20,7 @@
 		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/bFilter"
 			android:src="@drawable/ic_menu_filter_off"/>
-        <ImageButton android:layout_width="wrap_content"
-                     android:layout_height="wrap_content" android:id="@+id/bToggle"/>
-        <ImageButton android:layout_width="wrap_content"
-                     android:layout_height="wrap_content" android:id="@+id/bPieChart"
-                     android:src="@drawable/ic_tab_budgets"/>
+
         <include layout="@layout/total_text"/>
 	</LinearLayout>
 </LinearLayout>
