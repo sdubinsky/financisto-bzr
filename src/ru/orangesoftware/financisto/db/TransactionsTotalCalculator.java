@@ -139,6 +139,29 @@ public class TransactionsTotalCalculator {
         return balance.longValue();
     }
 
+    public static Total calculateTotalFromListInHomeCurrency(DatabaseAdapter db, List<TransactionInfo> list) {
+        try {
+            Currency toCurrency = db.em().getHomeCurrency();
+            long balance = calculateTotalFromList(db, list, toCurrency);
+            Total total = new Total(toCurrency);
+            total.balance = balance;
+            return total;
+        } catch (UnableToCalculateRateException e) {
+            return new Total(e.toCurrency, TotalError.atDateRateError(e.fromCurrency, e.datetime));
+        }
+    }
+
+    public static long calculateTotalFromList(DatabaseAdapter db, List<TransactionInfo> list, Currency toCurrency) throws UnableToCalculateRateException {
+        MyEntityManager em = db.em();
+        ExchangeRateProvider rates = db.getHistoryRates();
+        BigDecimal balance = BigDecimal.ZERO;
+        for (TransactionInfo t : list) {
+            BigDecimal amount = getAmountFromTransaction(em, t, toCurrency, rates);
+            balance = balance.add(amount);
+        }
+        return balance.longValue();
+    }
+
     public static BigDecimal getAmountFromCursor(MyEntityManager em, Cursor c, Currency toCurrency, ExchangeRateProvider rates, int index) throws UnableToCalculateRateException {
         long datetime = c.getLong(index++);
         long fromCurrencyId = c.getLong(index++);
@@ -150,7 +173,7 @@ public class TransactionsTotalCalculator {
         return getConvertedAmount(em, toCurrency, rates, datetime, fromCurrencyId, fromAmount, toCurrencyId, toAmount, originalCurrencyId, originalAmount);
     }
 
-    public static BigDecimal getAmountFromTransaction(MyEntityManager em, Currency toCurrency, TransactionInfo ti, ExchangeRateProvider rates)
+    public static BigDecimal getAmountFromTransaction(MyEntityManager em, TransactionInfo ti, Currency toCurrency, ExchangeRateProvider rates)
             throws UnableToCalculateRateException {
         long datetime = ti.dateTime;
         long fromCurrencyId = ti.fromAccount.currency.id;

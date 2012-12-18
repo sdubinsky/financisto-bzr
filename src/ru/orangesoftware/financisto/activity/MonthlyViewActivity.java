@@ -16,12 +16,10 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.CreditCardStatementAdapter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.AccountType;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.TransactionInfo;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.MonthlyViewPlanner;
 import ru.orangesoftware.financisto.utils.PinProtection;
+import ru.orangesoftware.financisto.utils.TransactionList;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -43,6 +41,7 @@ public class MonthlyViewActivity extends ListActivity {
 	private DatabaseAdapter dbAdapter;
 
 	private long accountId = 0;
+    private Account account;
     private Currency currency;
 	private boolean isCreditCard = false;
 	private boolean isStatementPreview = false;
@@ -112,7 +111,7 @@ public class MonthlyViewActivity extends ListActivity {
 		
 		// set currency based on account
 		MyEntityManager em = dbAdapter.em();
-        Account account = em.getAccount(accountId);
+        account = em.getAccount(accountId);
 		
         if (month==0 && year==0) {
 	        // get current month and year in first launch
@@ -326,7 +325,7 @@ public class MonthlyViewActivity extends ListActivity {
 		return calCurr.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
 	}
 
-    private class MonthlyPreviewTask extends AsyncTask<Void, Void, MonthlyPreviewReport> {
+    private class MonthlyPreviewTask extends AsyncTask<Void, Void, TransactionList> {
 
         private final Date open;
         private final Date close;
@@ -344,22 +343,21 @@ public class MonthlyViewActivity extends ListActivity {
         }
 
         @Override
-        protected MonthlyPreviewReport doInBackground(Void... voids) {
-            MonthlyViewPlanner planner = new MonthlyViewPlanner(dbAdapter, accountId, open, close, now);
-            List<TransactionInfo> transactions;
+        protected TransactionList doInBackground(Void... voids) {
+            MonthlyViewPlanner planner = new MonthlyViewPlanner(dbAdapter, account, isStatementPreview, open, close, now);
+            TransactionList transactions;
             if (isStatementPreview) {
                 transactions = planner.getCreditCardStatement();
             } else {
-                transactions = planner.getPlannedTransactions();
+                transactions = planner.getPlannedTransactionsWithTotals();
             }
-            long total = calculateTotal(transactions);
-            return new MonthlyPreviewReport(transactions, total);
+            return transactions;
         }
 
         @Override
-        protected void onPostExecute(MonthlyPreviewReport monthlyPreviewReport) {
+        protected void onPostExecute(TransactionList monthlyPreviewReport) {
             List<TransactionInfo> transactions = monthlyPreviewReport.transactions;
-            long total = monthlyPreviewReport.total;
+            long total = monthlyPreviewReport.totals[0].balance;
             if (transactions == null || transactions.isEmpty()) {
                 displayNoTransactions();
             } else { // display data
@@ -388,18 +386,6 @@ public class MonthlyViewActivity extends ListActivity {
         }
     }
 
-    private static class MonthlyPreviewReport {
-
-        public final List<TransactionInfo> transactions;
-        public final long total;
-
-        public MonthlyPreviewReport(List<TransactionInfo> transactions, long total) {
-            this.transactions = transactions;
-            this.total = total;
-        }
-
-    }
-
 	/**
 	 * Get data for a given period and display the related credit card expenses.
 	 * @param open Start of period.
@@ -420,34 +406,6 @@ public class MonthlyViewActivity extends ListActivity {
         ((TextView)findViewById(android.R.id.empty)).setText(R.string.no_transactions);
         setListAdapter(null);
     }
-
-	private long calculateTotal(List<TransactionInfo> transactions) {
-		long total = 0;
-		if (isStatementPreview) {
-			// exclude payments
-            for (TransactionInfo t : transactions) {
-                if (!t.isCreditCardPayment()) {
-                    total += getAmount(t);
-                }
-            }
-		} else {
-			// consider all transactions
-            for (TransactionInfo t : transactions) {
-                total += getAmount(t);
-            }
-		}
-		return total;		
-	}
-
-    private long getAmount(TransactionInfo t) {
-        if (t.fromAccount.id == accountId) {
-            return t.fromAmount;
-        } else if (t.isTransfer() && t.toAccount.id == accountId) {
-            return t.toAmount;
-        }
-        return 0;
-    }
-
 
     /**
 	 * Adjust the title based on the credit card's payment day.

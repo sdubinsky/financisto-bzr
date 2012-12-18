@@ -12,8 +12,7 @@ import android.database.Cursor;
 import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.model.TransactionInfo;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.recur.Recurrence;
 
 import java.util.*;
@@ -58,9 +57,7 @@ public abstract class AbstractPlanner {
         }
     }
 
-    private Total[] calculateTotals(List<TransactionInfo> transactions) {
-        return new Total[0];
-    }
+    protected abstract Total[] calculateTotals(List<TransactionInfo> transactions);
 
     protected abstract Cursor getRegularTransactions();
 

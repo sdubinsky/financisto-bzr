@@ -11,10 +11,7 @@ package ru.orangesoftware.financisto.db;
 import android.util.Log;
 import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.filter.DateTimeCriteria;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.TransactionInfo;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.test.*;
 import ru.orangesoftware.financisto.utils.*;
 
@@ -27,9 +24,12 @@ import static ru.orangesoftware.financisto.test.DateTime.date;
 
 public class PlannerTest extends AbstractDbTest {
 
+    Currency c1;
     Account a1;
+    Currency c2;
     Account a2;
     Map<String, Category> categoriesMap;
+    Currency homeCurrency;
 
     Date from = date(2011, 8, 1).atMidnight().asDate();
     Date to = date(2011, 8, 16).atDayEnd().asDate();
@@ -38,9 +38,13 @@ public class PlannerTest extends AbstractDbTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        a1 = AccountBuilder.createDefault(db);
-        a2 = AccountBuilder.createDefault(db);
+        c1 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").create();
+        c2 = CurrencyBuilder.withDb(db).name("SGD").title("Singapore Dollar").symbol("S$").makeDefault().create();
+        a1 = AccountBuilder.createDefault(db, c1);
+        a2 = AccountBuilder.createDefault(db, c2);
         categoriesMap = CategoryBuilder.createDefaultHierarchy(db);
+        homeCurrency = em.getHomeCurrency();
+        CurrencyCache.initialize(db.em());
     }
 
     public void test_should_generate_monthly_view_for_account() {
@@ -63,10 +67,10 @@ public class PlannerTest extends AbstractDbTest {
         //14 2011-08-15 -105 -> a2     r5
         //15 2011-08-16 -50            r1
         //16 2011-08-16 +40            r2
-        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<TransactionInfo> transactions = planner.getPlannedTransactions();
-        logTransactions(transactions);
-        assertTransactions(transactions,
+        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1, false, from, to, now);
+        TransactionList list = planner.getPlannedTransactionsWithTotals();
+        logTransactions(list.transactions);
+        assertTransactions(list.transactions,
                 date(2011, 8, 8), 1000,
                 date(2011, 8, 9), -100,
                 date(2011, 8, 9), 40,
@@ -85,12 +89,14 @@ public class PlannerTest extends AbstractDbTest {
                 date(2011, 8, 16), -50,
                 date(2011, 8, 16), 40
         );
+        assertAmount(447, a1.currency, list.totals[0]);
     }
 
     public void test_should_generate_credit_card_statement() {
         prepareData();
-        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
-        List<TransactionInfo> transactions = planner.getCreditCardStatement();
+        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1, true, from, to, now);
+        TransactionList statement = planner.getCreditCardStatement();
+        List<TransactionInfo> transactions = statement.transactions;
         logTransactions(transactions);
         assertTransactions(transactions,
                 //payments
@@ -117,6 +123,8 @@ public class PlannerTest extends AbstractDbTest {
                 date(2011, 8, 15), -105,
                 date(2011, 8, 16), -50
         );
+        // 400 gets excluded as payment
+        assertAmount(47, a1.currency, statement.totals[0]);
     }
 
     public void test_should_generate_monthly_preview_for_the_next_month_correctly(){
@@ -140,7 +148,7 @@ public class PlannerTest extends AbstractDbTest {
         //2011-09-16 -50            r1
         //2011-09-16 +52  <- a2     r4
         //2011-09-16 +30  <- a2     r6
-        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
+        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1, false, from, to, now);
         List<TransactionInfo> transactions = planner.getPlannedTransactions();
         logTransactions(transactions);
         assertTransactions(transactions,
@@ -169,7 +177,7 @@ public class PlannerTest extends AbstractDbTest {
         from = date(2011, 7, 1).atMidnight().asDate();
         to = date(2011, 7, 16).atDayEnd().asDate();
 
-        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1.id, from, to, now);
+        MonthlyViewPlanner planner = new MonthlyViewPlanner(db, a1, false, from, to, now);
         List<TransactionInfo> transactions = planner.getPlannedTransactions();
         logTransactions(transactions);
         assertTransactions(transactions,
@@ -181,7 +189,7 @@ public class PlannerTest extends AbstractDbTest {
     public void test_should_generate_future_preview() {
         prepareData();
         TransactionList transactions = planTransactions(date(2011, 7, 1), date(2011, 7, 19));
-        // well, this is going to be impossible to re-test if something breaks
+        // well, this is going to be impossible to re-verify if something breaks :)
         assertTransactions2(transactions.transactions,
                  0, date(2011, 7, 1),   -50, "x1",
                  1, date(2011, 7, 3),   -50, "x1",
@@ -194,6 +202,12 @@ public class PlannerTest extends AbstractDbTest {
                  8, date(2011, 7, 15),  -50, "x1",
                  9, date(2011, 7, 17),  -50, "x1",
                 10, date(2011, 7, 19),  -50, "x1");
+        assertTrue(transactions.totals[0].isError());
+
+        RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2011, 7, 1)).rate(2.0f).create();
+        transactions = planTransactions(date(2011, 7, 1), date(2011, 7, 19));
+        assertFalse(transactions.totals[0].isError());
+        assertAmount(10*(-50)+2*122, homeCurrency, transactions.totals[0]);
 
         transactions = planTransactions(date(2011, 7, 20), date(2011, 8, 4));
         assertTransactions2(transactions.transactions,
@@ -209,31 +223,33 @@ public class PlannerTest extends AbstractDbTest {
                 20, date(2011, 8, 4),   -50, "r1",
                 21, date(2011, 8, 4),   -50, "x1");
 
-/*                22, date(2011, 8, 5),  -600, "r4",
-                23, date(2011, 8, 5),  -120, "r6",
-                24, date(2011, 8, 6),   -50, "r1",
-                25, date(2011, 8, 6),   -50, "x1",
-                26, date(2011, 8, 8),  1000, "t1",
-                27, date(2011, 8, 8),   -50, "r1",
-                28, date(2011, 8, 8),   -50, "x1",
-                29, date(2011, 8, 9),  -100, "t2",
-                30, date(2011, 8, 9),    40, "r2",
+        transactions = planTransactions(date(2011, 8, 5), date(2011, 8, 15));
+        assertTransactions2(transactions.transactions,
+                22, date(2011, 8, 5), -600, "r4",
+                23, date(2011, 8, 5), -120, "r6",
+                24, date(2011, 8, 6), -50, "r1",
+                25, date(2011, 8, 6), -50, "x1",
+                26, date(2011, 8, 8), 1000, "t1",
+                27, date(2011, 8, 8), -50, "r1",
+                28, date(2011, 8, 8), -50, "x1",
+                29, date(2011, 8, 9), -100, "t2",
+                30, date(2011, 8, 9), 40, "r2",
                 31, date(2011, 8, 10), -500, "t3",
-                32, date(2011, 8, 10),  -50, "r1",
-                33, date(2011, 8, 10),  -50, "x1",
+                32, date(2011, 8, 10), -50, "r1",
+                33, date(2011, 8, 10), -50, "x1",
                 34, date(2011, 8, 11), -100, "t4",
                 35, date(2011, 8, 12), -120, "t5",
                 36, date(2011, 8, 12), -600, "r4",
-                37, date(2011, 8, 12),  -50, "r1",
-                38, date(2011, 8, 12),  -50, "x1",
+                37, date(2011, 8, 12), -50, "r1",
+                38, date(2011, 8, 12), -50, "x1",
                 39, date(2011, 8, 12), -120, "r6",
                 40, date(2011, 8, 14), -100, "t7",
-                41, date(2011, 8, 14),  -50, "r1",
-                42, date(2011, 8, 14),  -50, "x1",
-                43, date(2011, 8, 15),  400, "t6",
+                41, date(2011, 8, 14), -50, "r1",
+                42, date(2011, 8, 14), -50, "x1",
+                43, date(2011, 8, 15), 400, "t6",
                 44, date(2011, 8, 15), -210, "r3",
                 45, date(2011, 8, 15), -105, "r5"
-        );*/
+        );
     }
 
     private TransactionList planTransactions(DateTime start, DateTime end) {
@@ -337,7 +353,7 @@ public class PlannerTest extends AbstractDbTest {
     }
 
     private void logTransactions(List<TransactionInfo> transactions) {
-        Log.d("PlannerTest", "===== Planned transactions: "+transactions.size()+" =====");
+        Log.d("PlannerTest", "===== Planned transactions: " + transactions.size() + " =====");
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         for (TransactionInfo transaction : transactions) {
             Log.d("PlannerTest", df.format(new Date(transaction.dateTime))+" "+ Utils.amountToString(Currency.EMPTY, transaction.fromAmount)+" "+transaction.note);
@@ -388,6 +404,11 @@ public class PlannerTest extends AbstractDbTest {
 
     private Date asDate(long date) {
         return asDate(DateTime.fromTimestamp(date));
+    }
+
+    private void assertAmount(long expectedAmount, Currency expectedCurrency, Total total) {
+        assertEquals(expectedCurrency, total.currency);
+        assertEquals(expectedAmount, total.balance);
     }
 
 }

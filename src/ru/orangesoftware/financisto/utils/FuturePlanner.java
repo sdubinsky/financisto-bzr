@@ -9,11 +9,14 @@
 package ru.orangesoftware.financisto.utils;
 
 import android.database.Cursor;
+import ru.orangesoftware.financisto.db.TransactionsTotalCalculator;
 import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.TransactionInfo;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,6 +48,13 @@ public class FuturePlanner extends AbstractPlanner {
     @Override
     protected boolean includeScheduledSplitTransaction(TransactionInfo split) {
         return false;
+    }
+
+    @Override
+    protected Total[] calculateTotals(List<TransactionInfo> transactions) {
+        Total[] totals = new Total[1];
+        totals[0] = TransactionsTotalCalculator.calculateTotalFromListInHomeCurrency(db, transactions);
+        return totals;
     }
 
     /*@Override

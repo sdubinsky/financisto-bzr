@@ -88,7 +88,7 @@ public class PlannerActivity extends AbstractListActivity {
         private final WhereFilter filter;
 
         private PlannerTask(WhereFilter filter) {
-            this.filter = filter;
+            this.filter = WhereFilter.copyOf(filter);
         }
 
         @Override
@@ -96,7 +96,7 @@ public class PlannerActivity extends AbstractListActivity {
             Calendar date = Calendar.getInstance();
             date.add(Calendar.MONTH, 1);
             Date now = new Date();
-            filter.put(new DateTimeCriteria(new Period(PeriodType.CUSTOM, now.getTime(), date.getTimeInMillis())));
+            filter.put(new DateTimeCriteria(now.getTime(), date.getTimeInMillis()));
             FuturePlanner planner = new FuturePlanner(db, filter, now);
             return planner.getPlannedTransactionsWithTotals();
         }
