@@ -11,15 +11,16 @@ package ru.orangesoftware.financisto.activity;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ScheduledListAdapter;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.filter.WhereFilter;
-import ru.orangesoftware.financisto.datetime.Period;
-import ru.orangesoftware.financisto.datetime.PeriodType;
 import ru.orangesoftware.financisto.filter.DateTimeCriteria;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.utils.FuturePlanner;
@@ -37,7 +38,9 @@ import java.util.Date;
 public class PlannerActivity extends AbstractListActivity {
 
     private TextView totalText;
+    private TextView filterText;
     private ImageButton bFilter;
+
     private WhereFilter filter = WhereFilter.empty();
 
     public PlannerActivity() {
@@ -47,6 +50,7 @@ public class PlannerActivity extends AbstractListActivity {
     @Override
     protected void internalOnCreate(Bundle savedInstanceState) {
         totalText = (TextView)findViewById(R.id.total);
+        filterText = (TextView)findViewById(R.id.period);
         bFilter = (ImageButton)findViewById(R.id.bFilter);
     }
 
@@ -106,8 +110,19 @@ public class PlannerActivity extends AbstractListActivity {
             ScheduledListAdapter adapter = new ScheduledListAdapter(PlannerActivity.this, data.transactions);
             setListAdapter(adapter);
             setTotals(data.totals);
+            updateFilterText(filter);
         }
 
+    }
+
+    private void updateFilterText(WhereFilter filter) {
+        Criteria c = filter.get(DatabaseHelper.ReportColumns.DATETIME);
+        if (c != null) {
+            filterText.setText(DateUtils.formatDateRange(this, c.getLongValue1(), c.getLongValue2(),
+                    DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH));
+        } else {
+            filterText.setText(R.string.no_filter);
+        }
     }
 
     private void setTotals(Total[] totals) {
