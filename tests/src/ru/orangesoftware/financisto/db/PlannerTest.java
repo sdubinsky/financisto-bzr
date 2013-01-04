@@ -207,7 +207,7 @@ public class PlannerTest extends AbstractDbTest {
         RateBuilder.withDb(db).from(c1).to(c2).at(DateTime.date(2011, 7, 1)).rate(2.0f).create();
         transactions = planTransactions(date(2011, 7, 1), date(2011, 7, 19));
         assertFalse(transactions.totals[0].isError());
-        assertAmount(10*(-50)+2*122, homeCurrency, transactions.totals[0]);
+        assertAmount(2*122, 10*(-50), homeCurrency, transactions.totals[0]);
 
         transactions = planTransactions(date(2011, 7, 20), date(2011, 8, 4));
         assertTransactions2(transactions.transactions,
@@ -404,6 +404,13 @@ public class PlannerTest extends AbstractDbTest {
 
     private Date asDate(long date) {
         return asDate(DateTime.fromTimestamp(date));
+    }
+
+    private void assertAmount(long expectedIncome, long expectedExpenses, Currency expectedCurrency, Total total) {
+        assertEquals(expectedCurrency, total.currency);
+        assertEquals(expectedIncome, total.income);
+        assertEquals(expectedExpenses, total.expenses);
+        assertEquals(expectedIncome+expectedExpenses, total.balance);
     }
 
     private void assertAmount(long expectedAmount, Currency expectedCurrency, Total total) {

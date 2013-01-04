@@ -288,20 +288,22 @@ public class Utils {
 
     public void setAmountText(TextView totalText, Total total) {
         if (total.showAmount) {
-            setAmountTextWithBothAmountAndBalance(totalText, total);
+            setAmountTextWithTwoAmounts(totalText, total.currency, total.amount, total.balance);
+        } else if (total.showIncomeExpense) {
+            setAmountTextWithTwoAmounts(totalText, total.currency, total.income, total.expenses);
         } else {
             setAmountText(totalText, total.currency, total.balance, false);
         }
     }
 
-    private void setAmountTextWithBothAmountAndBalance(TextView textView, Total t) {
+    private void setAmountTextWithTwoAmounts(TextView textView, Currency c, long amount1, long amount2) {
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        sb.append(Utils.amountToString(t.currency, t.amount, false));
+        sb.append(Utils.amountToString(c, amount1, false));
         int x = sb.length();
-        sb.setSpan(getAmountSpan(context, t.amount), 0, x, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        sb.setSpan(getAmountSpan(context, amount1), 0, x, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         sb.append(" | ");
-        sb.append(Utils.amountToString(t.currency, t.balance, false));
-        sb.setSpan(getAmountSpan(context, t.balance), x+3, sb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        sb.append(Utils.amountToString(c, amount2, false));
+        sb.setSpan(getAmountSpan(context, amount2), x+3, sb.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         textView.setText(sb, TextView.BufferType.NORMAL);
     }
 

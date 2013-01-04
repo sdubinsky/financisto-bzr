@@ -142,24 +142,27 @@ public class TransactionsTotalCalculator {
     public static Total calculateTotalFromListInHomeCurrency(DatabaseAdapter db, List<TransactionInfo> list) {
         try {
             Currency toCurrency = db.em().getHomeCurrency();
-            long balance = calculateTotalFromList(db, list, toCurrency);
-            Total total = new Total(toCurrency);
-            total.balance = balance;
-            return total;
+            long[] balance = calculateTotalFromList(db, list, toCurrency);
+            return Total.asIncomeExpense(toCurrency, balance[0], balance[1]);
         } catch (UnableToCalculateRateException e) {
             return new Total(e.toCurrency, TotalError.atDateRateError(e.fromCurrency, e.datetime));
         }
     }
 
-    public static long calculateTotalFromList(DatabaseAdapter db, List<TransactionInfo> list, Currency toCurrency) throws UnableToCalculateRateException {
+    public static long[] calculateTotalFromList(DatabaseAdapter db, List<TransactionInfo> list, Currency toCurrency) throws UnableToCalculateRateException {
         MyEntityManager em = db.em();
         ExchangeRateProvider rates = db.getHistoryRates();
-        BigDecimal balance = BigDecimal.ZERO;
+        BigDecimal income = BigDecimal.ZERO;
+        BigDecimal expenses = BigDecimal.ZERO;
         for (TransactionInfo t : list) {
             BigDecimal amount = getAmountFromTransaction(em, t, toCurrency, rates);
-            balance = balance.add(amount);
+            if (amount.signum() > 0) {
+                income = income.add(amount);
+            } else {
+                expenses = expenses.add(amount);
+            }
         }
-        return balance.longValue();
+        return new long[]{income.longValue(),expenses.longValue()};
     }
 
     public static BigDecimal getAmountFromCursor(MyEntityManager em, Cursor c, Currency toCurrency, ExchangeRateProvider rates, int index) throws UnableToCalculateRateException {

@@ -35,6 +35,12 @@ public class DateUtilsTest extends AndroidTestCase {
         assertPeriod(LAST_MONTH, date(2012, 7, 1), date(2012, 7, 31));
         assertPeriod(THIS_AND_LAST_WEEK, date(2012, 8, 20), date(2012, 9, 2));
         assertPeriod(THIS_AND_LAST_MONTH, date(2012, 7, 1), date(2012, 8, 31));
+
+        assertPeriod(TOMORROW, date(2012, 8, 29), date(2012, 8, 29));
+        assertPeriod(NEXT_WEEK, date(2012, 9, 3), date(2012, 9, 9));
+        assertPeriod(NEXT_MONTH, date(2012, 9, 1), date(2012, 9, 30));
+        assertPeriod(THIS_AND_NEXT_MONTH, date(2012, 8, 1), date(2012, 9, 30));
+        assertPeriod(NEXT_3_MONTHS, date(2012, 8, 1), date(2012, 10, 31));
     }
 
     private void givenRefTime(DateTime dateTime) {

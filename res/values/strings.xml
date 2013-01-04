@@ -811,4 +811,11 @@
 
     <string name="planner">Planner</string>
 
+    <string name="period_tomorrow">Tomorrow</string>
+    <string name="period_next_week">Next week</string>
+    <string name="period_this_and_next_week">This and next week</string>
+    <string name="period_next_month">Next month</string>
+    <string name="period_this_and_next_month">This and next month</string>
+    <string name="period_next_3_months">Next 3 months</string>
+
 </resources>

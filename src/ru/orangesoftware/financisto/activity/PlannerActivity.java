@@ -8,6 +8,7 @@
 
 package ru.orangesoftware.financisto.activity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ScheduledListAdapter;
+import ru.orangesoftware.financisto.datetime.PeriodType;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.filter.WhereFilter;
@@ -39,7 +41,6 @@ public class PlannerActivity extends AbstractListActivity {
 
     private TextView totalText;
     private TextView filterText;
-    private ImageButton bFilter;
 
     private WhereFilter filter = WhereFilter.empty();
 
@@ -49,9 +50,32 @@ public class PlannerActivity extends AbstractListActivity {
 
     @Override
     protected void internalOnCreate(Bundle savedInstanceState) {
+        setupFilter(savedInstanceState);
         totalText = (TextView)findViewById(R.id.total);
         filterText = (TextView)findViewById(R.id.period);
-        bFilter = (ImageButton)findViewById(R.id.bFilter);
+        ImageButton bFilter = (ImageButton) findViewById(R.id.bFilter);
+        bFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFilter();
+            }
+        });
+    }
+
+    private void setupFilter(Bundle savedInstanceState) {
+        if (filter.isEmpty()) {
+            Calendar date = Calendar.getInstance();
+            date.add(Calendar.MONTH, 1);
+            filter.put(new DateTimeCriteria(PeriodType.THIS_MONTH));
+        }
+    }
+
+    private void showFilter() {
+        Intent intent = new Intent(this, DateFilterActivity.class);
+        intent.putExtra(DateFilterActivity.EXTRA_FILTER_DONT_SHOW_NO_FILTER, true);
+        intent.putExtra(DateFilterActivity.EXTRA_FILTER_SHOW_PLANNER, true);
+        filter.toIntent(intent);
+        startActivityForResult(intent, 1);
     }
 
     @Override
@@ -77,6 +101,15 @@ public class PlannerActivity extends AbstractListActivity {
     protected void viewItem(View v, int position, long id) {
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            DateTimeCriteria c = WhereFilter.dateTimeFromIntent(data);
+            filter.put(c);
+            retrieveData();
+        }
+    }
+
     private PlannerTask task;
 
     private void retrieveData() {
@@ -97,11 +130,7 @@ public class PlannerActivity extends AbstractListActivity {
 
         @Override
         protected TransactionList doInBackground(Void... voids) {
-            Calendar date = Calendar.getInstance();
-            date.add(Calendar.MONTH, 1);
-            Date now = new Date();
-            filter.put(new DateTimeCriteria(now.getTime(), date.getTimeInMillis()));
-            FuturePlanner planner = new FuturePlanner(db, filter, now);
+            FuturePlanner planner = new FuturePlanner(db, filter, new Date());
             return planner.getPlannedTransactionsWithTotals();
         }
 
