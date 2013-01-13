@@ -95,7 +95,9 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         status,
         attached_picture,
         is_ccard_payment,
-        last_recurrence;
+        last_recurrence,
+		updated_on,
+		remote_key;
 		
 		public static String[] NORMAL_PROJECTION = asStringArray(TransactionColumns.values());
 
@@ -179,6 +181,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         type,
 		last_location_id,
 		last_project_id,
+		updated_on,
+		remote_key,			
 		sort_order
 	}
 
@@ -218,10 +222,14 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		
 		public static final String ID = "_id";
 		public static final String TITLE = "title";
+		public static final String UPDATED_ON = "updated_on";
+		public static final String REMOTE_KEY = "remote_key";		
 		
 		public static final String[] NORMAL_PROJECTION = {
 			ID,
-			TITLE
+			TITLE,
+			UPDATED_ON,
+			REMOTE_KEY			
 		};
 		
 		public static class Indicies {
@@ -344,6 +352,12 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String PERIOD = "period";
 		public static final String CLOSING_DAY = "closing_day";
 		
+	}
+	
+	public static class deleteLogColumns {		
+		public static final String TABLE_NAME = "table_name";
+		public static final String REMOTE_KEY = "remote_key";
+		public static final String DELETED_ON = "deleted_on";		
 	}
 	
 }

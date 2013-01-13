@@ -76,6 +76,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int ACTIVITY_CSV_IMPORT = 4;
     private static final int ACTIVITY_QIF_IMPORT = 5;
     private static final int CHANGE_PREFERENCES = 6;
+    private static final int ACTIVITY_FLOWZR_SYNC = 7;    
 
 	private static final int MENU_PREFERENCES = Menu.FIRST+1;
 	private static final int MENU_ABOUT = Menu.FIRST+2;
@@ -90,7 +91,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int MENU_IMPORT_EXPORT = Menu.FIRST+11;
     private static final int MENU_BACKUP_TO = Menu.FIRST+12;
     private static final int MENU_INTEGRITY_FIX = Menu.FIRST+13;
-
+    private static final int MENU_CLOUD_SYNC = Menu.FIRST+14;
+    
     private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
 	@Override
@@ -268,6 +270,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menuItem.setIcon(R.drawable.ic_menu_upload);
 		menuItem = menu.add(0, MENU_PREFERENCES, 0, R.string.preferences);
 		menuItem.setIcon(android.R.drawable.ic_menu_preferences);
+		menu.addSubMenu(0, MENU_CLOUD_SYNC, 0, R.string.flowzr_sync);
 		menu.addSubMenu(0, MENU_RESTORE, 0, R.string.restore_database);
 		menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
@@ -335,10 +338,18 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         case MENU_INTEGRITY_FIX:
             doIntegrityFix();
             break;
+        case MENU_CLOUD_SYNC:
+            doFlowzrSync();
+            break;
         }
 		return false;
 	}
 
+	private void doFlowzrSync() {
+		 Intent intent = new Intent(this, FlowzrSyncActivity.class);
+		 startActivityForResult(intent, ACTIVITY_FLOWZR_SYNC);        
+	} 	
+	
     private void doIntegrityFix() {
         new IntegrityFixTask().execute();
     }

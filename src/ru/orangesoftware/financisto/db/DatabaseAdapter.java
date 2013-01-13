@@ -31,6 +31,11 @@ import ru.orangesoftware.financisto.utils.Utils;
 import java.math.BigDecimal;
 import java.util.*;
 
+import ru.orangesoftware.financisto.db.DatabaseHelper.deleteLogColumns;
+import ru.orangesoftware.financisto.model.Category;
+
+import static ru.orangesoftware.financisto.db.DatabaseHelper.CATEGORY_TABLE;
+import static ru.orangesoftware.financisto.db.DatabaseHelper.DELETE_LOG_TABLE;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 
 public class DatabaseAdapter {
@@ -87,6 +92,8 @@ public class DatabaseAdapter {
 		db.beginTransaction();
 		try {
 			String[] sid = new String[]{String.valueOf(id)};
+			Account a=em.load(Account.class, id);
+			writeDeleteLog(TRANSACTION_TABLE, a.remoteKey);
 			db.execSQL(UPDATE_ORPHAN_TRANSACTIONS_1, sid);
 			db.execSQL(UPDATE_ORPHAN_TRANSACTIONS_2, sid);
 			db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID
@@ -441,6 +448,7 @@ public class DatabaseAdapter {
 				updateLocationCount(t.locationId, 1);
 			}
 		}
+		t.updatedOn=System.currentTimeMillis();
 		db().update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
 				new String[]{String.valueOf(t.id)});
         if (oldT != null) {
@@ -479,6 +487,7 @@ public class DatabaseAdapter {
         SQLiteDatabase db = db();
         db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
         db.delete(TRANSACTION_TABLE, TransactionColumns._id+"=?", sid);
+        writeDeleteLog(TRANSACTION_TABLE, t.remoteKey);        
         deleteSplitsForParentTransaction(id);
 	}
 
@@ -491,7 +500,9 @@ public class DatabaseAdapter {
             }
             db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID + "=?",
                     new String[]{String.valueOf(split.id)});
+            		writeDeleteLog(TRANSACTION_TABLE, split.remoteKey);            
         }
+        
         db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id + "=?", new String[]{String.valueOf(parentId)});
     }
 
@@ -915,6 +926,8 @@ public class DatabaseAdapter {
 		}
 		db.beginTransaction();
 		try {
+			Category category=em.load(Category.class,categoryId);
+			writeDeleteLog(CATEGORY_TABLE, category.remoteKey);			
 			int width = right - left + 1;
 			String[] args = new String[]{String.valueOf(left), String.valueOf(right)};
 			db.execSQL(DELETE_CATEGORY_UPDATE1, args);
@@ -930,6 +943,8 @@ public class DatabaseAdapter {
 		ContentValues values = new ContentValues();
 		values.put(CategoryColumns.title.name(), title);
         values.put(CategoryColumns.type.name(), type);
+        values.remove("updated_on");     
+        values.put(CategoryColumns.updated_on.name(), System.currentTimeMillis());        
 		db().update(CATEGORY_TABLE, values, CategoryColumns._id+"=?", new String[]{String.valueOf(id)});
 	}
 	
@@ -1759,5 +1774,20 @@ public class DatabaseAdapter {
         return DatabaseUtils.rawFetchLongValue(this, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(account.id)});
     }
+    
+    private long writeDeleteLog(String tableName,String remoteKey) {
+    	if (remoteKey==null) {
+    		return 0;
+    	}
+    	if (remoteKey=="") {
+    		return 0;
+    	}     	
+    	ContentValues row = new ContentValues();
+		row.put(deleteLogColumns.TABLE_NAME, tableName);				
+    	row.put(deleteLogColumns.REMOTE_KEY,remoteKey);				
+    	row.put(deleteLogColumns.DELETED_ON, System.currentTimeMillis());
+    	return db().insert(DELETE_LOG_TABLE, null, row);
+    }
+    
 }
 

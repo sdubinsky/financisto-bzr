@@ -51,6 +51,12 @@ public class MyLocation {
 
 	@Column(name = "count")
 	public int count;
+	
+	@Column(name = "updated_on")
+ 	public long updatedOn = System.currentTimeMillis();
+ 
+ 	@Column(name = "remote_key")
+ 	public String remoteKey ;		
 
 	@Override
 	public String toString() {
