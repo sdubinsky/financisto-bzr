@@ -8,6 +8,8 @@
 
 package ru.orangesoftware.financisto.activity;
 
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.Utils;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,8 +17,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.TabHost;
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.utils.Utils;
 
 /**
  * Created by IntelliJ IDEA.

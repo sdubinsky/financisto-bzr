@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
+
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import android.content.Context;

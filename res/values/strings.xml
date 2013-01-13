@@ -669,6 +669,17 @@
     <string name="qif_import_success">QIF file has been successfully imported</string>
     <string name="import_export">Import/Export</string>
     <string name="qif_import_disclaimer">*WARNING* Please note that all existing data will be removed!</string>
+	
+	<string name="flowzr_sync">Cloud sync</string>
+    <string name="flowzr_sync_error">Sync error</string>
+    <string name="flowzr_sync_error_no_network">Network is not available</string>
+    <string name="flowzr_sync_inprogress">Synchronizing data ...</string>      	
+    <string name="about_server_sync">About sync server</string>
+    <string name="account_required">An account is required.</string>
+    <string name="flowzr_sync_success">Successfully synchronized</string>    
+    <string name="flowzr_choose_account">Please select an account to work with...</string>
+    <string name="sync_from_zero">Synch from all the time</string>
+            
 
     <string name="remember_last_category_for_payee">Last category</string>
     <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee (or account if payee is disabled)</string>
