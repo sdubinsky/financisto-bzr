@@ -110,7 +110,9 @@ public abstract class QuickActionWidget extends PopupWindow {
      * @param layoutId The layout identifier of the view to use.
      */
     public void setContentView(int layoutId) {
-        setContentView(LayoutInflater.from(mContext).inflate(layoutId, null));
+        View contentView = LayoutInflater.from(mContext).inflate(layoutId, null);
+        contentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setContentView(contentView);
     }
 
     private void initializeDefault() {

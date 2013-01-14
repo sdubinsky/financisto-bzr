@@ -93,9 +93,9 @@ public class QuickActionGrid extends QuickActionWidget {
     @Override
     protected void onMeasureAndLayout(Rect anchorRect, View contentView) {
 
-        contentView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.WRAP_CONTENT, GridView.LayoutParams.WRAP_CONTENT));
+        //contentView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.WRAP_CONTENT, GridView.LayoutParams.WRAP_CONTENT));
         contentView.measure(MeasureSpec.makeMeasureSpec(getScreenWidth(), MeasureSpec.EXACTLY),
-                GridView.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT);
 
         int rootHeight = contentView.getMeasuredHeight();
 
