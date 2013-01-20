@@ -331,9 +331,9 @@ public class FlowzrSync  {
 				}
 			}
 
-			for (NameValuePair p : nameValuePairs) {
-				Log.e("financisto",p.toString());
-			}
+//			for (NameValuePair p : nameValuePairs) {
+//				Log.e("financisto",p.toString());
+//			}
 			String strResponse=httpPush(nameValuePairs);							
 			
 			if (strResponse.equals(FLOWZR_MSG_NET_ERROR)) {
