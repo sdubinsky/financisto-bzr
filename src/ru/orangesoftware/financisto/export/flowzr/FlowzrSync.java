@@ -1015,14 +1015,28 @@ public class FlowzrSync  {
 					tEntity.parentId=getLocalKey("transactions", jsonObjectResponse.getString("parent_tr"));
 					Transaction parent_tr=em.load(Transaction.class, tEntity.parentId);
 					parent_tr.categoryId=Category.SPLIT_CATEGORY_ID;
+					em.saveOrUpdate(parent_tr);					
 					} catch (Exception e) {
-						Log.e("financisto","Error parsing Transaction.parent_tr with : " + jsonObjectResponse.getString("parent_tr"));						
+						Log.e("financisto","Error parsing/saving Transaction.parent_tr with : " + jsonObjectResponse.getString("parent_tr"));						
 					}
 				}								
 				//category_id,       			
 				if (jsonObjectResponse.has("cat")) {       		
 					try {
-						((Transaction)tEntity).categoryId=getLocalKey("category", jsonObjectResponse.getString("cat")); 
+						//transaction could have been writed with no category from one of it's split
+						//or from transaction activity in that case pull will not change.
+						if (((Transaction)tEntity).categoryId!=Category.SPLIT_CATEGORY_ID) {
+							// in the other case:
+							// SPLIT_CATEGORY and NO_CATEGORY are never pulled so they nether get
+							// a local key, so get local key return -1 
+							if (getLocalKey("category", jsonObjectResponse.getString("cat"))==-1) {
+								((Transaction)tEntity).categoryId=Category.NO_CATEGORY_ID;
+							} else {
+								//set the category
+								((Transaction)tEntity).categoryId=getLocalKey("category", jsonObjectResponse.getString("cat"));								
+							}
+						}
+						
 					} catch (Exception e1) {					
 						tEntity.categoryId=Category.NO_CATEGORY_ID;
 						Log.e("financisto","Error parsing Transaction.categoryId with : " + jsonObjectResponse.getString("cat"));			
