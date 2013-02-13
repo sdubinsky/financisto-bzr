@@ -328,4 +328,8 @@ public class AmountInput extends LinearLayout {
 		secondary.setTextColor(color);
 	}
 
+    public void openCalculator() {
+        startInputActivity(CalculatorInput.class);
+    }
+
 }

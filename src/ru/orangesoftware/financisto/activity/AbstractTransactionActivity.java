@@ -112,6 +112,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 	protected boolean isShowNote;
 	protected boolean isShowTakePicture;
 	protected boolean isShowIsCCardPayment;
+	protected boolean isOpenCalculatorForTemplates;
 
 	protected AttributeView deleteAfterExpired;
 	
@@ -145,6 +146,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 		isShowNote = MyPreferences.isShowNote(this);
 		isShowTakePicture = MyPreferences.isShowTakePicture(this);
 		isShowIsCCardPayment = MyPreferences.isShowIsCCardPayment(this);
+        isOpenCalculatorForTemplates = MyPreferences.isOpenCalculatorForTemplates(this);
 
         categorySelector = new CategorySelector(this, db, x);
         categorySelector.setListener(this);
@@ -770,6 +772,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 		if (isShowIsCCardPayment) {
 			setIsCCardPayment(transaction.isCCardPayment);
 		}
+
+        if (transaction.isCreatedFromTemlate()&& isOpenCalculatorForTemplates ){
+            rateView.openFromAmountCalculator();
+        }
 	}
 
 	private void setIsCCardPayment(int isCCardPaymentValue) {

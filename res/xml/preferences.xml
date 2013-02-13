@@ -140,6 +140,10 @@
                                     android:title="@string/show_category_in_transfer"
                                     android:summary="@string/show_category_in_transfer_summary"
                                     android:defaultValue="true"/>
+                <CheckBoxPreference android:key="ntsl_open_calculator_for_template_transactions"
+                                    android:title="@string/open_calculator_for_template_transactions"
+                                    android:summary="@string/open_calculator_for_template_transactions_summary"
+                                    android:defaultValue="true"/>
             </PreferenceCategory>
         </PreferenceScreen>
     </PreferenceCategory>

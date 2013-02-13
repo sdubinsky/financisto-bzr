@@ -8,9 +8,7 @@
 package ru.orangesoftware.financisto.model;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 
 public abstract class TransactionBase implements Serializable, Cloneable {
@@ -96,6 +94,10 @@ public abstract class TransactionBase implements Serializable, Cloneable {
 	public boolean isNotTemplateLike() {
 		return isTemplate == 0;
 	}
+
+    public boolean isCreatedFromTemlate() {
+        return !isTemplate() && templateName != null && templateName.length() > 0;
+    }
 
 	public boolean isCreditCardPayment() {
 		return isCCardPayment == 1;
