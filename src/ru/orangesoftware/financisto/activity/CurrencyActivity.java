@@ -44,7 +44,11 @@ public class CurrencyActivity extends Activity {
 	private String[] decimalSeparatorsItems;
 	private String[] groupSeparatorsItems;
     private SymbolFormat[] symbolFormats;
-	
+
+    private EditText name;
+    private EditText title;
+    private EditText symbol;
+    private CheckBox isDefault;
 	private Spinner decimals;
     private Spinner decimalSeparators;
     private Spinner groupSeparators;
@@ -64,7 +68,11 @@ public class CurrencyActivity extends Activity {
 		db = new DatabaseAdapter(this);
 		db.open();
 		em = db.em();
-		
+
+        name = (EditText)findViewById(R.id.name);
+        title = (EditText)findViewById(R.id.title);
+        symbol = (EditText)findViewById(R.id.symbol);
+        isDefault = (CheckBox)findViewById(R.id.is_default);
 		decimals = (Spinner)findViewById(R.id.spinnerDecimals);
 		decimalSeparators = (Spinner)findViewById(R.id.spinnerDecimalSeparators);
 		groupSeparators = (Spinner)findViewById(R.id.spinnerGroupSeparators);
@@ -82,11 +90,7 @@ public class CurrencyActivity extends Activity {
 		bOk.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View view) {
-				EditText name = (EditText)findViewById(R.id.name);
-				EditText title = (EditText)findViewById(R.id.title);
-				EditText symbol = (EditText)findViewById(R.id.symbol);
-				CheckBox isDefault = (CheckBox)findViewById(R.id.is_default);
-				if (checkEditText(title, "title", true, 100) 
+				if (checkEditText(title, "title", true, 100)
 						&& checkEditText(name, "code", true, 3)
 						&& checkEditText(symbol, "symbol", true, 3)) {
 					currency.title = text(title);
@@ -122,11 +126,17 @@ public class CurrencyActivity extends Activity {
 			if (id != -1) {
 				currency = em.load(Currency.class, id);
 				editCurrency();
-			}
+			} else {
+                makeDefaultIfNecessary();
+            }
 		}
 	}
-	
-	private void editCurrency() {
+
+    private void makeDefaultIfNecessary() {
+        isDefault.setChecked(em.getAllCurrenciesList().isEmpty());
+    }
+
+    private void editCurrency() {
 		Currency currency = this.currency;
 		EditText name = (EditText)findViewById(R.id.name);
 		name.setText(currency.name);
