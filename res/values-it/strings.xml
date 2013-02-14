@@ -8,6 +8,7 @@
   <string name="budgets">Budget</string>
   <string name="projects">Progetti</string>
   <string name="ok">OK</string>
+  <string name="reset">Reset</string>
   <string name="clear">Azzera</string>
   <string name="save">Salva</string>
   <string name="cancel">Annulla</string>
@@ -126,7 +127,7 @@
   <string name="overall">Globale</string>
   <string name="report_by_period">Per periodo</string>
   <string name="report_by_period_summary">Rapporti transazioni per periodo</string>
-  <string name="report_by_category">By Category</string>
+  <string name="report_by_category">Per categoria</string>
   <string name="report_by_category_summary">Rapporti transazioni per categoria</string>
   <string name="report_by_location">Per posizione</string>
   <string name="report_by_location_summary">Rapporti transazioni per posizione</string>
@@ -215,25 +216,25 @@
   <string name="restore">Ripristina</string>
   <string name="backup_database">Backup del Database</string>
   <string name="backup_database_inprogress">Salvataggio database...</string>
-  <string name="backup_database_gdocs">Backup su Google Docs</string>
+  <string name="backup_database_gdocs">Backup su Google Drive</string>
   <string name="backup_database_gdocs_inprogress">Salvataggio database...</string>
   <string name="csv_export">Esporta CSV</string>
   <string name="csv_export_inprogress">Esportazione database in CSV...</string>
   <string name="restore_database">Ripristino Database</string>
   <string name="restore_database_inprogress">Ripristino database...</string>
-  <string name="restore_database_gdocs">Ripristina da Google Docs</string>
+  <string name="restore_database_gdocs">Ripristina da Google Drive</string>
   <string name="restore_database_inprogress_gdocs">Ripristino database...</string>
   <string name="restore_database_success">Database ripristinato con successo.</string>
-  <string name="gdocs_connection_failed">Impossibile connettersi a Google Docs.</string>
-  <string name="gdocs_folder_not_found">La cartella di backup su Google Docs non è stata trovata.</string>
+  <string name="gdocs_connection_failed">Connessione a Google Drive non riuscita.</string>
+  <string name="gdocs_folder_not_found">Cartella di backup su Google Drive non trovata.</string>
   <string name="gdocs_credentials_not_configured">Imposta un account Google dalle preferenze.</string>
-  <string name="gdocs_folder_not_configured">Imposta la cartella di backup per Google Docs dalle preferenze.</string>
+  <string name="gdocs_folder_not_configured">Imposta la cartella di backup su Google Drive dalle opzioni.</string>
   <string name="gdocs_login_failed">Account Google non valido.</string>
-  <string name="gdocs_backup_failed">Errore inviando il backuo a Google Docs. Riprova.</string>
+  <string name="gdocs_backup_failed">Errore nell\'invio del file di backup su Google Drive. Si prega di riprovare.</string>
   <string name="gdocs_restore_failed">Errore recuperando il file di backup. Riprova.</string>
-  <string name="gdocs_folder_error">Errore nell\'accesso a Google Docs.</string>
-  <string name="gdocs_service_error">Errore nel servizio Google Docs.</string>
-  <string name="gdocs_io_error">Errore di comunicazione con Google Docs.</string>
+  <string name="gdocs_folder_error">Errore di accesso alla cartella in Google Drive.</string>
+  <string name="gdocs_service_error">Error service not available in Google Drive.</string>
+  <string name="gdocs_io_error">Errore di connessione con Google Drive.</string>
   <string name="package_info_error">Impossibile recuperare le informazioni de</string>
   <string name="success">Completato!</string>
   <string name="fail">Fallito...</string>
@@ -332,13 +333,13 @@
   <string name="calculating">Calcolo in corso...</string>
   <string name="budget_mode">Facilita condizioni</string>
   <string name="budget_mode_summary">Utilizza condizioni meno restrittive (categoria o progetto) per filtrare le transazioni</string>
-  <string name="gdocs_backup">Backup Google Docs</string>
+  <string name="gdocs_backup">Backup su Google Drive</string>
   <string name="user_login">Accesso</string>
   <string name="user_login_summary">Accesso dell\'account Google  (username)</string>
   <string name="user_password">Password</string>
   <string name="user_password_summary">Password dell\'account Google</string>
-  <string name="backup_folder">Backup Collection</string>
-  <string name="backup_folder_summary">To store backup files create a new collection in My Collections</string>
+  <string name="backup_folder">Cartella di backup</string>
+  <string name="backup_folder_summary">Per archiviare i file di backup creare una nuova cartella in My Drive</string>
   <string name="report_preferences">Preferenze Rapporti</string>
   <string name="all_reports_preferences">Preferenze Generali Rapporti</string>
   <string name="category_by_period_preferences">Preferenze Rapporti Categoria per Periodo</string>
@@ -657,24 +658,48 @@
   <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
   <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
   <string name="is_active">Is active</string>
-  <string name="report_income_expense_both">Income/Expenses</string>
-  <string name="report_income_expense_income">Income</string>
-  <string name="report_income_expense_expense">Expenses</string>
-  <string name="report_income_expense_summary">Summary</string>
+  <string name="report_income_expense_both">Entrate/Uscite</string>
+  <string name="report_income_expense_income">Entrate</string>
+  <string name="report_income_expense_expense">Uscite</string>
+  <string name="report_income_expense_summary">Sommario</string>
+  <string name="csv_import_inprogress_update">Importazione dati da file CSV: %s%%...</string>
+  <string name="delete_old_transactions">Cancella vecchie transazioni</string>
+  <string name="purge_account_backup_database">Fai un backup del database prima di eliminare le transazioni</string>
+  <string name="purge_account_date_summary">Eliminare le transazioni precedenti alla data specificata INCLUSA. Il saldo del conto non sarà interessato.</string>
+  <string name="purge_account_confirm_title">Conferma</string>
+  <string name="purge_account_confirm_message" formatted="false">Eliminare le transazioni dal conto %s precedenti il %s INCLUSO.</string>
+  <string name="purge_account_payee">Previous period</string>
+  <string name="purge_account_in_progress">Deleting old transactions...</string>
+  <string name="purge_account_unable_to_do_backup">Unable to do database backup, aborting...</string>
+  <string name="show_account_last_transaction_date">Data ultima transazione</string>
+  <string name="show_account_last_transaction_date_summary">Show last transaction date for on accounts list screen (requires restart)</string>
+  <string name="accounts_list_screen">Accounts List</string>
+  <string name="accounts_list_screen_summary">Preferences for accounts list screen</string>
+  <string name="blotter_screen">Blotter</string>
+  <string name="blotter_screen_summary">Preferences for blotter screen</string>
+  <string name="hide_closed_accounts">Hide closed accounts</string>
+  <string name="hide_closed_accounts_summary">Hide or show closed accounts in the accounts list (requires restart)</string>
+  <string name="re_index_categories">Re-index</string>
+  <string name="startup_screen">Startup screen</string>
+  <string name="startup_screen_summary">Select tab which will be selected on startup</string>
+  <string name="integrity_error">Running balances look out of sync, please do Menu -&gt; More -&gt; Integrity Fix</string>
+  <string name="integrity_fix">Integrity Fix</string>
+  <string name="integrity_fix_in_progress">Checking and fixing if necessary...</string>
+  <string name="select_to_account_differ_from_to_account">Cannot transfer to the same account...</string>
+  <string name="period_this_and_last_week">This and last week</string>
+  <string name="period_this_and_last_month">This and last month</string>
+  <string name="period_custom">Custom</string>
+  <string name="original_amount">Original Amount</string>
+  <string name="original_currency_as_account">Same as account</string>
+  <string name="split_transfer_not_supported_yet">Split-transfers with a currency differ from account\'s currency are not yet supported</string>
+  <string name="show_currency">Show currency</string>
+  <string name="show_currency_summary">Show currency selector in new transaction screen</string>
+  <string name="reconcile">Reconcile</string>
   <string-array name="attribute_types">
     <item>Testo</item>
     <item>Numero</item>
     <item>Lista</item>
     <item>Checkbox</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>Oggi</item>
-    <item>Ieri</item>
-    <item>Questa settimana</item>
-    <item>Questo mese</item>
-    <item>Ultima settimana</item>
-    <item>Ultimo mese</item>
-    <item>Personalizzato</item>
   </string-array>
   <string-array name="account_types">
     <item>Banca</item>
@@ -685,6 +710,8 @@
     <item>Ascendente</item>
     <item>Discendente</item>
     <item>Per nome</item>
+    <item>By Last Transaction (Asc)</item>
+    <item>By Last Transaction (Desc)</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>Per nome</item>
@@ -716,5 +743,11 @@
     <item>5 minuti</item>
     <item>10 minuti</item>
     <item>15 minuti</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>Accounts</item>
+    <item>Blotter</item>
+    <item>Budgets</item>
+    <item>Reports</item>
   </string-array>
 </resources>

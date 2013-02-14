@@ -79,10 +79,12 @@
         <item>English</item>
 		<item>Español</item>
 		<item>Français</item>
+        <item>Hungarian</item>
 		<item>Italiano</item>
         <item>Norwegian</item>
         <item>Polski</item>
 		<item>Português (Brasil)</item>
+        <item>Português (Portugal)</item>
         <item>Romanian</item>
         <item>Slovak</item>
 		<item>Русский</item>
@@ -98,10 +100,12 @@
         <item>en</item>
 		<item>es</item>
 		<item>fr</item>
+        <item>hu</item>
 		<item>it</item>
         <item>no-NB</item>
         <item>pl</item>
 		<item>pt-BR</item>
+        <item>pt-PT</item>
         <item>ro</item>
         <item>sk</item>
 		<item>ru</item>

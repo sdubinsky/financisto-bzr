@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.dropbox.client2.session.AccessTokenPair;
@@ -395,10 +396,11 @@ public class MyPreferences {
 	}
 	
 	private static void switchLocale(Context context, Locale locale) {
-        Configuration config = new Configuration();
-        config.locale = locale;
-        context.getApplicationContext().getResources().updateConfiguration(config, null);
-        Log.i("MyPreferences", "Switching locale to "+config.locale.getDisplayName());
+        Resources resources = context.getApplicationContext().getResources();
+        Configuration configuration = resources.getConfiguration();
+        configuration.locale = locale;
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+        Log.i("MyPreferences", "Switching locale to "+configuration.locale.getDisplayName());
 	}
 
     public static boolean isCameraSupported(Context context) {

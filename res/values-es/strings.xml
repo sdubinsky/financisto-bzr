@@ -8,6 +8,7 @@
   <string name="budgets">Dotaciones</string>
   <string name="projects">Proyectos</string>
   <string name="ok">OK</string>
+  <string name="reset">Reset</string>
   <string name="clear">Compensar</string>
   <string name="save">Guardar</string>
   <string name="cancel">Cancelar</string>
@@ -215,25 +216,25 @@
   <string name="restore">Restaurar</string>
   <string name="backup_database">Salvaguardar Datos</string>
   <string name="backup_database_inprogress">Salvando respaldo de la base de datos...</string>
-  <string name="backup_database_gdocs">Crear Respaldo en GDocs</string>
+  <string name="backup_database_gdocs">Backup on Google Drive</string>
   <string name="backup_database_gdocs_inprogress">Salvando respaldo de la base de datos...</string>
   <string name="csv_export">Exportar como CSV</string>
   <string name="csv_export_inprogress">Exportando base de datos en formato CSV...</string>
   <string name="restore_database">Restaurar Datos</string>
   <string name="restore_database_inprogress">Restaurando respaldo de la base de datos...</string>
-  <string name="restore_database_gdocs">Restaurar desde GDocs</string>
+  <string name="restore_database_gdocs">Restore from Google Drive</string>
   <string name="restore_database_inprogress_gdocs">Restaurando respaldo de la base de datos...</string>
   <string name="restore_database_success">La base de datos ha sido restaurada con éxito.</string>
-  <string name="gdocs_connection_failed">Ha sido imposible realizar la conexión con Google Docs.</string>
-  <string name="gdocs_folder_not_found">No se ha hallado ninguna carpeta de respaldo en Google Docs.</string>
+  <string name="gdocs_connection_failed">Can not connect to Google Drive.</string>
+  <string name="gdocs_folder_not_found">The backup folder on Google Drive was not found.</string>
   <string name="gdocs_credentials_not_configured">Antes debe introducir las credenciales de inicio de sesión de una cuenta de Google en Preferencias.</string>
-  <string name="gdocs_folder_not_configured">Antes debe establecer la carpeta de respaldo de Google Docs en Preferencias.</string>
+  <string name="gdocs_folder_not_configured">Please set the Google Drive backup folder on Preferences.</string>
   <string name="gdocs_login_failed">Las credenciales de inicio de sesión en Google Docs no son válidas.</string>
-  <string name="gdocs_backup_failed">Error de envío de la copia de respaldo a Google Docs.</string>
+  <string name="gdocs_backup_failed">Error sending backup file to Google Drive. Please try again.</string>
   <string name="gdocs_restore_failed">Error de recuperación de la copia de respaldo en Google Docs.</string>
-  <string name="gdocs_folder_error">Error de acceso a la carpeta de respaldo en Google Docs.</string>
-  <string name="gdocs_service_error">Error de servicio en Google Docs.</string>
-  <string name="gdocs_io_error">Error de conexión con Google Docs.</string>
+  <string name="gdocs_folder_error">Error accessing the folder in Google Drive.</string>
+  <string name="gdocs_service_error">Error service not available in Google Drive.</string>
+  <string name="gdocs_io_error">Error connecting with Google Drive.</string>
   <string name="package_info_error">No fue posible acceder a la información del paquete Financisto.</string>
   <string name="success">Tarea completada.</string>
   <string name="fail">Fallo...</string>
@@ -332,13 +333,13 @@
   <string name="calculating">Calculando...</string>
   <string name="budget_mode">Filtrado simplificado</string>
   <string name="budget_mode_summary">Solo se deberá cumplir un criterio [Categoría OR Proyecto] y no ambos</string>
-  <string name="gdocs_backup">Respaldo en Google Docs</string>
+  <string name="gdocs_backup">Google Drive Backup</string>
   <string name="user_login">Usuario</string>
   <string name="user_login_summary">Nombre de usuario de la cuenta de Google [user@gmail.com]</string>
   <string name="user_password">Contraseña</string>
   <string name="user_password_summary">Contraseña de la cuenta de Google</string>
-  <string name="backup_folder">Backup Collection</string>
-  <string name="backup_folder_summary">To store backup files create a new collection in My Collections</string>
+  <string name="backup_folder">Backup Folder</string>
+  <string name="backup_folder_summary">To store backup files create a new folder in My Drive</string>
   <string name="report_preferences">Preferencias de Informe</string>
   <string name="all_reports_preferences">Propiedades Generales</string>
   <string name="category_by_period_preferences">Propiedades por Categoría/Periodo</string>
@@ -661,20 +662,44 @@
   <string name="report_income_expense_income">Income</string>
   <string name="report_income_expense_expense">Expenses</string>
   <string name="report_income_expense_summary">Summary</string>
+  <string name="csv_import_inprogress_update">Importing data from CSV: %s%%...</string>
+  <string name="delete_old_transactions">Delete old transactions</string>
+  <string name="purge_account_backup_database">Do database backup before deleting transactions</string>
+  <string name="purge_account_date_summary">Delete transactions prior to AND including the specified date. Account balance will not be affected.</string>
+  <string name="purge_account_confirm_title">Confirm</string>
+  <string name="purge_account_confirm_message" formatted="false">Delete transactions from account %s prior to AND including %s.</string>
+  <string name="purge_account_payee">Previous period</string>
+  <string name="purge_account_in_progress">Deleting old transactions...</string>
+  <string name="purge_account_unable_to_do_backup">Unable to do database backup, aborting...</string>
+  <string name="show_account_last_transaction_date">Last transaction date</string>
+  <string name="show_account_last_transaction_date_summary">Show last transaction date for on accounts list screen (requires restart)</string>
+  <string name="accounts_list_screen">Accounts List</string>
+  <string name="accounts_list_screen_summary">Preferences for accounts list screen</string>
+  <string name="blotter_screen">Blotter</string>
+  <string name="blotter_screen_summary">Preferences for blotter screen</string>
+  <string name="hide_closed_accounts">Hide closed accounts</string>
+  <string name="hide_closed_accounts_summary">Hide or show closed accounts in the accounts list (requires restart)</string>
+  <string name="re_index_categories">Re-index</string>
+  <string name="startup_screen">Startup screen</string>
+  <string name="startup_screen_summary">Select tab which will be selected on startup</string>
+  <string name="integrity_error">Running balances look out of sync, please do Menu -&gt; More -&gt; Integrity Fix</string>
+  <string name="integrity_fix">Integrity Fix</string>
+  <string name="integrity_fix_in_progress">Checking and fixing if necessary...</string>
+  <string name="select_to_account_differ_from_to_account">Cannot transfer to the same account...</string>
+  <string name="period_this_and_last_week">This and last week</string>
+  <string name="period_this_and_last_month">This and last month</string>
+  <string name="period_custom">Custom</string>
+  <string name="original_amount">Original Amount</string>
+  <string name="original_currency_as_account">Same as account</string>
+  <string name="split_transfer_not_supported_yet">Split-transfers with a currency differ from account\'s currency are not yet supported</string>
+  <string name="show_currency">Show currency</string>
+  <string name="show_currency_summary">Show currency selector in new transaction screen</string>
+  <string name="reconcile">Reconcile</string>
   <string-array name="attribute_types">
     <item>Texto</item>
     <item>Número</item>
     <item>Lista</item>
     <item>Validación</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>Hoy</item>
-    <item>Ayer</item>
-    <item>Esta semana</item>
-    <item>Este mes</item>
-    <item>Semana anterior</item>
-    <item>Mes anterior</item>
-    <item>Personalizado</item>
   </string-array>
   <string-array name="account_types">
     <item>Banco</item>
@@ -685,6 +710,8 @@
     <item>Por Listado Ascendente</item>
     <item>Por Listado Descendente</item>
     <item>Por Orden Alfabético</item>
+    <item>By Last Transaction (Asc)</item>
+    <item>By Last Transaction (Desc)</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>Por Nombre</item>
@@ -716,5 +743,11 @@
     <item>5 minutos</item>
     <item>10 minutos</item>
     <item>15 minutos</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>Accounts</item>
+    <item>Blotter</item>
+    <item>Budgets</item>
+    <item>Reports</item>
   </string-array>
 </resources>
