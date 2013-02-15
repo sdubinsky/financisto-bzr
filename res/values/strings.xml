@@ -820,4 +820,6 @@
     <string name="period_this_and_next_month">This and next month</string>
     <string name="period_next_3_months">Next 3 months</string>
 
+    <string name="exchange_rate_provider_error">Something wrong with the exchange rates provider. Response from the service - %s</string>
+
 </resources>

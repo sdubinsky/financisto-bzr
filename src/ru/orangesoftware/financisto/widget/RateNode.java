@@ -161,9 +161,10 @@ public class RateNode {
                         return Float.valueOf(d);
                     } else {
                         String[] x = s.split("\r\n");
-                        error = owner.getActivity().getString(R.string.service_is_not_available);
+                        Activity activity = owner.getActivity();
+                        error = activity.getString(R.string.service_is_not_available);
                         if (x.length > 0) {
-                            error = x[0];
+                            error = activity.getString(R.string.exchange_rate_provider_error, x[0]);
                         }
                     }
                 } catch (Exception e) {
