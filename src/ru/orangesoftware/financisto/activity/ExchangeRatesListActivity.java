@@ -19,7 +19,7 @@ import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.GenericViewHolder;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.rates.ExchangeRate;
+import ru.orangesoftware.financisto.rates.ExchangeRate;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

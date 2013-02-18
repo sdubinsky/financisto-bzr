@@ -22,7 +22,7 @@ import ru.orangesoftware.financisto.graph.GraphStyle;
 import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
-import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
+import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

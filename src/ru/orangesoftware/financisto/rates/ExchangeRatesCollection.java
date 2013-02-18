@@ -6,19 +6,15 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
-package ru.orangesoftware.financisto.model.rates;
-
-import ru.orangesoftware.financisto.model.Currency;
+package ru.orangesoftware.financisto.rates;
 
 /**
  * Created by IntelliJ IDEA.
  * User: denis.solonenko
- * Date: 1/30/12 7:46 PM
+ * Date: 1/30/12 8:18 PM
  */
-public interface ExchangeRateProvider {
+public interface ExchangeRatesCollection {
 
-    ExchangeRate getRate(Currency fromCurrency, Currency toCurrency);
-
-    ExchangeRate getRate(Currency fromCurrency, Currency toCurrency, long atTime);
+    void addRate(ExchangeRate r);
 
 }

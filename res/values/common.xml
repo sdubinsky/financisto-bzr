@@ -206,4 +206,14 @@
         <item>REPORTS</item>
     </string-array>
 
+    <string-array name="exchange_rate_provider_entities">
+        <item>WebserviceX.NET</item>
+        <item>OpenExchangeRates</item>
+    </string-array>
+
+    <string-array name="exchange_rate_provider_values">
+        <item>webservicex</item>
+        <item>openexchangerates</item>
+    </string-array>
+
 </resources>

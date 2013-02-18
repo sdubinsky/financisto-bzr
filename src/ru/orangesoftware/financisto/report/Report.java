@@ -25,7 +25,7 @@ import ru.orangesoftware.financisto.graph.GraphUnit;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
 import ru.orangesoftware.financisto.model.TotalError;
-import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
+import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.math.BigDecimal;

@@ -821,5 +821,9 @@
     <string name="period_next_3_months">Next 3 months</string>
 
     <string name="exchange_rate_provider_error">Something wrong with the exchange rates provider. Response from the service - %s</string>
+    <string name="exchange_rate_provider">Exchange Rate Provider</string>
+    <string name="exchange_rate_provider_summary">Select provider to download exchange rates</string>
+    <string name="openexchangerates_app_id">OpenExchangeRates App ID</string>
+    <string name="openexchangerates_app_id_summary">Please register a free account on OpenExchangeRates and provide your App ID</string>
 
 </resources>

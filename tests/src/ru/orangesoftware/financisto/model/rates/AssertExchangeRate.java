@@ -9,6 +9,7 @@
 package ru.orangesoftware.financisto.model.rates;
 
 import ru.orangesoftware.financisto.db.AbstractDbTest;
+import ru.orangesoftware.financisto.rates.ExchangeRate;
 import ru.orangesoftware.financisto.test.DateTime;
 
 /**

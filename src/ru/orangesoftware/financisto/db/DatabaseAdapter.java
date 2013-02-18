@@ -24,8 +24,8 @@ import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.rates.*;
 import ru.orangesoftware.financisto.datetime.DateUtils;
+import ru.orangesoftware.financisto.rates.*;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.math.BigDecimal;

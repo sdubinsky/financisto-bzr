@@ -11,8 +11,8 @@ package ru.orangesoftware.financisto.db;
 import android.os.Handler;
 import android.util.Log;
 import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.model.rates.ExchangeRate;
-import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
+import ru.orangesoftware.financisto.rates.ExchangeRate;
+import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.math.BigDecimal;

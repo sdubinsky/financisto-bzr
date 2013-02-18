@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
-package ru.orangesoftware.financisto.model.rates;
+package ru.orangesoftware.financisto.rates;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -19,8 +19,8 @@ import ru.orangesoftware.financisto.db.DatabaseHelper;
  */
 public class ExchangeRate implements Comparable<ExchangeRate> {
 
-    public static final ExchangeRate NA = new ExchangeRate();
     public static final ExchangeRate ONE = new ExchangeRate();
+    public static final ExchangeRate NA = error("");
 
     static {
         ONE.rate = 1.0d;
@@ -32,6 +32,14 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         r.toCurrencyId = c.getLong(DatabaseHelper.ExchangeRateColumns.to_currency_id.ordinal());
         r.date = c.getLong(DatabaseHelper.ExchangeRateColumns.rate_date.ordinal());
         r.rate = c.getFloat(DatabaseHelper.ExchangeRateColumns.rate.ordinal());
+        return r;
+    }
+
+    public static ExchangeRate error(String message) {
+        ExchangeRate r = new ExchangeRate();
+        r.date = System.currentTimeMillis();
+        r.rate = Double.NaN;
+        r.error = message;
         return r;
     }
 
@@ -48,6 +56,7 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     public long toCurrencyId;
     public long date;
     public double rate;
+    public String error;
 
     public ExchangeRate flip() {
         ExchangeRate r = new ExchangeRate();
@@ -63,6 +72,14 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         long d0 = this.date;
         long d1 = that.date;
         return d0 > d1 ? -1 : (d0 < d1 ? 1 : 0);
+    }
+
+    public boolean isOk() {
+        return error == null;
+    }
+
+    public String getErrorMessage() {
+        return error != null ? error : "";
     }
 
 }
