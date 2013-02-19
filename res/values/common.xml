@@ -86,6 +86,7 @@
         <item>Romanian</item>
         <item>Slovak</item>
 		<item>Русский</item>
+		<item>Українська</item>
 		<item>Chinese (China)</item>
 		<item>Chinese (Taiwan)</item>
 	</string-array>
@@ -104,6 +105,7 @@
         <item>ro</item>
         <item>sk</item>
 		<item>ru</item>
+		<item>uk-UA</item>
 		<item>zh-CN</item>
 		<item>zh-TW</item>
 	</string-array>

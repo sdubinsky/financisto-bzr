@@ -58,7 +58,7 @@ public class CurrencySelector {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        addSelectedCurrency();
+                        addSelectedCurrency(selectedCurrency);
                         dialogInterface.dismiss();
                     }
                 })
@@ -71,7 +71,7 @@ public class CurrencySelector {
                 .show();
     }
 
-    private void addSelectedCurrency() {
+    public void addSelectedCurrency(int selectedCurrency) {
         if (selectedCurrency > 0 && selectedCurrency <= currencies.size()) {
             List<String> c = currencies.get(selectedCurrency-1);
             addSelectedCurrency(c);
@@ -88,9 +88,14 @@ public class CurrencySelector {
         c.decimals = Math.max(0, Math.min(2, Integer.parseInt(list.get(3))));
         c.decimalSeparator = decodeSeparator(list.get(4));
         c.groupSeparator = decodeSeparator(list.get(5));
+        c.isDefault = isTheFirstCurrencyAdded();
         em.saveOrUpdate(c);
         CurrencyCache.initialize(em);
         listener.onCreated(c.id);
+    }
+
+    private boolean isTheFirstCurrencyAdded() {
+        return em.getAllCurrenciesList().isEmpty();
     }
 
     private String decodeSeparator(String s) {

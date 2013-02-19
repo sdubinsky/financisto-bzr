@@ -9,6 +9,7 @@
 package ru.orangesoftware.financisto.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.ScheduledListAdapter;
+import ru.orangesoftware.financisto.datetime.Period;
 import ru.orangesoftware.financisto.datetime.PeriodType;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.filter.Criteria;
@@ -50,7 +52,6 @@ public class PlannerActivity extends AbstractListActivity {
 
     @Override
     protected void internalOnCreate(Bundle savedInstanceState) {
-        setupFilter(savedInstanceState);
         totalText = (TextView)findViewById(R.id.total);
         filterText = (TextView)findViewById(R.id.period);
         ImageButton bFilter = (ImageButton) findViewById(R.id.bFilter);
@@ -61,14 +62,34 @@ public class PlannerActivity extends AbstractListActivity {
                 showFilter();
             }
         });
+
+        loadFilter();
+        setupFilter();
     }
 
-    private void setupFilter(Bundle savedInstanceState) {
+    private void loadFilter() {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        filter = WhereFilter.fromSharedPreferences(preferences);
+        applyDateTimeCriteria(filter.getDateTime());
+    }
+
+    private void setupFilter() {
         if (filter.isEmpty()) {
             Calendar date = Calendar.getInstance();
             date.add(Calendar.MONTH, 1);
-            filter.put(new DateTimeCriteria(PeriodType.THIS_MONTH));
+            DateTimeCriteria criteria = new DateTimeCriteria(PeriodType.THIS_MONTH);
+            applyDateTimeCriteria(criteria);
         }
+    }
+
+    private void applyDateTimeCriteria(DateTimeCriteria criteria) {
+        long now = System.currentTimeMillis();
+        if (now > criteria.getLongValue1()) {
+            Period period = criteria.getPeriod();
+            period.start = now;
+            criteria = new DateTimeCriteria(period);
+        }
+        filter.put(criteria);
     }
 
     private void showFilter() {
@@ -77,6 +98,13 @@ public class PlannerActivity extends AbstractListActivity {
         intent.putExtra(DateFilterActivity.EXTRA_FILTER_SHOW_PLANNER, true);
         filter.toIntent(intent);
         startActivityForResult(intent, 1);
+    }
+
+    private void saveFilter() {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        filter.toSharedPreferences(preferences);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.commit();
     }
 
     @Override
@@ -106,7 +134,8 @@ public class PlannerActivity extends AbstractListActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             DateTimeCriteria c = WhereFilter.dateTimeFromIntent(data);
-            filter.put(c);
+            applyDateTimeCriteria(c);
+            saveFilter();
             retrieveData();
         }
     }

@@ -91,8 +91,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int MENU_IMPORT_EXPORT = Menu.FIRST+11;
     private static final int MENU_BACKUP_TO = Menu.FIRST+12;
     private static final int MENU_INTEGRITY_FIX = Menu.FIRST+13;
-    private static final int MENU_CLOUD_SYNC = Menu.FIRST+14;
-    
+    private static final int MENU_PLANNER = Menu.FIRST+14;
+    private static final int MENU_CLOUD_SYNC = Menu.FIRST+15;
+
     private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
 
 	@Override
@@ -237,7 +238,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 	}
 
     private void setupBlotterTab(TabHost tabHost) {
-    	Intent intent = new Intent(this, PlannerActivity.class);
+    	Intent intent = new Intent(this, BlotterActivity.class);
     	intent.putExtra(BlotterActivity.SAVE_FILTER, true);
     	intent.putExtra(BlotterActivity.EXTRA_FILTER_ACCOUNTS, true);
         tabHost.addTab(tabHost.newTabSpec("blotter")
@@ -264,13 +265,15 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		menuItem.setIcon(R.drawable.menu_entities);
 		menuItem = menu.add(0, MENU_SCHEDULED_TRANSACTIONS, 0, R.string.scheduled_transactions);
 		menuItem.setIcon(R.drawable.ic_menu_today);
-		menuItem = menu.add(0, MENU_MASS_OP, 0, R.string.mass_operations);
-		menuItem.setIcon(R.drawable.ic_menu_agenda);
+        menuItem = menu.add(0, MENU_MASS_OP, 0, R.string.mass_operations);
+        menuItem.setIcon(R.drawable.ic_menu_agenda);
+        menuItem = menu.add(0, MENU_PLANNER, 0, R.string.planner);
+        menuItem.setIcon(R.drawable.ic_menu_today);
 		menuItem = menu.add(0, MENU_BACKUP, 0, R.string.backup_database);
 		menuItem.setIcon(R.drawable.ic_menu_upload);
-		menuItem = menu.add(0, MENU_PREFERENCES, 0, R.string.preferences);
 		menuItem.setIcon(android.R.drawable.ic_menu_preferences);
 		menu.addSubMenu(0, MENU_CLOUD_SYNC, 0, R.string.flowzr_sync);
+        menu.addSubMenu(0, MENU_PREFERENCES, 0, R.string.preferences);
 		menu.addSubMenu(0, MENU_RESTORE, 0, R.string.restore_database);
 		menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
 		menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
@@ -311,6 +314,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		case MENU_MASS_OP:
 			startActivity(new Intent(this, MassOpActivity.class));
 			break;
+        case MENU_PLANNER:
+            startActivity(new Intent(this, PlannerActivity.class));
+            break;
 		case MENU_ABOUT:
             startActivity(new Intent(this, AboutActivity.class));
 			break;
