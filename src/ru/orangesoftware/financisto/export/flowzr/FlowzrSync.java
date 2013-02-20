@@ -330,10 +330,10 @@ public class FlowzrSync  {
 					nameValuePairs.add(new BasicNameValuePair("account",ark));
 				}
 			}
-
-//			for (NameValuePair p : nameValuePairs) {
-//				Log.e("financisto",p.toString());
-//			}
+			nameValuePairs.add(new BasicNameValuePair("lastSyncLocalTimestamp",String.valueOf(options.lastSyncLocalTimestamp)));
+			for (NameValuePair p : nameValuePairs) {
+				Log.e("financisto",p.toString());
+			}
 			String strResponse=httpPush(nameValuePairs);							
 			
 			if (strResponse.equals(FLOWZR_MSG_NET_ERROR)) {
