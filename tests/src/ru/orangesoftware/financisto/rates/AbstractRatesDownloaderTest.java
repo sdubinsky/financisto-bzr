@@ -10,12 +10,14 @@ package ru.orangesoftware.financisto.rates;
 
 import android.test.InstrumentationTestCase;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.util.EntityUtils;
 import ru.orangesoftware.financisto.http.FakeHttpClientWrapper;
 import ru.orangesoftware.financisto.model.Currency;
 
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,6 +27,9 @@ import java.io.InputStream;
  */
 public abstract class AbstractRatesDownloaderTest extends InstrumentationTestCase {
 
+    private final Map<String, Currency> nameToCurrency = new HashMap<String, Currency>();
+    private final AtomicLong counter = new AtomicLong(1);
+
     FakeHttpClientWrapper client = new FakeHttpClientWrapper();
 
     abstract ExchangeRateProvider service();
@@ -33,10 +38,23 @@ public abstract class AbstractRatesDownloaderTest extends InstrumentationTestCas
         return service().getRate(currency(from), currency(to));
     }
 
-    private Currency currency(String name) {
-        Currency c = new Currency();
-        c.name = name;
+    Currency currency(String name) {
+        Currency c = nameToCurrency.get(name);
+        if (c == null) {
+            c = new Currency();
+            c.id = counter.getAndIncrement();
+            c.name = name;
+            nameToCurrency.put(name, c);
+        }
         return c;
+    }
+
+    List<Currency> currencies(String... currencies) {
+        List<Currency> list = new ArrayList<Currency>();
+        for (String name : currencies) {
+            list.add(currency(name));
+        }
+        return list;
     }
 
     void givenResponseFromWebService(String url, String response) {
@@ -45,6 +63,17 @@ public abstract class AbstractRatesDownloaderTest extends InstrumentationTestCas
 
     void givenExceptionWhileRequestingWebService() {
         client.error = new ConnectTimeoutException("Timeout");
+    }
+
+    void assertRate(ExchangeRate exchangeRate, String fromCurrency, String toCurrency) {
+        assertEquals("Expected "+fromCurrency, currency(fromCurrency).id, exchangeRate.fromCurrencyId);
+        assertEquals("Expected "+toCurrency, currency(toCurrency).id, exchangeRate.toCurrencyId);
+    }
+
+    void assertRate(ExchangeRate exchangeRate, String fromCurrency, String toCurrency, double rate, long date) {
+        assertRate(exchangeRate, fromCurrency, toCurrency);
+        assertEquals(rate, exchangeRate.rate, 0.000001);
+        assertEquals(date, exchangeRate.date);
     }
 
     static String anyUrl() {

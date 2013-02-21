@@ -1463,12 +1463,16 @@ public class DatabaseAdapter {
         SQLiteDatabase db = db();
         db.beginTransaction();
         try {
-            deleteRateInTransaction(rate.fromCurrencyId, rate.toCurrencyId, originalDate, db);
-            saveBothRatesInTransaction(rate, db);
+            replaceRateInTransaction(rate, originalDate, db);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
+    }
+
+    private void replaceRateInTransaction(ExchangeRate rate, long originalDate, SQLiteDatabase db) {
+        deleteRateInTransaction(rate.fromCurrencyId, rate.toCurrencyId, originalDate, db);
+        saveBothRatesInTransaction(rate, db);
     }
 
     private void saveBothRatesInTransaction(ExchangeRate r, SQLiteDatabase db) {
@@ -1480,6 +1484,21 @@ public class DatabaseAdapter {
     private void saveRateInTransaction(SQLiteDatabase db, ExchangeRate r) {
         ContentValues values = r.toValues();
         db.insert(EXCHANGE_RATES_TABLE, null, values);
+    }
+
+    public void saveDownloadedRates(List<ExchangeRate> downloadedRates) {
+        SQLiteDatabase db = db();
+        db.beginTransaction();
+        try {
+            for (ExchangeRate r : downloadedRates) {
+                if (r.isOk()) {
+                    replaceRateInTransaction(r, r.date, db);
+                }
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public ExchangeRate findRate(Currency fromCurrency, Currency toCurrency, long date) {
@@ -1759,5 +1778,6 @@ public class DatabaseAdapter {
         return DatabaseUtils.rawFetchLongValue(this, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(account.id)});
     }
+
 }
 

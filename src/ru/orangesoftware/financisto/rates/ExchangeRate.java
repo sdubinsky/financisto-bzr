@@ -20,10 +20,11 @@ import ru.orangesoftware.financisto.db.DatabaseHelper;
 public class ExchangeRate implements Comparable<ExchangeRate> {
 
     public static final ExchangeRate ONE = new ExchangeRate();
-    public static final ExchangeRate NA = error("");
+    public static final ExchangeRate NA = new ExchangeRate();
 
     static {
         ONE.rate = 1.0d;
+        NA.error = "N/A";
     }
 
     public static ExchangeRate fromCursor(Cursor c) {
@@ -32,14 +33,6 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         r.toCurrencyId = c.getLong(DatabaseHelper.ExchangeRateColumns.to_currency_id.ordinal());
         r.date = c.getLong(DatabaseHelper.ExchangeRateColumns.rate_date.ordinal());
         r.rate = c.getFloat(DatabaseHelper.ExchangeRateColumns.rate.ordinal());
-        return r;
-    }
-
-    public static ExchangeRate error(String message) {
-        ExchangeRate r = new ExchangeRate();
-        r.date = System.currentTimeMillis();
-        r.rate = Double.NaN;
-        r.error = message;
         return r;
     }
 

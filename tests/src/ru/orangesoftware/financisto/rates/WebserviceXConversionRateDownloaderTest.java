@@ -8,15 +8,18 @@
 
 package ru.orangesoftware.financisto.rates;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: dsolonenko
  * Date: 2/18/13
  * Time: 10:04 PM
  */
-public class WebserviceXExchangeRatesDownloaderTest extends AbstractRatesDownloaderTest {
+public class WebserviceXConversionRateDownloaderTest extends AbstractRatesDownloaderTest {
 
-    WebserviceXExchangeRatesDownloader webserviceX = new WebserviceXExchangeRatesDownloader(client);
+    long dateTime = System.currentTimeMillis();
+    WebserviceXConversionRateDownloader webserviceX = new WebserviceXConversionRateDownloader(client, dateTime);
 
     @Override
     ExchangeRateProvider service() {
@@ -25,19 +28,35 @@ public class WebserviceXExchangeRatesDownloaderTest extends AbstractRatesDownloa
 
     public void test_should_download_single_rate_cur_to_cur() {
         //given
-        givenResponseFromWebService("http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency=USD&ToCurrency=SGD",
-                "<double xmlns=\"http://www.webserviceX.NET/\">1.2387</double>");
+        givenResponseFromWebService("USD","SGD",1.2387);
         //when
         ExchangeRate exchangeRate = downloadRate("USD", "SGD");
         //then
         assertEquals(1.2387, exchangeRate.rate);
     }
 
+    public void test_should_download_multiple_rates() {
+        //given
+        givenResponseFromWebService("USD", "SGD", 1.2);
+        givenResponseFromWebService("USD", "RUB", 30);
+        givenResponseFromWebService("SGD", "RUB", 25);
+        //when
+        List<ExchangeRate> rates = webserviceX.getRates(currencies("USD", "SGD", "RUB"));
+        //then
+        assertEquals(3, rates.size());
+        assertRate(rates.get(0), "USD", "SGD", 1.2, dateTime);
+        assertRate(rates.get(1), "USD", "RUB", 30, dateTime);
+        assertRate(rates.get(2), "SGD", "RUB", 25, dateTime);
+    }
+
     public void test_should_skip_unknown_currency() {
         //given
         givenResponseFromWebService(anyUrl(), "Exception: Unable to convert ToCurrency to Currency\r\nStacktrace...");
+        //when
+        ExchangeRate rate = downloadRate("USD", "AAA");
         //then
-        assertFalse(downloadRate("USD", "AAA").isOk());
+        assertFalse(rate.isOk());
+        assertRate(rate, "USD", "AAA");
     }
 
     public void test_should_handle_error_from_webservice_properly() {
@@ -58,7 +77,13 @@ public class WebserviceXExchangeRatesDownloaderTest extends AbstractRatesDownloa
         ExchangeRate downloadedRate = downloadRate("USD", "SGD");
         //then
         assertFalse(downloadedRate.isOk());
+        assertRate(downloadedRate, "USD", "SGD");
         assertEquals("Unable to get exchange rates: Timeout", downloadedRate.getErrorMessage());
+    }
+
+    private void givenResponseFromWebService(String c1, String c2, double r) {
+        givenResponseFromWebService("http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency="+c1+"&ToCurrency="+c2,
+                "<double xmlns=\"http://www.webserviceX.NET/\">"+r+"</double>");
     }
 
 }

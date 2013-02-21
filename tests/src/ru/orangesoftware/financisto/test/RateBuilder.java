@@ -55,6 +55,11 @@ public class RateBuilder {
         return this;
     }
 
+    public RateBuilder notOK() {
+        r.error = "Exception";
+        return this;
+    }
+
     public ExchangeRate create() {
         if (db != null) {
             db.saveRate(r);

@@ -52,7 +52,12 @@ public class HistoryExchangeRates implements ExchangeRateProvider, ExchangeRates
         }
         return rates.first();
     }
-    
+
+    @Override
+    public List<ExchangeRate> getRates(List<Currency> currencies) {
+        throw new UnsupportedOperationException();
+    }
+
     private SortedSet<ExchangeRate> getRates(long fromCurrencyId, long toCurrencyId) {
         TLongObjectMap<SortedSet<ExchangeRate>> map = getMapFor(fromCurrencyId);
         return getSetFor(map, toCurrencyId);

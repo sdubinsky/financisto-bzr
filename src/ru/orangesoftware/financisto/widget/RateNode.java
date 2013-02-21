@@ -10,6 +10,7 @@ package ru.orangesoftware.financisto.widget;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -152,9 +153,9 @@ public class RateNode {
         }
 
         private void showProgressDialog() {
-            Activity activity = owner.getActivity();
-            String message = activity.getString(R.string.downloading_rate, owner.getCurrencyFrom(), owner.getCurrencyTo());
-            progressDialog = ProgressDialog.show(activity, null, message, true, true, new DialogInterface.OnCancelListener() {
+            Context context = owner.getActivity();
+            String message = context.getString(R.string.downloading_rate, owner.getCurrencyFrom(), owner.getCurrencyTo());
+            progressDialog = ProgressDialog.show(context, null, message, true, true, new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialogInterface) {
                     cancel(true);
@@ -183,10 +184,10 @@ public class RateNode {
             }
         }
 
-    }
+        private ExchangeRateProvider getProvider() {
+            return MyPreferences.createExchangeRatesProvider(owner.getActivity());
+        }
 
-    private ExchangeRateProvider getProvider() {
-        return MyPreferences.createExchangeRatesProvider(owner.getActivity());
     }
 
     private final TextWatcher rateWatcher = new TextWatcher(){

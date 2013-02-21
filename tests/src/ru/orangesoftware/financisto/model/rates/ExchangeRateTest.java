@@ -16,6 +16,7 @@ import ru.orangesoftware.financisto.test.CurrencyBuilder;
 import ru.orangesoftware.financisto.test.DateTime;
 import ru.orangesoftware.financisto.test.RateBuilder;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,12 +28,14 @@ public class ExchangeRateTest extends AbstractDbTest {
 
     Currency c1;
     Currency c2;
+    Currency c3;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         c1 = CurrencyBuilder.withDb(db).name("USD").title("Dollar").symbol("$").create();
         c2 = CurrencyBuilder.withDb(db).name("EUR").title("Euro").symbol("€").create();
+        c3 = CurrencyBuilder.withDb(db).name("RUB").title("Ruble").symbol("p.").create();
     }
 
     public void test_should_calculate_opposite_rate() {
@@ -125,6 +128,22 @@ public class ExchangeRateTest extends AbstractDbTest {
         assertEquals(1, db.findRates(c2).size());
         assertEquals(0.888f, db.findRate(c1, c2, DateTime.date(2012, 1, 18).asLong()).rate, 0.00001f);
         assertEquals(1f/0.888f, db.findRate(c2, c1, DateTime.date(2012, 1, 18).asLong()).rate, 0.00001f);
+    }
+
+    public void test_should_save_downloaded_rates() {
+        //given
+        List<ExchangeRate> downloadedRates = Arrays.asList(
+                RateBuilder.inMemory().from(c1).to(c2).at(DateTime.date(2012, 1, 18)).rate(0.1f).create(),
+                RateBuilder.inMemory().from(c1).to(c3).at(DateTime.date(2012, 1, 18)).rate(0.2f).create(),
+                RateBuilder.inMemory().from(c2).to(c3).at(DateTime.date(2012, 1, 18)).rate(0.3f).create(),
+                RateBuilder.inMemory().from(c2).to(c3).at(DateTime.date(2012, 1, 19)).rate(0.3f).notOK().create()
+        );
+        //when
+        db.saveDownloadedRates(downloadedRates);
+        //then
+        assertEquals(2, db.findRates(c1).size());
+        assertEquals(2, db.findRates(c2).size());
+        assertEquals(2, db.findRates(c3).size());
     }
 
 }

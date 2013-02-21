@@ -12,6 +12,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.util.EntityUtils;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,12 +49,26 @@ public class OpenExchangeRatesDownloaderTest extends AbstractRatesDownloaderTest
         assertEquals(0.00010655, downloadRate("BYR", "CHF").rate, 0.00001);
     }
 
+    public void test_should_download_multiple_rates() {
+        //given
+        givenResponseFromWebService(anyUrl(), "open_exchange_normal_response.json");
+        //when
+        List<ExchangeRate> rates = openRates.getRates(currencies("USD", "SGD", "RUB"));
+        //then
+        assertEquals(3, rates.size());
+        assertRate(rates.get(0), "USD", "SGD", 1.236699, 1361034009000L);
+        assertRate(rates.get(1), "USD", "RUB", 30.117065, 1361034009000L);
+        assertRate(rates.get(2), "SGD", "RUB", 24.352785, 1361034009000L);
+    }
+
     public void test_should_skip_unknown_currency() {
         //given
         givenResponseFromWebService(anyUrl(), "open_exchange_normal_response.json");
+        //when
+        ExchangeRate rate = downloadRate("USD", "AAA");
         //then
-        assertFalse(downloadRate("USD", "AAA").isOk());
-        assertFalse(downloadRate("AAA", "USD").isOk());
+        assertFalse(rate.isOk());
+        assertRate(rate, "USD", "AAA");
     }
 
     public void test_should_handle_error_from_webservice_properly() {
@@ -63,6 +78,7 @@ public class OpenExchangeRatesDownloaderTest extends AbstractRatesDownloaderTest
         ExchangeRate downloadedRate = downloadRate("USD", "SGD");
         //then
         assertFalse(downloadedRate.isOk());
+        assertRate(downloadedRate, "USD", "SGD");
         assertEquals("400 (invalid_app_id): Invalid App ID", downloadedRate.getErrorMessage());
     }
 

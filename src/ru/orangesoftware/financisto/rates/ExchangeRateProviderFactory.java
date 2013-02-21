@@ -23,7 +23,7 @@ public enum ExchangeRateProviderFactory {
     webservicex(){
         @Override
         public ExchangeRateProvider createProvider(SharedPreferences sharedPreferences) {
-            return new WebserviceXExchangeRatesDownloader(createDefaultWrapper());
+            return new WebserviceXConversionRateDownloader(createDefaultWrapper(), System.currentTimeMillis());
         }
     },
     openexchangerates(){

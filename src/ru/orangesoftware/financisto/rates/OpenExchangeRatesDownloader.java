@@ -22,7 +22,7 @@ import ru.orangesoftware.financisto.model.Currency;
  * Time: 6:27 PM
  */
 //@NotThreadSafe
-public class OpenExchangeRatesDownloader implements ExchangeRateProvider {
+public class OpenExchangeRatesDownloader extends AbstractMultipleRatesDownloader {
 
     private static final String TAG = OpenExchangeRatesDownloader.class.getSimpleName();
     private static final String GET_LATEST = "http://openexchangerates.org/api/latest.json?app_id=";
@@ -39,15 +39,25 @@ public class OpenExchangeRatesDownloader implements ExchangeRateProvider {
 
     @Override
     public ExchangeRate getRate(Currency fromCurrency, Currency toCurrency) {
+        ExchangeRate rate = createRate(fromCurrency, toCurrency);
         try {
             downloadLatestRates();
             if (hasError(json)) {
-                return error(json);
+                rate.error = error(json);
+            } else {
+                updateRate(json, rate, fromCurrency, toCurrency);
             }
-            return getRate(json, fromCurrency, toCurrency);
         } catch (Exception e) {
-            return error(e);
+            rate.error = error(e);
         }
+        return rate;
+    }
+
+    private ExchangeRate createRate(Currency fromCurrency, Currency toCurrency) {
+        ExchangeRate r = new ExchangeRate();
+        r.fromCurrencyId = fromCurrency.id;
+        r.toCurrencyId = toCurrency.id;
+        return r;
     }
 
     private void downloadLatestRates() throws Exception {
@@ -73,42 +83,23 @@ public class OpenExchangeRatesDownloader implements ExchangeRateProvider {
         return json.optBoolean("error", false);
     }
 
-    private ExchangeRate error(JSONObject json) {
+    private String error(JSONObject json) {
         String status = json.optString("status");
         String message = json.optString("message");
         String description = json.optString("description");
-        return ExchangeRate.error(status+" ("+message+"): "+description);
+        return status+" ("+message+"): "+description;
     }
 
-    private ExchangeRate error(Exception e) {
-        return ExchangeRate.error("Unable to get exchange rates: "+e.getMessage());
+    private String error(Exception e) {
+        return "Unable to get exchange rates: "+e.getMessage();
     }
 
-    private ExchangeRate getRate(JSONObject json, Currency fromCurrency, Currency toCurrency) throws JSONException {
-        if (json.has("rates")) {
-            JSONObject rates = json.getJSONObject("rates");
-            if (rates.has(fromCurrency.name) && rates.has(toCurrency.name)) {
-                double usdFrom = rates.getDouble(fromCurrency.name);
-                double usdTo = rates.getDouble(toCurrency.name);
-                double rate = usdTo * (1 / usdFrom);
-                ExchangeRate exchangeRate = rate(fromCurrency, toCurrency, rate);
-                updateDateTime(json, exchangeRate);
-                return exchangeRate;
-            }
-        }
-        return ExchangeRate.NA;
-    }
-
-    private ExchangeRate rate(Currency fromCurrency, Currency toCurrency, double rate) {
-        ExchangeRate r = new ExchangeRate();
-        r.fromCurrencyId = fromCurrency.id;
-        r.toCurrencyId = toCurrency.id;
-        r.rate = rate;
-        return r;
-    }
-
-    private void updateDateTime(JSONObject json, ExchangeRate rate) throws JSONException {
-        rate.date = 1000*json.optLong("timestamp", System.currentTimeMillis());
+    private void updateRate(JSONObject json, ExchangeRate exchangeRate, Currency fromCurrency, Currency toCurrency) throws JSONException {
+        JSONObject rates = json.getJSONObject("rates");
+        double usdFrom = rates.getDouble(fromCurrency.name);
+        double usdTo = rates.getDouble(toCurrency.name);
+        exchangeRate.rate = usdTo * (1 / usdFrom);
+        exchangeRate.date = 1000*json.optLong("timestamp", System.currentTimeMillis());
     }
 
     @Override

@@ -639,7 +639,8 @@
     <string name="unsplit_amount">Unsplit amount</string>
     <string name="unsplit_amount_greater_than_zero">There is still some amount left un-split...</string>
     <string name="delete_transaction_parent_confirm">This transaction is a part of split. Do you want to delete the parent transaction?</string>
-    <string name="downloading_rate" formatted="false">Fetching %s/%s conversion rate...</string>
+    <string name="downloading_rate" formatted="false">Downloading %s/%s conversion rate...</string>
+    <string name="downloading_rates">Downloading conversion rates for %s...</string>
 
     <string name="unsplit_adjust_amount">Amount</string>
     <string name="unsplit_adjust_amount_summary">Adjust amount</string>
@@ -825,5 +826,7 @@
     <string name="exchange_rate_provider_summary">Select provider to download exchange rates</string>
     <string name="openexchangerates_app_id">OpenExchangeRates App ID</string>
     <string name="openexchangerates_app_id_summary">Please register a free account on OpenExchangeRates and provide your App ID</string>
+    <string name="download_all_rates">Download all current rates</string>
+    <string name="downloading_rates_result">Downloaded exchange rates</string>
 
 </resources>

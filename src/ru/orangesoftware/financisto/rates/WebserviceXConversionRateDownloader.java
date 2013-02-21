@@ -21,30 +21,43 @@ import java.util.regex.Pattern;
  * Date: 2/18/13
  * Time: 9:59 PM
  */
-public class WebserviceXExchangeRatesDownloader implements ExchangeRateProvider {
+public class WebserviceXConversionRateDownloader extends AbstractMultipleRatesDownloader {
 
-    private static final String TAG = WebserviceXExchangeRatesDownloader.class.getSimpleName();
+    private static final String TAG = WebserviceXConversionRateDownloader.class.getSimpleName();
 
     private final Pattern pattern = Pattern.compile("<double.*?>(.+?)</double>");
     private final HttpClientWrapper client;
+    private final long dateTime;
 
-    public WebserviceXExchangeRatesDownloader(HttpClientWrapper client) {
+    public WebserviceXConversionRateDownloader(HttpClientWrapper client, long dateTime) {
         this.client = client;
+        this.dateTime = dateTime;
     }
 
     @Override
     public ExchangeRate getRate(Currency fromCurrency, Currency toCurrency) {
+        ExchangeRate rate = createRate(fromCurrency, toCurrency);
         try {
             String s = getResponse(fromCurrency, toCurrency);
             Matcher m = pattern.matcher(s);
             if (m.find()) {
-                return rate(m.group(1));
+                rate.rate = parseRate(m.group(1));
             } else {
-                return error(s);
+                rate.error = parseError(s);
             }
+            return rate;
         } catch (Exception e) {
-            return ExchangeRate.error("Unable to get exchange rates: "+e.getMessage());
+            rate.error = "Unable to get exchange rates: "+e.getMessage();
         }
+        return rate;
+    }
+
+    private ExchangeRate createRate(Currency fromCurrency, Currency toCurrency) {
+        ExchangeRate rate = new ExchangeRate();
+        rate.fromCurrencyId = fromCurrency.id;
+        rate.toCurrencyId = toCurrency.id;
+        rate.date = dateTime;
+        return rate;
     }
 
     private String getResponse(Currency fromCurrency, Currency toCurrency) throws Exception {
@@ -55,20 +68,17 @@ public class WebserviceXExchangeRatesDownloader implements ExchangeRateProvider 
         return s;
     }
 
-    private ExchangeRate rate(String s) {
-        ExchangeRate rate = new ExchangeRate();
-        rate.rate = Double.parseDouble(s);
-        rate.date = System.currentTimeMillis();
-        return rate;
+    private double parseRate(String s) {
+        return Double.parseDouble(s);
     }
 
-    private ExchangeRate error(String s) {
+    private String parseError(String s) {
         String[] x = s.split("\r\n");
         String error = "Service is not available, please try again later";
         if (x.length > 0) {
             error = "Something wrong with the exchange rates provider. Response from the service - "+x[0];
         }
-        return ExchangeRate.error(error);
+        return error;
     }
 
     private String buildUrl(Currency fromCurrency, Currency toCurrency) {
