@@ -338,7 +338,7 @@ public class FlowzrSync  {
 			
 			if (strResponse.equals(FLOWZR_MSG_NET_ERROR)) {
 				return new Exception(strResponse);
-			} else if (remote_key==null && !strResponse.equals(FLOWZR_MSG_DELETED)) {				
+			} else if (!strResponse.equals(FLOWZR_MSG_DELETED)) {				
 				if (!tableName.equals("currency_exchange_rate")) {
 					String sql="update " + tableName + " set remote_key='" + strResponse + "' where  _id=" + c.getInt(c.getColumnIndex("_id"));
 					db.beginTransaction();
