@@ -36,7 +36,6 @@ import api.wireless.gdata.docs.data.FolderEntry;
 import api.wireless.gdata.parser.ParseException;
 import api.wireless.gdata.util.AuthenticationException;
 import api.wireless.gdata.util.ServiceException;
-import com.nullwire.trace.ExceptionHandler;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.backup.Backup;
 import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
@@ -99,7 +98,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		initialLoad();
 
 		if (MyPreferences.isSendErrorReport(this)) {
-			ExceptionHandler.register(this, "http://orangesoftware.ru/bugs/server.php");
 		}
 		
 		final TabHost tabHost = getTabHost();
