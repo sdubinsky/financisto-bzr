@@ -62,7 +62,6 @@ import ru.orangesoftware.financisto.utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static ru.orangesoftware.financisto.export.docs.GoogleDocsClient.createDocsClient;
@@ -92,8 +91,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int MENU_INTEGRITY_FIX = Menu.FIRST+13;
     private static final int MENU_PLANNER = Menu.FIRST+14;
 
-    private final HashMap<String, Boolean> started = new HashMap<String, Boolean>();
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -102,7 +99,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		initialLoad();
 
 		if (MyPreferences.isSendErrorReport(this)) {
-			ExceptionHandler.register(this, "http://orangesoftware.ru/bugs/server.php");		
+			ExceptionHandler.register(this, "http://orangesoftware.ru/bugs/server.php");
 		}
 		
 		final TabHost tabHost = getTabHost();
@@ -113,7 +110,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 		setupReportsTab(tabHost);
 
         MyPreferences.StartupScreen screen = MyPreferences.getStartupScreen(this);
-		started.put(screen.tag, Boolean.TRUE);
         tabHost.setCurrentTabByTag(screen.tag);
 
 		tabHost.setOnTabChangedListener(this);
@@ -209,15 +205,11 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 
 	@Override
 	public void onTabChanged(String tabId) {
-		if (started.containsKey(tabId)) {
-            Log.d("Financisto", "About to update tab " + tabId);
-            long t0 = System.currentTimeMillis();
-            refreshCurrentTab();
-            long t1 = System.currentTimeMillis();
-            Log.d("Financisto", "Tab " + tabId + " updated in " + (t1 - t0) + "ms");
-        } else {
-			started.put(tabId, Boolean.TRUE);
-		}
+        Log.d("Financisto", "About to update tab " + tabId);
+        long t0 = System.currentTimeMillis();
+        refreshCurrentTab();
+        long t1 = System.currentTimeMillis();
+        Log.d("Financisto", "Tab " + tabId + " updated in " + (t1 - t0) + "ms");
 	}
 
     private void refreshCurrentTab() {
