@@ -1186,17 +1186,17 @@ public class FlowzrSync  {
     					
     			long id=getLocalKey(tableName,remoteKey);
     			Object o=null;
-				if (tableName==DatabaseHelper.ACCOUNT_TABLE) {    
+				if (tableName.equals(DatabaseHelper.ACCOUNT_TABLE)) {    
 					dba.deleteAccount(id);				
-				} else if (tableName==DatabaseHelper.TRANSACTION_TABLE) {
-					dba.deleteTransaction(id);					
-				} else if (tableName==DatabaseHelper.CURRENCY_TABLE) {
+				} else if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
+					dba.deleteTransaction(id);								
+				} else if (tableName.equals(DatabaseHelper.CURRENCY_TABLE)) {
 					em.deleteCurrency(id);					
-				} else if (tableName==DatabaseHelper.BUDGET_TABLE) {
+				} else if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
 					em.deleteBudget(id);
-				} else if (tableName==DatabaseHelper.LOCATIONS_TABLE) {
+				} else if (tableName.equals(DatabaseHelper.LOCATIONS_TABLE)) {
 					em.deleteLocation(id);
-				} else  if (tableName==DatabaseHelper.CATEGORY_TABLE) {
+				} else  if (tableName.equals(DatabaseHelper.CATEGORY_TABLE)) {
 					dba.deleteCategory(id);
 				}
 				if (progressListener != null) {	            					
