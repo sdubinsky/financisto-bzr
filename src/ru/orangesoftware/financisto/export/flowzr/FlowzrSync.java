@@ -287,7 +287,7 @@ public class FlowzrSync  {
 			for (String colName: c.getColumnNames()) {
 				//if (colName.endsWith("_id")  && getClassForColName(colName)!=null) {				
 				if (colName.endsWith("_id") &&  getClassForColName(colName)!=null) {	
-					if (colName.equals("location_id")) {
+					if (colName.equals("location_id") && c.getInt(c.getColumnIndex(colName))>=0) {
 						int entity_id=c.getInt(c.getColumnIndex(colName));						
 						MyLocation myEntityEntityLoaded=(MyLocation) em.load(getClassForColName(colName), entity_id);
 						nameValuePairs.add(new BasicNameValuePair(colName,myEntityEntityLoaded.remoteKey));						
@@ -538,7 +538,6 @@ public class FlowzrSync  {
 				if (jsonObjectEntity.has("rightPos") ) {
 					try {
 						((Category)tEntity).right=jsonObjectEntity.getInt("rightPos");
-						Log.e("financisto","Set Category.right with : " + jsonObjectEntity.getString("rightPos"));	
 					} catch (Exception e) {
 						Log.e("financisto","Error parsing Category.right with : " + jsonObjectEntity.getString("rightPos"));				
 						e.printStackTrace();
