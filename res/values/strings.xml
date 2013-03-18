@@ -829,4 +829,6 @@
     <string name="download_all_rates">Download all current rates</string>
     <string name="downloading_rates_result">Downloaded exchange rates</string>
 
+    <string name="export_splits">Export splits</string>
+
 </resources>

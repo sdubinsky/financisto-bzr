@@ -11,9 +11,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent" android:layout_height="fill_parent"
               android:orientation="vertical" android:padding="3dp">
-    <ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1">
+    <ScrollView android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1">
         <LinearLayout
-                android:layout_width="fill_parent" android:layout_height="fill_parent"
+                android:layout_width="fill_parent" android:layout_height="0dp"
                 android:orientation="vertical">
             <TextView android:layout_height="wrap_content"
                       android:layout_width="fill_parent" android:layout_marginLeft="3dp"
@@ -54,6 +54,14 @@
                              android:entries="@array/field_separators"/>
                     <CheckBox android:id="@+id/checkboxIncludeHeader" android:checked="true"/>
                     <CheckBox android:id="@+id/checkboxUploadToDropbox" android:checked="false"/>
+                </TableRow>
+                <include layout="@layout/list_divider"/>
+                <TableRow>
+                    <TextView android:layout_marginLeft="3dp"
+                              android:text="@string/export_splits"/>
+                </TableRow>
+                <TableRow>
+                    <CheckBox android:id="@+id/checkboxExportSplits" android:checked="false"/>
                 </TableRow>
             </TableLayout>
         </LinearLayout>

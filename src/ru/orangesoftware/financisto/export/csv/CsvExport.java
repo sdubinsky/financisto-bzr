@@ -31,7 +31,7 @@ import static ru.orangesoftware.financisto.datetime.DateUtils.FORMAT_TIME_ISO_86
 
 public class CsvExport extends Export {
 
-    public static final String[] HEADER = "date,time,account,amount,currency,category,parent,payee,location,project,note".split(",");
+    public static final String[] HEADER = "date,time,account,amount,currency,original amount,original currency,category,parent,payee,location,project,note".split(",");
 
 	private final DatabaseAdapter db;
     private final CsvExportOptions options;
@@ -98,27 +98,41 @@ public class CsvExport extends Export {
 			long fromAmount = cursor.getLong(BlotterColumns.from_amount.ordinal());
 			long toAmount = cursor.getLong(BlotterColumns.to_amount.ordinal());
 			String note = cursor.getString(BlotterColumns.note.ordinal());
-			writeLine(w, dt, fromAccountTitle, fromAmount, fromCurrencyId, category, "", "Transfer Out", project, note);
-			writeLine(w, dt, toAccountTitle, toAmount, toCurrencyId, category, "", "Transfer In", project, note);
+			writeLine(w, dt, fromAccountTitle, fromAmount, fromCurrencyId, 0, 0, category, "", "Transfer Out", project, note);
+			writeLine(w, dt, toAccountTitle, toAmount, toCurrencyId, 0, 0, category, "", "Transfer In", project, note);
 		} else {
 			String fromAccountTitle = cursor.getString(BlotterColumns.from_account_title.ordinal());
 			String note = cursor.getString(BlotterColumns.note.ordinal());
 			String location = cursor.getString(BlotterColumns.location.ordinal());
 			long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
 			long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
+            long originalCurrencyId = cursor.getLong(BlotterColumns.original_currency_id.ordinal());
+            long originalAmount = cursor.getLong(BlotterColumns.original_from_amount.ordinal());
             String payee = cursor.getString(BlotterColumns.payee.ordinal());
-			writeLine(w, dt, fromAccountTitle, amount, fromCurrencyId, category, payee, location, project, note);
+			writeLine(w, dt, fromAccountTitle, amount, fromCurrencyId, originalAmount, originalCurrencyId,
+                    category, payee, location, project, note);
 		}
 	}
 	
-	private void writeLine(Csv.Writer w, Date dt, String account, long amount, long currencyId, 
-			Category category, String payee, String location, String project, String note) {
+	private void writeLine(Csv.Writer w, Date dt, String account,
+                           long amount, long currencyId,
+                           long originalAmount, long originalCurrencyId,
+			               Category category, String payee, String location, String project, String note) {
 		w.value(FORMAT_DATE_ISO_8601.format(dt));
 		w.value(FORMAT_TIME_ISO_8601.format(dt));
 		w.value(account);
-		w.value(options.amountFormat.format(new BigDecimal(amount).divide(Utils.HUNDRED)));
+        String amountFormatted = options.amountFormat.format(new BigDecimal(amount).divide(Utils.HUNDRED));
+        w.value(amountFormatted);
 		Currency c = CurrencyCache.getCurrency(db.em(), currencyId);
 		w.value(c.name);
+        if (originalCurrencyId > 0) {
+            w.value(options.amountFormat.format(new BigDecimal(originalAmount).divide(Utils.HUNDRED)));
+            Currency originalCurrency = CurrencyCache.getCurrency(db.em(), originalCurrencyId);
+            w.value(originalCurrency.name);
+        } else {
+            w.value("");
+            w.value("");
+        }
 		w.value(category != null ? category.title : "");
 		String sParent = buildPath(category);
 		w.value(sParent);
