@@ -155,15 +155,15 @@ public class FlowzrSyncActivity extends Activity  {
 	        	        finish();
 	        	    }
 	        	});	        	
-	        	progressDialog.show();              	
+            	
      	
 	        	//
             	if (useCredential==null) {
-            		progressDialog.dismiss();            		
+            		//progressDialog.dismiss();            		
     				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_choose_account);              		
             	} else if (!isOnline()) {        
             		            		
-        			progressDialog.dismiss();
+        			//progressDialog.dismiss();
     				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);                                         				
         		} else {
                     savePreferences();	         			
@@ -222,6 +222,7 @@ public class FlowzrSyncActivity extends Activity  {
 					// User input required
 					startActivity(intent);
 				} else {
+		        	progressDialog.show();  					
                 	Toast.makeText(FlowzrSyncActivity.this, R.string.flowzr_sync_inprogress, Toast.LENGTH_SHORT).show();
 					onGetAuthToken(bundle);
 				}
