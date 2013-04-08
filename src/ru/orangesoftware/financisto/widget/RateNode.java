@@ -149,23 +149,18 @@ public class RateNode {
             Currency fromCurrency = getFromCurrency();
             Currency toCurrency = getToCurrency();
             if (fromCurrency != null && toCurrency != null) {
-                HttpGet get = new HttpGet("http://www.webservicex.net/CurrencyConvertor.asmx/ConversionRate?FromCurrency="+fromCurrency.name+"&ToCurrency="+toCurrency.name);
+                HttpGet get = new HttpGet("http://flowzr-hrd.appspot.com/?action=currencyRateDownload&from_currency="+fromCurrency.name+"&to_currency="+toCurrency.name);
                 try {
                     Log.i("RateDownload", get.getURI().toString());
                     HttpResponse r = httpClient.execute(get);
-                    String s = EntityUtils.toString(r.getEntity());
-                    Log.i("RateDownload", s);
-                    Matcher m = pattern.matcher(s);
-                    if (m.find()) {
-                        String d = m.group(1);
-                        return Float.valueOf(d);
-                    } else {
-                        String[] x = s.split("\r\n");
-                        error = owner.getActivity().getString(R.string.service_is_not_available);
-                        if (x.length > 0) {
-                            error = x[0];
-                        }
-                    }
+                    int code=r.getStatusLine().getStatusCode();                    
+                	String s = EntityUtils.toString(r.getEntity());
+                    if (code==200) {
+                    	Log.i("RateDownload", s);
+                    	return Float.valueOf(s);
+                    } else {                   
+                        error = s;
+                    }                    
                 } catch (Exception e) {
                     error = e.getMessage();
                 }

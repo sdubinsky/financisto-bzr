@@ -31,8 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.flowzr.export.flowzr.FlowzrSyncOptions;
-
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
@@ -55,6 +54,7 @@ import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.Html;
 import android.util.Log;
 
 
@@ -78,7 +78,8 @@ public class FlowzrSync  {
 	private Class[] clazzArray = {Currency.class,Category.class,Project.class,Payee.class,Account.class,MyLocation.class,Transaction.class,Budget.class,null};        
     
     
-	   public FlowzrSync(Context context, DatabaseAdapter dba, FlowzrSyncOptions options, DefaultHttpClient pHttp_client) {
+
+	  public FlowzrSync(Context context, DatabaseAdapter dba, FlowzrSyncOptions options, DefaultHttpClient pHttp_client) {
 	    	this.dba=dba;
 	    	this.context=context;
 	    	try {
@@ -128,7 +129,7 @@ public class FlowzrSync  {
 	        nameValuePairs.add(new BasicNameValuePair("action","balancesRecalc"));
 			nameValuePairs.add(new BasicNameValuePair("lastSyncLocalTimestamp",String.valueOf(options.lastSyncLocalTimestamp)));        
 			String strResponse=httpPush(nameValuePairs);    
-			
+
 	        progressListener.onProgress(95);        
 	        IntegrityFix fix = new IntegrityFix(dba);
 	        fix.fix();        
@@ -176,7 +177,7 @@ public class FlowzrSync  {
 
 			sql="select * from " + tableName + " where updated_on > " + options.lastSyncLocalTimestamp + " and updated_on<" + options.startTimestamp ;
 			if (!tableName.equals("currency_exchange_rate") && !tableName.equals("currency")) {
-					sql+= " order by updated_on asc";
+				sql+= " order by _id asc";	
 			}
 			cursorCursor=db2.rawQuery(sql, null);
 
@@ -290,7 +291,13 @@ public class FlowzrSync  {
 				nameValuePairs.add(new BasicNameValuePair("action","push" + tableName));
 				nameValuePairs.add(new BasicNameValuePair("clientTimestamp",String.valueOf((System.currentTimeMillis()))));							
 				String remote_key=c.getString(c.getColumnIndex("remote_key"));
-				
+				if (tableName.equals("account")) {
+					String sql="select max(dateTime) as maxDate, min(dateTime) as mintDate from " + DatabaseHelper.TRANSACTION_TABLE + " where from_account_id=" + c.getInt(c.getColumnIndex("_id")) ;		
+					Cursor cursorCursor=db.rawQuery(sql, null);
+					cursorCursor.moveToFirst();	
+					nameValuePairs.add(new BasicNameValuePair("dateOfFirstTransaction",cursorCursor.getString(1)));					
+					nameValuePairs.add(new BasicNameValuePair("dateOfLastTransaction",cursorCursor.getString(0)));
+				}
 				for (String colName: c.getColumnNames()) {
 					//if (colName.endsWith("_id")  && getClassForColName(colName)!=null) {				
 					if (colName.endsWith("_id") &&  getClassForColName(colName)!=null) {	
@@ -338,12 +345,12 @@ public class FlowzrSync  {
 					}
 				}
 				nameValuePairs.add(new BasicNameValuePair("lastSyncLocalTimestamp",String.valueOf(options.lastSyncLocalTimestamp)));
-				//for (NameValuePair p : nameValuePairs) {
-				//	Log.e("financisto",p.toString());
-				//}
+				for (NameValuePair p : nameValuePairs) {
+					Log.e("financisto",p.toString());
+				}
 				String strResponse=httpPush(nameValuePairs);							
 				
-				if (strResponse.equals(FLOWZR_MSG_NET_ERROR)) {
+				if (strResponse.equals(FLOWZR_MSG_NET_ERROR) || strResponse.substring(0, 3).equals("500")) {
 					return new Exception(strResponse);
 				} else if (!strResponse.equals(FLOWZR_MSG_DELETED)) {				
 					if (!tableName.equals("currency_exchange_rate")) {
@@ -371,9 +378,14 @@ public class FlowzrSync  {
 				try {
 					response = http_client.execute(httppost);
 			        HttpEntity entity = response.getEntity();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
+		            int code = response.getStatusLine().getStatusCode();
+			        BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
 					strResponse = reader.readLine(); 				 			
 			        entity.consumeContent();			
+			        if (code!=200) {
+			        	return "500 " + Html.fromHtml(strResponse).toString();
+			        }
+
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();				
 					return FLOWZR_MSG_NET_ERROR;				
@@ -405,6 +417,11 @@ public class FlowzrSync  {
 				nameValuePairs.add(new BasicNameValuePair("action","pushDelete"));
 				nameValuePairs.add(new BasicNameValuePair("remoteKey",del_list));
 	    		String strResponse=httpPush(nameValuePairs);    		
+	    		try {
+		    		if (strResponse.substring(0, 3).equals("500")) {
+						return new Exception(strResponse);
+		    		}
+	    		} catch (Exception e) { }
 	    	}    	
 	    	return null;
 	    }
@@ -943,7 +960,8 @@ public class FlowzrSync  {
 						tEntity.fromAccountId=getLocalKey("account", jsonObjectResponse.getString("account"));
 					} catch (Exception e1) {					
 						//Log.e("financisto","Error parsing Transaction.fromAccount with : " + jsonObjectResponse.getString("account"));
-						return e1; //mandatory: fatal					
+						return null;
+						//return e1; //mandatory: fatal					
 					} 
 					
 					//to_account_id,
@@ -1124,18 +1142,14 @@ public class FlowzrSync  {
 							tEntity.status=TransactionStatus.RC;
 						}			
 					}
-					if (jsonObjectResponse.has("jived")) {
-						if (jsonObjectResponse.getBoolean("jived")) {
-							((Transaction)tEntity).status=((Transaction)tEntity).status.RC;						
-						}
-					}
 					//is_ccard_payment,
 					if (jsonObjectResponse.has("is_ccard_payment")) {				
 							((Transaction)tEntity).isCCardPayment=jsonObjectResponse.getInt("is_ccard_payment");
 					}
 					// end main transaction data				
-					id=em.saveOrUpdate((Transaction)tEntity);        			
-
+					if (!jsonObjectResponse.has("from_crebit")) {
+						id=em.saveOrUpdate((Transaction)tEntity);        			
+					}
 				} catch (Exception e) {				
 					e.printStackTrace();
 					return e;
@@ -1162,15 +1176,19 @@ public class FlowzrSync  {
 	    
 	    public JSONObject readFlowzrJSON(String url) {
 	    	 // Making HTTP request
+	    	int code=200;
 	        try {
 	            // http_client parametred with auth at the activity level (need user response)
 	            HttpGet httpGet = new HttpGet(url); 
 	            HttpResponse httpResponse = http_client.execute(httpGet);
 	            HttpEntity httpEntity = httpResponse.getEntity();
-	            isHttpcontent = httpEntity.getContent();           
+	            isHttpcontent = httpEntity.getContent();         
+	            code = httpResponse.getStatusLine().getStatusCode();
+
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        } 
+
 	        try {
 	            BufferedReader reader = new BufferedReader(new InputStreamReader(isHttpcontent, "UTF-8"), 8);
 	            StringBuilder sb = new StringBuilder();
@@ -1179,6 +1197,10 @@ public class FlowzrSync  {
 	                sb.append(line + "n");
 	            }
 	            isHttpcontent.close();
+	            if (code!=200) {
+	            	Log.e("financisto", sb.toString());
+	            	return new JSONObject("{ \"error\": [{\"message\": \"" + Html.fromHtml(sb.toString()).toString() + "\"}]}");
+	            }            
 	            json = sb.toString();
 	        } catch (Exception e) {
 	            Log.e("financisto", "Error converting result " + e.toString());
@@ -1232,7 +1254,14 @@ public class FlowzrSync  {
 	        	return null;    		
 	    	} catch (JSONException e) {    	
 	    		e.printStackTrace();
-	    		return e;
+	    		try { 
+	        		JSONArray jsrArrError=jsonObjectResponse.getJSONArray("error");
+	        		return new Exception(jsrArrError.getJSONObject(0).getString("message"));
+	    		} 
+	    		catch (Exception e2){
+	        		e2.printStackTrace();
+	        		return e;    			
+	    		}
 	    	}    	
 	    }
 }

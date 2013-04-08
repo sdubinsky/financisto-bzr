@@ -31,11 +31,13 @@ import ru.orangesoftware.financisto.utils.Utils;
 import java.math.BigDecimal;
 import java.util.*;
 
+import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
+import ru.orangesoftware.financisto.model.TransactionStatus;
+
 import ru.orangesoftware.financisto.db.DatabaseHelper.deleteLogColumns;
 import ru.orangesoftware.financisto.model.Category;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.CATEGORY_TABLE;
-import static ru.orangesoftware.financisto.db.DatabaseHelper.DELETE_LOG_TABLE;
+import static ru.orangesoftware.financisto.db.DatabaseHelper.TRANSACTION_TABLE;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 
 public class DatabaseAdapter {
@@ -1193,7 +1195,7 @@ public class DatabaseAdapter {
      * @param ids selected transactions' ids
      */
 	public void clearSelectedTransactions(long[] ids) {
-		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.CL+"'";
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.CL+"'," + TransactionColumns.updated_on + "='" + System.currentTimeMillis() + "' ";		
 		runInTransaction(sql, ids);
 	}
 
@@ -1202,7 +1204,7 @@ public class DatabaseAdapter {
      * @param ids selected transactions' ids
      */
 	public void reconcileSelectedTransactions(long[] ids) {
-		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.RC+"'";
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.RC + "'," + TransactionColumns.updated_on + "='" + System.currentTimeMillis() + "' ";				
 		runInTransaction(sql, ids);
 	}
 
