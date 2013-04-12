@@ -717,7 +717,9 @@ public class FlowzrSync  {
 			try {
 				tEntity.remoteKey=jsonObjectEntity.getString("key"); 			
 				tEntity.name=jsonObjectEntity.getString("name"); 			
-				tEntity.provider=jsonObjectEntity.getString("provider"); 
+				if (jsonObjectEntity.has("provider")) {
+					tEntity.provider=jsonObjectEntity.getString("provider"); 
+				}
 				if (jsonObjectEntity.has("accuracy")) {
 					try {
 						tEntity.accuracy=Float.valueOf(jsonObjectEntity.getString("accuracy")); 	   
