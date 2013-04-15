@@ -736,9 +736,23 @@ public class DatabaseAdapter {
 			c.close();
 		}
 	}
-	
-	public Map<Long, Category> getCategoriesMap(boolean includeNoCategory) {
-		return getCategoriesTree(includeNoCategory).asMap();
+
+    public CategoryTree<Category> getAllCategoriesTree() {
+        Cursor c = getAllCategories();
+        try {
+            return CategoryTree.createFromCursor(c, new NodeCreator<Category>(){
+                @Override
+                public Category createNode(Cursor c) {
+                    return Category.formCursor(c);
+                }
+            });
+        } finally {
+            c.close();
+        }
+    }
+
+	public Map<Long, Category> getAllCategoriesMap() {
+		return getAllCategoriesTree().asMap();
 	}
 
 	public List<Category> getCategoriesList(boolean includeNoCategory) {

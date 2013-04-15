@@ -66,6 +66,46 @@ public class CsvExportTest extends AbstractExportTest<CsvExport, CsvExportOption
                 exportAsString(options));
     }
 
+    public void test_should_export_split_transaction() throws Exception {
+        CsvExportOptions options = new CsvExportOptions(createExportCurrency(), ',', false, true, false, WhereFilter.empty(), false);
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 3).at(22, 34, 55, 10))
+                .account(a1).amount(-2000).payee("P1").location("Home").project("R1").note("My note")
+                .withSplit(categoriesMap.get("A1"), -500)
+                .withSplit(categoriesMap.get("A2"), -1500)
+                .create();
+        assertEquals(
+                "2011-08-03,22:34:55,My Cash Account,-20.00,SGD,\"\",\"\",SPLIT,\"\",P1,Home,R1,My note\n"+
+                "~,\"\",My Cash Account,-5.00,SGD,\"\",\"\",A1,A,P1,\"\",<NO_PROJECT>,\n"+
+                "~,\"\",My Cash Account,-15.00,SGD,\"\",\"\",A2,A,P1,\"\",<NO_PROJECT>,\n",
+                exportAsString(options));
+    }
+
+    public void test_should_export_split_transfer() throws Exception {
+        CsvExportOptions options = new CsvExportOptions(createExportCurrency(), ',', false, true, false, WhereFilter.empty(), false);
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 3).at(22, 34, 55, 10))
+                .account(a1).amount(-500).payee("P1").location("Home").project("R1").note("My note")
+                .withTransferSplit(a2, -500, +100)
+                .create();
+        assertEquals(
+                "2011-08-03,22:34:55,My Cash Account,-5.00,SGD,\"\",\"\",SPLIT,\"\",P1,Home,R1,My note\n"+
+                        "~,\"\",My Cash Account,-5.00,SGD,\"\",\"\",\"\",\"\",\"\",Transfer Out,<NO_PROJECT>,\n"+
+                        "~,\"\",My Bank Account,1.00,CZK,\"\",\"\",\"\",\"\",\"\",Transfer In,<NO_PROJECT>,\n",
+                exportAsString(options));
+    }
+
+    public void test_should_not_export_split_transactions_if_not_set_in_options() throws Exception {
+        CsvExportOptions options = new CsvExportOptions(createExportCurrency(), ',', false, false, false, WhereFilter.empty(), false);
+        TransactionBuilder.withDb(db).dateTime(DateTime.date(2011, 8, 3).at(22, 34, 55, 10))
+                .account(a1).amount(-2000).payee("P1").location("Home").project("R1").note("My note")
+                .withSplit(categoriesMap.get("A1"), -500)
+                .withSplit(categoriesMap.get("A2"), -1500)
+                .create();
+        assertEquals(
+                "2011-08-03,22:34:55,My Cash Account,-20.00,SGD,\"\",\"\",SPLIT,\"\",P1,Home,R1,My note\n",
+                exportAsString(options));
+    }
+
+
     private Currency createExportCurrency() {
         Currency c = CurrencyBuilder.withDb(db)
                 .title("USD")

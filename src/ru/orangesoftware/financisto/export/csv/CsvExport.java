@@ -13,10 +13,9 @@ package ru.orangesoftware.financisto.export.csv;
 import android.content.Context;
 import android.database.Cursor;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.db.DatabaseHelper.BlotterColumns;
+import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.Export;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.Utils;
 
@@ -24,6 +23,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static ru.orangesoftware.financisto.datetime.DateUtils.FORMAT_DATE_ISO_8601;
@@ -33,10 +33,24 @@ public class CsvExport extends Export {
 
     public static final String[] HEADER = "date,time,account,amount,currency,original amount,original currency,category,parent,payee,location,project,note".split(",");
 
+    private static final MyLocation TRANSFER_IN = new MyLocation();
+    private static final MyLocation TRANSFER_OUT = new MyLocation();
+
+    static {
+        TRANSFER_IN.name = "Transfer In";
+        TRANSFER_OUT.name = "Transfer Out";
+    }
+
 	private final DatabaseAdapter db;
     private final CsvExportOptions options;
 
-	public CsvExport(Context context, DatabaseAdapter db, CsvExportOptions options) {
+    private Map<Long, Category> categoriesMap;
+    private Map<Long, Account> accountsMap;
+    private Map<Long, Payee> payeeMap;
+    private Map<Long, Project> projectMap;
+    private Map<Long, MyLocation> locationMap;
+
+    public CsvExport(Context context, DatabaseAdapter db, CsvExportOptions options) {
         super(context, false);
 		this.db = db;
 		this.options = options;
@@ -69,11 +83,17 @@ public class CsvExport extends Export {
 	protected void writeBody(BufferedWriter bw) throws IOException {
 		Csv.Writer w = new Csv.Writer(bw).delimiter(options.fieldSeparator);
 		try {
-			Map<Long, Category> categoriesMap = db.getCategoriesMap(false);
-			Cursor c = db.getBlotter(options.filter);
+            MyEntityManager em = db.em();
+            accountsMap = em.getAllAccountsMap();
+            categoriesMap = db.getAllCategoriesMap();
+            payeeMap = em.getAllPayeeByIdMap();
+            projectMap = em.getAllProjectsByIdMap(true);
+            locationMap = em.getAllLocationsByIdMap(false);
+            Cursor c = db.getBlotter(options.filter);
 			try {			
 				while (c.moveToNext()) {
-					writeLine(w, c, categoriesMap);
+                    Transaction t = Transaction.fromBlotterCursor(c);
+					writeLine(w, t);
 				}					
 			} finally {
 				c.close();
@@ -83,43 +103,41 @@ public class CsvExport extends Export {
 		}
 	}
 
-	private void writeLine(Csv.Writer w, Cursor cursor, Map<Long, Category> categoriesMap) {
-		long date = cursor.getLong(BlotterColumns.datetime.ordinal());
-		Date dt = new Date(date);
-		long categoryId = cursor.getLong(BlotterColumns.category_id.ordinal());
-		Category category = getCategoryById(categoriesMap, categoryId);
-		long toAccountId = cursor.getLong(BlotterColumns.to_account_id.ordinal());
-		String project = cursor.getString(BlotterColumns.project.ordinal());
-		if (toAccountId > 0) {
-			String fromAccountTitle = cursor.getString(BlotterColumns.from_account_title.ordinal());
-			String toAccountTitle = cursor.getString(BlotterColumns.to_account_title.ordinal());
-			long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
-			long toCurrencyId = cursor.getLong(BlotterColumns.to_account_currency_id.ordinal());
-			long fromAmount = cursor.getLong(BlotterColumns.from_amount.ordinal());
-			long toAmount = cursor.getLong(BlotterColumns.to_amount.ordinal());
-			String note = cursor.getString(BlotterColumns.note.ordinal());
-			writeLine(w, dt, fromAccountTitle, fromAmount, fromCurrencyId, 0, 0, category, "", "Transfer Out", project, note);
-			writeLine(w, dt, toAccountTitle, toAmount, toCurrencyId, 0, 0, category, "", "Transfer In", project, note);
-		} else {
-			String fromAccountTitle = cursor.getString(BlotterColumns.from_account_title.ordinal());
-			String note = cursor.getString(BlotterColumns.note.ordinal());
-			String location = cursor.getString(BlotterColumns.location.ordinal());
-			long fromCurrencyId = cursor.getLong(BlotterColumns.from_account_currency_id.ordinal());
-			long amount = cursor.getLong(BlotterColumns.from_amount.ordinal());
-            long originalCurrencyId = cursor.getLong(BlotterColumns.original_currency_id.ordinal());
-            long originalAmount = cursor.getLong(BlotterColumns.original_from_amount.ordinal());
-            String payee = cursor.getString(BlotterColumns.payee.ordinal());
-			writeLine(w, dt, fromAccountTitle, amount, fromCurrencyId, originalAmount, originalCurrencyId,
-                    category, payee, location, project, note);
-		}
-	}
-	
-	private void writeLine(Csv.Writer w, Date dt, String account,
+    private void writeLine(Csv.Writer w, Transaction t) {
+        Date dt = t.dateTime > 0 ? new Date(t.dateTime) : null;
+        Category category = getCategoryById(t.categoryId);
+        Project project = getProjectById(t.projectId);
+        Account fromAccount = getAccount(t.fromAccountId);
+        if (t.isTransfer()) {
+            Account toAccount = getAccount(t.toAccountId);
+            writeLine(w, dt, fromAccount.title, t.fromAmount, fromAccount.currency.id, 0, 0, category, null, TRANSFER_OUT, project, t.note);
+            writeLine(w, dt, toAccount.title, t.toAmount, toAccount.currency.id, 0, 0, category, null, TRANSFER_IN, project, t.note);
+        } else {
+            MyLocation location = getLocationById(t.locationId);
+            Payee payee = getPayee(t.payeeId);
+            writeLine(w, dt, fromAccount.title, t.fromAmount, fromAccount.currency.id, t.originalFromAmount, t.originalCurrencyId,
+                    category, payee, location, project, t.note);
+            if (category != null && category.isSplit() && options.exportSplits) {
+                List<Transaction> splits = db.em().getSplitsForTransaction(t.id);
+                for (Transaction split : splits) {
+                    split.dateTime = 0;
+                    writeLine(w, split);
+                }
+            }
+        }
+    }
+
+    private void writeLine(Csv.Writer w, Date dt, String account,
                            long amount, long currencyId,
                            long originalAmount, long originalCurrencyId,
-			               Category category, String payee, String location, String project, String note) {
-		w.value(FORMAT_DATE_ISO_8601.format(dt));
-		w.value(FORMAT_TIME_ISO_8601.format(dt));
+			               Category category, Payee payee, MyLocation location, Project project, String note) {
+        if (dt != null) {
+		    w.value(FORMAT_DATE_ISO_8601.format(dt));
+		    w.value(FORMAT_TIME_ISO_8601.format(dt));
+        } else {
+            w.value("~");
+            w.value("");
+        }
 		w.value(account);
         String amountFormatted = options.amountFormat.format(new BigDecimal(amount).divide(Utils.HUNDRED));
         w.value(amountFormatted);
@@ -136,9 +154,9 @@ public class CsvExport extends Export {
 		w.value(category != null ? category.title : "");
 		String sParent = buildPath(category);
 		w.value(sParent);
-        w.value(payee);
-		w.value(location);
-		w.value(project);
+        w.value(payee != null ? payee.title : "");
+		w.value(location != null ? location.name : "");
+		w.value(project != null ? project.title : "");
 		w.value(note);
 		w.newLine();
 	}
@@ -159,8 +177,29 @@ public class CsvExport extends Export {
 	protected void writeFooter(BufferedWriter bw) throws IOException {
 	}
 
-	public Category getCategoryById(Map<Long, Category> categoriesMap, long id) {
-		return categoriesMap.get(id);
+    private Account getAccount(long accountId) {
+        return accountsMap.get(accountId);
+    }
+
+	public Category getCategoryById(long id) {
+        Category category = categoriesMap.get(id);
+        if (category.id == 0) return null;
+        if (category.isSplit()) {
+            category.title = "SPLIT";
+        }
+        return category;
 	}
-	
+
+    private Payee getPayee(long payeeId) {
+        return payeeMap.get(payeeId);
+    }
+
+    private Project getProjectById(long projectId) {
+        return projectMap.get(projectId);
+    }
+
+    private MyLocation getLocationById(long locationId) {
+        return locationMap.get(locationId);
+    }
+
 }

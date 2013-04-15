@@ -123,7 +123,7 @@ public class MyEntityManager extends EntityManager {
         return q.execute();
 	}
 
-	public ArrayList<MyLocation> getAllLocationsList(boolean includeNoLocation) {
+	public List<MyLocation> getAllLocationsList(boolean includeNoLocation) {
 		Cursor c = getAllLocations(includeNoLocation);
 		try {
 			MyLocation e0 = null;
@@ -144,6 +144,15 @@ public class MyEntityManager extends EntityManager {
 			c.close();
 		}
 	}
+
+    public Map<Long, MyLocation> getAllLocationsByIdMap(boolean includeNoLocation) {
+        List<MyLocation> locations = getAllLocationsList(includeNoLocation);
+        Map<Long, MyLocation> map = new HashMap<Long, MyLocation>();
+        for (MyLocation location : locations) {
+            map.put(location.id, location);
+        }
+        return map;
+    }
 
 	public void deleteLocation(long id) {
         SQLiteDatabase db = db();
@@ -321,6 +330,10 @@ public class MyEntityManager extends EntityManager {
         return q.desc("isDefault").asc(sortBy).list();
     }
 
+    public Map<String, Currency> getAllCurrenciesByTtitleMap() {
+        return entitiesAsTitleMap(getAllCurrenciesList("name"));
+    }
+
 	/* ===============================================
 	 * TRANSACTIONS
 	 * =============================================== */
@@ -361,6 +374,14 @@ public class MyEntityManager extends EntityManager {
 
     public ArrayList<Project> getActiveProjectsList(boolean includeNoProject) {
         return getAllEntitiesList(Project.class, includeNoProject, true);
+    }
+
+    public Map<String, Project> getAllProjectsByTitleMap(boolean includeNoProject) {
+        return entitiesAsTitleMap(getAllProjectsList(includeNoProject));
+    }
+
+    public Map<Long, Project> getAllProjectsByIdMap(boolean includeNoProject) {
+        return entitiesAsIdMap(getAllProjectsList(includeNoProject));
     }
 
 //	public Category getCategoryByLeft(long left) {
@@ -503,6 +524,14 @@ public class MyEntityManager extends EntityManager {
         return getAllEntitiesList(Payee.class, true);
     }
 
+    public Map<String, Payee> getAllPayeeByTitleMap() {
+        return entitiesAsTitleMap(getAllPayeeList());
+    }
+
+    public Map<Long, Payee> getAllPayeeByIdMap() {
+        return entitiesAsIdMap(getAllPayeeList());
+    }
+
     public Cursor getAllPayeesLike(CharSequence constraint) {
         Query<Payee> q = createQuery(Payee.class);
         q.where(Expressions.or(
@@ -546,6 +575,22 @@ public class MyEntityManager extends EntityManager {
             homeCurrency = Currency.EMPTY;
         }
         return homeCurrency;
+    }
+
+    private static <T extends MyEntity> Map<String, T> entitiesAsTitleMap(List<T> entities) {
+        Map<String, T> map = new HashMap<String, T>();
+        for (T e: entities) {
+            map.put(e.title, e);
+        }
+        return map;
+    }
+
+    private static <T extends MyEntity> Map<Long, T> entitiesAsIdMap(List<T> entities) {
+        Map<Long, T> map = new HashMap<Long, T>();
+        for (T e: entities) {
+            map.put(e.id, e);
+        }
+        return map;
     }
 
 }

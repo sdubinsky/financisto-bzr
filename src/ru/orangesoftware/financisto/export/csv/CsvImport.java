@@ -60,7 +60,7 @@ public class CsvImport {
 
     public Map<String, Project> collectAndInsertProjects(List<CsvTransaction> transactions) {
         MyEntityManager em = db.em();
-        Map<String, Project> map = entitiesAsMap(em.getAllProjectsList(false));
+        Map<String, Project> map = em.getAllProjectsByTitleMap(false);
         for (CsvTransaction transaction : transactions) {
             String project = transaction.project;
             if (isNewProject(map, project)) {
@@ -80,7 +80,7 @@ public class CsvImport {
 
     public Map<String, Payee> collectAndInsertPayees(List<CsvTransaction> transactions) {
         MyEntityManager em = db.em();
-        Map<String, Payee> map = entitiesAsMap(em.getAllPayeeList());
+        Map<String, Payee> map = em.getAllPayeeByTitleMap();
         for (CsvTransaction transaction : transactions) {
             String payee = transaction.payee;
             if (isNewEntity(map, payee)) {
@@ -89,14 +89,6 @@ public class CsvImport {
                 em.saveOrUpdate(p);
                 map.put(payee, p);
             }
-        }
-        return map;
-    }
-
-    private static <T extends MyEntity> Map<String, T> entitiesAsMap(List<T> entities) {
-        Map<String, T> map = new HashMap<String, T>();
-        for (T e: entities) {
-            map.put(e.title, e);
         }
         return map;
     }
@@ -115,7 +107,7 @@ public class CsvImport {
 
     private Map<String, Currency> collectAndInsertCurrencies(List<CsvTransaction> transactions) {
         MyEntityManager em = db.em();
-        Map<String, Currency> map = entitiesAsMap(em.getAllCurrenciesList("name"));
+        Map<String, Currency> map = em.getAllCurrenciesByTtitleMap();
         for (CsvTransaction transaction : transactions) {
             String currency = transaction.originalCurrency;
             if (isNewEntity(map, currency)) {
