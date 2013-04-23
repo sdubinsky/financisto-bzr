@@ -56,6 +56,7 @@
                     <CheckBox android:id="@+id/checkboxUploadToDropbox" android:checked="false"/>
                 </TableRow>
                 <include layout="@layout/list_divider"/>
+                <!--
                 <TableRow>
                     <TextView android:layout_marginLeft="3dp"
                               android:text="@string/export_splits"/>
@@ -63,6 +64,7 @@
                 <TableRow>
                     <CheckBox android:id="@+id/checkboxExportSplits" android:checked="false"/>
                 </TableRow>
+                -->
             </TableLayout>
         </LinearLayout>
     </ScrollView>
