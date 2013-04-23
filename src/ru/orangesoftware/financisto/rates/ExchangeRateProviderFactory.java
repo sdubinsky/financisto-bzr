@@ -32,6 +32,12 @@ public enum ExchangeRateProviderFactory {
             String appId = sharedPreferences.getString("openexchangerates_app_id", "");
             return new OpenExchangeRatesDownloader(createDefaultWrapper(), appId);
         }
+    },
+    flowzr(){
+        @Override
+        public ExchangeRateProvider createProvider(SharedPreferences sharedPreferences) {
+            return new FlowzrRateDownloader(createDefaultWrapper(), System.currentTimeMillis());
+        }
     };
 
     public abstract ExchangeRateProvider createProvider(SharedPreferences sharedPreferences);

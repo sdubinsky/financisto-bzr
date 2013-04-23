@@ -44,4 +44,18 @@ public class HttpClientWrapper {
         return EntityUtils.toString(r.getEntity());
     }
 
+    public String getAsStringIfOk(String url) throws Exception {
+        HttpGet get = new HttpGet(url);
+        HttpParams params = new BasicHttpParams();
+        params.setParameter("http.protocol.handle-redirects",false);
+        get.setParams(params);
+        HttpResponse r = httpClient.execute(get);
+        String s = EntityUtils.toString(r.getEntity());
+        if (r.getStatusLine().getStatusCode() == 200) {
+            return s;
+        } else {
+            throw new RuntimeException(s);
+        }
+    }
+
 }
