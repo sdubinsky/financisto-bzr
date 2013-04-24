@@ -1235,23 +1235,25 @@ public class FlowzrSync  {
 	    			String tableName = jsonObjectEntity.getString("tableName");
 	    					
 	    			long id=getLocalKey(tableName,remoteKey);  			
-	    			Object o=null;
-					if (tableName.equals(DatabaseHelper.ACCOUNT_TABLE)) {    
-						dba.deleteAccount(id);				
-					} else if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
-						dba.deleteTransaction(id);								
-					} else if (tableName.equals(DatabaseHelper.CURRENCY_TABLE)) {
-						em.deleteCurrency(id);					
-					} else if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
-						em.deleteBudget(id);
-					} else if (tableName.equals(DatabaseHelper.LOCATIONS_TABLE)) {
-						em.deleteLocation(id);
-					} else  if (tableName.equals(DatabaseHelper.CATEGORY_TABLE)) {
-						dba.deleteCategory(id);
-					}
-					if (progressListener != null) {	            					
-		                progressListener.onProgress((int)(Math.round(i*100/entitiesAsJSON.length())));
-		            } 
+	    			if (id>0) {
+	    				Object o=null;
+						if (tableName.equals(DatabaseHelper.ACCOUNT_TABLE)) {    
+							dba.deleteAccount(id);				
+						} else if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
+							dba.deleteTransaction(id);								
+						} else if (tableName.equals(DatabaseHelper.CURRENCY_TABLE)) {
+							em.deleteCurrency(id);					
+						} else if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
+							em.deleteBudget(id);
+						} else if (tableName.equals(DatabaseHelper.LOCATIONS_TABLE)) {
+							em.deleteLocation(id);
+						} else  if (tableName.equals(DatabaseHelper.CATEGORY_TABLE)) {
+							dba.deleteCategory(id);
+						}
+						if (progressListener != null) {	            					
+			                progressListener.onProgress((int)(Math.round(i*100/entitiesAsJSON.length())));
+			            } 
+	    			}
 	    		}
 	        	return null;    		
 	    	} catch (JSONException e) {    	
