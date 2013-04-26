@@ -84,8 +84,13 @@ public class WhereFilter {
 		criterias.add(Criteria.lte(column, value));
 		return this;
 	}
-	
-	public WhereFilter asc(String column) {
+
+    public WhereFilter isNull(String column) {
+        criterias.add(Criteria.isNull(column));
+        return this;
+    }
+
+    public WhereFilter asc(String column) {
 		sorts.add(column+" asc");
 		return this;
 	}
@@ -307,7 +312,7 @@ public class WhereFilter {
 	}
 	
 	public static enum Operation {
-		NOPE(""), EQ("=?"), NEQ("!=?"), GT(">?"), GTE(">=?"), LT("<?"), LTE("<=?"), BTW("BETWEEN ? AND ?");
+		NOPE(""), EQ("=?"), NEQ("!=?"), GT(">?"), GTE(">=?"), LT("<?"), LTE("<=?"), BTW("BETWEEN ? AND ?"), ISNULL("is NULL");
 		
 		public final String op;
 		

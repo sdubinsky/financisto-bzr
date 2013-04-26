@@ -10,7 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.MyEntity;
@@ -24,14 +24,14 @@ public class EntityListAdapter<T extends MyEntity> extends BaseAdapter {
 	
 	private final LayoutInflater inflater;
 	
-	private ArrayList<T> entities;
+	private List<T> entities;
 	
-	public EntityListAdapter(Context context, ArrayList<T> entities) {
+	public EntityListAdapter(Context context, List<T> entities) {
 		this.entities = entities;
 		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
-	public void setEntities(ArrayList<T> entities) {
+	public void setEntities(List<T> entities) {
 		this.entities = entities;
 		notifyDataSetChanged();
 	}

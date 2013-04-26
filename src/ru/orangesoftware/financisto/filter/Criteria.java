@@ -48,6 +48,10 @@ public class Criteria {
         return new Criteria(column, WhereFilter.Operation.LTE, value);
     }
 
+    public static Criteria isNull(String column) {
+        return new Criteria(column, WhereFilter.Operation.ISNULL);
+    }
+
     public static Criteria raw(String text) {
         return new Criteria("(" + text + ")", WhereFilter.Operation.NOPE);
     }
@@ -60,6 +64,10 @@ public class Criteria {
         this.columnName = columnName;
         this.operation = operation;
         this.values = values;
+    }
+
+    public boolean isNull() {
+        return operation == WhereFilter.Operation.ISNULL;
     }
 
     public Expression toWhereExpression() {
@@ -98,6 +106,8 @@ public class Criteria {
         String[] a = extra.split(",");
         if (BlotterFilter.DATETIME.equals(a[0])) {
             return DateTimeCriteria.fromStringExtra(extra);
+        } else if (BlotterFilter.CATEGORY_ID.equals(a[0])) {
+            return SingleCategoryCriteria.fromStringExtra(extra);
         } else {
             String[] values = new String[a.length - 2];
             System.arraycopy(a, 2, values, 0, values.length);

@@ -129,7 +129,7 @@ public class CsvImportTest extends AbstractImportExportTest {
         //when
         Map<String, Payee> payees = csvImport.collectAndInsertPayees(transactions);
         //then
-        ArrayList<Payee> allPayees = em.getAllPayeeList();
+        List<Payee> allPayees = em.getAllPayeeList();
         assertEquals(2, allPayees.size());
         assertEquals(2, payees.size());
         //when
