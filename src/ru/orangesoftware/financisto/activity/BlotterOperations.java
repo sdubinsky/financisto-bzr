@@ -8,6 +8,7 @@
 
 package ru.orangesoftware.financisto.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,6 +32,8 @@ public class BlotterOperations {
     private final Transaction originalTransaction;
     private final Transaction targetTransaction;
 
+    private boolean newFromTemplate = false;
+
     public BlotterOperations(BlotterActivity activity, DatabaseAdapter db, long transactionId) {
         this.activity = activity;
         this.db = db;
@@ -42,18 +45,25 @@ public class BlotterOperations {
         }
     }
 
+    public BlotterOperations asNewFromTemplate() {
+        newFromTemplate = true;
+        return this;
+    }
+
     public void editTransaction() {
         if (targetTransaction.isTransfer()) {
-            Intent intent = new Intent(activity, TransferActivity.class);
-            intent.putExtra(TransferActivity.TRAN_ID_EXTRA, targetTransaction.id);
-            intent.putExtra(TransferActivity.DUPLICATE_EXTRA, false);
-            activity.startActivityForResult(intent, EDIT_TRANSFER_REQUEST);
+            startEditTransactionActivity(TransferActivity.class, EDIT_TRANSFER_REQUEST);
         } else {
-            Intent intent = new Intent(activity, TransactionActivity.class);
-            intent.putExtra(TransactionActivity.TRAN_ID_EXTRA, targetTransaction.id);
-            intent.putExtra(TransactionActivity.DUPLICATE_EXTRA, false);
-            activity.startActivityForResult(intent, EDIT_TRANSACTION_REQUEST);
+            startEditTransactionActivity(TransactionActivity.class, EDIT_TRANSACTION_REQUEST);
         }
+    }
+
+    private void startEditTransactionActivity(Class<? extends Activity> activityClass, int requestCode) {
+        Intent intent = new Intent(activity, activityClass);
+        intent.putExtra(AbstractTransactionActivity.TRAN_ID_EXTRA, targetTransaction.id);
+        intent.putExtra(AbstractTransactionActivity.DUPLICATE_EXTRA, false);
+        intent.putExtra(AbstractTransactionActivity.NEW_FROM_TEMPLATE_EXTRA, newFromTemplate);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     public void deleteTransaction() {

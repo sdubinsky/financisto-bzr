@@ -201,6 +201,18 @@
                             android:title="@string/dropbox_upload_autobackup" android:summary="@string/dropbox_upload_autobackup_summary"
                             android:defaultValue="false"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/exchange_rates">
+        <ListPreference android:key="exchange_rate_provider"
+                        android:title="@string/exchange_rate_provider"
+                        android:summary="@string/exchange_rate_provider_summary"
+                        android:entries="@array/exchange_rate_provider_entities"
+                        android:entryValues="@array/exchange_rate_provider_values"
+                        android:defaultValue="webservicex"/>
+        <EditTextPreference android:key="openexchangerates_app_id"
+                            android:title="@string/openexchangerates_app_id"
+                            android:summary="@string/openexchangerates_app_id_summary"
+                            android:enabled="false"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/location">
         <CheckBoxPreference android:key="use_gps"
                             android:title="@string/use_gps" android:summary="@string/use_gps_summary"

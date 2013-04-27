@@ -8,6 +8,7 @@
   <string name="budgets">預算</string>
   <string name="projects">專案</string>
   <string name="ok">確定</string>
+  <string name="reset">重設</string>
   <string name="clear">清除</string>
   <string name="save">儲存</string>
   <string name="cancel">取消</string>
@@ -126,7 +127,7 @@
   <string name="overall">全體</string>
   <string name="report_by_period">以期間統計</string>
   <string name="report_by_period_summary">以期間分別統計的交易報告</string>
-  <string name="report_by_category">By Category</string>
+  <string name="report_by_category">依分類</string>
   <string name="report_by_category_summary">在同一層列出所有分類的交易報告</string>
   <string name="report_by_location">以地點統計</string>
   <string name="report_by_location_summary">以地點分別統計的交易報告</string>
@@ -215,25 +216,25 @@
   <string name="restore">重設</string>
   <string name="backup_database">備份資料庫</string>
   <string name="backup_database_inprogress">正在備份資料庫…</string>
-  <string name="backup_database_gdocs">備份到 Google Docs</string>
+  <string name="backup_database_gdocs">備份到 Google Drive</string>
   <string name="backup_database_gdocs_inprogress">正在備份資料庫到 Google Docs…</string>
   <string name="csv_export">匯出 CSV</string>
   <string name="csv_export_inprogress">匯出資料庫至 CSV 檔案…</string>
   <string name="restore_database">匯回資料庫</string>
   <string name="restore_database_inprogress">正在匯回資料庫…</string>
-  <string name="restore_database_gdocs">從 Google Docs 匯回資料庫</string>
+  <string name="restore_database_gdocs">從 Google Drive 復原</string>
   <string name="restore_database_inprogress_gdocs">正在從 Google Docs 匯回資料庫…</string>
   <string name="restore_database_success">資料庫已成功匯回</string>
-  <string name="gdocs_connection_failed">無法連上 Google Docs。</string>
-  <string name="gdocs_folder_not_found">Google Docs 上面找不到備份目錄。</string>
+  <string name="gdocs_connection_failed">無法連到 Google Drive。</string>
+  <string name="gdocs_folder_not_found">在 Google Drive 找不到備份目錄。</string>
   <string name="gdocs_credentials_not_configured">請至設定畫面設定 Google 帳號與密碼。</string>
-  <string name="gdocs_folder_not_configured">請至設定畫面設定 Google Docs 備份目錄。</string>
+  <string name="gdocs_folder_not_configured">請在設定選項設定 Google Drive 備份目錄。</string>
   <string name="gdocs_login_failed">Google 帳號或密碼錯誤。</string>
-  <string name="gdocs_backup_failed">傳送備份資料到 Google Docs 時發生錯誤，請再試一次。</string>
+  <string name="gdocs_backup_failed">傳送備份檔到 Google Drive 的過程發生錯誤。請重試一次。</string>
   <string name="gdocs_restore_failed">從 Google Docs 取得備份資料時發生錯誤，請再試一次。</string>
-  <string name="gdocs_folder_error">讀寫 Google Docs 目錄時發生錯誤。</string>
-  <string name="gdocs_service_error">Google Docs 服務發生錯誤。</string>
-  <string name="gdocs_io_error">與 Google Docs 通訊時發生錯誤。</string>
+  <string name="gdocs_folder_error">讀寫 Google Drive 目錄時發生錯誤。</string>
+  <string name="gdocs_service_error">Google Drive 目前無法提供服務。</string>
+  <string name="gdocs_io_error">連線到 Google Drive 時發生錯誤。</string>
   <string name="package_info_error">取得套件資訊時發生錯誤。.</string>
   <string name="success">成功!</string>
   <string name="fail">失敗…</string>
@@ -332,13 +333,13 @@
   <string name="calculating">計算中..</string>
   <string name="budget_mode">擇一限制</string>
   <string name="budget_mode_summary">只要分類或專案其中之一符合條件就納入預算</string>
-  <string name="gdocs_backup">Google Docs 備份</string>
+  <string name="gdocs_backup">Google Drive 備份</string>
   <string name="user_login">帳號</string>
   <string name="user_login_summary">Google 帳戶名稱</string>
   <string name="user_password">密碼</string>
   <string name="user_password_summary">Google 帳戶密碼</string>
-  <string name="backup_folder">Backup Collection</string>
-  <string name="backup_folder_summary">To store backup files create a new collection in My Collections</string>
+  <string name="backup_folder">備份目錄</string>
+  <string name="backup_folder_summary">為儲存備份檔，請在 My Drive 建立新目錄</string>
   <string name="report_preferences">報告選項</string>
   <string name="all_reports_preferences">一般報告選項</string>
   <string name="category_by_period_preferences">根據分類與期間統計的選項</string>
@@ -619,7 +620,7 @@
   <string name="quick_menu_transaction_enabled_summary">在明細畫面啟用單按選單</string>
   <string name="dropbox">Dropbox</string>
   <string name="dropbox_authorize">授權</string>
-  <string name="dropbox_authorize_summary">允許 Financisto 上傳檔暗到您的 Dropbox</string>
+  <string name="dropbox_authorize_summary">允許 Financisto 上傳檔案到您的 Dropbox</string>
   <string name="dropbox_unlink">解除連結</string>
   <string name="dropbox_unlink_summary">防止 Financisto 上傳檔案到您的 Dropbox</string>
   <string name="dropbox_upload_backup">上傳備份</string>
@@ -643,38 +644,62 @@
   <string name="hierarchical_category_selector_select_child_immediately_summary">自動確認子分類選項</string>
   <string name="hierarchical_category_selector_income_expense">收入/支出</string>
   <string name="hierarchical_category_selector_income_expense_summary">將收入與支出分類混合排列</string>
-  <string name="totals">Totals</string>
-  <string name="account_total_in_currency">All %s accounts</string>
-  <string name="blotter_total_in_currency">All %s transactions</string>
-  <string name="budget_total_in_currency">All %s budgets</string>
-  <string name="home_currency_total">Total in home currency</string>
-  <string name="total_rate">Rate: %0.5f</string>
-  <string name="home_currency">Home currency</string>
-  <string name="upload_to_dropbox">Upload to\nDropbox</string>
+  <string name="totals">總額</string>
+  <string name="account_total_in_currency">所有 %s 帳戶</string>
+  <string name="blotter_total_in_currency">所有 %s 交易</string>
+  <string name="budget_total_in_currency">所有 %s 預算</string>
+  <string name="home_currency_total">以本國貨幣計算的總額</string>
+  <string name="total_rate">匯率: %0.5f</string>
+  <string name="home_currency">本國貨幣</string>
+  <string name="upload_to_dropbox">上傳到\nDropbox</string>
   <string name="not_available">N/A</string>
-  <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
-  <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
-  <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
-  <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
-  <string name="is_active">Is active</string>
-  <string name="report_income_expense_both">Income/Expenses</string>
-  <string name="report_income_expense_income">Income</string>
-  <string name="report_income_expense_expense">Expenses</string>
-  <string name="report_income_expense_summary">Summary</string>
+  <string name="rate_not_available_on_date_error" formatted="false">%s 沒有指定 %s 與 %s 之間的匯率</string>
+  <string name="rate_not_available_error" formatted="false">沒有指定 %s 與 %s 之間的匯率</string>
+  <string name="collapse_blotter_buttons">縮合明細畫面按鈕</string>
+  <string name="collapse_blotter_buttons_summary">將新交易/轉帳/範本按鈕合一 (需要重新啟動)</string>
+  <string name="is_active">已啟用</string>
+  <string name="report_income_expense_both">收入/支出</string>
+  <string name="report_income_expense_income">收入</string>
+  <string name="report_income_expense_expense">支出</string>
+  <string name="report_income_expense_summary">摘要</string>
+  <string name="csv_import_inprogress_update">正從 CSV 匯入資料: %s%%...</string>
+  <string name="delete_old_transactions">刪除舊交易</string>
+  <string name="purge_account_backup_database">刪除交易之前備份資料庫</string>
+  <string name="purge_account_date_summary">刪除指定日期 (包含此日) 之前的所有交易。帳戶餘額不會變動。</string>
+  <string name="purge_account_confirm_title">確認</string>
+  <string name="purge_account_confirm_message" formatted="false">從 %s 帳戶刪除 %s 之前 (包含此日期) 的所有交易。</string>
+  <string name="purge_account_payee">上次範圍</string>
+  <string name="purge_account_in_progress">正在刪除舊交易 ...</string>
+  <string name="purge_account_unable_to_do_backup">無法備份資料庫，中止 ...</string>
+  <string name="show_account_last_transaction_date">最後交易日期</string>
+  <string name="show_account_last_transaction_date_summary">在帳戶列表顯示最後一筆交易的日期 (需要重新啟動)</string>
+  <string name="accounts_list_screen">帳戶清單</string>
+  <string name="accounts_list_screen_summary">帳戶清單選項</string>
+  <string name="blotter_screen">明細</string>
+  <string name="blotter_screen_summary">明細畫面選項</string>
+  <string name="hide_closed_accounts">隱藏已關閉帳戶</string>
+  <string name="hide_closed_accounts_summary">在帳戶列表隱藏或顯示已關閉的帳戶 (需要重新啟動)</string>
+  <string name="re_index_categories">重建索引</string>
+  <string name="startup_screen">啟動畫面</string>
+  <string name="startup_screen_summary">選擇啟動時顯示的畫面</string>
+  <string name="integrity_error">逐筆餘額似乎不準確。請按選單 -&gt; 更多 -&gt; 修復資料庫</string>
+  <string name="integrity_fix">修復資料庫</string>
+  <string name="integrity_fix_in_progress">正在檢查並修復 (若有需要) ...</string>
+  <string name="select_to_account_differ_from_to_account">無法轉帳到相同帳戶...</string>
+  <string name="period_this_and_last_week">本週與上週</string>
+  <string name="period_this_and_last_month">本月與上月</string>
+  <string name="period_custom">自訂</string>
+  <string name="original_amount">原始總額</string>
+  <string name="original_currency_as_account">與帳戶相同</string>
+  <string name="split_transfer_not_supported_yet">尚未支援以不同的幣值分割交易</string>
+  <string name="show_currency">顯示幣值</string>
+  <string name="show_currency_summary">在新交易畫面顯示幣值選項</string>
+  <string name="reconcile">結帳</string>
   <string-array name="attribute_types">
     <item>文字</item>
     <item>數值</item>
     <item>清單</item>
     <item>核選</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>今天</item>
-    <item>昨天</item>
-    <item>本週</item>
-    <item>本月</item>
-    <item>上一週</item>
-    <item>上個月</item>
-    <item>自訂</item>
   </string-array>
   <string-array name="account_types">
     <item>銀行</item>
@@ -685,6 +710,8 @@
     <item>以指定順序 (小至大)</item>
     <item>以指定順序 (大至小)</item>
     <item>以名稱</item>
+    <item>依最後一筆交易 (遞增)</item>
+    <item>依最後一筆交易 (遞減)</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>以名稱</item>
@@ -716,5 +743,11 @@
     <item>5 分鐘</item>
     <item>10 分鐘</item>
     <item>15 分鐘</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>帳戶</item>
+    <item>明細</item>
+    <item>預算</item>
+    <item>報表</item>
   </string-array>
 </resources>

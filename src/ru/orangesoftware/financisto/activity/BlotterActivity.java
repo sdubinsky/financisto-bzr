@@ -403,25 +403,27 @@ public class BlotterActivity extends AbstractListActivity {
 			applyFilter();
 			recreateCursor();			
 		} else if (resultCode == RESULT_OK && requestCode == NEW_TRANSACTION_FROM_TEMPLATE_REQUEST) {
-			long templateId = data.getLongExtra(SelectTemplateActivity.TEMPATE_ID, -1);
-			int multiplier = data.getIntExtra(SelectTemplateActivity.MULTIPLIER, 1);
-			boolean edit = data.getBooleanExtra(SelectTemplateActivity.EDIT_AFTER_CREATION, false);
-			if (templateId > 0) {
-				long id = duplicateTransaction(templateId, multiplier);
-				Transaction t = db.getTransaction(id);
-				if (t.fromAmount == 0 || edit) {
-					editTransaction(id);
-				} else {
-					AccountWidget.updateWidgets(BlotterActivity.this);
-				}
-			}
+            createTransactionFromTemplate(data);
 		}
 		if (resultCode == RESULT_OK || resultCode == RESULT_FIRST_USER) {
 			calculateTotals();
 		}
 	}
-	
-	private void saveFilter() {
+
+    private void createTransactionFromTemplate(Intent data) {
+        long templateId = data.getLongExtra(SelectTemplateActivity.TEMPATE_ID, -1);
+        int multiplier = data.getIntExtra(SelectTemplateActivity.MULTIPLIER, 1);
+        boolean edit = data.getBooleanExtra(SelectTemplateActivity.EDIT_AFTER_CREATION, false);
+        if (templateId > 0) {
+            long id = duplicateTransaction(templateId, multiplier);
+            Transaction t = db.getTransaction(id);
+            if (t.fromAmount == 0 || edit) {
+                new BlotterOperations(this, db, id).asNewFromTemplate().editTransaction();
+            }
+        }
+    }
+
+    private void saveFilter() {
 		SharedPreferences preferences = getPreferences(0);
 		blotterFilter.toSharedPreferences(preferences);
 	}

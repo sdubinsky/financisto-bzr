@@ -8,18 +8,23 @@
 
 package ru.orangesoftware.financisto.activity;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.adapter.GenericViewHolder;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.rates.ExchangeRate;
+import ru.orangesoftware.financisto.rates.ExchangeRate;
+import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -36,6 +41,10 @@ public class ExchangeRatesListActivity extends AbstractListActivity {
 
     private static final int ADD_RATE = 1;
     private static final int EDIT_RATE = 1;
+
+    private static final int MENU_DOWNLOAD_ALL = Menu.FIRST;
+
+    private final DecimalFormat nf = new DecimalFormat("0.00000");
 
     private Spinner fromCurrencySpinner;
     private Spinner toCurrencySpinner;
@@ -212,10 +221,107 @@ public class ExchangeRatesListActivity extends AbstractListActivity {
         startActivityForResult(intent, EDIT_RATE);
     }
 
-    private static class ExchangeRateListAdapter extends BaseAdapter {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.add(0, MENU_DOWNLOAD_ALL, 0, R.string.download_all_rates);
+        menuItem.setIcon(R.drawable.ic_menu_refresh);
+        return true;
+    }
 
-        private final StringBuilder sb = new StringBuilder();
-        private final DecimalFormat nf = new DecimalFormat("0.00000");
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if (item.getItemId() == MENU_DOWNLOAD_ALL) {
+            new RatesDownloadTask(this).execute();
+        }
+        return true;
+    }
+
+    private class RatesDownloadTask extends AsyncTask<Void, Void, List<ExchangeRate>> {
+
+        private final Context context;
+        private ProgressDialog progressDialog;
+
+        private RatesDownloadTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<ExchangeRate> doInBackground(Void... args) {
+            List<ExchangeRate> rates = getProvider().getRates(currencies);
+            if (isCancelled()) {
+                return null;
+            } else {
+                db.saveDownloadedRates(rates);
+                return rates;
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            showProgressDialog();
+        }
+
+        private void showProgressDialog() {
+            String message = context.getString(R.string.downloading_rates, asString(currencies));
+            progressDialog = ProgressDialog.show(context, null, message, true, true, new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    cancel(true);
+                }
+            });
+        }
+
+        private String asString(List<Currency> currencies) {
+            StringBuilder sb = new StringBuilder();
+            for (Currency currency : currencies) {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(currency.name);
+            }
+            return sb.toString();
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPostExecute(List<ExchangeRate> result) {
+            progressDialog.dismiss();
+            if (result != null) {
+                showResult(result);
+                updateAdapter();
+            }
+        }
+
+        private void showResult(List<ExchangeRate> result) {
+            StringBuilder sb = new StringBuilder();
+            for (ExchangeRate rate : result) {
+                Currency fromCurrency = CurrencyCache.getCurrency(em, rate.fromCurrencyId);
+                Currency toCurrency = CurrencyCache.getCurrency(em, rate.toCurrencyId);
+                sb.append(fromCurrency.name).append(" -> ").append(toCurrency.name);
+                if (rate.isOk()) {
+                    sb.append(" => ").append(nf.format(rate.rate));
+                } else {
+                    sb.append(" => ").append(rate.getErrorMessage());
+                }
+                sb.append(String.format("%n%n"));
+            }
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.downloading_rates_result)
+                    .setMessage(sb.toString())
+                    .setNeutralButton(R.string.ok, null)
+                    .create().show();
+        }
+
+        private ExchangeRateProvider getProvider() {
+            return MyPreferences.createExchangeRatesProvider(context);
+        }
+
+    }
+
+    private class ExchangeRateListAdapter extends BaseAdapter {
 
         private final Context context;
         private final LayoutInflater inflater;

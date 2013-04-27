@@ -15,6 +15,7 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.dialog.FolderBrowser;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.export.dropbox.Dropbox;
+import ru.orangesoftware.financisto.rates.ExchangeRateProviderFactory;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.PinProtection;
 import android.content.ComponentName;
@@ -29,8 +30,10 @@ import android.preference.Preference.OnPreferenceClickListener;
 public class PreferencesActivity extends PreferenceActivity {	
     
     private static final int SELECT_DATABASE_FOLDER = 100;
-	
-	@Override
+
+    Preference pOpenExchangeRatesAppId;
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);   
 		addPreferencesFromResource(R.xml.preferences);
@@ -86,8 +89,22 @@ public class PreferencesActivity extends PreferenceActivity {
                 return true;
             }
         });
+        Preference pExchangeProvider = preferenceScreen.findPreference("exchange_rate_provider");
+        pOpenExchangeRatesAppId = preferenceScreen.findPreference("openexchangerates_app_id");
+        pExchangeProvider.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                pOpenExchangeRatesAppId.setEnabled(isOpenExchangeRatesProvider((String) newValue));
+                return true;
+            }
+
+            private boolean isOpenExchangeRatesProvider(String provider) {
+                return ExchangeRateProviderFactory.openexchangerates.name().equals(provider);
+            }
+        });
         linkToDropbox();
         setCurrentDatabaseBackupFolder();
+        enableOpenExchangeApp();
 	}
 
     private void linkToDropbox() {
@@ -102,6 +119,10 @@ public class PreferencesActivity extends PreferenceActivity {
         Intent intent = new Intent(this, FolderBrowser.class);
         intent.putExtra(FolderBrowser.PATH, getDatabaseBackupFolder());
         startActivityForResult(intent, SELECT_DATABASE_FOLDER);
+    }
+
+    private void enableOpenExchangeApp() {
+        pOpenExchangeRatesAppId.setEnabled(MyPreferences.isOpenExchangeRatesProviderSelected(this));
     }
 
     private String getDatabaseBackupFolder() {

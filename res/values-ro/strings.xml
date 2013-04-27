@@ -8,6 +8,7 @@
   <string name="budgets">Bugete</string>
   <string name="projects">Proiecte</string>
   <string name="ok">OK</string>
+  <string name="reset">Resetare</string>
   <string name="clear">Goleşte</string>
   <string name="save">Salvează</string>
   <string name="cancel">Renunţă</string>
@@ -126,7 +127,7 @@
   <string name="overall">General</string>
   <string name="report_by_period">Pe perioadă</string>
   <string name="report_by_period_summary">Raport tranzacţii pe perioadă</string>
-  <string name="report_by_category">By Category</string>
+  <string name="report_by_category">După categorie</string>
   <string name="report_by_category_summary">Raport tranzacţii pe categorie</string>
   <string name="report_by_location">Pe locaţie</string>
   <string name="report_by_location_summary">Raport tranzacţii pe locaţie</string>
@@ -215,25 +216,25 @@
   <string name="restore">Restaurează</string>
   <string name="backup_database">Copie de siguranţă</string>
   <string name="backup_database_inprogress">Se salvează baza de date...</string>
-  <string name="backup_database_gdocs">Copie de siguranţă în Google Docs</string>
+  <string name="backup_database_gdocs">Backup in Google Drive</string>
   <string name="backup_database_gdocs_inprogress">Se salvează baza de date...</string>
   <string name="csv_export">Exportă CSV</string>
   <string name="csv_export_inprogress">Se exportă baza de date în CSV...</string>
   <string name="restore_database">Restaurează baza de date</string>
   <string name="restore_database_inprogress">Se restaurează baza de date...</string>
-  <string name="restore_database_gdocs">Restaurează din Google Docs</string>
+  <string name="restore_database_gdocs">Restaurare din Google Drive</string>
   <string name="restore_database_inprogress_gdocs">Se restaurează baza de date...</string>
   <string name="restore_database_success">Baza de date a fost restaurată cu succes.</string>
-  <string name="gdocs_connection_failed">Nu se poate conecta la Google Docs.</string>
-  <string name="gdocs_folder_not_found">Dosarul copiei de siguranţă din Google Docs nu a fost găsit.</string>
+  <string name="gdocs_connection_failed">Can not connect to Google Drive.</string>
+  <string name="gdocs_folder_not_found">The backup folder on Google Drive was not found.</string>
   <string name="gdocs_credentials_not_configured">Definiţi utilizatorul şi parola contului Google în Preferinţe.</string>
-  <string name="gdocs_folder_not_configured">Definiţi dosarul copiei de siguranţă Google Docs în Preferinţe.</string>
+  <string name="gdocs_folder_not_configured">Please set the Google Drive backup folder on Preferences.</string>
   <string name="gdocs_login_failed">Contul Google sau parola nu sunt valide.</string>
-  <string name="gdocs_backup_failed">Eroare la stocarea copiei de siguranţă în Google Docs. Încercaţi din nou.</string>
+  <string name="gdocs_backup_failed">Error sending backup file to Google Drive. Please try again.</string>
   <string name="gdocs_restore_failed">Eroare la preluarea copiei de siguranţă. Încercaţi din nou.</string>
-  <string name="gdocs_folder_error">Eroare la accesarea dosarului din Google Docs.</string>
-  <string name="gdocs_service_error">Eroare serviciu indisponibil în Google Docs.</string>
-  <string name="gdocs_io_error">Eroare la conectarea cu Google Docs.</string>
+  <string name="gdocs_folder_error">Error accessing the folder in Google Drive.</string>
+  <string name="gdocs_service_error">Error service not available in Google Drive.</string>
+  <string name="gdocs_io_error">Error connecting with Google Drive.</string>
   <string name="package_info_error">Nu a fost posibila accesarea informațiilor pachetului Financisto.</string>
   <string name="success">Succes!</string>
   <string name="fail">Eşec...</string>
@@ -332,13 +333,13 @@
   <string name="calculating">Se calculează...</string>
   <string name="budget_mode">Condiţii uşoare</string>
   <string name="budget_mode_summary">Foloseşte condiţii mai puţin restrictive (categorie SAU proiect) pentru filtrarea tranzacţiilor</string>
-  <string name="gdocs_backup">Copii de siguranţă în Google Docs</string>
+  <string name="gdocs_backup">Google Drive Backup</string>
   <string name="user_login">Autentificare</string>
   <string name="user_login_summary">Utilizatorul contului Google</string>
   <string name="user_password">Parolă</string>
   <string name="user_password_summary">Parola contului Google</string>
-  <string name="backup_folder">Colecție de backup-uri</string>
-  <string name="backup_folder_summary">To store backup files create a new collection in My Collections</string>
+  <string name="backup_folder">Director Backup</string>
+  <string name="backup_folder_summary">To store backup files create a new folder in My Drive</string>
   <string name="report_preferences">Preferinţe raport</string>
   <string name="all_reports_preferences">Preferinţe raport general</string>
   <string name="category_by_period_preferences">Categoria pe Preferinţe Raport Perioadă</string>
@@ -616,7 +617,7 @@
   <string name="quick_menu_account_enabled">Meniu-rapid conturi</string>
   <string name="quick_menu_account_enabled_summary">Enable one-tap menu in the Accounts</string>
   <string name="quick_menu_transaction_enabled">Meniu-rapid operațiuni</string>
-  <string name="quick_menu_transaction_enabled_summary">Enable one-tap menu in the Blotter</string>
+  <string name="quick_menu_transaction_enabled_summary">Activare meniu o-apasare în Operaţiuni</string>
   <string name="dropbox">Dropbox</string>
   <string name="dropbox_authorize">Autorizare</string>
   <string name="dropbox_authorize_summary">Allow Financisto to upload files to your Dropbox</string>
@@ -650,31 +651,55 @@
   <string name="home_currency_total">Total în moneda locală</string>
   <string name="total_rate">Rată: %0.5f</string>
   <string name="home_currency">Moneda locală</string>
-  <string name="upload_to_dropbox">Upload to\nDropbox</string>
+  <string name="upload_to_dropbox">Încărcaţi în\nDropbox</string>
   <string name="not_available">N/A</string>
   <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
   <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
   <string name="collapse_blotter_buttons">Extinde butoanele din Operaţiuni</string>
-  <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
-  <string name="is_active">Is active</string>
-  <string name="report_income_expense_both">Income/Expenses</string>
-  <string name="report_income_expense_income">Income</string>
-  <string name="report_income_expense_expense">Expenses</string>
-  <string name="report_income_expense_summary">Summary</string>
+  <string name="collapse_blotter_buttons_summary">Grupează butoanele Tranzacţie/Transfer/Şablon nou (necesită repornire)</string>
+  <string name="is_active">Activ</string>
+  <string name="report_income_expense_both">Venituri/Cheltuieli</string>
+  <string name="report_income_expense_income">Venit</string>
+  <string name="report_income_expense_expense">Cheltuieli</string>
+  <string name="report_income_expense_summary">Rezumat</string>
+  <string name="csv_import_inprogress_update">Importing data from CSV: %s%%...</string>
+  <string name="delete_old_transactions">Şterge tranzacţiile vechi</string>
+  <string name="purge_account_backup_database">Do database backup before deleting transactions</string>
+  <string name="purge_account_date_summary">Delete transactions prior to AND including the specified date. Account balance will not be affected.</string>
+  <string name="purge_account_confirm_title">Confirmare</string>
+  <string name="purge_account_confirm_message" formatted="false">Delete transactions from account %s prior to AND including %s.</string>
+  <string name="purge_account_payee">Perioada anterioară</string>
+  <string name="purge_account_in_progress">Ştergerea tranzacţiilor vechi...</string>
+  <string name="purge_account_unable_to_do_backup">Imposibil de creat backup la baza de date, abandonare...</string>
+  <string name="show_account_last_transaction_date">Data ultimei tranzacții</string>
+  <string name="show_account_last_transaction_date_summary">Show last transaction date for on accounts list screen (requires restart)</string>
+  <string name="accounts_list_screen">Listă conturi</string>
+  <string name="accounts_list_screen_summary">Preferences for accounts list screen</string>
+  <string name="blotter_screen">Operaţiuni</string>
+  <string name="blotter_screen_summary">Preferinţe pentru ecranul Operaţiuni</string>
+  <string name="hide_closed_accounts">Ascunde conturile închise</string>
+  <string name="hide_closed_accounts_summary">Hide or show closed accounts in the accounts list (requires restart)</string>
+  <string name="re_index_categories">Reindexare</string>
+  <string name="startup_screen">Ecranul de pornire</string>
+  <string name="startup_screen_summary">Selectaţi tab-ul care va fi selectat la pornire</string>
+  <string name="integrity_error">Running balances look out of sync, please do Menu -&gt; More -&gt; Integrity Fix</string>
+  <string name="integrity_fix">Integrity Fix</string>
+  <string name="integrity_fix_in_progress">Se verifică şi se repară dacă este necesar...</string>
+  <string name="select_to_account_differ_from_to_account">Nu se poate transfera la acelaşi cont...</string>
+  <string name="period_this_and_last_week">Săptămâna curentă şi trecută</string>
+  <string name="period_this_and_last_month">Luna curentă şi trecută</string>
+  <string name="period_custom">Personalizat</string>
+  <string name="original_amount">Suma iniţială</string>
+  <string name="original_currency_as_account">Aceeaşi precum contul</string>
+  <string name="split_transfer_not_supported_yet">Split-transfers with a currency differ from account\'s currency are not yet supported</string>
+  <string name="show_currency">Arată moneda</string>
+  <string name="show_currency_summary">Arată selectorul de monedă în ecranul de tranzacţie nouă</string>
+  <string name="reconcile">Reconcile</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Număr</item>
     <item>Listă</item>
     <item>Casetă de selecţie</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>Astăzi</item>
-    <item>Ieri</item>
-    <item>Săptămâna curentă</item>
-    <item>Luna curentă</item>
-    <item>Săptămâna trecută</item>
-    <item>Luna trecută</item>
-    <item>Personalizat</item>
   </string-array>
   <string-array name="account_types">
     <item>Bancă</item>
@@ -685,6 +710,8 @@
     <item>Pe ordine (crescător)</item>
     <item>Pe ordine (descrescător)</item>
     <item>Pe nume</item>
+    <item>După ultima tranzacţie (crescător)</item>
+    <item>După ultima tranzacţie (descrescător)</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>Pe nume</item>
@@ -716,5 +743,11 @@
     <item>5 minute</item>
     <item>10 minute</item>
     <item>15 minute</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>Conturi</item>
+    <item>Operaţiuni</item>
+    <item>Bugete</item>
+    <item>Rapoarte</item>
   </string-array>
 </resources>

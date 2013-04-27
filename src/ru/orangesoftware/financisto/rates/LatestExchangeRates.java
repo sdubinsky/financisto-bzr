@@ -6,11 +6,13 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
-package ru.orangesoftware.financisto.model.rates;
+package ru.orangesoftware.financisto.rates;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import ru.orangesoftware.financisto.model.Currency;
+
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,6 +40,11 @@ public class LatestExchangeRates implements ExchangeRateProvider, ExchangeRatesC
     @Override
     public ExchangeRate getRate(Currency fromCurrency, Currency toCurrency, long atTime) {
         return getRate(fromCurrency, toCurrency);
+    }
+
+    @Override
+    public List<ExchangeRate> getRates(List<Currency> currencies) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

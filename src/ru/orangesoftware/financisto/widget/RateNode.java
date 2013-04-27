@@ -10,27 +10,23 @@ package ru.orangesoftware.financisto.widget;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.ActivityLayout;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.rates.ExchangeRate;
+import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.text.DecimalFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -136,18 +132,14 @@ public class RateNode {
         rateInfo.setText(sb.toString());
     }
 
-    private class RateDownloadTask extends AsyncTask<Void, Void, Float> {
+    private class RateDownloadTask extends AsyncTask<Void, Void, ExchangeRate> {
 
-        private final HttpClient httpClient = new DefaultHttpClient();
-        private final Pattern pattern = Pattern.compile("<double.*?>(.+?)</double>");
-
-        private String error;
         private ProgressDialog progressDialog;
 
         @Override
-        protected Float doInBackground(Void... args) {
-            Currency fromCurrency = getFromCurrency();
-            Currency toCurrency = getToCurrency();
+        protected ExchangeRate doInBackground(Void... args) {
+            Currency fromCurrency = owner.getCurrencyFrom();
+            Currency toCurrency = owner.getCurrencyTo();
             if (fromCurrency != null && toCurrency != null) {
                 HttpGet get = new HttpGet("http://flowzr-hrd.appspot.com/?action=currencyRateDownload&from_currency="+fromCurrency.name+"&to_currency="+toCurrency.name);
                 try {
@@ -164,8 +156,7 @@ public class RateNode {
                 } catch (Exception e) {
                     error = e.getMessage();
                 }
-            }
-            return null;
+                return getProvider().getRate(fromCurrency, toCurrency);
         }
 
         @Override
@@ -175,9 +166,9 @@ public class RateNode {
         }
 
         private void showProgressDialog() {
-            Activity activity = owner.getActivity();
-            String message = activity.getString(R.string.downloading_rate, getFromCurrency(), getToCurrency());
-            progressDialog = ProgressDialog.show(activity, null, message, true, true, new DialogInterface.OnCancelListener() {
+            Context context = owner.getActivity();
+            String message = context.getString(R.string.downloading_rate, owner.getCurrencyFrom(), owner.getCurrencyTo());
+            progressDialog = ProgressDialog.show(context, null, message, true, true, new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialogInterface) {
                     cancel(true);
@@ -192,26 +183,22 @@ public class RateNode {
         }
 
         @Override
-        protected void onPostExecute(Float result) {
+        protected void onPostExecute(ExchangeRate result) {
             progressDialog.dismiss();
             owner.onAfterRateDownload();
-            if (result == null) {
-                if (error != null) {
-                    Toast t = Toast.makeText(owner.getActivity(), error, Toast.LENGTH_LONG);
+            if (result != null) {
+                if (result.isOk()) {
+                    setRate(result.rate);
+                    owner.onSuccessfulRateDownload();
+                } else {
+                    Toast t = Toast.makeText(owner.getActivity(), result.getErrorMessage(), Toast.LENGTH_LONG);
                     t.show();
                 }
-            } else {
-                setRate(result);
-                owner.onSuccessfulRateDownload();
             }
         }
 
-        private Currency getFromCurrency() {
-            return owner.getCurrencyFrom();
-        }
-
-        private Currency getToCurrency() {
-            return owner.getCurrencyTo();
+        private ExchangeRateProvider getProvider() {
+            return MyPreferences.createExchangeRatesProvider(owner.getActivity());
         }
 
     }
@@ -228,7 +215,5 @@ public class RateNode {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
         }
     };
-
-
 
 }

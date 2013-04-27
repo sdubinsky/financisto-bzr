@@ -8,6 +8,7 @@
   <string name="budgets">Rozpočty</string>
   <string name="projects">Projekty</string>
   <string name="ok">OK</string>
+  <string name="reset">Restart</string>
   <string name="clear">Zůčtovat</string>
   <string name="save">Uložit</string>
   <string name="cancel">Zrušit</string>
@@ -215,25 +216,25 @@
   <string name="restore">Obnovit</string>
   <string name="backup_database">Zálohovat databázi</string>
   <string name="backup_database_inprogress">databáze se zálohuje..</string>
-  <string name="backup_database_gdocs">Zálohovat na Google Docs</string>
+  <string name="backup_database_gdocs">Zálohovat na Google Drive</string>
   <string name="backup_database_gdocs_inprogress">Databáze se zálohuje..</string>
   <string name="csv_export">Exportovat do CSV</string>
   <string name="csv_export_inprogress">Exportuje se do CSV..</string>
   <string name="restore_database">Obnovit databázi</string>
   <string name="restore_database_inprogress">Databáze se obnovuje...</string>
-  <string name="restore_database_gdocs">Obnovit z Google Docs</string>
+  <string name="restore_database_gdocs">Obnovit z Google Drive</string>
   <string name="restore_database_inprogress_gdocs">Databáze se obnovuje...</string>
   <string name="restore_database_success">Databáze byla úspěšně obnovena.</string>
-  <string name="gdocs_connection_failed">Nelze se připojit ke Google Docs.</string>
-  <string name="gdocs_folder_not_found">Zálohovací adresář na Google Docs nebyl nalezen.</string>
+  <string name="gdocs_connection_failed">Nelze se připojit ke Google Drive.</string>
+  <string name="gdocs_folder_not_found">Složka pro zálohu nebyl na Google Drive nalezen.</string>
   <string name="gdocs_credentials_not_configured">Prosím zadejte v Nastavení přihlašovací údaje do Google Docs.</string>
-  <string name="gdocs_folder_not_configured">Prosím zvolte v Nastavení zálohovací adresář Google Docs.</string>
+  <string name="gdocs_folder_not_configured">V nastavení prosím zvolte zálohovací složku na Google Drive.</string>
   <string name="gdocs_login_failed">Neplatené přihlašovací údaje do Google Docs.</string>
-  <string name="gdocs_backup_failed">Chyba během odesílání zálohy na Google Docs. Zkuste to prosím znovu.</string>
+  <string name="gdocs_backup_failed">Chyba při posílání zálohy na Google Drive. Zkuste to prosím znovu.</string>
   <string name="gdocs_restore_failed">Chyba při získávání zálohovacího souboru. Zkuste to prosím znovu.</string>
-  <string name="gdocs_folder_error">Chyba s adresářem na Google Docs.</string>
-  <string name="gdocs_service_error">Chyba služby Google Docs.</string>
-  <string name="gdocs_io_error">Chyba spojení s Google Docs.</string>
+  <string name="gdocs_folder_error">Chyba přístupu do Google Drive.</string>
+  <string name="gdocs_service_error">Chyba, služba Google Drive není dostupná.</string>
+  <string name="gdocs_io_error">Chyba spojení s Google Drive.</string>
   <string name="package_info_error">Nelze získat informace o balíčku Financisto.</string>
   <string name="success">Úspěch!</string>
   <string name="fail">Chyba..</string>
@@ -332,13 +333,13 @@
   <string name="calculating">Počítám..</string>
   <string name="budget_mode">Zvolnit podmínky</string>
   <string name="budget_mode_summary">Použít méně omezující podmínky (kategorií nebo projektů) k filtrování operací</string>
-  <string name="gdocs_backup">Google Docs záloha</string>
+  <string name="gdocs_backup">Záloha na Google Drive</string>
   <string name="user_login">Přihlášení</string>
   <string name="user_login_summary">Přihlášení na Google účet (uživatelské jméno)</string>
   <string name="user_password">Heslo</string>
   <string name="user_password_summary">Heslo na Google účet</string>
-  <string name="backup_folder">Backup Collection</string>
-  <string name="backup_folder_summary">To store backup files create a new collection in My Collections</string>
+  <string name="backup_folder">Složka pro zálohu</string>
+  <string name="backup_folder_summary">Abyste mohli ukládat záložní soubory, vytvořte si novou složku na Google Drive</string>
   <string name="report_preferences">Nastavení zpráv</string>
   <string name="all_reports_preferences">Hlavní nastavení zpráv</string>
   <string name="category_by_period_preferences">Nastavení kategorie za období</string>
@@ -633,12 +634,12 @@
   <string name="rate_from_currency">Od měna</string>
   <string name="rate_to_currency">Do měna</string>
   <string name="currency_make_default">Nastavit jako výchozí</string>
-  <string name="currency_make_default_warning">Abyste získali správný Součet, nastavte prosím výchozí měnu (Menu -&gt; Položky -&gt; Měny)</string>
+  <string name="currency_make_default_warning">Abyste získali správný Součet, nastavte prosím výchozí měnu (Menu -&gt; Číselníky -&gt; Měny)</string>
   <string name="back">Zpět</string>
   <string name="select">Zvolit</string>
-  <string name="category_selector">Volič kategorií</string>
-  <string name="use_hierarchical_category_selector">Hierarchický volič</string>
-  <string name="use_hierarchical_category_selector_summary">Použít hierarchický volič kategorií</string>
+  <string name="category_selector">Výběr kategorií</string>
+  <string name="use_hierarchical_category_selector">Hierarchický výběr</string>
+  <string name="use_hierarchical_category_selector_summary">Použít hierarchický výběr kategorií</string>
   <string name="hierarchical_category_selector_select_child_immediately">Automaticky potvrdit</string>
   <string name="hierarchical_category_selector_select_child_immediately_summary">Automaticky potvrdit výběr podkategorie</string>
   <string name="hierarchical_category_selector_income_expense">Příjem/Výdaj</string>
@@ -661,20 +662,44 @@
   <string name="report_income_expense_income">Příjmy</string>
   <string name="report_income_expense_expense">Výdaje</string>
   <string name="report_income_expense_summary">Shrnutí</string>
+  <string name="csv_import_inprogress_update">Importuji data z CSV: %s%%...</string>
+  <string name="delete_old_transactions">Smazat staré operace</string>
+  <string name="purge_account_backup_database">Zazálohujte si databázi před mazáním operací</string>
+  <string name="purge_account_date_summary">Smazat operace včetně A starší zadaného data. Zůstatek účtu nebude ovlivněn.</string>
+  <string name="purge_account_confirm_title">Potvrdit</string>
+  <string name="purge_account_confirm_message" formatted="false">Smazat operace z účtu %s starší než a včetně %s.</string>
+  <string name="purge_account_payee">Předchozí období</string>
+  <string name="purge_account_in_progress">Odstraňování starých transakcí...</string>
+  <string name="purge_account_unable_to_do_backup">Záloha databáze se nezdařila, ruším...</string>
+  <string name="show_account_last_transaction_date">Datum poslední operace</string>
+  <string name="show_account_last_transaction_date_summary">Zobrazit datum poslední transakce na obrazovce Seznam účtů (vyžaduje restart)</string>
+  <string name="accounts_list_screen">Seznam účtů</string>
+  <string name="accounts_list_screen_summary">Předvolby pro obrazovku Seznam účtů</string>
+  <string name="blotter_screen">Záznamník</string>
+  <string name="blotter_screen_summary">Předvolby pro obrazovku Záznamníku</string>
+  <string name="hide_closed_accounts">Skrýt uzavřené účty</string>
+  <string name="hide_closed_accounts_summary">Skryje nebo zobrazí uzavřené účty v Seznamu účtů (vyžaduje restart)</string>
+  <string name="re_index_categories">Přeindexovat</string>
+  <string name="startup_screen">Úvodní obrazovka</string>
+  <string name="startup_screen_summary">Vyberte kartu, která bude zobrazena po startu</string>
+  <string name="integrity_error">Zůstatky vypadají nesouměrně, prosím proveďte Menu -&gt; Více -&gt; Oprava integrity</string>
+  <string name="integrity_fix">Oprava Integrity</string>
+  <string name="integrity_fix_in_progress">Kontroluji a opravuji pokud je potřeba...</string>
+  <string name="select_to_account_differ_from_to_account">Nelze převádět na stejný účet...</string>
+  <string name="period_this_and_last_week">Tento a minulý týden</string>
+  <string name="period_this_and_last_month">Tento a minulý měsíc</string>
+  <string name="period_custom">Vlastní</string>
+  <string name="original_amount">Původní částka</string>
+  <string name="original_currency_as_account">Stejně jako účet</string>
+  <string name="split_transfer_not_supported_yet">Rozdělené převody s rozdílnou měnou nejsou zatím podporovány</string>
+  <string name="show_currency">Zobrazit měnu</string>
+  <string name="show_currency_summary">Zobrazí výběr měny na obrazovce nové operace</string>
+  <string name="reconcile">Vyřešit</string>
   <string-array name="attribute_types">
     <item>Text</item>
     <item>Číslo</item>
     <item>Seznam</item>
     <item>Zaškrtávadlo</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>Dnes</item>
-    <item>Včera</item>
-    <item>Tento týden</item>
-    <item>Tento měsíc</item>
-    <item>Minulý týden</item>
-    <item>Minulý měsíc</item>
-    <item>Vlastní</item>
   </string-array>
   <string-array name="account_types">
     <item>Bankovní účet</item>
@@ -685,6 +710,8 @@
     <item>Vzestupně</item>
     <item>Sestupně</item>
     <item>Dle jména</item>
+    <item>Podle poslední transakce (vzestupně)</item>
+    <item>Podle poslední transakce (vzestupně)</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>Dle jména</item>
@@ -716,5 +743,11 @@
     <item>5 minut</item>
     <item>10 minut</item>
     <item>15 minut</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>Účty</item>
+    <item>Záznamník</item>
+    <item>Rozpočty</item>
+    <item>Zprávy</item>
   </string-array>
 </resources>

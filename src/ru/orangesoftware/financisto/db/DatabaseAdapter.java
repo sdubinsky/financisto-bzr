@@ -24,8 +24,8 @@ import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.CategoryTree.NodeCreator;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.rates.*;
 import ru.orangesoftware.financisto.datetime.DateUtils;
+import ru.orangesoftware.financisto.rates.*;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.math.BigDecimal;
@@ -749,9 +749,23 @@ public class DatabaseAdapter {
 			c.close();
 		}
 	}
-	
-	public Map<Long, Category> getCategoriesMap(boolean includeNoCategory) {
-		return getCategoriesTree(includeNoCategory).asMap();
+
+    public CategoryTree<Category> getAllCategoriesTree() {
+        Cursor c = getAllCategories();
+        try {
+            return CategoryTree.createFromCursor(c, new NodeCreator<Category>(){
+                @Override
+                public Category createNode(Cursor c) {
+                    return Category.formCursor(c);
+                }
+            });
+        } finally {
+            c.close();
+        }
+    }
+
+	public Map<Long, Category> getAllCategoriesMap() {
+		return getAllCategoriesTree().asMap();
 	}
 
 	public List<Category> getCategoriesList(boolean includeNoCategory) {
@@ -1480,12 +1494,16 @@ public class DatabaseAdapter {
         SQLiteDatabase db = db();
         db.beginTransaction();
         try {
-            deleteRateInTransaction(rate.fromCurrencyId, rate.toCurrencyId, originalDate, db);
-            saveBothRatesInTransaction(rate, db);
+            replaceRateInTransaction(rate, originalDate, db);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
+    }
+
+    private void replaceRateInTransaction(ExchangeRate rate, long originalDate, SQLiteDatabase db) {
+        deleteRateInTransaction(rate.fromCurrencyId, rate.toCurrencyId, originalDate, db);
+        saveBothRatesInTransaction(rate, db);
     }
 
     private void saveBothRatesInTransaction(ExchangeRate r, SQLiteDatabase db) {
@@ -1497,6 +1515,21 @@ public class DatabaseAdapter {
     private void saveRateInTransaction(SQLiteDatabase db, ExchangeRate r) {
         ContentValues values = r.toValues();
         db.insert(EXCHANGE_RATES_TABLE, null, values);
+    }
+
+    public void saveDownloadedRates(List<ExchangeRate> downloadedRates) {
+        SQLiteDatabase db = db();
+        db.beginTransaction();
+        try {
+            for (ExchangeRate r : downloadedRates) {
+                if (r.isOk()) {
+                    replaceRateInTransaction(r, r.date, db);
+                }
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public ExchangeRate findRate(Currency fromCurrency, Currency toCurrency, long date) {

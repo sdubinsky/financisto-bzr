@@ -75,14 +75,16 @@ public class PlannerActivity extends AbstractListActivity {
 
     private void setupFilter() {
         if (filter.isEmpty()) {
-            Calendar date = Calendar.getInstance();
-            date.add(Calendar.MONTH, 1);
-            DateTimeCriteria criteria = new DateTimeCriteria(PeriodType.THIS_MONTH);
-            applyDateTimeCriteria(criteria);
+            applyDateTimeCriteria(null);
         }
     }
 
     private void applyDateTimeCriteria(DateTimeCriteria criteria) {
+        if (criteria == null) {
+            Calendar date = Calendar.getInstance();
+            date.add(Calendar.MONTH, 1);
+            criteria = new DateTimeCriteria(PeriodType.THIS_MONTH);
+        }
         long now = System.currentTimeMillis();
         if (now > criteria.getLongValue1()) {
             Period period = criteria.getPeriod();

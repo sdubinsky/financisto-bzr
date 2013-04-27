@@ -166,13 +166,25 @@ public class CsvImportTest extends AbstractImportExportTest {
     public void test_should_import_one_transaction_without_the_header() throws Exception {
         categories = CategoryBuilder.createDefaultHierarchy(db);
         defaultOptions.useHeaderFromFile = false;
-        doImport("10.07.2011,07:13:17,AAA,2100.56,SGD,B,\"\",P1,Current location,No project,", defaultOptions);
+        doImport(
+                "11.07.2011,07:13:17,AAA,2100.56,SGD,1680.10,USD,B,\"\",P1,Current location,No project\n"+
+                "10.07.2011,07:13:17,AAA,2100.56,SGD,\"\",\"\",B,\"\",P1,Current location,No project,", defaultOptions);
 
         List<TransactionInfo> transactions = em.getTransactionsForAccount(defaultAccountId);
-        assertEquals(1, transactions.size());
+        assertEquals(2, transactions.size());
 
         TransactionInfo t = transactions.get(0);
-        assertEquals(DateTime.date(2011, 7, 10).at(7, 13, 17, 0).asLong(), t.dateTime);
+        assertEquals(DateTime.date(2011, 7, 11).at(7, 13, 17, 0).asLong(), t.dateTime);
+        assertEquals(defaultAccountId, t.fromAccount.id);
+        assertEquals(210056, t.fromAmount);
+        assertEquals(168010, t.originalFromAmount);
+        assertEquals("USD", t.originalCurrency.name);
+        assertEquals(categories.get("B").id, t.category.id);
+        assertEquals("P1", t.payee.title);
+
+        t = transactions.get(1);
+        //each transaction adds 1 ms to keep the original order
+        assertEquals(DateTime.date(2011, 7, 10).at(7, 13, 17, 1).asLong(), t.dateTime);
         assertEquals(defaultAccountId, t.fromAccount.id);
         assertEquals(210056, t.fromAmount);
         assertEquals(categories.get("B").id, t.category.id);

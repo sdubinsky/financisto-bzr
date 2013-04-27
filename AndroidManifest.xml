@@ -10,7 +10,7 @@
       Denis Solonenko - initial API and implementation
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.orangesoftware.financisto" android:versionName="1.6.2" android:versionCode="80"
+    package="ru.orangesoftware.financisto" android:versionName="1.6.3" android:versionCode="81"
     android:installLocation="internalOnly">
 
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="11"/>

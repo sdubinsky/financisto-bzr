@@ -10,7 +10,7 @@ package ru.orangesoftware.financisto.test;
 
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.rates.ExchangeRate;
+import ru.orangesoftware.financisto.rates.ExchangeRate;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,6 +52,11 @@ public class RateBuilder {
 
     public RateBuilder rate(float rate) {
         r.rate = rate;
+        return this;
+    }
+
+    public RateBuilder notOK() {
+        r.error = "Exception";
         return this;
     }
 

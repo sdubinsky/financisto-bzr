@@ -8,6 +8,7 @@
   <string name="budgets">预算</string>
   <string name="projects">项目</string>
   <string name="ok">确定</string>
+  <string name="reset">重置</string>
   <string name="clear">清除</string>
   <string name="save">保存</string>
   <string name="cancel">取消</string>
@@ -126,7 +127,7 @@
   <string name="overall">全体</string>
   <string name="report_by_period">以期间统计</string>
   <string name="report_by_period_summary">以期间分别统计的交易报告</string>
-  <string name="report_by_category">By Category</string>
+  <string name="report_by_category">按类别</string>
   <string name="report_by_category_summary">以分类分别统计的交易报告</string>
   <string name="report_by_location">以地点统计</string>
   <string name="report_by_location_summary">以地点分别统计的交易报告</string>
@@ -146,7 +147,7 @@
   <string name="sum_result_label">总和：</string>
   <string name="report_init_res">0</string>
   <string name="no_data_to_report">没有可用来显示报表的数据。</string>
-  <string name="report_preferences_not_set">调整‘报告首选项’菜单上的首选项。如默认货币和时间段。</string>
+  <string name="report_preferences_not_set">请调整首选项菜单里的设置。将使用默认货币和时间段。</string>
   <string name="currency_not_set">在‘首选项’里没有设置‘参考货币’。将用默认货币。</string>
   <string name="period_not_set">在‘首选项’里没有设置‘参考时间段’。将用默认时间段。</string>
   <string name="report_no_category">没有可用于报表筛选条件的分类。</string>
@@ -215,25 +216,25 @@
   <string name="restore">重设</string>
   <string name="backup_database">备份数据库</string>
   <string name="backup_database_inprogress">正在备份数据库…</string>
-  <string name="backup_database_gdocs">备份至Google Docs</string>
+  <string name="backup_database_gdocs">备份到Google Drive</string>
   <string name="backup_database_gdocs_inprogress">正在备份数据库…...</string>
   <string name="csv_export">导出 CSV</string>
   <string name="csv_export_inprogress">导出数据库至 CSV 文件…</string>
   <string name="restore_database">导入数据库</string>
   <string name="restore_database_inprogress">正在导入数据库…</string>
-  <string name="restore_database_gdocs">从Google Docs还原</string>
+  <string name="restore_database_gdocs">从Google Drive恢复</string>
   <string name="restore_database_inprogress_gdocs">正在还原数据库…...</string>
   <string name="restore_database_success">数据库已成功导入</string>
-  <string name="gdocs_connection_failed">无法连接到 Google Docs。</string>
-  <string name="gdocs_folder_not_found">找不到在Google Docs的备份文件夹。</string>
+  <string name="gdocs_connection_failed">无法连接到Google Drive。</string>
+  <string name="gdocs_folder_not_found">在Google Drive中找不到备份文件夹。</string>
   <string name="gdocs_credentials_not_configured">请在‘首选项’里设置 Google 账户的登录名和密码。</string>
-  <string name="gdocs_folder_not_configured">请在‘首选项’里设置谷歌文档的备份文件夹。</string>
+  <string name="gdocs_folder_not_configured">请在‘首选项’里设置Google Drive的备份文件夹。.</string>
   <string name="gdocs_login_failed">Google 账户登录名或密码无效。</string>
-  <string name="gdocs_backup_failed">发送备份文件时到 Google Docs 时出错。请重试。</string>
+  <string name="gdocs_backup_failed">发送备份文件时到 Google Drive 时出错。请重试。.</string>
   <string name="gdocs_restore_failed">无法获取备份文件，请重试</string>
-  <string name="gdocs_folder_error">访问Google Docs的文件夹出错。</string>
-  <string name="gdocs_service_error">Google Docs服务不可用。</string>
-  <string name="gdocs_io_error">连接Google Docs时出错。</string>
+  <string name="gdocs_folder_error">访问Google Drive的文件夹出错。.</string>
+  <string name="gdocs_service_error">Google Drive 服务不可用。</string>
+  <string name="gdocs_io_error">无法连接到Google Drive.</string>
   <string name="package_info_error">无法访问 Financisto 的包信息。</string>
   <string name="success">成功!</string>
   <string name="fail">失败…</string>
@@ -332,13 +333,13 @@
   <string name="calculating">计算中..</string>
   <string name="budget_mode">择一限制</string>
   <string name="budget_mode_summary">只要分类或项目其中之一符合条件就纳入预算</string>
-  <string name="gdocs_backup">Google Docs 备份</string>
+  <string name="gdocs_backup">Google Drive备份</string>
   <string name="user_login">登录</string>
   <string name="user_login_summary">Google帐户登录 (用户名)</string>
   <string name="user_password">密码</string>
   <string name="user_password_summary">Google账号密码</string>
-  <string name="backup_folder">备份列表</string>
-  <string name="backup_folder_summary">若要储存备份文件，在“我的收藏”中创建新的收藏</string>
+  <string name="backup_folder">备份文件夹</string>
+  <string name="backup_folder_summary">要存储备份文件，在My Drive创建一个新文件夹</string>
   <string name="report_preferences">报告首选项</string>
   <string name="all_reports_preferences">常规报告首选项</string>
   <string name="category_by_period_preferences">按时间段统计的分类报表首选项</string>
@@ -656,25 +657,49 @@
   <string name="rate_not_available_error" formatted="false">没有指定 %s 和 %s 之间的汇率</string>
   <string name="collapse_blotter_buttons">折叠明细按钮</string>
   <string name="collapse_blotter_buttons_summary">将 新交易/转帐/模板 按钮放在一起(需重启)</string>
-  <string name="is_active">Is active</string>
-  <string name="report_income_expense_both">Income/Expenses</string>
-  <string name="report_income_expense_income">Income</string>
-  <string name="report_income_expense_expense">Expenses</string>
-  <string name="report_income_expense_summary">Summary</string>
+  <string name="is_active">处于激活状态</string>
+  <string name="report_income_expense_both">收入/支出</string>
+  <string name="report_income_expense_income">收入</string>
+  <string name="report_income_expense_expense">支出</string>
+  <string name="report_income_expense_summary">总结</string>
+  <string name="csv_import_inprogress_update">从 CSV 导入数据： %s%% …</string>
+  <string name="delete_old_transactions">删除旧的交易</string>
+  <string name="purge_account_backup_database">删除交易记录之前备份数据库</string>
+  <string name="purge_account_date_summary">删除指定日期及其以前的交易记录。帐户余额将不受影响。</string>
+  <string name="purge_account_confirm_title">确认</string>
+  <string name="purge_account_confirm_message" formatted="false">从账号 %s 删除在 %s 之前（含）的交易记录。</string>
+  <string name="purge_account_payee">上一段时间</string>
+  <string name="purge_account_in_progress">正在删除旧的交易…</string>
+  <string name="purge_account_unable_to_do_backup">无法执行数据库备份，中止操作 … …</string>
+  <string name="show_account_last_transaction_date">上一次交易日期</string>
+  <string name="show_account_last_transaction_date_summary">在账户列表界面显示上依次交易日期（需重启）</string>
+  <string name="accounts_list_screen">账户列表</string>
+  <string name="accounts_list_screen_summary">账户列表界面的首选项</string>
+  <string name="blotter_screen">明细</string>
+  <string name="blotter_screen_summary">明细界面的首选项</string>
+  <string name="hide_closed_accounts">隐藏关闭账户</string>
+  <string name="hide_closed_accounts_summary">在账户列表中隐藏或显示关闭的账户（需要重新启动)</string>
+  <string name="re_index_categories">重新索引</string>
+  <string name="startup_screen">启动界面</string>
+  <string name="startup_screen_summary">选择在启动时选中的选项卡</string>
+  <string name="integrity_error">动态余额看起来不同步。请按此操作：菜单 -&gt; 更多 -&gt; 完整性修复</string>
+  <string name="integrity_fix">完整性修复</string>
+  <string name="integrity_fix_in_progress">检查，如有必要并修复</string>
+  <string name="select_to_account_differ_from_to_account">不能给同一账户转账</string>
+  <string name="period_this_and_last_week">本周与上周合计</string>
+  <string name="period_this_and_last_month">本月与上月合计</string>
+  <string name="period_custom">自定义</string>
+  <string name="original_amount">来源账户</string>
+  <string name="original_currency_as_account">与账户相同</string>
+  <string name="split_transfer_not_supported_yet">尚不支持用与账户货币不同的货币拆分转账</string>
+  <string name="show_currency">显示货币</string>
+  <string name="show_currency_summary">在新交易窗口显示货币选择</string>
+  <string name="reconcile">Reconcile</string>
   <string-array name="attribute_types">
     <item>文字</item>
     <item>数值</item>
     <item>清单</item>
     <item>选框</item>
-  </string-array>
-  <string-array name="datetime_filter_items">
-    <item>今天</item>
-    <item>昨天</item>
-    <item>本周</item>
-    <item>本月</item>
-    <item>上一周</item>
-    <item>上个月</item>
-    <item>自定</item>
   </string-array>
   <string-array name="account_types">
     <item>银行</item>
@@ -685,6 +710,8 @@
     <item>以指定顺序 (小至大)</item>
     <item>以指定顺序 (大至小)</item>
     <item>以名称</item>
+    <item>按上一次交易（升序）</item>
+    <item>按上一次交易（降序）</item>
   </string-array>
   <string-array name="sort_locations_entities">
     <item>以名称</item>
@@ -716,5 +743,11 @@
     <item>5 分钟</item>
     <item>10 分钟</item>
     <item>15 分钟</item>
+  </string-array>
+  <string-array name="startup_screen_entities">
+    <item>账户</item>
+    <item>明细</item>
+    <item>预算</item>
+    <item>报告</item>
   </string-array>
 </resources>

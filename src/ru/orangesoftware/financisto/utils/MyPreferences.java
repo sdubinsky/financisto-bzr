@@ -16,11 +16,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.dropbox.client2.session.AccessTokenPair;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.rates.ExchangeRateProviderFactory;
+import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -395,10 +398,11 @@ public class MyPreferences {
 	}
 	
 	private static void switchLocale(Context context, Locale locale) {
-        Configuration config = new Configuration();
-        config.locale = locale;
-        context.getApplicationContext().getResources().updateConfiguration(config, null);
-        Log.i("MyPreferences", "Switching locale to "+config.locale.getDisplayName());
+        Resources resources = context.getApplicationContext().getResources();
+        Configuration configuration = resources.getConfiguration();
+        configuration.locale = locale;
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+        Log.i("MyPreferences", "Switching locale to "+configuration.locale.getDisplayName());
 	}
 
     public static boolean isCameraSupported(Context context) {
@@ -561,6 +565,22 @@ public class MyPreferences {
             return new AccessTokenPair(authKey, authSecret);
         }
         return null;
+    }
+
+    public static ExchangeRateProvider createExchangeRatesProvider(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        ExchangeRateProviderFactory factory = getExchangeRateProviderFactory(sharedPreferences);
+        return factory.createProvider(sharedPreferences);
+    }
+
+    private static ExchangeRateProviderFactory getExchangeRateProviderFactory(SharedPreferences sharedPreferences) {
+        String provider = sharedPreferences.getString("exchange_rate_provider", ExchangeRateProviderFactory.webservicex.name());
+        return ExchangeRateProviderFactory.valueOf(provider);
+    }
+
+    public static boolean isOpenExchangeRatesProviderSelected(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return getExchangeRateProviderFactory(sharedPreferences) == ExchangeRateProviderFactory.openexchangerates;
     }
 
     private static boolean getBoolean(Context context, String name, boolean defaultValue) {

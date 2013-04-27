@@ -19,8 +19,8 @@ import android.widget.TextView;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.model.Total;
-import ru.orangesoftware.financisto.model.rates.ExchangeRate;
-import ru.orangesoftware.financisto.model.rates.ExchangeRateProvider;
+import ru.orangesoftware.financisto.rates.ExchangeRate;
+import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.util.ArrayList;

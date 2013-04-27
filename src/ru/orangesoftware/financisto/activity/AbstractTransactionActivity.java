@@ -55,6 +55,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 	public static final String DUPLICATE_EXTRA = "isDuplicate";
 	public static final String TEMPLATE_EXTRA = "isTemplate";
     public static final String DATETIME_EXTRA = "dateTimeExtra";
+    public static final String NEW_FROM_TEMPLATE_EXTRA = "newFromTemplateExtra";
 
 	private static final int NEW_LOCATION_REQUEST = 4002;
 	private static final int RECURRENCE_REQUEST = 4003;
@@ -163,6 +164,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 
 		long accountId = -1;
 		long transactionId = -1;
+        boolean isNewFromTemplate = false;
 		final Intent intent = getIntent();
 		if (intent != null) {
 			accountId = intent.getLongExtra(ACCOUNT_ID_EXTRA, -1);
@@ -172,6 +174,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 				transaction = db.getTransaction(transactionId);
                 transaction.categoryAttributes = db.getAllAttributesForTransaction(transactionId);
 				isDuplicate = intent.getBooleanExtra(DUPLICATE_EXTRA, false);
+                isNewFromTemplate = intent.getBooleanExtra(NEW_FROM_TEMPLATE_EXTRA, false);
 				if (isDuplicate) {
 					transaction.id = -1;
 					transaction.dateTime = System.currentTimeMillis();
@@ -288,6 +291,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
         });
 		
 		if (transactionId != -1) {
+            isOpenCalculatorForTemplates &= isNewFromTemplate;
 			editTransaction(transaction);
 		} else {
             setDateTime(transaction.dateTime);

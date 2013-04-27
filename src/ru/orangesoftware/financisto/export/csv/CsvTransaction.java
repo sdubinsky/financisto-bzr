@@ -23,6 +23,8 @@ public class CsvTransaction {
     public long time;
     public long fromAccountId;
     public long fromAmount;
+    public long originalAmount;
+    public String originalCurrency;
     public String payee;
     public String category;
     public String categoryParent;
@@ -30,7 +32,7 @@ public class CsvTransaction {
     public String project;
     public String currency;
 
-    public Transaction createTransaction(Map<String, Category> categories, Map<String, Project> projects, Map<String, Payee> payees) {
+    public Transaction createTransaction(Map<String, Currency> currencies, Map<String, Category> categories, Map<String, Project> projects, Map<String, Payee> payees) {
         Transaction t = new Transaction();
         t.dateTime = date+time;
         t.fromAccountId = fromAccountId;
@@ -38,6 +40,11 @@ public class CsvTransaction {
         t.categoryId = getEntityIdOrZero(categories, category);
         t.payeeId = getEntityIdOrZero(payees, payee);
         t.projectId = getEntityIdOrZero(projects, project);
+        if (originalAmount != 0) {
+            Currency currency = currencies.get(originalCurrency);
+            t.originalFromAmount = originalAmount;
+            t.originalCurrencyId = currency.id;
+        }
         t.note = note;
         return t;
     }

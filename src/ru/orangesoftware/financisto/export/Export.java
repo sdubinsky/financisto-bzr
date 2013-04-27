@@ -106,11 +106,11 @@ public abstract class Export {
 		}	
 	}
 
-	protected abstract  void writeHeader(BufferedWriter bw) throws IOException, NameNotFoundException;
+	protected abstract void writeHeader(BufferedWriter bw) throws IOException, NameNotFoundException;
 
-	protected abstract  void writeBody(BufferedWriter bw) throws IOException;
+	protected abstract void writeBody(BufferedWriter bw) throws IOException;
 
-	protected abstract  void writeFooter(BufferedWriter bw) throws IOException;
+	protected abstract void writeFooter(BufferedWriter bw) throws IOException;
 
 	protected abstract String getExtension();
 	
