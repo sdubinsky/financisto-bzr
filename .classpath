@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="libs/trace-0.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/rfc2445-no-joda.jar" sourcepath="H:/Work/Java/Android/google-rfc-2445-read-only/src"/>
 	<classpathentry kind="lib" path="libs/GDocsAPI.jar"/>
 	<classpathentry kind="lib" path="libs/CWAC-WakefulIntentService.jar"/>

@@ -613,5 +613,4 @@ public class MyEntityManager extends EntityManager {
         return map;
     }
 
->>>>>>> MERGE-SOURCE
 }

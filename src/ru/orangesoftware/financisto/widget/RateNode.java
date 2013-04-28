@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
@@ -27,6 +28,10 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.text.DecimalFormat;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -141,24 +146,11 @@ public class RateNode {
             Currency fromCurrency = owner.getCurrencyFrom();
             Currency toCurrency = owner.getCurrencyTo();
             if (fromCurrency != null && toCurrency != null) {
-                HttpGet get = new HttpGet("http://flowzr-hrd.appspot.com/?action=currencyRateDownload&from_currency="+fromCurrency.name+"&to_currency="+toCurrency.name);
-                try {
-                    Log.i("RateDownload", get.getURI().toString());
-                    HttpResponse r = httpClient.execute(get);
-                    int code=r.getStatusLine().getStatusCode();                    
-                	String s = EntityUtils.toString(r.getEntity());
-                    if (code==200) {
-                    	Log.i("RateDownload", s);
-                    	return Float.valueOf(s);
-                    } else {                   
-                        error = s;
-                    }                    
-                } catch (Exception e) {
-                    error = e.getMessage();
-                }
                 return getProvider().getRate(fromCurrency, toCurrency);
+            }
+            return null;
         }
-
+            
         @Override
         protected void onPreExecute() {
             showProgressDialog();
@@ -200,7 +192,14 @@ public class RateNode {
         private ExchangeRateProvider getProvider() {
             return MyPreferences.createExchangeRatesProvider(owner.getActivity());
         }
+        private Currency getFromCurrency() {
+            return owner.getCurrencyFrom();
+        }
 
+        private Currency getToCurrency() {
+            return owner.getCurrencyTo();
+        }
+        
     }
 
     private final TextWatcher rateWatcher = new TextWatcher(){
