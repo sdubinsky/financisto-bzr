@@ -41,6 +41,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -72,11 +73,17 @@ public class FlowzrSyncActivity extends Activity  {
     private ProgressDialog progressDialog ;
 	private FlowzrSyncTask t;
 	public boolean isCanceled=false;
-    
+	protected PowerManager.WakeLock vWakeLock;
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.flowzr_sync);
+        
+        final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        this.vWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
+        this.vWakeLock.acquire();        
+        
         restorePreferences();
 
         db = new DatabaseAdapter(this);
@@ -331,6 +338,7 @@ public class FlowzrSyncActivity extends Activity  {
     @Override
     protected void onDestroy() {
         db.close();
+        this.vWakeLock.release();        
         super.onDestroy();
     }
 

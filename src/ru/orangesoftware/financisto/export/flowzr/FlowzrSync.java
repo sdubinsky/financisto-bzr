@@ -98,15 +98,14 @@ public class FlowzrSync  {
 	    
 	    public Object doSync() throws Exception {
 	    	Object o=null;
-	    	if (options.lastSyncLocalTimestamp>0) {
-	    		fixCreatedEntities();
-	            if (o instanceof Exception) {
-	            	return o;
-	            }    		
-	    		o=pullDelete(options.lastSyncLocalTimestamp);
-	            if (o instanceof Exception) {
-	            	return o;
-	            }
+
+	    	fixCreatedEntities();
+	    	if (o instanceof Exception) {
+	    		return o;
+	    	}    		
+	    	o=pullDelete(options.lastSyncLocalTimestamp);
+	    	if (o instanceof Exception) {
+	    		return o;
 	    	}
 	    	
 	        progressListener.onProgress(10);        
@@ -480,8 +479,7 @@ public class FlowzrSync  {
 					//sometime server can set a transaction with no key (ex initial amount ...)
 	    			if (jsonObjectEntity.has("key")) {
 	    					remoteKey=jsonObjectEntity.getString("key");    			
-	    			}
-	   			
+	    			}	   			
 	    			Object o=null;
 					if (clazz==Account.class) {    			
 						o=saveOrUpdateAccountFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);					
@@ -522,7 +520,16 @@ public class FlowzrSync  {
 		public <T> Object saveOrUpdateEntityFromJSON(Class<T> clazz,long id,JSONObject jsonObjectEntity) {					
 			if (!jsonObjectEntity.has("name")) {
 				return null;
-			}
+			} 
+			if (jsonObjectEntity.has("isNone")) {	    			
+				try {
+					if (jsonObjectEntity.getBoolean("isNone")) {
+						return null;
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}			
 			MyEntity tEntity=(MyEntity) em.get(clazz, id);			
 			//---
 			//Below is a hack, cause if i do :
@@ -544,6 +551,7 @@ public class FlowzrSync  {
 				((MyEntity)tEntity).title=jsonObjectEntity.getString("name");
 
 				if ((clazz)==Project.class) {
+					Log.e("financisto","Project!!!!!!!!!");
 					if (jsonObjectEntity.has("is_active")) {
 						if (jsonObjectEntity.getBoolean("is_active")) {
 							((Project)tEntity).isActive=true;
@@ -961,7 +969,7 @@ public class FlowzrSync  {
 					try {
 						tEntity.fromAccountId=getLocalKey("account", jsonObjectResponse.getString("account"));
 					} catch (Exception e1) {					
-						//Log.e("financisto","Error parsing Transaction.fromAccount with : " + jsonObjectResponse.getString("account"));
+						Log.e("financisto","Error parsing Transaction.fromAccount with : " + jsonObjectResponse.getString("account"));
 						return null;
 						//return e1; //mandatory: fatal					
 					} 
@@ -971,7 +979,7 @@ public class FlowzrSync  {
 						try {
 							tEntity.toAccountId=getLocalKey("account", jsonObjectResponse.getString("to_account")); 						
 						} catch (Exception e1) {											 						
-							//Log.e("financisto","Error parsing Transaction.toAccount with : " + jsonObjectResponse.getString("to_account"));						
+							Log.e("financisto","Error parsing Transaction.toAccount with : " + jsonObjectResponse.getString("to_account"));						
 						} 					
 					} else {
 						tEntity.toAccountId=0;
@@ -1247,6 +1255,10 @@ public class FlowzrSync  {
 							em.deleteBudget(id);
 						} else if (tableName.equals(DatabaseHelper.LOCATIONS_TABLE)) {
 							em.deleteLocation(id);
+						} else if (tableName.equals(DatabaseHelper.PROJECT_TABLE)) {
+							em.deleteProject(id);							
+						} else if (tableName.equals(DatabaseHelper.PAYEE_TABLE)) {
+							em.delete(Payee.class,id);								
 						} else  if (tableName.equals(DatabaseHelper.CATEGORY_TABLE)) {
 							dba.deleteCategory(id);
 						}
