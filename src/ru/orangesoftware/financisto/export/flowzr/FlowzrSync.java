@@ -314,6 +314,7 @@ public class FlowzrSync  {
 								Log.e("financisto",e.getMessage());
 							}
 						}  else {
+							try {
 							String[] entities=c.getString(c.getColumnIndex(colName)).split(",");	
 							String keys="";
 							for (String entity_id2: entities) {
@@ -329,8 +330,10 @@ public class FlowzrSync  {
 							if (keys.endsWith(",")) {
 								keys=keys.substring(0,keys.length()-1);
 							}
-
 							nameValuePairs.add(new BasicNameValuePair(colName,keys));
+							} catch (Exception e) {
+								Log.e("financisto","not referencing" + tableName + " " +  colName);
+							}
 						}
 					} else {
 						nameValuePairs.add(new BasicNameValuePair(colName,c.getString(c.getColumnIndex(colName))));					
