@@ -14,11 +14,19 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrBilling;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncTask;
 import android.accounts.Account;
@@ -34,6 +42,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -54,7 +63,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
 public class FlowzrSyncActivity extends Activity  {
 
     public static final int CLASS_ACCOUNT = 1;
@@ -69,23 +77,43 @@ public class FlowzrSyncActivity extends Activity  {
     private DatabaseAdapter db;
     private long lastSyncLocalTimestamp=0;
     private Account useCredential;
-	DefaultHttpClient http_client = new DefaultHttpClient();
+	DefaultHttpClient http_client ;
     private ProgressDialog progressDialog ;
-	private FlowzrSyncTask t;
+	public FlowzrSyncTask flowzrSyncTask;
 	public boolean isCanceled=false;
-	protected PowerManager.WakeLock vWakeLock;
-	
+	protected PowerManager.WakeLock vWakeLock;	
+	private FlowzrBilling flowzrBilling;
+	public String TAG="flowzr";
+	public String FLOWZR_API_URL="https://flowzr-hrd.appspot.com/financisto/";
+     	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    	try {
+			this.FLOWZR_API_URL=this.FLOWZR_API_URL + getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).versionName + "/";
+		} catch (NameNotFoundException e) {
+
+		}
         setContentView(R.layout.flowzr_sync);
+
+        http_client=new DefaultHttpClient();
+        
+        BasicHttpParams params = new BasicHttpParams();
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
+        schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
+        ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+        DefaultHttpClient httpclient = new DefaultHttpClient(cm, params);
         
         final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        this.vWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
-        this.vWakeLock.acquire();        
-        
-        restorePreferences();
+        this.vWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, this.TAG);
+        this.vWakeLock.acquire();          
 
+        restorePreferences();        
+        if (useCredential!=null) {
+        	flowzrBilling=new FlowzrBilling(FlowzrSyncActivity.this, getApplicationContext(), http_client, useCredential.toString());  
+        }
         db = new DatabaseAdapter(this);
         db.open();
         		
@@ -142,6 +170,7 @@ public class FlowzrSyncActivity extends Activity  {
         Button bOk = (Button) findViewById(R.id.bOK);
         bOk.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+            	Toast.makeText(FlowzrSyncActivity.this, R.string.flowzr_sync_inprogress, Toast.LENGTH_SHORT).show();
             	isCanceled=false;
 	        	progressDialog = new ProgressDialog(FlowzrSyncActivity.this);
 				progressDialog.setCancelable(false);
@@ -153,8 +182,8 @@ public class FlowzrSyncActivity extends Activity  {
 	        	    @Override
 	        	    public void onClick(DialogInterface dialog, int which) {
 	                    setResult(RESULT_CANCELED);    
-	                    if (t!=null) {
-	                    	t.cancel(true);
+	                    if (flowzrSyncTask!=null) {
+	                    	flowzrSyncTask.cancel(true);
 	                    	
 	                    }
 	                    isCanceled=true;
@@ -162,7 +191,7 @@ public class FlowzrSyncActivity extends Activity  {
 	        	        finish();
 	        	    }
 	        	});	        	
-            	
+           	
      	
 	        	//
             	if (useCredential==null) {
@@ -173,9 +202,12 @@ public class FlowzrSyncActivity extends Activity  {
         			//progressDialog.dismiss();
     				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);                                         				
         		} else {
-                    savePreferences();	         			
-        			AccountManager.get(getApplicationContext()).getAuthToken(useCredential, "ah", false, new GetAuthTokenCallback(), null);                 			
-          			
+                    savePreferences();	
+                    progressDialog.show(); 
+                    
+
+               	    AccountManager.get(getApplicationContext()).getAuthToken(useCredential, "ah" , null, FlowzrSyncActivity.this, new GetAuthTokenCallback(), null);
+  
         		}
             }
         });
@@ -229,9 +261,9 @@ public class FlowzrSyncActivity extends Activity  {
 					// User input required
 					startActivity(intent);
 				} else {
-		        	progressDialog.show();  					
-                	Toast.makeText(FlowzrSyncActivity.this, R.string.flowzr_sync_inprogress, Toast.LENGTH_SHORT).show();
-					onGetAuthToken(bundle);
+                	AccountManager.get(getApplicationContext()).invalidateAuthToken(bundle.getString(AccountManager.KEY_ACCOUNT_TYPE), bundle.getString(AccountManager.KEY_AUTHTOKEN));
+                	AccountManager.get(getApplicationContext()).invalidateAuthToken("ah", bundle.getString(AccountManager.KEY_AUTHTOKEN));                	  
+                	onGetAuthToken(bundle);
 				}
 			} catch (OperationCanceledException e) {
 				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
@@ -316,8 +348,8 @@ public class FlowzrSyncActivity extends Activity  {
 			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());	
 			FlowzrSyncOptions options = FlowzrSyncOptions.fromPrefs(preferences);	
 			progressDialog.setProgress(5);
-			t= new FlowzrSyncTask(FlowzrSyncActivity.this, handler, progressDialog, options,http_client);
-			t.execute();   												
+			flowzrSyncTask= new FlowzrSyncTask(FlowzrSyncActivity.this, handler, progressDialog, options,http_client,flowzrBilling);
+			flowzrSyncTask.execute();   												
 		}
 	}
     
@@ -338,7 +370,7 @@ public class FlowzrSyncActivity extends Activity  {
     @Override
     protected void onDestroy() {
         db.close();
-        this.vWakeLock.release();        
+        this.vWakeLock.release();          
         super.onDestroy();
     }
 
@@ -348,8 +380,10 @@ public class FlowzrSyncActivity extends Activity  {
   
         CheckBox chk=(CheckBox)findViewById(R.id.chk_sync_from_zero);
         if (chk.isChecked()) {
-    		editor.putLong(FlowzrSyncActivity.LAST_SYNC_LOCAL_TIMESTAMP, 0);      	
+    		editor.putLong(FlowzrSyncActivity.LAST_SYNC_LOCAL_TIMESTAMP, 0);  
+    		lastSyncLocalTimestamp=0;
         }
+        Log.e("financisto",String.valueOf(lastSyncLocalTimestamp));
         editor.commit();          
 	}
 
@@ -364,5 +398,6 @@ public class FlowzrSyncActivity extends Activity  {
 	    		 useCredential=accounts[i];
 	    	 }
 	     }		 		
+	    
 	}
 }

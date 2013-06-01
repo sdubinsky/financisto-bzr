@@ -679,9 +679,10 @@
     <string name="account_required">An account is required.</string>
     <string name="flowzr_sync_success">Successfully synchronized</string>    
     <string name="flowzr_choose_account">Please select an account to work with...</string>
-    <string name="sync_from_zero">Synch from all the time</string>
-            
-
+    <string name="sync_from_zero">Resume sync</string>
+    <string name="flowzr_account_setup">Account now set up, please restart sync.</string>            
+    <string name="flowzr_subscription_required">Subscription required.</string>
+      
     <string name="remember_last_category_for_payee">Last category</string>
     <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee (or account if payee is disabled)</string>
 

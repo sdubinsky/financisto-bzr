@@ -40,26 +40,41 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     private final FlowzrSyncOptions options;
     private final DefaultHttpClient http_client;
     private final FlowzrSyncActivity flowzrSyncActivity;
-    FlowzrSync flowzrSync;
+    FlowzrSyncEngine flowzrSync;
+    FlowzrBilling flowzrBilling;
     
-    public FlowzrSyncTask(FlowzrSyncActivity flowzrSyncActivity, Handler handler, ProgressDialog dialog, FlowzrSyncOptions options, DefaultHttpClient pHttp_client) {
+    public FlowzrSyncTask(FlowzrSyncActivity flowzrSyncActivity, Handler handler, ProgressDialog dialog, FlowzrSyncOptions options, DefaultHttpClient pHttp_client,FlowzrBilling flowzrBilling) {
         this.options = options;
         this.http_client=pHttp_client;
         this.context=flowzrSyncActivity;
         this.dialog=dialog;        
         this.flowzrSyncActivity=flowzrSyncActivity;
+        this.flowzrBilling=flowzrBilling;
     }
 
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
+    	
         try {	
-        	flowzrSync = new FlowzrSync(context, db, options, http_client);
+        	flowzrSync = new FlowzrSyncEngine(flowzrSyncActivity,context, db, options, http_client);
             flowzrSync.setProgressListener(new ProgressListener() {
                 @Override                
                 public void onProgress(int percentage) {
                     publishProgress(String.valueOf(percentage));
                 }
-            });        	                        
-            return flowzrSync.doSync();
+            });    
+            Boolean sync=false;
+            if (flowzrBilling!=null) {
+            	sync=flowzrBilling.checkSubscription();
+            } else {
+            	sync=false;
+            	return new Exception(context.getString(R.string.flowzr_account_setup));
+            }
+            if (sync) {
+            	return flowzrSync.doSync();
+            } else {
+            	return new Exception(context.getString(R.string.flowzr_subscription_required));
+            }
+
             
         } catch (Exception e) {
             return e;
@@ -137,23 +152,22 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
          		});
          	trd.start();
          	
-
-
          	return;
+		} else {
+			if (isCancelled()) {
+		        flowzrSyncActivity.finish();			
+				return;
+			}
+			flowzrSync.finishDelete();
+	    	
+	        flowzrSyncActivity.finish();         	
+	        Toast.makeText(context.getApplicationContext(), R.string.flowzr_sync_success, Toast.LENGTH_SHORT).show();  
+	        		
+			dialog.dismiss();			
+	        options.lastSyncLocalTimestamp=System.currentTimeMillis();
+			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+			editor.putLong(FlowzrSyncActivity.LAST_SYNC_LOCAL_TIMESTAMP, System.currentTimeMillis());
+			editor.commit();
 		}
-		if (isCancelled()) {
-	        flowzrSyncActivity.finish();			
-			return;
-		}
-		flowzrSync.finishDelete();
-    	
-        flowzrSyncActivity.finish();         	
-        Toast.makeText(context.getApplicationContext(), R.string.flowzr_sync_success, Toast.LENGTH_SHORT).show();  
-        		
-		dialog.dismiss();			
-        options.lastSyncLocalTimestamp=System.currentTimeMillis();
-		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-		editor.putLong(FlowzrSyncActivity.LAST_SYNC_LOCAL_TIMESTAMP, System.currentTimeMillis());
-		editor.commit();		
 	}
 }

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry exported="true" kind="lib" path="libs/rfc2445-no-joda.jar" sourcepath="H:/Work/Java/Android/google-rfc-2445-read-only/src"/>
-	<classpathentry kind="lib" path="libs/GDocsAPI.jar"/>
-	<classpathentry kind="lib" path="libs/CWAC-WakefulIntentService.jar"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Android 2.2 Google APIs"/>
-	<classpathentry kind="src" path="src"/>
+
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+
+	<classpathentry excluding="android/vending/billing/" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="src" path="GreenDroid_src"/>
-	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="src" path="libs"/>
+	<classpathentry kind="src" path="src/android/vending/billing"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
