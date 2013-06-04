@@ -96,7 +96,7 @@ public class DatabaseExport extends Export {
 					String value = c.getString(i);
 					if (value != null) {
 						bw.write(columnNames[i]);bw.write(":");
-						bw.write(value);
+						bw.write(removeNewLine(value));
 						bw.write("\n");
 					}
 				}
@@ -106,5 +106,9 @@ public class DatabaseExport extends Export {
 			c.close();
 		}
 	}
+
+    private static String removeNewLine(String value) {
+        return value.replace('\n', ' ');
+    }
 
 }

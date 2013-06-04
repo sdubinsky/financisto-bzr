@@ -32,6 +32,7 @@ public abstract class AbstractImportExportTest extends AbstractDbTest {
         a.currency = c;
         a.totalAmount = 10000;
         a.sortOrder = 100;
+        a.note = "AAA\nBBB:CCC";
         em.saveAccount(a);
         assertNotNull(em.load(Account.class, a.id));
         return a;
