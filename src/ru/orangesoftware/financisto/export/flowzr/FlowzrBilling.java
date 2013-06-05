@@ -115,7 +115,7 @@ public class FlowzrBilling {
       /** Verifies the developer payload of a purchase. */
       boolean verifyDeveloperPayload(Purchase p) {
           String returnedPayload = p.getDeveloperPayload();
-          return returnedPayload==payload;
+          return returnedPayload.equals(payload);
       }
       
       public boolean launchPlayFlow() {    	
