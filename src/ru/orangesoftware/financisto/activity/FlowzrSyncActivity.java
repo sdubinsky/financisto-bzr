@@ -78,7 +78,8 @@ public class FlowzrSyncActivity extends Activity  {
     private long lastSyncLocalTimestamp=0;
     private Account useCredential;
 	DefaultHttpClient http_client ;
-    private ProgressDialog progressDialog ;
+    public ProgressDialog progressDialog ;
+	public Button bOk;    
 	public FlowzrSyncTask flowzrSyncTask;
 	public boolean isCanceled=false;
 	protected PowerManager.WakeLock vWakeLock;	
@@ -167,7 +168,7 @@ public class FlowzrSyncActivity extends Activity  {
 		}
 
         	
-        Button bOk = (Button) findViewById(R.id.bOK);
+        bOk = (Button) findViewById(R.id.bOK);
         bOk.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
             	Toast.makeText(FlowzrSyncActivity.this, R.string.flowzr_sync_inprogress, Toast.LENGTH_SHORT).show();

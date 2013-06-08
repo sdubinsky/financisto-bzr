@@ -162,11 +162,15 @@ public class FlowzrBilling {
       }
 
       public boolean informWebOfSubscription(Purchase p) {
-  		ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+      	if (p==null) {
+    		return false;
+    	}
+    	ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
   		nameValuePairs.add(new BasicNameValuePair("action","gotSubscription"));
   		nameValuePairs.add(new BasicNameValuePair("payload",p.getDeveloperPayload()));
   		nameValuePairs.add(new BasicNameValuePair("purchase",p.getOriginalJson()));
- 		
+  		nameValuePairs.add(new BasicNameValuePair("signature",p.getSignature()));
+  		
         HttpPost httppost = new HttpPost(FLOWZR_API_URL);
         try {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.UTF_8));
@@ -194,6 +198,8 @@ public class FlowzrBilling {
 			e.printStackTrace();
 			return false;							
 		}
+		flowzrSyncActivity.progressDialog.dismiss();
+		flowzrSyncActivity.bOk.performClick();	
 		return true;
       }      
       
