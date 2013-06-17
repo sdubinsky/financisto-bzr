@@ -342,7 +342,7 @@
   <string name="backup_folder_summary">Создайте новую папку для резерных копий в Мой диск</string>
   <string name="report_preferences">Настройки отчетов</string>
   <string name="all_reports_preferences">Основные настройки отчетов</string>
-  <string name="category_by_period_preferences">Настройки для отчетав по категориям</string>
+  <string name="category_by_period_preferences">Настройки для отчетов по категориям</string>
   <string name="report_include_sub_categories">Включать под-категории в список</string>
   <string name="report_include_sub_categories_summary">Включать под-категории в отчете в список всех категорий.</string>
   <string name="report_add_sub_categories_result">Суммировать под-категориии</string>
