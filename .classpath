@@ -3,12 +3,9 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Android 2.2 Google APIs"/>
-
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-
 	<classpathentry excluding="android/vending/billing/" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="src" path="libs"/>
-	<classpathentry kind="src" path="src/android/vending/billing"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
