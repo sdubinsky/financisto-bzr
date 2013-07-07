@@ -1090,11 +1090,14 @@ public class DatabaseAdapter {
         SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
+			Attribute attr=getAttribute(id);
+			String key=attr.remoteKey;
 			String[] p = new String[]{String.valueOf(id)};
 			db.delete(ATTRIBUTES_TABLE, AttributeColumns.ID+"=?", p);
 			db.delete(CATEGORY_ATTRIBUTE_TABLE, CategoryAttributeColumns.ATTRIBUTE_ID+"=?", p);
 			db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.ATTRIBUTE_ID+"=?", p);
 			db.setTransactionSuccessful();
+			writeDeleteLog(ATTRIBUTES_TABLE, key);
 		} finally {
 			db.endTransaction();
 		}
