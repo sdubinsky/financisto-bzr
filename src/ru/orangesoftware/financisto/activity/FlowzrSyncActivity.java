@@ -26,7 +26,6 @@ import org.apache.http.params.BasicHttpParams;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.export.flowzr.FlowzrBilling;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncTask;
 import android.accounts.Account;
@@ -83,7 +82,6 @@ public class FlowzrSyncActivity extends Activity  {
 	public FlowzrSyncTask flowzrSyncTask;
 	public boolean isCanceled=false;
 	protected PowerManager.WakeLock vWakeLock;	
-	private FlowzrBilling flowzrBilling;
 	public String TAG="flowzr";
 	public String FLOWZR_API_URL="https://flowzr-hrd.appspot.com/financisto/";
      	
@@ -112,9 +110,7 @@ public class FlowzrSyncActivity extends Activity  {
         this.vWakeLock.acquire();          
 
         restorePreferences();        
-        if (useCredential!=null) {
-        	flowzrBilling=new FlowzrBilling(FlowzrSyncActivity.this, getApplicationContext(), http_client, useCredential.toString());  
-        }
+
         db = new DatabaseAdapter(this);
         db.open();
         		
@@ -147,7 +143,7 @@ public class FlowzrSyncActivity extends Activity  {
 		    			    	
 		    	for (Account account: accounts) {
 		    		if (account.name==radioButtonSelected.getText()) {
-		    			useCredential=account;
+		    			useCredential=account;    			
 		    		}
 		    	}		    			    	
 		    }
@@ -166,6 +162,7 @@ public class FlowzrSyncActivity extends Activity  {
 	    		}
 
 		}
+	    
 
         	
         bOk = (Button) findViewById(R.id.bOK);
@@ -189,7 +186,7 @@ public class FlowzrSyncActivity extends Activity  {
 	                    }
 	                    isCanceled=true;
 	        	        dialog.dismiss();
-	        	        finish();
+	        	        //finish();
 	        	    }
 	        	});	        	
            	
@@ -220,20 +217,40 @@ public class FlowzrSyncActivity extends Activity  {
                 setResult(RESULT_CANCELED);    
                 finish();
             }
-        });        
+        });    
+        
+
         
         TextView textViewAbout = (TextView) findViewById(R.id.aboutServerSync);
         textViewAbout.setOnClickListener(new View.OnClickListener() {        		
         	public void onClick(View v) {
 	        		if (isOnline()) {
-	            		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.flowzr.com/mobile/"));
+	        			String url="https://flowzr-hrd.appspot.com/paywall/";
+	        			if (useCredential!=null) {
+	        				url=url + useCredential.name;
+	        			}
+	            		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 	            		startActivity(intent);                                     
 	        		} else {         			
 	    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);            			           			
 	        		}        			
         		}
 		});
-    }	
+
+        TextView textViewAboutAnon = (TextView) findViewById(R.id.aboutServerSyncAnon);
+        textViewAboutAnon.setOnClickListener(new View.OnClickListener() {        		
+        	public void onClick(View v) {
+	        		if (isOnline()) {
+	        			String url="http://www.flowzr.com/paywall/";
+	            		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+	            		startActivity(intent);                                     
+	        		} else {         			
+	    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);            			           			
+	        		}        			
+        		}
+		});	
+	
+	}	
 	
 	@Override
 	protected void onResume() {
@@ -349,7 +366,7 @@ public class FlowzrSyncActivity extends Activity  {
 			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());	
 			FlowzrSyncOptions options = FlowzrSyncOptions.fromPrefs(preferences);	
 			progressDialog.setProgress(5);
-			flowzrSyncTask= new FlowzrSyncTask(FlowzrSyncActivity.this, handler, progressDialog, options,http_client,flowzrBilling);
+			flowzrSyncTask= new FlowzrSyncTask(FlowzrSyncActivity.this, handler, progressDialog, options,http_client);
 			flowzrSyncTask.execute();   												
 		}
 	}
@@ -384,7 +401,6 @@ public class FlowzrSyncActivity extends Activity  {
     		editor.putLong(FlowzrSyncActivity.LAST_SYNC_LOCAL_TIMESTAMP, 0);  
     		lastSyncLocalTimestamp=0;
         }
-        Log.e("financisto",String.valueOf(lastSyncLocalTimestamp));
         editor.commit();          
 	}
 

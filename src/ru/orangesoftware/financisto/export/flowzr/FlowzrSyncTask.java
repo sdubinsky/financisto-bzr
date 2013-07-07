@@ -9,14 +9,17 @@
 package ru.orangesoftware.financisto.export.flowzr;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -41,15 +44,13 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     private final DefaultHttpClient http_client;
     private final FlowzrSyncActivity flowzrSyncActivity;
     FlowzrSyncEngine flowzrSync;
-    FlowzrBilling flowzrBilling;
     
-    public FlowzrSyncTask(FlowzrSyncActivity flowzrSyncActivity, Handler handler, ProgressDialog dialog, FlowzrSyncOptions options, DefaultHttpClient pHttp_client,FlowzrBilling flowzrBilling) {
+    public FlowzrSyncTask(FlowzrSyncActivity flowzrSyncActivity, Handler handler, ProgressDialog dialog, FlowzrSyncOptions options, DefaultHttpClient pHttp_client) {
         this.options = options;
         this.http_client=pHttp_client;
         this.context=flowzrSyncActivity;
         this.dialog=dialog;        
         this.flowzrSyncActivity=flowzrSyncActivity;
-        this.flowzrBilling=flowzrBilling;
     }
 
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
@@ -62,14 +63,7 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
                     publishProgress(String.valueOf(percentage));
                 }
             });    
-            Boolean sync=false;
-            if (flowzrBilling!=null) {
-            	sync=flowzrBilling.checkSubscription();
-            } else {
-            	sync=false;
-            	return new Exception(context.getString(R.string.flowzr_account_setup));
-            }
-            if (sync) {
+            if (checkSubscriptionFromWeb()) {
             	return flowzrSync.doSync();
             } else {
             	return new Exception(context.getString(R.string.flowzr_subscription_required));
@@ -81,6 +75,22 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
         }
     }
 
+    public boolean checkSubscriptionFromWeb() {
+		String url=flowzrSync.FLOWZR_API_URL + "?action=checkSubscription";
+	    InputStream isHttpcontent = null;
+		try {
+          HttpGet httpGet = new HttpGet(url); 
+          HttpResponse httpResponse = http_client.execute(httpGet);      
+          int code = httpResponse.getStatusLine().getStatusCode();
+          if (code==403) {
+          	return false;
+          }
+      } catch (Exception e) {
+          e.printStackTrace();
+      } 
+    	return true;
+    }
+    
     @Override
 	protected Object doInBackground(String... params) {
 

@@ -7,7 +7,8 @@ SELECT
 	a.default_value as default_value,
 	c._id as category_id,
 	c.left as category_left,
-	c.right as category_right
+	c.right as category_right,
+	a.remote_key as remote_key
 FROM
 	attributes as a,
 	category_attribute as ca,

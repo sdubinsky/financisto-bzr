@@ -8,6 +8,8 @@
 
 package ru.orangesoftware.financisto.export.flowzr;
 
+import static ru.orangesoftware.financisto.db.DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +17,9 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -30,6 +35,10 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
+import ru.orangesoftware.financisto.model.Attribute;
+import ru.orangesoftware.financisto.model.TransactionAttribute;
 
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -49,6 +58,7 @@ import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.rates.ExchangeRate;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.IntegrityFix;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -73,8 +83,8 @@ public class FlowzrSyncEngine  {
     private ProgressListener progressListener;
     private Context context;
     private FlowzrSyncActivity flowzrSyncActivity; 
-    private String[] tableNames= {"currency","category","category","project","payee","account","LOCATIONS","transactions","budget","currency_exchange_rate"};  
-	private Class[] clazzArray = {Currency.class,Category.class,Category.class,Project.class,Payee.class,Account.class,MyLocation.class,Transaction.class,Budget.class,null};        
+    private String[] tableNames= {"attributes","currency","category","category","project","payee","account","LOCATIONS","transactions","currency_exchange_rate",DatabaseHelper.BUDGET_TABLE};  
+	private Class[] clazzArray = {Attribute.class,Currency.class,Category.class,Category.class,Project.class,Payee.class,Account.class,MyLocation.class,Transaction.class,null,Budget.class};        
 	
 
     
@@ -163,12 +173,21 @@ public class FlowzrSyncEngine  {
     
 	private <T extends MyEntity> Object pushUpdate(String tableName,Class<T> clazz)  {	
 		SQLiteDatabase db2=dba.db();
-		String sql="select count(*) from " + tableName + " where updated_on > " + options.lastSyncLocalTimestamp + " and updated_on<" + options.startTimestamp ;			
+		String sql="select count(*) from " + tableName ;
+		if (options.lastSyncLocalTimestamp > 0) {
+			sql=sql + " where updated_on > " + options.lastSyncLocalTimestamp  + " and updated_on<" + options.startTimestamp ;			
+		}
+		
 		Cursor cursorCursor=db.rawQuery(sql, null);
 		cursorCursor.moveToFirst();
 		long total=cursorCursor.getLong(0);
 
-		sql="select * from " + tableName + " where updated_on > " + options.lastSyncLocalTimestamp + " and updated_on<" + options.startTimestamp ;
+		sql="select * from " + tableName +  " where updated_on > " + options.lastSyncLocalTimestamp +  " and updated_on<" + options.startTimestamp ;
+		//if (options.lastSyncLocalTimestamp>0) {
+		//	sql=sql +  " where updated_on > " + options.lastSyncLocalTimestamp +  " and updated_on<" + options.startTimestamp ;
+		//}
+
+		
 		if (!tableName.equals("currency_exchange_rate") && !tableName.equals("currency")) {
 			sql+= " order by _id asc";	
 		}
@@ -296,20 +315,47 @@ public class FlowzrSyncEngine  {
 			ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 			nameValuePairs.add(new BasicNameValuePair("action","push" + tableName));
 			nameValuePairs.add(new BasicNameValuePair("clientTimestamp",String.valueOf((System.currentTimeMillis()))));							
-			String remote_key=c.getString(c.getColumnIndex("remote_key"));
-			if (tableName.equals("account")) {
+			String remote_key=c.getString(c.getColumnIndex(DatabaseHelper.CategoryColumns.remote_key.toString()));
+			if (tableName.equals(DatabaseHelper.ACCOUNT_TABLE)) {
 				String sql="select max(dateTime) as maxDate, min(dateTime) as mintDate from " + DatabaseHelper.TRANSACTION_TABLE + " where from_account_id=" + c.getInt(c.getColumnIndex("_id")) ;		
 				Cursor cursorCursor=db.rawQuery(sql, null);
 				cursorCursor.moveToFirst();	
 				nameValuePairs.add(new BasicNameValuePair("dateOfFirstTransaction",cursorCursor.getString(1)));					
 				nameValuePairs.add(new BasicNameValuePair("dateOfLastTransaction",cursorCursor.getString(0)));
-			} else if (tableName.equals("category")) {
+			} else if (tableName.equals(DatabaseHelper.CATEGORY_TABLE)) {
 				//load parent id
 				Category cat=dba.getCategory(c.getInt(0)); // sql build/load parentId	
 				if (cat.getParentId()>KEY_CREATE) {
 					Category pcat=em.load(Category.class, cat.getParentId());
 					nameValuePairs.add(new BasicNameValuePair("parent",pcat.remoteKey));					
-				}				
+				}
+				String attrPushString="";
+				
+				for (Attribute attr: dba.getAttributesForCategory(c.getInt(0))) {						
+					attrPushString=attrPushString + attr.remoteKey + ";";
+				}
+				if (attrPushString!="") {
+					nameValuePairs.add(new BasicNameValuePair("attributes",attrPushString));	
+				}
+			} else if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
+				//Transaction t=dba.getTransaction() ;
+	            Map<Long, String> attributesMap = dba.getAllAttributesForTransaction(c.getInt(0));
+	            LinkedList<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();
+	            String transaction_attribute="";
+	            for (long attributeId : attributesMap.keySet()) {
+	                String attr_key = dba.getAttribute(attributeId).remoteKey;	                
+	                String attr_value = attributesMap.get(attributeId);
+	                transaction_attribute+= dba.getAttribute(attributeId).remoteKey + "=" + attributesMap.get(attributeId) +";";
+	                nameValuePairs.add(new BasicNameValuePair("transaction_attribute",transaction_attribute));	                
+	            }
+				
+			} else if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
+				//String d=c.getString(c.getColumnIndex("parent"));
+				
+				//if (d>(System.currentTimeMillis() + 31556926000.0)) {
+				//	Log.e(TAG,"avoiding pulling too much budgets");
+				//	return null;
+				//}
 			}
 			for (String colName: c.getColumnNames()) {			
 				if ((colName.endsWith("_id") || colName.equals("right") || colName.equals("left") )&&  getClassForColName(colName)!=null) {	
@@ -317,17 +363,17 @@ public class FlowzrSyncEngine  {
 						int entity_id=c.getInt(c.getColumnIndex(colName));
 						MyLocation myEntityEntityLoaded=(MyLocation) em.load(getClassForColName(colName), entity_id);
 						nameValuePairs.add(new BasicNameValuePair(colName,myEntityEntityLoaded.remoteKey));						
-					} else if (colName.equals("right") || colName.equals("left")) {
-
-
+					} else if (colName.equals("parent_budget_id")) {
+						String k=getRemoteKey(DatabaseHelper.BUDGET_TABLE, String.valueOf(c.getInt(c.getColumnIndex(colName))));
+						nameValuePairs.add(new BasicNameValuePair(colName,k));						
 					}	else if (colName.equals("parent_id")) {
 						int entity_id=c.getInt(c.getColumnIndex(colName));		
 						try {
 						Transaction myEntityEntityLoaded=(Transaction) em.load(getClassForColName(colName), entity_id);
 						nameValuePairs.add(new BasicNameValuePair(colName,myEntityEntityLoaded.remoteKey));						
 						} catch (Exception e) {
-							Log.e("financisto" ,"unable to link " + tableName + " parent_id with " + getClassForColName(colName) +"::"+colName + " " + entity_id);							
-							Log.e("financisto",e.getMessage());
+							Log.w("financisto" ,"unable to link " + tableName + " parent_id with " + getClassForColName(colName) +"::"+colName + " " + entity_id);							
+							Log.w("financisto",e.getMessage());
 						}
 					}  else {
 						String[] entities=c.getString(c.getColumnIndex(colName)).split(",");	
@@ -338,8 +384,8 @@ public class FlowzrSyncEngine  {
 									T myEntityEntityLoaded=(T) em.load(getClassForColName(colName), entity_id2);	
 									keys+=myEntityEntityLoaded.remoteKey + ",";								
 								} catch (Exception e) {									
-									Log.e("financisto" ,"unable to link " + tableName + " with " + getClassForColName(colName) +"::"+colName + " " + entity_id2);
-									Log.e("financisto",e.getMessage());
+									Log.w("financisto" ,"unable to link " + tableName + " with " + getClassForColName(colName) +"::"+colName + " " + entity_id2);
+									Log.w("financisto",e.getMessage());
 								}
 						}
 						if (keys.endsWith(",")) {
@@ -360,9 +406,9 @@ public class FlowzrSyncEngine  {
 				}
 			}
 			nameValuePairs.add(new BasicNameValuePair("lastSyncLocalTimestamp",String.valueOf(options.lastSyncLocalTimestamp)));
-//			for (NameValuePair p : nameValuePairs) {
-//				Log.e(TAG,p.toString());
-//			}
+			for (NameValuePair p : nameValuePairs) {
+				Log.i(TAG,p.toString());
+			}
 			String strResponse=httpPush(nameValuePairs);							
 			
 			if (strResponse.equals(FLOWZR_MSG_NET_ERROR) || strResponse.substring(0, 3).equals("500")) {
@@ -453,6 +499,7 @@ public class FlowzrSyncEngine  {
     	int i=0;
     	for (String tableName : tableNames) {      	   		
         	if (tableName=="transactions") {
+        		//pull all remote accounts, accounts by accounts
         		String sql="select remote_key from account";		
         		Cursor c=db.rawQuery(sql, null);        		
         		if (c.moveToFirst()) {
@@ -466,6 +513,7 @@ public class FlowzrSyncEngine  {
         		c.close();
         		}
         	} else {
+        		//otherwhise pull the table
 				if (((FlowzrSyncActivity)context).isCanceled)
 				{
 					return new Exception("operation canceled");
@@ -506,13 +554,15 @@ public class FlowzrSyncEngine  {
 					o=saveOrUpdateBudgetFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);					
 				} else if (clazz==MyLocation.class) {
 					o=saveOrUpdateLocationFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);					
-				} else if (tableName.equals(DatabaseHelper.EXCHANGE_RATES_TABLE))  {
+				} else if (tableName.equals("currency_exchange_rate"))  {
 					o=saveOrUpdateCurrencyRateFromJSON(jsonObjectEntity);
 				} else if (clazz==Category.class)  {
 						o=saveOrUpdateCategoryFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);						
-				} else  {
+				}else if (clazz==Attribute.class)  {
+					o=saveOrUpdateAttributeFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);						
+				}  else  {
 					o=saveOrUpdateEntityFromJSON(clazz,getLocalKey(tableName,remoteKey),jsonObjectEntity);										
-				}
+				} 
 				if (o instanceof Exception ) {
 					return o;
 				}
@@ -531,6 +581,34 @@ public class FlowzrSyncEngine  {
     		return e;
     	}     	
     }
+
+	private Object saveOrUpdateAttributeFromJSON(long localKey,
+			JSONObject jsonObjectEntity) {
+		if (!jsonObjectEntity.has("name")) {
+			return null;
+		}
+		
+		Attribute tEntity=dba.getAttribute(localKey);
+		
+		try {			
+			tEntity.remoteKey=jsonObjectEntity.getString("key");
+			tEntity.name=jsonObjectEntity.getString("name");
+			if (jsonObjectEntity.has("type")) {
+				tEntity.type=jsonObjectEntity.getInt("type");
+			}
+			if (jsonObjectEntity.has("default_value")) {
+				tEntity.defaultValue=jsonObjectEntity.getString("default_value");
+			}
+			if (jsonObjectEntity.has("list_values")) {			
+				tEntity.listValues=jsonObjectEntity.getString("list_values");
+			}
+			dba.insertOrUpdate(tEntity);
+			return tEntity;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return e;
+		}	
+	}
 
 	public <T> Object saveOrUpdateEntityFromJSON(Class<T> clazz,long id,JSONObject jsonObjectEntity) {					
 		if (!jsonObjectEntity.has("name")) {
@@ -590,10 +668,22 @@ public class FlowzrSyncEngine  {
 					e.printStackTrace();
 				}
 			}
+			ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+			if (jsonObjectEntity.has("attributes") ) {				
+				for (String attr_key: jsonObjectEntity.getString("attributes").split(";")) {
+						int l=(int) getLocalKey(DatabaseHelper.ATTRIBUTES_TABLE, attr_key);
+						if (l>0) {						
+							Attribute attr=dba.getAttribute(l);
+							attributes.add(attr);
+						}
+				}				
+			}
 			//updated on + remote key
 			em.saveOrUpdate(tEntity);
 			//left, right
-			dba.insertOrUpdate(tEntity, tEntity.attributes);			
+			dba.insertOrUpdate(tEntity, attributes);
+
+			
 			return tEntity;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -626,14 +716,25 @@ public class FlowzrSyncEngine  {
 	
 	public Object saveOrUpdateBudgetFromJSON(long id,JSONObject jsonObjectEntity) {
 		Budget tEntity=em.get(Budget.class, id);
+		Log.e(TAG,"loading budget" + String.valueOf(id));
 		if (tEntity==null) {
 			tEntity = new Budget();
 			tEntity.id=KEY_CREATE; 									
 		}			
-		try {
-			tEntity.remoteKey=jsonObjectEntity.getString("key"); 
+//		try {
+			try {
+				tEntity.remoteKey=jsonObjectEntity.getString("key");
+			} catch (JSONException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} 
 			if (jsonObjectEntity.has("title")) {	
-				tEntity.title=jsonObjectEntity.getString("title");
+				try {
+					tEntity.title=jsonObjectEntity.getString("title");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			if (jsonObjectEntity.has("categories")) {	
 				try {
@@ -647,7 +748,7 @@ public class FlowzrSyncEngine  {
 					}
 
 				} catch (Exception e) {
-					Log.e(TAG,"Error parsing Budget categories with : " + jsonObjectEntity.getString("categories"));
+					Log.e(TAG,"Error parsing Budget categories");
 					e.printStackTrace();
 				}
 			}
@@ -662,7 +763,7 @@ public class FlowzrSyncEngine  {
 						tEntity.projects=tEntity.projects.substring(0, tEntity.projects.length()-1);
 					}									
 				} catch (Exception e) {
-					Log.e(TAG,"Error parsing Budget.project_id with : " + jsonObjectEntity.getString("project_id"));				
+					Log.e(TAG,"Error parsing Budget.project_id ");				
 					e.printStackTrace();
 				}
 			}
@@ -670,7 +771,7 @@ public class FlowzrSyncEngine  {
 				try {
 					tEntity.currencyId=getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("currency"));
 				} catch (Exception e) {
-					Log.e(TAG,"Error parsing Budget.currency with : " + jsonObjectEntity.getString("currency"));				
+					Log.e(TAG,"Error parsing Budget.currency ");				
 					e.printStackTrace();
 				}
 			}
@@ -678,56 +779,91 @@ public class FlowzrSyncEngine  {
 				try {
 					tEntity.amount=(long)jsonObjectEntity.getDouble("amount")*100;
 				} catch (Exception e) {
-					Log.e(TAG,"Error parsing Budget.amount with : " + jsonObjectEntity.getString("amount"));								
+					Log.e(TAG,"Error parsing Budget.amount");								
 				}
 			}
 			
 			if (jsonObjectEntity.has("includeSubcategories")) {
-				tEntity.includeSubcategories=jsonObjectEntity.getBoolean("includeSubcategories");
+				try {
+					tEntity.includeSubcategories=jsonObjectEntity.getBoolean("includeSubcategories");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} 		
 			if (jsonObjectEntity.has("expanded")) {
-				tEntity.expanded=jsonObjectEntity.getBoolean("expanded");
+				try {
+					tEntity.expanded=jsonObjectEntity.getBoolean("expanded");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} 
 			if (jsonObjectEntity.has("include_credit")) {
-				tEntity.includeSubcategories=jsonObjectEntity.getBoolean("include_credit");
+				try {
+					tEntity.includeSubcategories=jsonObjectEntity.getBoolean("include_credit");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} 		
 			if (jsonObjectEntity.has("startDate")) {
 				try {
 					tEntity.startDate = jsonObjectEntity.getLong("startDate")*1000;
 				} catch (Exception e1) {					
-					Log.e(TAG,"Error parsing Budget.startDate with : " + jsonObjectEntity.getString("startDate"));
+					Log.e(TAG,"Error parsing Budget.startDate");
+					e1.printStackTrace();
 				}
 			}
 			if (jsonObjectEntity.has("endDate")) {			
 				try {
 					tEntity.endDate = jsonObjectEntity.getLong("endDate")*1000;
 				} catch (Exception e1) {					
-					Log.e(TAG,"Error parsing Budget.endDate with : " + jsonObjectEntity.getString("endDate"));
+					Log.e(TAG,"Error parsing Budget.endDate");
+					e1.printStackTrace();					
 				}
 			}
-			tEntity.recur=jsonObjectEntity.getString("recur");
+			if (jsonObjectEntity.has("recur")) {
+				try {
+					tEntity.recur=jsonObjectEntity.getString("recur");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			if (jsonObjectEntity.has("recurNum")) {
-				tEntity.recurNum=jsonObjectEntity.getInt("recurNum");
+				try {
+					tEntity.recurNum=jsonObjectEntity.getInt("recurNum");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			if (jsonObjectEntity.has("isCurrent")) {
-				tEntity.isCurrent=jsonObjectEntity.getBoolean("isCurrent");
+				try {
+					tEntity.isCurrent=jsonObjectEntity.getBoolean("isCurrent");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			if (jsonObjectEntity.has("parent_budget_id")) {
 				try {
 					tEntity.parentBudgetId=getLocalKey(DatabaseHelper.BUDGET_TABLE, jsonObjectEntity.getString("parent_budget_id"));
 				} catch (Exception e) {
 					
-					Log.e(TAG,"Error parsing Budget.parentBudgetId with : " + jsonObjectEntity.getString("parent_budget_id"));				
+					Log.e(TAG,"Error parsing Budget.parentBudgetId ");				
 					e.printStackTrace();
 				}
 			}
-			em.saveOrUpdate(tEntity);
+			em.insertBudget(tEntity);
+			//em.saveOrUpdate(tEntity);
 			
 			return tEntity;
-		} catch (Exception e) {			
-			e.printStackTrace();
-			return e;
-		}		 						
+//		} catch (Exception e) {			
+//			e.printStackTrace();
+//			return e;
+//		}		 						
 	}	
 	
 	public Object saveOrUpdateLocationFromJSON(long id,JSONObject jsonObjectEntity) {				
@@ -1176,9 +1312,38 @@ public class FlowzrSyncEngine  {
 				if (jsonObjectResponse.has("is_ccard_payment")) {				
 						((Transaction)tEntity).isCCardPayment=jsonObjectResponse.getInt("is_ccard_payment");
 				}
+				List<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();
+				if (jsonObjectResponse.has("transaction_attribute")) {
+					
+			    	for (String pair : jsonObjectResponse.getString("transaction_attribute").split(";")) {
+			    		String [] tmp=pair.split("=");
+			    		if (tmp.length==2) {
+			    			String key=tmp[0];
+			    			TransactionAttribute a = new TransactionAttribute();
+			    			a.value=tmp[1];
+			    			a.attributeId=getLocalKey(DatabaseHelper.ATTRIBUTES_TABLE, tmp[0]);
+			    			a.transactionId=tEntity.id;
+			    			attributes.add(a);
+			    		} else {
+			    			Log.e(TAG,"transaction attribute: invalid array size");
+			    		}
+			    		
+			    	}
+				}
 				// end main transaction data				
 				if (!jsonObjectResponse.has("from_crebit")) {
-					id=em.saveOrUpdate((Transaction)tEntity);        			
+					//long id = db.insertOrUpdate(transaction, getAttributes());
+				
+					id=em.saveOrUpdate((Transaction)tEntity);        		
+					if (attributes!=null) {
+			            dba.db().delete(DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE, DatabaseHelper.TransactionAttributeColumns.TRANSACTION_ID+"=?",
+			                    new String[]{String.valueOf(id)});
+			    		for (TransactionAttribute a : attributes) {
+			    			a.transactionId=id;
+			    			ContentValues values = a.toValues();
+							dba.db().insert(TRANSACTION_ATTRIBUTE_TABLE, null, values);
+						}
+					}
 				}
 			} catch (Exception e) {				
 				e.printStackTrace();
@@ -1201,6 +1366,21 @@ public class FlowzrSyncEngine  {
     	    return KEY_CREATE;
 		}
     }
+
+    public String getRemoteKey(String tableName,String localKey) {
+		String sql="select remote_key from " + tableName + " where _id= '" + localKey + "';";
+		Cursor c=db.rawQuery(sql, null);
+
+		if (c.moveToFirst()) {
+			String l = c.getString(0);
+			c.close();
+			return l;
+		} else {
+			c.close();
+    	    return null;
+		}
+    }
+    
     
     public JSONObject readFlowzrJSON(String url) {
     	 // Making HTTP request

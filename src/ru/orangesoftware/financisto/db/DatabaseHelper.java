@@ -246,13 +246,15 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String TYPE = "type";
 		public static final String LIST_VALUES = "list_values";
 		public static final String DEFAULT_VALUE = "default_value";
+		public static final String REMOTE_KEY = "remote_key";
 		
 		public static final String[] NORMAL_PROJECTION = {
 			ID,
 			NAME,
 			TYPE,
 			LIST_VALUES,
-			DEFAULT_VALUE
+			DEFAULT_VALUE,
+			REMOTE_KEY
 		};
 		
 		public static class Indicies {
@@ -261,6 +263,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			public static final int TYPE = 2;
 			public static final int LIST_VALUES = 3;
 			public static final int DEFAULT_VALUE = 4;
+			public static final int REMOTE_KEY = 5;			
 		}
 		
 	}

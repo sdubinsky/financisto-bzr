@@ -15,7 +15,9 @@
         android:layout_height="wrap_content"
         android:text="@string/flowzr_choose_account"
         android:textSize="18dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="#0000FF" 
+         />
 
     <RadioGroup
         android:id="@+id/radioCredentials"
@@ -30,16 +32,49 @@
         android:text="@string/sync_from_zero" />
 
 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:padding="3dp" 
+            android:layout_weight="0.15"
+    >
+           
     <TextView
         android:id="@+id/aboutServerSync"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.15"
-        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
         android:text="@string/about_server_sync"
         android:textSize="18dp"
-        android:textStyle="bold" />
+        android:textStyle="bold" 
+        android:textColor="#FF0000"
+        android:gravity="center"                    
+            android:layout_weight="0.5"        
+        />
+    <TextView
+        android:id="@+id/aboutServerSyncAnon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/about_server_sync_anon"
+        android:textSize="18dp"
+        android:textStyle="bold" 
+        android:textColor="#00FF00"
+        android:gravity="center"      
+                 android:layout_weight="0.5"                 
+        />
+
+               
+</LinearLayout>            
+
+   
 
     <include layout="@layout/ok_cancel_buttons" />
 
+
+
 </LinearLayout>
+
+
+
+
+ 

@@ -31,13 +31,14 @@ import ru.orangesoftware.financisto.utils.Utils;
 import java.math.BigDecimal;
 import java.util.*;
 
+import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
+
 import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
 import ru.orangesoftware.financisto.model.TransactionStatus;
 
 import ru.orangesoftware.financisto.db.DatabaseHelper.deleteLogColumns;
 import ru.orangesoftware.financisto.model.Category;
 
-import static ru.orangesoftware.financisto.db.DatabaseHelper.TRANSACTION_TABLE;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 
 public class DatabaseAdapter {
@@ -1101,11 +1102,17 @@ public class DatabaseAdapter {
 
 	private long insertAttribute(Attribute attribute) {
 		ContentValues values = attribute.toValues();
+		values.remove("updated_on");     
+        values.put(CategoryColumns.updated_on.name(), System.currentTimeMillis());
+        values.put(CategoryColumns.remote_key.name(), attribute.remoteKey);        	
 		return db().insert(ATTRIBUTES_TABLE, null, values);
 	}
 
 	private void updateAttribute(Attribute attribute) {
 		ContentValues values = attribute.toValues();
+        values.remove("updated_on");     
+        values.put(CategoryColumns.updated_on.name(), System.currentTimeMillis());
+        values.put(CategoryColumns.remote_key.name(), attribute.remoteKey);		
 		db().update(ATTRIBUTES_TABLE, values, AttributeColumns.ID+"=?", new String[]{String.valueOf(attribute.id)});
 	}
 
@@ -1514,6 +1521,8 @@ public class DatabaseAdapter {
 
     private void saveRateInTransaction(SQLiteDatabase db, ExchangeRate r) {
         ContentValues values = r.toValues();
+        values.remove("updated_on");     
+        values.put(CategoryColumns.updated_on.name(), System.currentTimeMillis());          
         db.insert(EXCHANGE_RATES_TABLE, null, values);
     }
 

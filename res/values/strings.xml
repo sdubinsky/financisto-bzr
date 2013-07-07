@@ -675,10 +675,11 @@
     <string name="flowzr_sync_error">Sync error</string>
     <string name="flowzr_sync_error_no_network">Network is not available</string>
     <string name="flowzr_sync_inprogress">Synchronizing data ...</string>      	
-    <string name="about_server_sync">About sync server</string>
+    <string name="about_server_sync">Request subscription</string>
+    <string name="about_server_sync_anon">or visit anonymously</string>
     <string name="account_required">An account is required.</string>
     <string name="flowzr_sync_success">Successfully synchronized</string>    
-    <string name="flowzr_choose_account">Please select an account to work with...</string>
+    <string name="flowzr_choose_account">Register an Account on Flowzr.com ...</string>
     <string name="sync_from_zero">Resume sync</string>
     <string name="flowzr_account_setup">Account now set up, please restart sync.</string>            
     <string name="flowzr_subscription_required">Subscription required.</string>
