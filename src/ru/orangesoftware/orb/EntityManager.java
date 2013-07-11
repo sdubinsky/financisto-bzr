@@ -117,10 +117,10 @@ public abstract class EntityManager {
 		EntityDefinition ed = getEntityDefinitionOrThrow(entity.getClass());
 		ContentValues values = getContentValues(ed, entity);
 		long id = ed.getId(entity);
+		values.remove("updated_on");
+		values.put("updated_on", System.currentTimeMillis());			
 		if (id <= 0) {
-			values.remove(ed.idField.columnName);
-			values.remove("updated_on");
-			values.put("updated_on", System.currentTimeMillis());			
+			values.remove(ed.idField.columnName);		
 			id = db.insertOrThrow(ed.tableName, null, values);
             ed.setId(entity, id);
             return id;
