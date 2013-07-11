@@ -36,16 +36,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
-import ru.orangesoftware.financisto.model.Attribute;
-import ru.orangesoftware.financisto.model.TransactionAttribute;
-
+import ru.orangesoftware.financisto.activity.AccountWidget;
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.ProgressListener;
 import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Budget;
 import ru.orangesoftware.financisto.model.Category;
 import ru.orangesoftware.financisto.model.Currency;
@@ -54,6 +52,7 @@ import ru.orangesoftware.financisto.model.MyLocation;
 import ru.orangesoftware.financisto.model.Payee;
 import ru.orangesoftware.financisto.model.Project;
 import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.model.TransactionAttribute;
 import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.rates.ExchangeRate;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
@@ -137,6 +136,7 @@ public class FlowzrSyncEngine  {
         IntegrityFix fix = new IntegrityFix(dba);
         fix.fix();        
         progressListener.onProgress(100);
+        AccountWidget.updateWidgets(context);        
         return null;
     }
 
