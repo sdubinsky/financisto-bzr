@@ -346,8 +346,8 @@ public class FlowzrSyncEngine  {
 	                String attr_key = dba.getAttribute(attributeId).remoteKey;	                
 	                String attr_value = attributesMap.get(attributeId);
 	                transaction_attribute+= dba.getAttribute(attributeId).remoteKey + "=" + attributesMap.get(attributeId) +";";
-	                nameValuePairs.add(new BasicNameValuePair("transaction_attribute",transaction_attribute));	                
 	            }
+	            nameValuePairs.add(new BasicNameValuePair("transaction_attribute",transaction_attribute));	 
 				
 			} else if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
 				//String d=c.getString(c.getColumnIndex("parent"));
