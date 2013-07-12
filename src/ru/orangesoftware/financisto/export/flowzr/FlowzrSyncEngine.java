@@ -476,12 +476,7 @@ public class FlowzrSyncEngine  {
 			ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 			nameValuePairs.add(new BasicNameValuePair("action","pushDelete"));
 			nameValuePairs.add(new BasicNameValuePair("remoteKey",del_list));
-    		String strResponse=httpPush(nameValuePairs);    		
-    		try {
-	    		if (strResponse.substring(0, 3).equals("500")) {
-					return new Exception(strResponse);
-	    		}
-    		} catch (Exception e) { }
+    		httpPush(nameValuePairs);    		
     	}    	
     	return null;
     }
