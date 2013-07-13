@@ -83,7 +83,8 @@ public class FlowzrSyncActivity extends Activity  {
 	public boolean isCanceled=false;
 	protected PowerManager.WakeLock vWakeLock;	
 	public String TAG="flowzr";
-	public String FLOWZR_API_URL="https://flowzr-hrd.appspot.com/financisto/";
+	public String FLOWZR_BASE_URL="https://flowzr-hrd.appspot.com";
+	public String FLOWZR_API_URL=FLOWZR_BASE_URL + "/android/";
      	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,7 +226,7 @@ public class FlowzrSyncActivity extends Activity  {
         textViewAbout.setOnClickListener(new View.OnClickListener() {        		
         	public void onClick(View v) {
 	        		if (isOnline()) {
-	        			String url="https://flowzr-hrd.appspot.com/paywall/";
+	        			String url=FLOWZR_BASE_URL + "/paywall/";
 	        			if (useCredential!=null) {
 	        				url=url + useCredential.name;
 	        			}
@@ -337,7 +338,7 @@ public class FlowzrSyncActivity extends Activity  {
 				// Don't follow redirects
 				http_client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 				
-				HttpGet http_get = new HttpGet("https://flowzr-hrd.appspot.com/_ah/login?continue=https://flowzr-hrd.appspot.com/&auth=" + tokens[0]);
+				HttpGet http_get = new HttpGet(FLOWZR_BASE_URL + "/_ah/login?continue=" + FLOWZR_BASE_URL +"/&auth=" + tokens[0]);
 				HttpResponse response;
 				response = http_client.execute(http_get);
 				if(response.getStatusLine().getStatusCode() != 302) {

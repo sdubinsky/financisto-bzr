@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -322,6 +323,8 @@ public class FlowzrSyncEngine  {
 				cursorCursor.moveToFirst();	
 				nameValuePairs.add(new BasicNameValuePair("dateOfFirstTransaction",cursorCursor.getString(1)));					
 				nameValuePairs.add(new BasicNameValuePair("dateOfLastTransaction",cursorCursor.getString(0)));
+				//each account can have a timezone so if you can have a balance at closing day
+				nameValuePairs.add(new BasicNameValuePair("tz",String.valueOf(TimeZone.getDefault().getRawOffset())));						
 			} else if (tableName.equals(DatabaseHelper.CATEGORY_TABLE)) {
 				//load parent id
 				Category cat=dba.getCategory(c.getInt(0)); // sql build/load parentId	
