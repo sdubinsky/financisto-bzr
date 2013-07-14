@@ -84,7 +84,7 @@ public class FlowzrSyncActivity extends Activity  {
 	protected PowerManager.WakeLock vWakeLock;	
 	public String TAG="flowzr";
 	public String FLOWZR_BASE_URL="https://flowzr-hrd.appspot.com";
-	public String FLOWZR_API_URL=FLOWZR_BASE_URL + "/android/";
+	public String FLOWZR_API_URL=FLOWZR_BASE_URL + "/financisto/";
      	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
