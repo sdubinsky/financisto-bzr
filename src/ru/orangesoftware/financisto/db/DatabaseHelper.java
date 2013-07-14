@@ -59,7 +59,6 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
     public static final String V_BLOTTER_FOR_ACCOUNT_WITH_SPLITS = "v_blotter_for_account_with_splits";
 	public static final String V_ACCOUNT = "v_account";
 	public static final String V_CATEGORY = "v_category";
-	public static final String V_BUDGET = "v_budget";
 	public static final String V_ATTRIBUTES = "v_attributes";
 	public static final String V_REPORT_CATEGORY = "v_report_category";
 	public static final String V_REPORT_SUB_CATEGORY = "v_report_sub_category";	

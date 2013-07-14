@@ -142,11 +142,11 @@ public abstract class EntityManager {
 					fi.type.setValue(values, fi.columnName, value);					
 				} else {
 					Object e = fi.field.get(entity);
-					EntityDefinition eed = getEntityDefinitionOrThrow(e.getClass());
-					FieldInfo ffi = eed.idField;
 					if (e == null) {
-						ffi.type.setValue(values, fi.columnName, null);
+                        values.putNull(fi.columnName);
 					} else {
+                        EntityDefinition eed = getEntityDefinitionOrThrow(e.getClass());
+                        FieldInfo ffi = eed.idField;
 						Object value = ffi.field.get(e);
 						ffi.type.setValue(values, fi.columnName, value);
 					}

@@ -10,13 +10,11 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.adapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Budget;
 import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
 import ru.orangesoftware.financisto.utils.RecurUtils.RecurInterval;
@@ -32,20 +30,19 @@ import android.widget.TextView;
 public class BudgetListAdapter extends BaseAdapter {
 
 	private final Context context;
-    private final DatabaseAdapter db;
 	private final LayoutInflater inflater;
 	private final Utils u;
-	private ArrayList<Budget> budgets;
+
+    private List<Budget> budgets;
 	
-	public BudgetListAdapter(Context context, DatabaseAdapter db, ArrayList<Budget> budgets) {
+	public BudgetListAdapter(Context context, List<Budget> budgets) {
 		this.context = context;
-        this.db = db;
 		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.budgets = budgets;
 		this.u = new Utils(context);
 	}
 	
-	public void setBudgets(ArrayList<Budget> budgets) {
+	public void setBudgets(List<Budget> budgets) {
 		this.budgets = budgets;
 		notifyDataSetChanged();
 	}
@@ -80,9 +77,9 @@ public class BudgetListAdapter extends BaseAdapter {
 		v.bottomView.setText("*/*");
 		v.centerView.setText(b.title);
 		
-		Currency c = CurrencyCache.getCurrency(db.em(), b.currencyId);
+		Currency c = b.getBudgetCurrency();
 		long amount = b.amount;
-		v.rightCenterView.setText(Utils.amountToString(c, amount));
+		v.rightCenterView.setText(Utils.amountToString(c, Math.abs(amount)));
 		
 		StringBuilder sb = this.sb;
 
@@ -100,8 +97,7 @@ public class BudgetListAdapter extends BaseAdapter {
 			long balance = amount+spent;
 			u.setAmountText(v.rightView1, c, balance, false);
 			u.setAmountText(v.rightView2, c, spent, false);
-			//Utils.setTotal(context, v.rightView, total);		
-			
+
 			sb.setLength(0);
 			String categoriesText = b.categoriesText;
 			if (Utils.isEmpty(categoriesText)) {
@@ -116,10 +112,13 @@ public class BudgetListAdapter extends BaseAdapter {
 				sb.append(" [").append(b.projectsText).append("]");
 			}
 			v.bottomView.setText(sb.toString());
-
-			v.progressBar.setMax((int)(b.amount > 0 ? b.amount : 1));
-			v.progressBar.setSecondaryProgress(0);
-			v.progressBar.setProgress((int)(balance-1));			
+            if (b.amount > 0) {
+			    v.progressBar.setMax((int)Math.abs(b.amount));
+			    v.progressBar.setProgress((int)(balance-1));
+            } else {
+                v.progressBar.setMax((int)Math.abs(b.amount));
+                v.progressBar.setProgress((int)(spent-1));
+            }
 		} else {
 			v.rightView1.setText(R.string.calculating);
 			v.rightView2.setText(R.string.calculating);
@@ -130,8 +129,9 @@ public class BudgetListAdapter extends BaseAdapter {
 		v.progressBar.setVisibility(View.VISIBLE);
 		return convertView;
 	}
-	
-	private static class Holder {
+
+    private static class Holder {
+
 		public TextView topView;
 		public TextView centerView;
 		public TextView bottomView;

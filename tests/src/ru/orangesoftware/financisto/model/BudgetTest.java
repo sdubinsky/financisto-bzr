@@ -37,7 +37,7 @@ public class BudgetTest extends AbstractDbTest {
 
     private void createBudget() {
         budgetOne = new Budget();
-        budgetOne.currencyId = account.currency.id;
+        budgetOne.currency = account.currency;
         budgetOne.amount = 1000;
         budgetOne.categories = String.valueOf(categoriesMap.get("A").id);
         budgetOne.projects = String.valueOf(project.id);

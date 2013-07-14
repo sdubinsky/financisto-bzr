@@ -84,7 +84,15 @@ public abstract class AbstractActivity extends Activity implements ActivityLayou
 	public void onSelectedPos(int id, int selectedPos) {
 	}
 
-	protected boolean checkSelectedId(long value, int messageResId) {
+    protected boolean checkSelected(Object value, int messageResId) {
+        if (value == null) {
+            Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean checkSelectedId(long value, int messageResId) {
 		if (value <= 0) {
 			Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
 			return false;

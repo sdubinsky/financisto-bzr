@@ -831,4 +831,8 @@
 
     <string name="export_splits">Export splits</string>
 
+    <string name="account_by_currency">All %s Accounts</string>
+    <string name="budget_type_saving">Saving</string>
+    <string name="budget_type_saving_summary">Budget with a goal to save money</string>
+
 </resources>
