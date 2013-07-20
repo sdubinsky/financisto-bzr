@@ -8,6 +8,7 @@
 
 package ru.orangesoftware.financisto.export.flowzr;
 
+
 import static ru.orangesoftware.financisto.db.DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE;
 
 import java.io.BufferedReader;
@@ -29,14 +30,15 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.params.ClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 import ru.orangesoftware.financisto.activity.AccountWidget;
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
@@ -66,7 +68,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.Html;
 import android.util.Log;
 
-//TODO : rates, batch
+
 public class FlowzrSyncEngine  {
 	private String TAG;
 	String FLOWZR_API_URL;
@@ -85,8 +87,9 @@ public class FlowzrSyncEngine  {
     private FlowzrSyncActivity flowzrSyncActivity; 
     private String[] tableNames= {"attributes","currency","category","category","project","payee","account","LOCATIONS","transactions","currency_exchange_rate",DatabaseHelper.BUDGET_TABLE};  
 	private Class[] clazzArray = {Attribute.class,Currency.class,Category.class,Category.class,Project.class,Payee.class,Account.class,MyLocation.class,Transaction.class,null,Budget.class};        
-	
 
+	static JsonReader reader = null;
+	static InputStream is = null;
     
     public FlowzrSyncEngine(FlowzrSyncActivity a, Context c, DatabaseAdapter dba, FlowzrSyncOptions o, DefaultHttpClient pHttp_client) {
     	this.dba=dba;
@@ -108,10 +111,9 @@ public class FlowzrSyncEngine  {
     	if (o instanceof Exception) {
     		return o;
     	}    		
-		o=pullDelete(options.lastSyncLocalTimestamp);
-        if (o instanceof Exception) {
-        	return o;
-        }    	
+		
+    	pullDelete(options.lastSyncLocalTimestamp);
+ 	
         progressListener.onProgress(10);        
     	o=pushDelete();
         if (o instanceof Exception) {
@@ -119,18 +121,13 @@ public class FlowzrSyncEngine  {
         }
         progressListener.onProgress(20);        
     	o=pullUpdate();
-        if (o instanceof Exception) {
-        	return o;
-        }
-        progressListener.onProgress(25);
+        progressListener.onProgress(35);
         o=pushUpdate();      
         progressListener.onProgress(50);
         o=pushRetry();      
         progressListener.onProgress(75);
         
-        if (o instanceof Exception) {
-        	return o;
-        }
+
 		ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("action","balancesRecalc"));
 		nameValuePairs.add(new BasicNameValuePair("lastSyncLocalTimestamp",String.valueOf(options.lastSyncLocalTimestamp)));        
@@ -353,7 +350,6 @@ public class FlowzrSyncEngine  {
     private <T extends MyEntity> Object pushEntity(String tableName,Cursor c) {    	    			
 			ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 			nameValuePairs.add(new BasicNameValuePair("action","push" + tableName));
-			nameValuePairs.add(new BasicNameValuePair("clientTimestamp",String.valueOf((System.currentTimeMillis()))));							
 			if (tableName.equals(DatabaseHelper.ACCOUNT_TABLE)) {
 				String sql="select max(dateTime) as maxDate, min(dateTime) as mintDate from " + DatabaseHelper.TRANSACTION_TABLE + " where from_account_id=" + c.getInt(c.getColumnIndex("_id")) ;		
 				Cursor cursorCursor=db.rawQuery(sql, null);
@@ -592,59 +588,7 @@ public class FlowzrSyncEngine  {
     	return o;
     }    
         
-	private <T> Object pullUpdate(String tableName,Class<T> clazz,long  lastSyncLocalTimestamp,String account,String gotoDate)  {	
-		String url=FLOWZR_API_URL + options.useCredential + "/?action=pull" + tableName + "&account=" + account + "&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp  + "&gotoDate="+ gotoDate + "&localTimestamp=" + System.currentTimeMillis();
-    	JSONObject jsonObjectResponse=readFlowzrJSON(url);  
-    	try {
-    		JSONArray entitiesAsJSON=jsonObjectResponse.getJSONArray(tableName);
-    		for(int i = 0; i < entitiesAsJSON.length(); i++) {
-    			JSONObject jsonObjectEntity = entitiesAsJSON.getJSONObject(i);
 
-    			String remoteKey ="";
-				//sometime server can set a transaction with no key (ex initial amount ...)
-    			if (jsonObjectEntity.has("key")) {
-    					remoteKey=jsonObjectEntity.getString("key");    			
-    			}
-   			
-    			Object o=null;
-				if (clazz==Account.class) {    			
-					o=saveOrUpdateAccountFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);					
-				} else if (clazz==Transaction.class) {
-					o=saveOrUpdateTransactionFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);					
-				} else if (clazz==Currency.class) {
-					o=saveOrUpdateCurrencyFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);					
-				} else if (clazz==Budget.class) {
-					o=saveOrUpdateBudgetFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);					
-				} else if (clazz==MyLocation.class) {
-					o=saveOrUpdateLocationFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);					
-				} else if (tableName.equals("currency_exchange_rate"))  {
-					o=saveOrUpdateCurrencyRateFromJSON(jsonObjectEntity);
-				} else if (clazz==Category.class)  {
-						o=saveOrUpdateCategoryFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);						
-				}else if (clazz==Attribute.class)  {
-					o=saveOrUpdateAttributeFromJSON(getLocalKey(tableName,remoteKey),jsonObjectEntity);						
-				}  else  {
-					o=saveOrUpdateEntityFromJSON(clazz,getLocalKey(tableName,remoteKey),jsonObjectEntity);										
-				} 
-				if (o instanceof Exception ) {
-					return o;
-				}
-				if (progressListener != null) {	            					
-	                progressListener.onProgress((int)(Math.round(i*100/entitiesAsJSON.length())));
-	            } 
-    		}
-    		JSONArray jsonParams=jsonObjectResponse.getJSONArray("params");
-			JSONObject jsonParam = jsonParams.getJSONObject(0);
-    		if (jsonParam.has("gotoDate")) {
-    			pullUpdate(tableName,Transaction.class,0,account,jsonParam.getString("gotoDate"));    			    			
-    		}
-    		System.gc();
-        	return null;    		
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		return e;
-    	}     	
-    }
 
 	private Object saveOrUpdateAttributeFromJSON(long localKey,
 			JSONObject jsonObjectEntity) {
@@ -946,11 +890,13 @@ public class FlowzrSyncEngine  {
 					Log.e(TAG,"Error parsing MyLocation.accuracy with : " + jsonObjectEntity.getString("accuracy"));				
 				}
 			}
-			if (jsonObjectEntity.has("geo_point")) {
-				JSONObject pt=jsonObjectEntity.getJSONObject("geo_point");
-				tEntity.latitude=pt.getDouble("lat");
-				tEntity.longitude=pt.getDouble("lon");		
+			if (jsonObjectEntity.has("lon")) {
+				tEntity.longitude=jsonObjectEntity.getDouble("lon");		
 			}
+			if (jsonObjectEntity.has("lat")) {
+				tEntity.latitude=jsonObjectEntity.getDouble("lat");
+			}
+			
 			if (jsonObjectEntity.has("is_payee")) {
 				if (jsonObjectEntity.getBoolean("is_payee")) {
 					tEntity.isPayee=true;
@@ -1007,15 +953,15 @@ public class FlowzrSyncEngine  {
 				tEntity.id=c.getLong(0); 	
 				c.close();
 			} else {
-				c.close();
-				//tEntity.id=KEY_CREATE; //already have it, not needed to re-assign ... 	
+				c.close();	
 			}			
-			
-			try {
-				tEntity.symbol=jsonObjectEntity.getString("symbol");						
-			} catch (Exception e) {
-				Log.e(TAG,"Error pulling Currency.symbol");					
-				e.printStackTrace();
+			if (jsonObjectEntity.has("symbol")) {
+				try {
+					tEntity.symbol=jsonObjectEntity.getString("symbol");						
+				} catch (Exception e) {
+					Log.e(TAG,"Error pulling Currency.symbol");					
+					e.printStackTrace();
+				}
 			}
 			tEntity.isDefault=false;		
 			if (jsonObjectEntity.has("isDefault")) {
@@ -1074,11 +1020,13 @@ public class FlowzrSyncEngine  {
 				Log.e(TAG,"Error parsing Account.creationDate");
 			}
 			//last_transaction_date
-			try {
-				tEntity.lastTransactionDate = jsonObjectAccount.getLong("dateOfLastTransaction");
-			} catch (Exception e) {
-				Log.e(TAG,"Error parsing Account.dateOfLastTransaction with : " + jsonObjectAccount.getString("dateOfLastTransaction"));
-			}			
+			if (jsonObjectAccount.has("dateOfLastTransaction")) {
+				try {
+					tEntity.lastTransactionDate = jsonObjectAccount.getLong("dateOfLastTransaction");
+				} catch (Exception e) {
+					Log.e(TAG,"Error parsing Account.dateOfLastTransaction with : " + jsonObjectAccount.getString("dateOfLastTransaction"));
+				}			
+			}
 			//currency, currency_name, currency_symbol
 			Currency c=null;			
 			Collection<Currency> currencies=CurrencyCache.getAllCurrencies();			
@@ -1200,6 +1148,8 @@ public class FlowzrSyncEngine  {
 					tEntity.fromAccountId=getLocalKey(DatabaseHelper.ACCOUNT_TABLE, jsonObjectResponse.getString("account"));
 				} catch (Exception e1) {					
 					Log.e("financisto","Error parsing Transaction.fromAccount with : " + jsonObjectResponse.getString("account"));
+					Log.e(TAG,jsonObjectResponse.getString("key"));
+					
 					return null;				
 				} 
 				
@@ -1214,7 +1164,6 @@ public class FlowzrSyncEngine  {
 					tEntity.toAccountId=0;
 				}
 				try {
-					tEntity.dateTime = jsonObjectResponse.getLong("dateOfEmission")*1000;								
 					if (jsonObjectResponse.has("dateTime")) {					
 						tEntity.dateTime=jsonObjectResponse.getLong("dateTime")*1000;
 					}
@@ -1227,6 +1176,7 @@ public class FlowzrSyncEngine  {
 					tEntity.remoteKey=jsonObjectResponse.getString("key");					
 				} 
 				//from_amount,       			
+				
 				double debit=0.0;
 				double credit=0.0;       	
 				if (jsonObjectResponse.has("debit")) {
@@ -1243,9 +1193,7 @@ public class FlowzrSyncEngine  {
 						e.printStackTrace();
 					}				
 				}
-				tEntity.fromAmount=(long)(credit-debit);
-
-			       									
+				tEntity.fromAmount=(long)(credit-debit);	       									
 				if (jsonObjectResponse.has("to_amount")) {
 					if ((long)jsonObjectResponse.getDouble("to_amount")*100 != 0.0) {
 						((Transaction)tEntity).toAmount=(long)jsonObjectResponse.getDouble("to_amount")*100;       				
@@ -1350,9 +1298,8 @@ public class FlowzrSyncEngine  {
 						}
 					}
 					try {
-						JSONObject pt=jsonObjectResponse.getJSONObject("geo_point");
-						tEntity.latitude=pt.getDouble("lat");
-						tEntity.longitude=pt.getDouble("lon");
+						tEntity.latitude=jsonObjectResponse.getDouble("lat");
+						tEntity.longitude=jsonObjectResponse.getDouble("lon");
 					}	catch (Exception e) {
 						//Log.e("financisto","Error getting geo_point value for transaction with:" + jsonObjectResponse.getString("geo_point"));
 					}
@@ -1446,85 +1393,273 @@ public class FlowzrSyncEngine  {
     	    return null;
 		}
     }
-    
-    public JSONObject readFlowzrJSON(String url) {
-        JSONObject j = null;
-        try {
-        	HttpGet httpGet = new HttpGet(url);
-        	HttpResponse httpResponse = http_client.execute(httpGet);
-        	j = new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
-        	return j;
-          } catch (Exception e) {
-        	  try {
-				return new JSONObject("{ \"error\": [{\"message\": \"" + e.toString() + "\"}]}");
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-				return j;
-			}
-          }  
+
+	private <T> Object pullUpdate(String tableName,Class<T> clazz,long  lastSyncLocalTimestamp,String account,String gotoDate)  {	
+		String url=FLOWZR_API_URL + options.useCredential + "/?action=pull" + tableName + "&account=" + account + "&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp ;
+		if (gotoDate!=null) {
+			url=url + "&gotoDate="+ gotoDate ;
+		}
+		try {
+			getJSONFromUrl(url,tableName,clazz,account,lastSyncLocalTimestamp);
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return e;
+		}	
     }    
+    
  
+    
+
+    public <T> void getJSONFromUrl(String url,String tableName, Class<T> clazz,String account,long lastSyncLocalTimestamp) throws IOException {
+
+    		HttpGet httpGet = new HttpGet(url);
+            try {
+	        	HttpResponse httpResponse = http_client.execute(httpGet);
+	            HttpEntity httpEntity = httpResponse.getEntity();
+	            is = httpEntity.getContent(); 
+	        } catch (UnsupportedEncodingException e) {
+	            e.printStackTrace();
+	        } catch (ClientProtocolException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+
+            try {
+                reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
+                reader.beginObject();
+            } catch (UnsupportedEncodingException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+            try {
+	             readMessage(reader,tableName,clazz,account,lastSyncLocalTimestamp);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+    }
+
+    public <T> Object readMessage(JsonReader reader,String tableName,Class<T> clazz,String account,long lastSyncLocalTimestamp) throws IOException {    
+			String n = null;      
+			String gotoDate=null;
+			reader.setLenient(true);
+   		while (reader.hasNext()) {
+   			JsonToken peek=reader.peek();
+   			String v = null;
+   			if (peek==JsonToken.BEGIN_OBJECT) {
+   				reader.beginObject();
+   			} else if (peek==JsonToken.NAME) {
+   				n=reader.nextName();
+   			} else if (peek==JsonToken.BEGIN_ARRAY) {   				
+   				if (n.equals(tableName)) {
+   					readJsnArr(reader,tableName,clazz);
+   				} else {
+   					if (n.equals("params")) {
+   						reader.beginArray();
+   						if (reader.hasNext()) {
+   						reader.beginObject();
+   						if (reader.hasNext()) {
+	   						n=reader.nextName();
+	   						v=reader.nextString();
+	   						gotoDate=v;
+   						}
+   						reader.endObject();
+   						}
+   						reader.endArray();
+   					} else {
+   						reader.skipValue();
+   					}
+   				}
+   			} else if (peek==JsonToken.END_OBJECT) {
+   				reader.endObject();
+   			} else if (peek==JsonToken.END_ARRAY) {
+   				reader.endArray();
+   			}
+   		}
+   		if (gotoDate!=null && ! flowzrSyncActivity.isCanceled) {			
+   			pullUpdate(tableName, clazz,lastSyncLocalTimestamp,account,gotoDate);
+   		}
+ return null;         
+}
+    
+	public <T> void readJsnArr(JsonReader reader, String tableName, Class<T> clazz) throws IOException {
+		JSONObject o = new JSONObject();
+		JsonToken peek = reader.peek();
+		String n = null;
+		reader.beginArray();
+		int i=0;		
+		while (reader.hasNext()) {
+			peek = reader.peek();
+			if (reader.peek()==JsonToken.BEGIN_OBJECT) {
+				reader.beginObject();
+			} else if (reader.peek()==JsonToken.END_OBJECT) {
+				reader.endObject();
+			}
+			o = new JSONObject();
+			while (reader.hasNext()) {
+				peek = reader.peek();
+				if (peek == JsonToken.NAME) {
+					n = reader.nextName();
+				} else if (peek==JsonToken.BEGIN_OBJECT) {
+					reader.beginObject();
+				} else if (peek==JsonToken.END_OBJECT) {
+					reader.endObject();
+				} else if (peek == JsonToken.BOOLEAN) {
+					try {
+						o.put(n, reader.nextBoolean());
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else if (peek == JsonToken.STRING) {
+					try {
+						o.put(n, reader.nextString());
+
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else if (peek == JsonToken.NUMBER) {
+					try {
+						o.put(n, reader.nextDouble());
+
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} 
+			}
+			reader.endObject();
+			i=i+1;
+			if (o.has("key")) {
+				saveEntityFromJson(o, tableName, clazz,i);
+			}
+		}
+		reader.endArray();
+	}
+			
+	public <T> void saveEntityFromJson(JSONObject o, String tableName, Class<T> clazz, int i) {
+		Object o2=null;
+		String remoteKey="";
+		try {
+			remoteKey = o.getString("key");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (clazz==Account.class) {    			
+			o2=saveOrUpdateAccountFromJSON(getLocalKey(tableName,remoteKey),o);					
+		} else if (clazz==Transaction.class) {
+			o2=saveOrUpdateTransactionFromJSON(getLocalKey(tableName,remoteKey),o);					
+		} else if (clazz==Currency.class) {
+			o2=saveOrUpdateCurrencyFromJSON(getLocalKey(tableName,remoteKey),o);					
+		} else if (clazz==Budget.class) {
+			o2=saveOrUpdateBudgetFromJSON(getLocalKey(tableName,remoteKey),o);					
+		} else if (clazz==MyLocation.class) {
+			o2=saveOrUpdateLocationFromJSON(getLocalKey(tableName,remoteKey),o);					
+		} else if (tableName.equals("currency_exchange_rate"))  {
+			o2=saveOrUpdateCurrencyRateFromJSON(o);
+		} else if (clazz==Category.class)  {
+			o2=saveOrUpdateCategoryFromJSON(getLocalKey(tableName,remoteKey),o);						
+		}else if (clazz==Attribute.class)  {
+			o2=saveOrUpdateAttributeFromJSON(getLocalKey(tableName,remoteKey),o);						
+		}  else  {
+			o2=saveOrUpdateEntityFromJSON(clazz,getLocalKey(tableName,remoteKey),o);										
+		} 
+		if (o2 instanceof Exception ) {
+			((Exception) o2).printStackTrace();
+			//return o2;
+		}
+		if (progressListener != null) {	
+			if (i>100) {
+				i=100;
+			}
+            progressListener.onProgress(i);
+        }	   
+	}
+     
+    
+    //@param progressListener    
     public void setProgressListener(ProgressListener progressListener) {
         this.progressListener = progressListener;
     }
 
-	private Object pullDelete(long  lastSyncLocalTimestamp)  {			
-		String url=FLOWZR_API_URL + options.useCredential + "?action=pullDelete&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp +  "&localTimestamp=" + System.currentTimeMillis();
-    	JSONObject jsonObjectResponse=readFlowzrJSON(url);      	
-    	try {
-    		JSONArray entitiesAsJSON=new JSONArray();
-    		try {
-    			entitiesAsJSON=jsonObjectResponse.getJSONArray(DatabaseHelper.DELETE_LOG_TABLE);
-    		} catch (Exception e) {
-	
-				
-    			url=flowzrSyncActivity.FLOWZR_BASE_URL + "/_ah/logout?continue=https://www.google.com/accounts/Logout%3Fcontinue%3Dhttps://appengine.google.com/_ah/logout%253Fcontinue%253Dhttp://www.flowzr.com/%26service%3Dah";
-    		    try {
-    		    		http_client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, true);
-    		            // http_client parametred with auth at the activity level (need user response)
-    		            HttpGet httpGet = new HttpGet(url); 
-    		            http_client.execute(httpGet);
-    		        } catch (Exception f) {
-    		            f.printStackTrace();
-    		            return new Exception("Logged out please retry");
-    		       } 
-    			http_client.getCookieStore().clear();
-    			return new Exception(jsonObjectResponse.getJSONArray("error").getJSONObject(0).getString("message"));
-    		}
-    		for(int i = 0; i < entitiesAsJSON.length(); i++) {
-    			JSONObject jsonObjectEntity = entitiesAsJSON.getJSONObject(i);
-    			String remoteKey = jsonObjectEntity.getString("key");    			
-    			String tableName = jsonObjectEntity.getString("tableName");
-    					
-    			long id=getLocalKey(tableName,remoteKey);  			
-    		
-    			if (id>0) {
-					if (tableName.equals(DatabaseHelper.ACCOUNT_TABLE)) {    
-						dba.deleteAccount(id);				
-					} else if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
-						dba.deleteTransaction(id);								
-					} else if (tableName.equals(DatabaseHelper.CURRENCY_TABLE)) {
-						em.deleteCurrency(id);					
-					} else if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
-						em.deleteBudget(id);
-					} else if (tableName.equals(DatabaseHelper.LOCATIONS_TABLE)) {
-						em.deleteLocation(id);
-					} else if (tableName.equals(DatabaseHelper.PROJECT_TABLE)) {
-						em.deleteProject(id);							
-					} else if (tableName.equals(DatabaseHelper.PAYEE_TABLE)) {
-						em.delete(Payee.class,id);								
-					} else  if (tableName.equals(DatabaseHelper.CATEGORY_TABLE)) {
-						dba.deleteCategory(id);
-					}
-    			}
-				if (progressListener != null) {	            					
-	                progressListener.onProgress((int)(Math.round(i*100/entitiesAsJSON.length())));
-	            } 
-    		}
-        	return null;    		
-    	} catch (JSONException e) {    	
-    		 return new Exception(e);
-    		
-    	}    	
+
+    public void pullDelete(long lastSyncLocalTimestamp)  throws IOException {
+		String url=FLOWZR_API_URL + options.useCredential + "?action=pullDelete&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp ;
+		HttpGet httpGet = new HttpGet(url);
+        try {
+        	HttpResponse httpResponse = http_client.execute(httpGet);
+            HttpEntity httpEntity = httpResponse.getEntity();
+            is = httpEntity.getContent(); 
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
+            reader.beginObject();
+        } catch (UnsupportedEncodingException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        try {
+             readDelete(reader);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
+	
+    public void readDelete(JsonReader reader) throws IOException {
+    	reader.nextName();
+    	reader.beginArray();
+    	while (reader.hasNext()) {
+    		reader.beginObject();
+    		reader.nextName(); //tablename
+    		String t=reader.nextString();
+    	    reader.nextName(); //key    				
+    		execDelete(t,reader.nextString());
+    		reader.endObject();
+    	}
+    	reader.endArray();
+    }
+    
+    public void execDelete(String tableName,String remoteKey) {
+    	long id=getLocalKey(tableName,remoteKey);  			
+		
+		if (id>0) {
+			if (tableName.equals(DatabaseHelper.ACCOUNT_TABLE)) {    
+				dba.deleteAccount(id);				
+			} else if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
+				dba.deleteTransaction(id);								
+			} else if (tableName.equals(DatabaseHelper.CURRENCY_TABLE)) {
+				em.deleteCurrency(id);					
+			} else if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
+				em.deleteBudget(id);
+			} else if (tableName.equals(DatabaseHelper.LOCATIONS_TABLE)) {
+				em.deleteLocation(id);
+			} else if (tableName.equals(DatabaseHelper.PROJECT_TABLE)) {
+				em.deleteProject(id);							
+			} else if (tableName.equals(DatabaseHelper.PAYEE_TABLE)) {
+				em.delete(Payee.class,id);								
+			} else  if (tableName.equals(DatabaseHelper.CATEGORY_TABLE)) {
+				dba.deleteCategory(id);
+			}
+		}
+    }
+
+	
+
 }
