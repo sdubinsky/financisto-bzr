@@ -375,11 +375,8 @@ public class FlowzrSyncEngine  {
 				}
 			} else if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
 	            Map<Long, String> attributesMap = dba.getAllAttributesForTransaction(c.getInt(0));
-	            //LinkedList<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();
 	            String transaction_attribute="";
 	            for (long attributeId : attributesMap.keySet()) {
-	                //String attr_key = dba.getAttribute(attributeId).remoteKey;	                
-	                //String attr_value = attributesMap.get(attributeId);
 	                transaction_attribute+= dba.getAttribute(attributeId).remoteKey + "=" + attributesMap.get(attributeId) +";";
 	            }
 	            nameValuePairs.add(new BasicNameValuePair("transaction_attribute",transaction_attribute));	 
@@ -1175,31 +1172,17 @@ public class FlowzrSyncEngine  {
 				if (jsonObjectResponse.has("key")) {
 					tEntity.remoteKey=jsonObjectResponse.getString("key");					
 				} 
-				//from_amount,       			
-				
-				double debit=0.0;
-				double credit=0.0;       	
-				if (jsonObjectResponse.has("debit")) {
-					try {
-						debit=jsonObjectResponse.getDouble("debit")*100;
-					} catch (Exception e) { 
-						e.printStackTrace();
-					}
+
+				if (jsonObjectResponse.has("amount")) {
+					tEntity.fromAmount=jsonObjectResponse.getLong("amount");
 				}
-				if (jsonObjectResponse.has("credit")) {				
-					try {
-						credit=jsonObjectResponse.getDouble("credit")*100;
-					} catch (Exception e) {
-						e.printStackTrace();
-					}				
-				}
-				tEntity.fromAmount=(long)(credit-debit);	       									
+			
 				if (jsonObjectResponse.has("to_amount")) {
 					if ((long)jsonObjectResponse.getDouble("to_amount")*100 != 0.0) {
-						((Transaction)tEntity).toAmount=(long)jsonObjectResponse.getDouble("to_amount")*100;       				
+						tEntity.toAmount=(long)jsonObjectResponse.getDouble("to_amount")*100;       				
 					}     				
 				}
-
+				
 				/**
 			    @Column(name = "original_currency_id")
 			    public long originalCurrencyId;
@@ -1286,24 +1269,25 @@ public class FlowzrSyncEngine  {
 					} 						
 				}
 				//accuracy,provider,latitude,longitude
-				if (jsonObjectResponse.has("geo_point")) {
-					if (jsonObjectResponse.has("provider")) {				
-						tEntity.provider=jsonObjectResponse.getString("provider");
+				if (jsonObjectResponse.has("provider")) {				
+					tEntity.provider=jsonObjectResponse.getString("provider");
+				}
+				if (jsonObjectResponse.has("accuracy")) {	
+					try {
+						tEntity.accuracy=jsonObjectResponse.getLong("accuracy");
+					} catch (Exception e) {
+						//Log.e("financisto","Error getting accuracy value for transaction with:" + jsonObjectResponse.getString("accuracy"));
 					}
-					if (jsonObjectResponse.has("accuracy")) {	
-						try {
-							tEntity.accuracy=jsonObjectResponse.getLong("accuracy");
-						} catch (Exception e) {
-							//Log.e("financisto","Error getting accuracy value for transaction with:" + jsonObjectResponse.getString("accuracy"));
-						}
-					}
+				}
+				if (jsonObjectResponse.has("lat") && jsonObjectResponse.has("lon")) {
 					try {
 						tEntity.latitude=jsonObjectResponse.getDouble("lat");
 						tEntity.longitude=jsonObjectResponse.getDouble("lon");
 					}	catch (Exception e) {
-						//Log.e("financisto","Error getting geo_point value for transaction with:" + jsonObjectResponse.getString("geo_point"));
+						Log.e("financisto","Error getting geo_point value for transaction with:" + jsonObjectResponse.getString("lat") + " " + jsonObjectResponse.getDouble("lon"));
 					}
 				}
+				
 
 				tEntity.status=TransactionStatus.UR;
 				if (jsonObjectResponse.has("status")) {
