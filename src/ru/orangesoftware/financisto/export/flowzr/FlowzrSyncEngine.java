@@ -1178,9 +1178,7 @@ public class FlowzrSyncEngine  {
 				}
 			
 				if (jsonObjectResponse.has("to_amount")) {
-					if ((long)jsonObjectResponse.getDouble("to_amount")*100 != 0.0) {
-						tEntity.toAmount=(long)jsonObjectResponse.getDouble("to_amount")*100;       				
-					}     				
+					tEntity.toAmount=jsonObjectResponse.getLong("to_amount");
 				}
 				
 				/**
