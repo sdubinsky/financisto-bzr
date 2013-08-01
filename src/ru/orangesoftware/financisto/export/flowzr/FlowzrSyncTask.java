@@ -82,7 +82,7 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
           HttpGet httpGet = new HttpGet(url); 
           HttpResponse httpResponse = http_client.execute(httpGet);      
           int code = httpResponse.getStatusLine().getStatusCode();
-          if (code==403) {
+          if (code==402) {
           	return false;
           }
       } catch (Exception e) {

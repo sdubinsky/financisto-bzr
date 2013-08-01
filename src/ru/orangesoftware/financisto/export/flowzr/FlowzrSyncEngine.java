@@ -476,9 +476,9 @@ public class FlowzrSyncEngine  {
 					db.execSQL(sql);
 					Log.e(TAG,"pushing to datastore failed, response was: " + strResponse);
 					Log.i(TAG,"marked for re-push");
-					for (NameValuePair p : nameValuePairs) {
-						Log.e(TAG,p.toString());
-					}
+					//for (NameValuePair p : nameValuePairs) {
+					//	Log.e(TAG,p.toString());
+					//}
 				}
 			}			 			
 			return null;		    	    	
