@@ -838,10 +838,14 @@ public class FlowzrSyncEngine  {
 			if (jsonObjectEntity.has("recurNum")) {
 				try {
 					tEntity.recurNum=jsonObjectEntity.getInt("recurNum");
+					if (tEntity.recurNum>0) {
+						return null;
+					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 			}
 			if (jsonObjectEntity.has("isCurrent")) {
 				try {
@@ -1193,7 +1197,7 @@ public class FlowzrSyncEngine  {
 					}					
 				}
 				if (jsonObjectResponse.has("original_from_amount")) {
-					((Transaction)tEntity).originalFromAmount=(long)jsonObjectResponse.getDouble("original_from_amount")*100;       				
+					((Transaction)tEntity).originalFromAmount=(long)jsonObjectResponse.getDouble("original_from_amount");       				
 				}								
 				
 				if (jsonObjectResponse.has("description")) {
