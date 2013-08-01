@@ -442,18 +442,17 @@ public class MyEntityManager extends EntityManager {
 	public void deleteBudget(long id) {
         SQLiteDatabase db = db();
         Budget b=load(Budget.class, id);
-        
         writeDeleteLog(BUDGET_TABLE, b.remoteKey); 
         db.delete(BUDGET_TABLE, "_id=?", new String[]{String.valueOf(id)});
 		String sql="select remote_key from " + BUDGET_TABLE +  " where parent_budget_id=" + id + "";
-		Cursor cursor=db.rawQuery(sql, null);
-		if (cursor.moveToFirst()) {			
+		Cursor cursorCursor=db.rawQuery(sql, null);
+		if (cursorCursor.moveToFirst()) {			
 			do {	
-				String rKey=cursor.getString(0);
+				String rKey=cursorCursor.getString(0);
 				writeDeleteLog(BUDGET_TABLE,rKey);
-			} while (cursor.moveToNext());	
+			} while (cursorCursor.moveToNext());	
 		}
-		cursor.close();
+		cursorCursor.close();
         db.delete(BUDGET_TABLE, "parent_budget_id=?", new String[]{String.valueOf(id)});
 	}
 
