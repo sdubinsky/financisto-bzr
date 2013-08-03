@@ -411,6 +411,7 @@ public class DatabaseAdapter {
     }
 
     private long insertTransaction(Transaction t) {
+    	t.updatedOn=System.currentTimeMillis();    	
         long id = db().insert(TRANSACTION_TABLE, null, t.toValues());
         if (updateAccountBalance) {
             if (!t.isTemplateLike()) {
