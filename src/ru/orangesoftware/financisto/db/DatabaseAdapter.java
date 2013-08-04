@@ -504,7 +504,6 @@ public class DatabaseAdapter {
             }
             db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID + "=?",
                     new String[]{String.valueOf(split.id)});
-            		writeDeleteLog(TRANSACTION_TABLE, split.remoteKey);            
         }
         
         db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id + "=?", new String[]{String.valueOf(parentId)});
@@ -1823,7 +1822,7 @@ public class DatabaseAdapter {
                 new String[]{String.valueOf(account.id)});
     }
     
-    private long writeDeleteLog(String tableName,String remoteKey) {
+    public long writeDeleteLog(String tableName,String remoteKey) {
     	if (remoteKey==null) {
     		return 0;
     	}

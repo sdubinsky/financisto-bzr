@@ -1206,10 +1206,12 @@ public class FlowzrSyncEngine  {
 				//parent_tr
 				if (jsonObjectResponse.has("parent_tr")) {
 					try {					
-					tEntity.parentId=getLocalKey(DatabaseHelper.TRANSACTION_TABLE, jsonObjectResponse.getString("parent_tr"));
-					Transaction parent_tr=em.load(Transaction.class, tEntity.parentId);
-					parent_tr.categoryId=Category.SPLIT_CATEGORY_ID;
-					em.saveOrUpdate(parent_tr);					
+						tEntity.parentId=getLocalKey(DatabaseHelper.TRANSACTION_TABLE, jsonObjectResponse.getString("parent_tr"));
+						Transaction parent_tr=em.load(Transaction.class, tEntity.parentId);
+						if (parent_tr.categoryId!=Category.SPLIT_CATEGORY_ID) {
+							parent_tr.categoryId=Category.SPLIT_CATEGORY_ID;
+							em.saveOrUpdate(parent_tr);					
+						}				
 					} catch (Exception e) {
 						//Log.e("financisto","Error parsing/saving Transaction.parent_tr with : " + jsonObjectResponse.getString("parent_tr"));						
 					}
