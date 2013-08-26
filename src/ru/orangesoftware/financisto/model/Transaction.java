@@ -89,6 +89,8 @@ public class Transaction extends TransactionBase {
 		values.put(TransactionColumns.attached_picture.name(), attachedPicture);
 		values.put(TransactionColumns.is_ccard_payment.name(), isCCardPayment);
 		values.put(TransactionColumns.last_recurrence.name(), lastRecurrence);
+		values.put(TransactionColumns.updated_on.name(), updatedOn);
+		values.put(TransactionColumns.remote_key.name(), remoteKey);		
 		return values;
 	}
 

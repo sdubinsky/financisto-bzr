@@ -14,7 +14,7 @@ import ru.orangesoftware.financisto.db.DatabaseHelper.AttributeColumns;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class Attribute {
+public class Attribute extends MyEntity {
 
 	public static final int TYPE_TEXT = 1; 
 	public static final int TYPE_NUMBER = 2;
@@ -50,6 +50,7 @@ public class Attribute {
 		a.type = c.getInt(AttributeColumns.Indicies.TYPE);
 		a.listValues = c.getString(AttributeColumns.Indicies.LIST_VALUES);
 		a.defaultValue = c.getString(AttributeColumns.Indicies.DEFAULT_VALUE);
+		a.remoteKey = c.getString(AttributeColumns.Indicies.REMOTE_KEY);
 		return a;
 	}
 

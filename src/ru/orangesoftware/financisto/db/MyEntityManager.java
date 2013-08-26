@@ -312,6 +312,8 @@ public class MyEntityManager extends EntityManager {
 
 	public int deleteCurrency(long id) {
 		String sid = String.valueOf(id);
+		Currency c=load(Currency.class, id);
+		writeDeleteLog(CURRENCY_TABLE, c.remoteKey);
 		return db().delete(CURRENCY_TABLE, "_id=? AND NOT EXISTS (SELECT 1 FROM "+ACCOUNT_TABLE+" WHERE "+AccountColumns.CURRENCY_ID+"=?)",
 				new String[]{sid, sid});
 	}
@@ -424,7 +426,7 @@ public class MyEntityManager extends EntityManager {
 				budget.parentBudgetId = id;
 				budget.recurNum = i;
 				budget.startDate = p.start;
-				budget.endDate = p.end;								
+				budget.endDate = p.end;			
 				long bid = super.saveOrUpdate(budget);
 				if (i == 0) {
 					id = bid;
@@ -439,12 +441,25 @@ public class MyEntityManager extends EntityManager {
 
 	public void deleteBudget(long id) {
         SQLiteDatabase db = db();
+        Budget b=load(Budget.class, id);
+        writeDeleteLog(BUDGET_TABLE, b.remoteKey); 
         db.delete(BUDGET_TABLE, "_id=?", new String[]{String.valueOf(id)});
+		String sql="select remote_key from " + BUDGET_TABLE +  " where parent_budget_id=" + id + "";
+		Cursor cursorCursor=db.rawQuery(sql, null);
+		if (cursorCursor.moveToFirst()) {			
+			do {	
+				String rKey=cursorCursor.getString(0);
+				writeDeleteLog(BUDGET_TABLE,rKey);
+			} while (cursorCursor.moveToNext());	
+		}
+		cursorCursor.close();
         db.delete(BUDGET_TABLE, "parent_budget_id=?", new String[]{String.valueOf(id)});
 	}
 
 	public void deleteBudgetOneEntry(long id) {
         SQLiteDatabase db = db();
+        Budget b=load(Budget.class, id);
+        writeDeleteLog(BUDGET_TABLE, b.remoteKey); 
 		db.delete(BUDGET_TABLE, "_id=?", new String[]{String.valueOf(id)});
 	}
 
@@ -576,6 +591,20 @@ public class MyEntityManager extends EntityManager {
         }
         return homeCurrency;
     }
+    
+    private long writeDeleteLog(String tableName,String remoteKey) {
+    	     	if (remoteKey==null) {
+    	     		return 0;
+    	     	}
+    	     	if (remoteKey=="") {
+    	     		return 0;
+    	     	}    	
+    	     	ContentValues row = new ContentValues();
+    	 		row.put(DatabaseHelper.deleteLogColumns.TABLE_NAME, tableName);				
+    	     	row.put(DatabaseHelper.deleteLogColumns.REMOTE_KEY,remoteKey);				
+    	     	row.put(DatabaseHelper.deleteLogColumns.DELETED_ON, System.currentTimeMillis());
+    	     	return db().insert(DatabaseHelper.DELETE_LOG_TABLE, null, row);
+    	     }
 
     private static <T extends MyEntity> Map<String, T> entitiesAsTitleMap(List<T> entities) {
         Map<String, T> map = new HashMap<String, T>();

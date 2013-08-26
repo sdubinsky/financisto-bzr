@@ -670,6 +670,20 @@
     <string name="qif_import_success">QIF file has been successfully imported</string>
     <string name="import_export">Import/Export</string>
     <string name="qif_import_disclaimer">*WARNING* Please note that all existing data will be removed!</string>
+	
+	<string name="flowzr_sync">Flowzr sync</string>
+    <string name="flowzr_sync_error">Sync error</string>
+    <string name="flowzr_sync_error_no_network">Network is not available</string>
+    <string name="flowzr_sync_inprogress">Synchronizing data ...</string>      	
+    <string name="buy_subscription">Purchase a subscription</string>
+    <string name="visit_flowzr">Visit Flowzr</string>
+    <string name="account_required">An account is required.</string>
+    <string name="flowzr_sync_success">Successfully synchronized</string>    
+    <string name="flowzr_choose_account">Choose account to use on Flowzr.com</string>
+    <string name="sync_from_zero">Force sync</string>
+    <string name="flowzr_account_setup">Account now set up, please restart sync.</string>            
+    <string name="flowzr_subscription_required">Subscription required.</string>
+    <string name="flowzr_terms_of_use">A &lt;b&gt;paid subscription&lt;/b&gt; is required to use Flowzr sync service. The subscription can be cancelled free of charge during the trial period of &lt;b&gt;14 days&lt;/b&gt;. Flowzr is a third-party service, not affiliated with Financisto. By using the service you agree to Flowzr &lt;a href="http://www.flowzr.com/static/en/mobile/privacypolicy.html"&gt;Privacy Policy&lt;/a&gt; and &lt;a href="http://www.flowzr.com/static/en/mobile/tos.html"&gt;Terms Of Use Agreement&lt;/a&gt;.</string>
 
     <string name="remember_last_category_for_payee">Last category</string>
     <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee (or account if payee is disabled)</string>

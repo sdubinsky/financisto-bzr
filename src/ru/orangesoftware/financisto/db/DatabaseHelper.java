@@ -52,6 +52,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
     public static final String PAYEE_TABLE = "payee";
     public static final String CCARD_CLOSING_DATE_TABLE = "ccard_closing_date";
     public static final String EXCHANGE_RATES_TABLE = "currency_exchange_rate";
+    public static final String DELETE_LOG_TABLE = "delete_log";    
 
 	public static final String V_ALL_TRANSACTIONS = "v_all_transactions";
 	public static final String V_BLOTTER = "v_blotter";
@@ -93,7 +94,9 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         status,
         attached_picture,
         is_ccard_payment,
-        last_recurrence;
+        last_recurrence,
+		updated_on,
+		remote_key;
 		
 		public static String[] NORMAL_PROJECTION = asStringArray(TransactionColumns.values());
 
@@ -177,6 +180,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         type,
 		last_location_id,
 		last_project_id,
+		updated_on,
+		remote_key,			
 		sort_order
 	}
 
@@ -216,10 +221,14 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		
 		public static final String ID = "_id";
 		public static final String TITLE = "title";
+		public static final String UPDATED_ON = "updated_on";
+		public static final String REMOTE_KEY = "remote_key";		
 		
 		public static final String[] NORMAL_PROJECTION = {
 			ID,
-			TITLE
+			TITLE,
+			UPDATED_ON,
+			REMOTE_KEY			
 		};
 		
 		public static class Indicies {
@@ -236,13 +245,15 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String TYPE = "type";
 		public static final String LIST_VALUES = "list_values";
 		public static final String DEFAULT_VALUE = "default_value";
+		public static final String REMOTE_KEY = "remote_key";
 		
 		public static final String[] NORMAL_PROJECTION = {
 			ID,
 			NAME,
 			TYPE,
 			LIST_VALUES,
-			DEFAULT_VALUE
+			DEFAULT_VALUE,
+			REMOTE_KEY
 		};
 		
 		public static class Indicies {
@@ -251,6 +262,7 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 			public static final int TYPE = 2;
 			public static final int LIST_VALUES = 3;
 			public static final int DEFAULT_VALUE = 4;
+			public static final int REMOTE_KEY = 5;			
 		}
 		
 	}
@@ -342,6 +354,12 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
 		public static final String PERIOD = "period";
 		public static final String CLOSING_DAY = "closing_day";
 		
+	}
+	
+	public static class deleteLogColumns {		
+		public static final String TABLE_NAME = "table_name";
+		public static final String REMOTE_KEY = "remote_key";
+		public static final String DELETED_ON = "deleted_on";		
 	}
 	
 }

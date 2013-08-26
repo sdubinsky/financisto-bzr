@@ -74,6 +74,13 @@ public class Budget {
 
 	@Column(name = "parent_budget_id")
 	public long parentBudgetId;
+	
+	@Column(name = "updated_on")
+	public long updatedOn = System.currentTimeMillis();
+	 
+	@Column(name = "remote_key")
+ 	public String remoteKey ;		
+	
 
 	@Transient
 	public String categoriesText = "";

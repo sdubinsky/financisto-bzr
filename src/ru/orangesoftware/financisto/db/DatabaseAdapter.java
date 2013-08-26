@@ -31,6 +31,14 @@ import ru.orangesoftware.financisto.utils.Utils;
 import java.math.BigDecimal;
 import java.util.*;
 
+import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryColumns;
+
+import ru.orangesoftware.financisto.db.DatabaseHelper.TransactionColumns;
+import ru.orangesoftware.financisto.model.TransactionStatus;
+
+import ru.orangesoftware.financisto.db.DatabaseHelper.deleteLogColumns;
+import ru.orangesoftware.financisto.model.Category;
+
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
 
 public class DatabaseAdapter {
@@ -87,6 +95,8 @@ public class DatabaseAdapter {
 		db.beginTransaction();
 		try {
 			String[] sid = new String[]{String.valueOf(id)};
+			Account a=em.load(Account.class, id);
+			writeDeleteLog(TRANSACTION_TABLE, a.remoteKey);
 			db.execSQL(UPDATE_ORPHAN_TRANSACTIONS_1, sid);
 			db.execSQL(UPDATE_ORPHAN_TRANSACTIONS_2, sid);
 			db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID
@@ -401,6 +411,7 @@ public class DatabaseAdapter {
     }
 
     private long insertTransaction(Transaction t) {
+    	t.updatedOn=System.currentTimeMillis();    	
         long id = db().insert(TRANSACTION_TABLE, null, t.toValues());
         if (updateAccountBalance) {
             if (!t.isTemplateLike()) {
@@ -441,6 +452,7 @@ public class DatabaseAdapter {
 				updateLocationCount(t.locationId, 1);
 			}
 		}
+		t.updatedOn=System.currentTimeMillis();
 		db().update(TRANSACTION_TABLE, t.toValues(), TransactionColumns._id +"=?",
 				new String[]{String.valueOf(t.id)});
         if (oldT != null) {
@@ -479,6 +491,7 @@ public class DatabaseAdapter {
         SQLiteDatabase db = db();
         db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID+"=?", sid);
         db.delete(TRANSACTION_TABLE, TransactionColumns._id+"=?", sid);
+        writeDeleteLog(TRANSACTION_TABLE, t.remoteKey);        
         deleteSplitsForParentTransaction(id);
 	}
 
@@ -492,6 +505,7 @@ public class DatabaseAdapter {
             db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID + "=?",
                     new String[]{String.valueOf(split.id)});
         }
+        
         db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id + "=?", new String[]{String.valueOf(parentId)});
     }
 
@@ -929,6 +943,8 @@ public class DatabaseAdapter {
 		}
 		db.beginTransaction();
 		try {
+			Category category=em.load(Category.class,categoryId);
+			writeDeleteLog(CATEGORY_TABLE, category.remoteKey);			
 			int width = right - left + 1;
 			String[] args = new String[]{String.valueOf(left), String.valueOf(right)};
 			db.execSQL(DELETE_CATEGORY_UPDATE1, args);
@@ -944,6 +960,8 @@ public class DatabaseAdapter {
 		ContentValues values = new ContentValues();
 		values.put(CategoryColumns.title.name(), title);
         values.put(CategoryColumns.type.name(), type);
+        values.remove("updated_on");     
+        values.put(CategoryColumns.updated_on.name(), System.currentTimeMillis());        
 		db().update(CATEGORY_TABLE, values, CategoryColumns._id+"=?", new String[]{String.valueOf(id)});
 	}
 	
@@ -1072,11 +1090,14 @@ public class DatabaseAdapter {
         SQLiteDatabase db = db();
 		db.beginTransaction();
 		try {
+			Attribute attr=getAttribute(id);
+			String key=attr.remoteKey;
 			String[] p = new String[]{String.valueOf(id)};
 			db.delete(ATTRIBUTES_TABLE, AttributeColumns.ID+"=?", p);
 			db.delete(CATEGORY_ATTRIBUTE_TABLE, CategoryAttributeColumns.ATTRIBUTE_ID+"=?", p);
 			db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.ATTRIBUTE_ID+"=?", p);
 			db.setTransactionSuccessful();
+			writeDeleteLog(ATTRIBUTES_TABLE, key);
 		} finally {
 			db.endTransaction();
 		}
@@ -1084,11 +1105,17 @@ public class DatabaseAdapter {
 
 	private long insertAttribute(Attribute attribute) {
 		ContentValues values = attribute.toValues();
+		values.remove("updated_on");     
+        values.put(CategoryColumns.updated_on.name(), System.currentTimeMillis());
+        values.put(CategoryColumns.remote_key.name(), attribute.remoteKey);        	
 		return db().insert(ATTRIBUTES_TABLE, null, values);
 	}
 
 	private void updateAttribute(Attribute attribute) {
 		ContentValues values = attribute.toValues();
+        values.remove("updated_on");     
+        values.put(CategoryColumns.updated_on.name(), System.currentTimeMillis());
+        values.put(CategoryColumns.remote_key.name(), attribute.remoteKey);		
 		db().update(ATTRIBUTES_TABLE, values, AttributeColumns.ID+"=?", new String[]{String.valueOf(attribute.id)});
 	}
 
@@ -1192,7 +1219,7 @@ public class DatabaseAdapter {
      * @param ids selected transactions' ids
      */
 	public void clearSelectedTransactions(long[] ids) {
-		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.CL+"'";
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.CL+"'," + TransactionColumns.updated_on + "='" + System.currentTimeMillis() + "' ";		
 		runInTransaction(sql, ids);
 	}
 
@@ -1201,7 +1228,7 @@ public class DatabaseAdapter {
      * @param ids selected transactions' ids
      */
 	public void reconcileSelectedTransactions(long[] ids) {
-		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.RC+"'";
+		String sql = "UPDATE "+TRANSACTION_TABLE+" SET "+TransactionColumns.status +"='"+TransactionStatus.RC + "'," + TransactionColumns.updated_on + "='" + System.currentTimeMillis() + "' ";				
 		runInTransaction(sql, ids);
 	}
 
@@ -1497,6 +1524,8 @@ public class DatabaseAdapter {
 
     private void saveRateInTransaction(SQLiteDatabase db, ExchangeRate r) {
         ContentValues values = r.toValues();
+        values.remove("updated_on");     
+        values.put(CategoryColumns.updated_on.name(), System.currentTimeMillis());          
         db.insert(EXCHANGE_RATES_TABLE, null, values);
     }
 
@@ -1792,6 +1821,20 @@ public class DatabaseAdapter {
         return DatabaseUtils.rawFetchLongValue(this, "select balance from running_balance where account_id=? order by datetime desc, transaction_id desc limit 1",
                 new String[]{String.valueOf(account.id)});
     }
-
+    
+    public long writeDeleteLog(String tableName,String remoteKey) {
+    	if (remoteKey==null) {
+    		return 0;
+    	}
+    	if (remoteKey=="") {
+    		return 0;
+    	}     	
+    	ContentValues row = new ContentValues();
+		row.put(deleteLogColumns.TABLE_NAME, tableName);				
+    	row.put(deleteLogColumns.REMOTE_KEY,remoteKey);				
+    	row.put(deleteLogColumns.DELETED_ON, System.currentTimeMillis());
+    	return db().insert(DELETE_LOG_TABLE, null, row);
+    }
+    
 }
 

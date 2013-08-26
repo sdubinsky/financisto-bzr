@@ -10,6 +10,38 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
+import static ru.orangesoftware.financisto.utils.Utils.text;
+import greendroid.widget.QuickActionGrid;
+import greendroid.widget.QuickActionWidget;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.Category;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.model.MyEntity;
+import ru.orangesoftware.financisto.model.Payee;
+import ru.orangesoftware.financisto.model.Transaction;
+import ru.orangesoftware.financisto.utils.CurrencyCache;
+import ru.orangesoftware.financisto.utils.MyPreferences;
+import ru.orangesoftware.financisto.utils.SplitAdjuster;
+import ru.orangesoftware.financisto.utils.TransactionUtils;
+import ru.orangesoftware.financisto.utils.Utils;
+import ru.orangesoftware.financisto.widget.AmountInput;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,21 +51,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
-import greendroid.widget.QuickActionGrid;
-import greendroid.widget.QuickActionWidget;
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.utils.*;
-import ru.orangesoftware.financisto.widget.AmountInput;
-
-import java.io.*;
-import java.util.*;
-
-import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
-import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
-import static ru.orangesoftware.financisto.utils.Utils.text;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class TransactionActivity extends AbstractTransactionActivity {
 
@@ -681,6 +705,9 @@ public class TransactionActivity extends AbstractTransactionActivity {
         if (split != null) {
             removeSplitView(v);
             updateUnsplitAmount();
+            if (split.remoteKey!=null) {
+            	db.writeDeleteLog(DatabaseHelper.TRANSACTION_TABLE, split.remoteKey);
+            }
         }
     }
 

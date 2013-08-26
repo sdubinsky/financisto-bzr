@@ -10,12 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.orb;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
-import javax.persistence.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -23,6 +17,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.PersistenceException;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import ru.orangesoftware.financisto.db.DatabaseHelper;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public abstract class EntityManager {
 	
@@ -106,12 +117,16 @@ public abstract class EntityManager {
 		EntityDefinition ed = getEntityDefinitionOrThrow(entity.getClass());
 		ContentValues values = getContentValues(ed, entity);
 		long id = ed.getId(entity);
+		values.remove("updated_on");
+		values.put("updated_on", System.currentTimeMillis());			
 		if (id <= 0) {
-			values.remove(ed.idField.columnName);
+			values.remove(ed.idField.columnName);		
 			id = db.insertOrThrow(ed.tableName, null, values);
             ed.setId(entity, id);
             return id;
 		} else {
+			values.remove("updated_on");
+			values.put("updated_on", System.currentTimeMillis());
 			db.update(ed.tableName, values, ed.idField.columnName+"=?", new String[]{String.valueOf(id)});
 			return id;
 		}
@@ -245,7 +260,25 @@ public abstract class EntityManager {
 		if (id == null) {
 			throw new IllegalArgumentException("Id can't be null");
 		}
+
 		EntityDefinition ed = getEntityDefinitionOrThrow(clazz);
+		for (FieldInfo fI: ed.fields) {
+			if (fI.columnName=="remote_key") {				
+				Cursor cursor = db().query(ed.tableName,
+						new String[] { "remote_key"}, ed.idField.columnName + "=?",
+						new String[] { String.valueOf(id) }, null, null, null, null);
+			    if (cursor != null) {
+			    	cursor.moveToFirst();
+			    	ContentValues row = new ContentValues();			    	
+					row.put(DatabaseHelper.deleteLogColumns.TABLE_NAME, ed.tableName);				
+			    	row.put(DatabaseHelper.deleteLogColumns.REMOTE_KEY,cursor.getString(0));				
+			    	row.put(DatabaseHelper.deleteLogColumns.DELETED_ON, System.currentTimeMillis());
+			    	db().insert(DatabaseHelper.DELETE_LOG_TABLE, null, row);
+			    	Log.e("financisto","stored deleteLog " + ed.tableName + " "+ cursor.getString(0));
+			    }
+			}
+		}		
+		
 		return db().delete(ed.tableName, ed.idField.columnName+"=?", new String[]{id.toString()});
 	}
 
