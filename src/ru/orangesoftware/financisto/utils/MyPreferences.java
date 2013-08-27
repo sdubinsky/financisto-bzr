@@ -551,6 +551,10 @@ public class MyPreferences {
         return getBoolean(context, "hide_closed_accounts", false);
     }
 
+    public static boolean isPinHapticFeedbackEnabled(Context context) {
+        return getBoolean(context, "pin_protection_haptic_feedback", true);
+    }
+
     public static StartupScreen getStartupScreen(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String screen = sharedPreferences.getString("startup_screen", StartupScreen.ACCOUNTS.name());

@@ -169,6 +169,11 @@
                         android:entryValues="@array/lock_time_values"
                         android:dependency="pin_protection"
                         android:defaultValue="5"/>
+        <CheckBoxPreference android:key="pin_protection_haptic_feedback"
+                            android:title="@string/pin_protection_haptic_feedback"
+                            android:summary="@string/pin_protection_haptic_feedback_summary"
+                            android:dependency="pin_protection"
+                            android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/home_screen">
         <Preference android:title="@string/shortcut_new_transaction"
