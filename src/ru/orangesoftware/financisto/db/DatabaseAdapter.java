@@ -258,6 +258,7 @@ public class DatabaseAdapter {
 			transaction.id = -1;
 			transaction.isTemplate = isTemplate;
 			transaction.dateTime = now;
+			transaction.remoteKey=null;
 			if (isTemplate == 0) {
 				transaction.recurrence = null;
 				transaction.notificationOptions = null;
@@ -282,6 +283,7 @@ public class DatabaseAdapter {
             if (multiplier > 1) {
                 for (Transaction split : splits) {
                     split.fromAmount *= multiplier;
+                    split.remoteKey=null;
                 }
             }
             transaction.id = transactionId;
