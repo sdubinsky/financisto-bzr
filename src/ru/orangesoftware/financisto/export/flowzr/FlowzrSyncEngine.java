@@ -780,9 +780,9 @@ public class FlowzrSyncEngine  {
 					e.printStackTrace();
 				}
 			}
-			if (jsonObjectEntity.has("amount")) {			
+			if (jsonObjectEntity.has("amount2")) {			
 				try {
-					tEntity.amount=(long)jsonObjectEntity.getDouble("amount")*100;
+					tEntity.amount=(long)jsonObjectEntity.getInt("amount2");
 				} catch (Exception e) {
 					Log.e(TAG,"Error parsing Budget.amount");								
 				}
