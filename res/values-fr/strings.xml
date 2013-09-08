@@ -5,7 +5,7 @@
   <string name="blotter">Opérations</string>
   <string name="currencies">Devises</string>
   <string name="categories">Catégories</string>
-  <string name="budgets">Planification</string>
+  <string name="budgets">Budgets</string>
   <string name="projects">Projets</string>
   <string name="ok">OK</string>
   <string name="clear">Effacer</string>
@@ -47,7 +47,7 @@
   <string name="include_subcategories_summary">Ajouter les opérations des sous-catégories</string>
   <string name="start_date">Date de départ</string>
   <string name="end_date">Date de fin</string>
-  <string name="budget">Planification</string>
+  <string name="budget">Budget</string>
   <string name="no_limit">Aucune limite</string>
   <string name="period">Période</string>
   <string name="period_from">Début de période</string>
@@ -64,7 +64,7 @@
   <string name="select_project">Sélectionnez un projet..</string>
   <string name="warning">Attention</string>
   <string name="no_accounts">Vous devriez commencer par créer un compte. Appuyez sur le \'+\' vert en bas de l\'écran..</string>
-  <string name="no_budgets">Aucune opération planifiée</string>
+  <string name="no_budgets">Aucun budget préparé</string>
   <string name="no_transactions">Aucune opération</string>
   <string name="no_categories">Aucune catégorie</string>
   <string name="no_currencies">Aucune devise</string>
@@ -126,7 +126,7 @@
   <string name="overall">Total</string>
   <string name="report_by_period">Par période</string>
   <string name="report_by_period_summary">Etat des opérations par période</string>
-  <string name="report_by_category">By Category</string>
+  <string name="report_by_category">Par Categorie</string>
   <string name="report_by_category_summary">Etat des opérations par catégorie</string>
   <string name="report_by_location">Par position</string>
   <string name="report_by_location_summary">Etat des opérations par position</string>
@@ -146,13 +146,13 @@
   <string name="sum_result_label">Som:</string>
   <string name="report_init_res">0</string>
   <string name="no_data_to_report">Aucune donnée n\'est disponible pour afficher le etat.</string>
-  <string name="report_preferences_not_set">Configurer préférences dans menu Préférences de Rapport. Considérant devise et période standard.</string>
-  <string name="currency_not_set">Devise de référence n\'est pas configuré dans menu Préférences. Considérant devise standard.</string>
-  <string name="period_not_set">Période de référence n\'est pas configuré dans menu Préférences du rapport. Considérant période standard.</string>
-  <string name="report_no_category">There is no category available for filtering in the report.</string>
-  <string name="report_no_project">There is no project available for filtering in the report.</string>
-  <string name="report_no_account">There is no account available for filtering in the report.</string>
-  <string name="report_no_location">There is no location available for filtering in the report.</string>
+  <string name="report_preferences_not_set">Configurer préférences dans menu Préférences de Rapport (logiciel utilisera période et devise standard).</string>
+  <string name="currency_not_set">Devise de référence n\'est pas configuré dans menu Préférences (logiciel utilisera période standard).</string>
+  <string name="period_not_set">Période de référence n\'est pas configuré dans menu Préférences du rapport (logiciel utilisera période standard).</string>
+  <string name="report_no_category">Pas de catégorie comme filtre de cet état.</string>
+  <string name="report_no_project">Pas de project comme filtre de cet état.</string>
+  <string name="report_no_account">Pas de compte comme filtre de cet état.</string>
+  <string name="report_no_location">Pas de position comme filtre de cet état.</string>
   <string name="no_account">Aucun compte</string>
   <string name="period_today">Aujourd\'hui</string>
   <string name="period_yesterday">Hier</string>
@@ -338,28 +338,28 @@
   <string name="user_password">Mot de passe</string>
   <string name="user_password_summary">Mot de passe du compte Google</string>
   <string name="backup_folder">Backup Collection</string>
-  <string name="backup_folder_summary">To store backup files create a new collection in My Collections</string>
-  <string name="report_preferences">Préférences de etat</string>
-  <string name="all_reports_preferences">General Report Preferences</string>
-  <string name="category_by_period_preferences">Category by Period Report Preferences</string>
-  <string name="report_include_sub_categories">Inclure sous catégories dans la liste</string>
-  <string name="report_include_sub_categories_summary">Include sub categories in the Category by Period Reports list of categories</string>
+  <string name="backup_folder_summary">Choisissez un dossier (Collection) pour le backup</string>
+  <string name="report_preferences">Préférences des états</string>
+  <string name="all_reports_preferences">Preferences de tous les états</string>
+  <string name="category_by_period_preferences">Preferences du rapport \"Catégories par période\"</string>
+  <string name="report_include_sub_categories">Inclure les sous catégories dans la liste</string>
+  <string name="report_include_sub_categories_summary">Inclure les sous catégories dans la liste de séléction pour le rapport \"Catégories par période\" </string>
   <string name="report_add_sub_categories_result">Ajouter le résultat de sous-catégories</string>
   <string name="report_add_sub_categories_result_summary">Ajouter le résultat de tous les sous-catégories dans les résultats de la catégorie primaire</string>
   <string name="report_consider_null_results">Considérez nuls dans les statistiques</string>
   <string name="report_consider_null_results_summary">Considérez résultat nul lors de la génération des statistiques (min, max et moyenne)</string>
   <string name="report_include_no_filter">Inclure Aucun &lt;Filtre&gt;</string>
-  <string name="report_include_no_filter_summary">Include non classified transactions to reports filters lists (No category, No Project and Unknown Location)</string>
+  <string name="report_include_no_filter_summary">Inclure les non-classifiés dans les filtres de rapport (pas de catégorie, pas de project, pas de géo-localisation)</string>
   <string name="report_reference_month">Mois de référence</string>
-  <string name="report_reference_month_summary">Define the Reference Month that represents the end of the report period</string>
+  <string name="report_reference_month_summary">Definir la le mois de référence pour representer la fin de la période de référence.</string>
   <string name="report_last_quarter">Dernier trimestre</string>
   <string name="report_last_half_year">Dernière semestre</string>
   <string name="report_last_9_months">Derniers 9 mois</string>
   <string name="report_last_year">Dernière année</string>
   <string name="report_reference_period">Période de référence</string>
-  <string name="report_reference_period_summary">Define the period of reference (number of months) to be considered when opening report charts</string>
+  <string name="report_reference_period_summary">Definir la période de référence (en mois) à l\'ouverture des graphiques</string>
   <string name="report_reference_currency">Devise de référence</string>
-  <string name="report_reference_currency_summary">Define the reference currency to be considered when request data for report charts</string>
+  <string name="report_reference_currency_summary">Definir la monnaie de référence pour le rapport graphique</string>
   <string name="report_last_n_months">Dernière $n mois</string>
   <string name="report_n_months_var">$n</string>
   <string name="month_jan">JAN</string>
@@ -398,8 +398,8 @@
   <string name="delete_template_confirm">Supprimer le modèle ?</string>
   <string name="save_as_template">Enregistrer comme modèle</string>
   <string name="save_as_template_success">Opération enregistrée comme modèle..</string>
-  <string name="scheduled_transactions">Planification</string>
-  <string name="no_scheduled_transactions">Aucune opération planifiée</string>
+  <string name="scheduled_transactions">Transactions auto.</string>
+  <string name="no_scheduled_transactions">Aucune transaction automatique</string>
   <string name="recur_interval_geeky">Geek</string>
   <string name="recurrence_pattern">Modèle de récurrence</string>
   <string name="recurrence_period">Période de récurrence</string>
@@ -486,8 +486,8 @@
   <string name="negative_opening_amount_summary">Ouvrir un compte avec le montant ouvrant négative</string>
   <string name="payment_day">Jour de paiement</string>
   <string name="closing_day">Journée de clôture</string>
-  <string name="payment_day_hint">The day on which you pay your credit card bill.</string>
-  <string name="closing_day_hint">Day on which the bill closes</string>
+  <string name="payment_day_hint">Le jour ou vous avez éffectivement payé.</string>
+  <string name="closing_day_hint">Jour de clôture du relevé</string>
   <string name="closing_day_title">Relevé Date de Clôture</string>
   <string name="reference_period">Période de référence</string>
   <string name="regular_closing_day">Utilisez la journée de clôture régulière</string>
@@ -504,9 +504,9 @@
   <string name="monthly_result">Balance du mois</string>
   <string name="closing_day_error">Journée de clôture invalide.</string>
   <string name="payment_day_error">Jour de paiement invalide.</string>
-  <string name="statement_error">Please set payment and closing days for this credit card on account properties.</string>
-  <string name="is_ccard_payment">Credit Card Payment</string>
-  <string name="is_ccard_payment_summary">Not Include into bill total</string>
+  <string name="statement_error">Merci de définir dates de paiment et de clotures (propriétés du compte).</string>
+  <string name="is_ccard_payment">Card Paiment par carte</string>
+  <string name="is_ccard_payment_summary">Ne pas inclure dans le total des factures par cartes</string>
   <string name="header_payments">Paiements</string>
   <string name="header_credits">Divers crédits</string>
   <string name="header_expenses">Dépenses</string>
@@ -537,8 +537,8 @@
   <string name="report_by_payee_summary">Opérations rapport par le bénéficiaire</string>
   <string name="report_by_payee_by_period">Par le Bénéficiaire / Période</string>
   <string name="report_by_payee_by_period_summary">Opérations rapport par le bénéficiaire et période</string>
-  <string name="no_payee">Aucun bénéficiaires</string>
-  <string name="report_no_payee">There is no payee available for filtering in the report.</string>
+  <string name="no_payee">Aucun bénéficiaire</string>
+  <string name="report_no_payee">Pas de bénéficiaire pour ce rapport.</string>
   <string name="donate">Faire un don</string>
   <string name="donate_error">Android Market n\'est pas disponible sur votre appareil</string>
   <string name="type">Type</string>
@@ -549,7 +549,7 @@
   <string name="empty_report">Rapport vide</string>
   <string name="day_of_month">Jour du mois</string>
   <string name="show_running_balance">Montrer bilan courant</string>
-  <string name="show_running_balance_summary">Show account running balance in the blotter (requires restart)</string>
+  <string name="show_running_balance_summary">Montrer le solde dans la liste des transactions (redémmarage néccessaire)</string>
   <string name="new_currency">Nouvelle devise...</string>
   <string name="lock_time">Temps pour blocage</string>
   <string name="lock_time_summary">Temps de maintenir l\'écran actif avant de bloqué</string>
@@ -588,9 +588,9 @@
   <string name="qif_import_error">Erreur d\'importation QIF</string>
   <string name="qif_import_success">Fichier QIF a été importé avec succès</string>
   <string name="import_export">Importation/Exportation</string>
-  <string name="qif_import_disclaimer">*ATTENTION* S\'il vous plaît noter que toutes les données existantes seront supprimées!</string>
+  <string name="qif_import_disclaimer">*ATTENTION*  Toutes les données existantes seront supprimées!</string>
   <string name="remember_last_category_for_payee">Dernière catégorie</string>
-  <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee (or account if payee is disabled)</string>
+  <string name="remember_last_category_for_payee_summary">Bénéficiaires: se souvenir de la dernière catégorie (ou compte si pas de bénéficiaire)</string>
   <string name="currency_symbol_format">Format de symbole</string>
   <string name="use_header_from_file">Utilisez-tête du fichier</string>
   <string name="info">Info</string>
@@ -601,7 +601,7 @@
   <string name="auto_backup_enabled">Activer auto-backup</string>
   <string name="auto_backup_enabled_summary">Sauvegarde de la base de données quotidiennement à l\'heure spécifiée</string>
   <string name="auto_backup_time">Heure d\'auto-sauvegarde</string>
-  <string name="auto_backup_time_summary" formatted="false">Faire une backup quotidienne %02d:%02d</string>
+  <string name="auto_backup_time_summary" formatted="false">Faire un backup quotidien %02d:%02d</string>
   <string name="select_folder">Sélectionnez le dossier courant</string>
   <string name="create">Créer</string>
   <string name="create_new_folder">Nouveau</string>
@@ -609,24 +609,24 @@
   <string name="create_new_folder_fail">Échec à créer le dossier</string>
   <string name="database_backup">Sauvegarde de la base de données</string>
   <string name="database_backup_folder">Dossier de sauvegarde</string>
-  <string name="database_backup_folder_summary">Actuelle dossier de sauvegarde de bases de données: %s</string>
+  <string name="database_backup_folder_summary">Actuel dossier de sauvegarde de bases de données: %s</string>
   <string name="backup_database_to">Envoyer la sauvegarde de...</string>
   <string name="backup_database_to_title">Envoyer la sauvegarde de la base de données à...</string>
   <string name="license">Licence</string>
   <string name="quick_menu_account_enabled">Accounts quick-menu</string>
-  <string name="quick_menu_account_enabled_summary">Enable one-tap menu in the Accounts</string>
+  <string name="quick_menu_account_enabled_summary">Activer le menu en  \"un-click\" sur les comptes</string>
   <string name="quick_menu_transaction_enabled">Blotter quick-menu</string>
-  <string name="quick_menu_transaction_enabled_summary">Enable one-tap menu in the Blotter</string>
+  <string name="quick_menu_transaction_enabled_summary">Activer \"en un clic\" comme menu sur la liste des transactions</string>
   <string name="dropbox">Dropbox</string>
   <string name="dropbox_authorize">Autoriser</string>
-  <string name="dropbox_authorize_summary">Allow Financisto to upload files to your Dropbox</string>
+  <string name="dropbox_authorize_summary">Autoriser l\'envoie sur Dropbox</string>
   <string name="dropbox_unlink">Dissocier</string>
-  <string name="dropbox_unlink_summary">Prevent Financisto from uploading files to your Dropbox</string>
+  <string name="dropbox_unlink_summary">Annuler l\'autorisation d\'envoi sur Dropbox</string>
   <string name="dropbox_upload_backup">Upload Backups</string>
-  <string name="dropbox_upload_backup_summary">Upload database backups to Dropbox</string>
+  <string name="dropbox_upload_backup_summary">Upload backups sur Dropbox</string>
   <string name="dropbox_upload_autobackup">Upload Auto-backups</string>
-  <string name="dropbox_upload_autobackup_summary">Upload database auto-backups to Dropbox</string>
-  <string name="dropbox_uploading_file">Uploading file to Dropbox...</string>
+  <string name="dropbox_upload_autobackup_summary">Upload auto-backups sur Dropbox</string>
+  <string name="dropbox_uploading_file">Envoie sur Dropbox...</string>
   <string name="exchange_rates">Taux de change</string>
   <string name="no_exchange_rates">Aucun taux de change</string>
   <string name="exchange_rate">Taux de change</string>
@@ -638,29 +638,29 @@
   <string name="select">Select</string>
   <string name="category_selector">Category selector</string>
   <string name="use_hierarchical_category_selector">Hierarchical selector</string>
-  <string name="use_hierarchical_category_selector_summary">Use hierarchical category selector</string>
-  <string name="hierarchical_category_selector_select_child_immediately">Confirm automatically</string>
-  <string name="hierarchical_category_selector_select_child_immediately_summary">Confirm child category selection automatically</string>
-  <string name="hierarchical_category_selector_income_expense">Income/Expense</string>
-  <string name="hierarchical_category_selector_income_expense_summary">Group income and expense categories together</string>
+  <string name="use_hierarchical_category_selector_summary">Utiliser la selection par sous-catégories</string>
+  <string name="hierarchical_category_selector_select_child_immediately">Confirmer automatiquement</string>
+  <string name="hierarchical_category_selector_select_child_immediately_summary">Selectionnez les sous-categories automatiquement (confirmez)</string>
+  <string name="hierarchical_category_selector_income_expense">Revenus/Dépenses</string>
+  <string name="hierarchical_category_selector_income_expense_summary">Grouper ensemble les revenus et les dépenses</string>
   <string name="totals">Totals</string>
-  <string name="account_total_in_currency">All %s accounts</string>
-  <string name="blotter_total_in_currency">All %s transactions</string>
-  <string name="budget_total_in_currency">All %s budgets</string>
-  <string name="home_currency_total">Total in home currency</string>
-  <string name="total_rate">Rate: %0.5f</string>
-  <string name="home_currency">Home currency</string>
-  <string name="upload_to_dropbox">Upload to\nDropbox</string>
-  <string name="not_available">N/A</string>
-  <string name="rate_not_available_on_date_error" formatted="false">No exchange rate specified on %s to calculate between %s and %s</string>
-  <string name="rate_not_available_error" formatted="false">No exchange rate specified between %s and %s</string>
-  <string name="collapse_blotter_buttons">Collapse Blotter buttons</string>
-  <string name="collapse_blotter_buttons_summary">Group New Transaction/Transfer/Template buttons together (requires restart)</string>
-  <string name="is_active">Is active</string>
-  <string name="report_income_expense_both">Income/Expenses</string>
-  <string name="report_income_expense_income">Income</string>
-  <string name="report_income_expense_expense">Expenses</string>
-  <string name="report_income_expense_summary">Summary</string>
+  <string name="account_total_in_currency">Tous comptes %s</string>
+  <string name="blotter_total_in_currency">Toutes transactions %s</string>
+  <string name="budget_total_in_currency">Tous budgets %s</string>
+  <string name="home_currency_total">Total dans la monnaie par défaut</string>
+  <string name="total_rate">Taux: %0.5f</string>
+  <string name="home_currency">Monnaie par défaut</string>
+  <string name="upload_to_dropbox">Envoyer sur\nDropbox</string>
+  <string name="not_available">Indisp.</string>
+  <string name="rate_not_available_on_date_error" formatted="false">Pas de taux de change specifié pour le %s afin de calculer %s et %s</string>
+  <string name="rate_not_available_error" formatted="false">Pas de taux de change connus entre %s et %s</string>
+  <string name="collapse_blotter_buttons">Réduires boutons</string>
+  <string name="collapse_blotter_buttons_summary">Grouper les nouvelles Transactions/Transferts/Templates boutons ensemble (nécessite un redémmarage)</string>
+  <string name="is_active">Est actif</string>
+  <string name="report_income_expense_both">Revenus/Dépenses</string>
+  <string name="report_income_expense_income">Revenus</string>
+  <string name="report_income_expense_expense">Dépenses</string>
+  <string name="report_income_expense_summary">Résumé</string>
   <string-array name="attribute_types">
     <item>Texte</item>
     <item>Nombre</item>
@@ -717,4 +717,6 @@
     <item>10 minutes</item>
     <item>15 minutes</item>
   </string-array>
+    <string name="planner">A venir</string>
+      
 </resources>

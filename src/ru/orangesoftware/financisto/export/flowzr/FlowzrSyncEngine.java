@@ -47,6 +47,7 @@ import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.ProgressListener;
 import ru.orangesoftware.financisto.model.Account;
+import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Budget;
 import ru.orangesoftware.financisto.model.Category;
@@ -1080,6 +1081,7 @@ public class FlowzrSyncEngine  {
 			CurrencyCache.initialize(em);			
 			//card_issuer
 		 	if (jsonObjectAccount.has("card_issuer")) {
+		 		
 		 		tEntity.cardIssuer=jsonObjectAccount.getString("card_issuer");
 		 	} 
 		 	//issuer
