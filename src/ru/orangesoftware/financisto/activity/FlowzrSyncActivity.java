@@ -63,6 +63,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
+
 
 public class FlowzrSyncActivity extends Activity  {
 
@@ -198,7 +200,7 @@ public class FlowzrSyncActivity extends Activity  {
             	if (useCredential==null) {
             		//progressDialog.dismiss();            		
     				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_choose_account);              		
-            	} else if (!isOnline()) {        
+            	} else if (!isOnline(FlowzrSyncActivity.this)) {
             		            		
         			//progressDialog.dismiss();
     				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);                                         				
@@ -227,7 +229,7 @@ public class FlowzrSyncActivity extends Activity  {
         Button textViewAbout = (Button) findViewById(R.id.buySubscription);
         textViewAbout.setOnClickListener(new View.OnClickListener() {        		
         	public void onClick(View v) {
-	        		if (isOnline()) {
+	        		if (isOnline(FlowzrSyncActivity.this)) {
                         visitFlowzr(useCredential);
 	        		} else {         			
 	    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);            			           			
@@ -238,7 +240,7 @@ public class FlowzrSyncActivity extends Activity  {
         Button textViewAboutAnon = (Button) findViewById(R.id.visitFlowzr);
         textViewAboutAnon.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
-	        		if (isOnline()) {
+	        		if (isOnline(FlowzrSyncActivity.this)) {
                         visitFlowzr(null);
 	        		} else {
 	    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
@@ -267,17 +269,6 @@ public class FlowzrSyncActivity extends Activity  {
         restorePreferences();		
 	}
 
-	public boolean isOnline() {
-	    ConnectivityManager cm =
-	        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-	        return true;
-	    }
-	    return false;
-	}
-
-	
 	private class GetAuthTokenCallback implements AccountManagerCallback<Bundle> {
 		public void run(AccountManagerFuture<Bundle> result) {
 			Bundle bundle;

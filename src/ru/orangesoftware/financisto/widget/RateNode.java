@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.*;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.ActivityLayout;
+import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.rates.ExchangeRate;
 import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
@@ -27,6 +28,8 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.Utils;
 
 import java.text.DecimalFormat;
+
+import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,6 +45,7 @@ public class RateNode {
     private final RateNodeOwner owner;
     private final ActivityLayout x;
     private final LinearLayout layout;
+    private final DatabaseAdapter db;
 
     public View rateInfoNode;
     public TextView rateInfo;
@@ -54,6 +58,7 @@ public class RateNode {
         this.owner = owner;
         this.x = x;
         this.layout = layout;
+        this.db = new DatabaseAdapter(owner.getActivity());
         createUI();
     }
 
@@ -135,13 +140,20 @@ public class RateNode {
     private class RateDownloadTask extends AsyncTask<Void, Void, ExchangeRate> {
 
         private ProgressDialog progressDialog;
+        private volatile boolean isOfflineRate = false;
 
         @Override
         protected ExchangeRate doInBackground(Void... args) {
             Currency fromCurrency = owner.getCurrencyFrom();
             Currency toCurrency = owner.getCurrencyTo();
             if (fromCurrency != null && toCurrency != null) {
-                return getProvider().getRate(fromCurrency, toCurrency);
+                if (isOnline(owner.getActivity())) {
+                    isOfflineRate = false;
+                    return getProvider().getRate(fromCurrency, toCurrency);
+                } else {
+                    isOfflineRate = true;
+                    return db.getLatestRates().getRate(fromCurrency, toCurrency);
+                }
             }
             return null;
         }
@@ -175,11 +187,13 @@ public class RateNode {
             owner.onAfterRateDownload();
             if (result != null) {
                 if (result.isOk()) {
+                    if (isOfflineRate) {
+                        Toast.makeText(owner.getActivity(), R.string.offline_rate, Toast.LENGTH_LONG).show();
+                    }
                     setRate(result.rate);
                     owner.onSuccessfulRateDownload();
                 } else {
-                    Toast t = Toast.makeText(owner.getActivity(), result.getErrorMessage(), Toast.LENGTH_LONG);
-                    t.show();
+                    Toast.makeText(owner.getActivity(), result.getErrorMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }
