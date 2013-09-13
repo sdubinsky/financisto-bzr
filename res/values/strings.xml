@@ -852,4 +852,7 @@
     <string name="pin_protection_haptic_feedback_summary">Enable vibration when tapping pin buttons</string>
     <string name="offline_rate">No network connection, the latest offline rate applied...</string>
 
+    <string name="show_payee_in_transfer">Transfer Payee</string>
+    <string name="show_payee_in_transfer_summary">Show payee field in New Transfer screen</string>
+
 </resources>

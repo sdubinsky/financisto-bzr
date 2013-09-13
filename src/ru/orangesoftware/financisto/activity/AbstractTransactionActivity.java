@@ -25,6 +25,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -114,6 +115,10 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 	protected boolean isShowTakePicture;
 	protected boolean isShowIsCCardPayment;
 	protected boolean isOpenCalculatorForTemplates;
+
+    protected boolean isShowPayee = true;
+    protected AutoCompleteTextView payeeText;
+    protected SimpleCursorAdapter payeeAdapter;
 
 	protected AttributeView deleteAfterExpired;
 	
@@ -318,6 +323,25 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 		long t1 = System.currentTimeMillis();
 		Log.i("TransactionActivity", "onCreate "+(t1-t0)+"ms");
 	}
+
+    protected void createPayeeNode(LinearLayout layout) {
+        payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
+        payeeText = new AutoCompleteTextView(this);
+        payeeText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS |
+                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+                InputType.TYPE_TEXT_VARIATION_FILTER);
+        payeeText.setThreshold(1);
+        payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    payeeText.setAdapter(payeeAdapter);
+                    payeeText.selectAll();
+                }
+            }
+        });
+        x.addEditNode(layout, R.string.payee, payeeText);
+    }
 
     protected abstract void fetchCategories();
 
@@ -823,6 +847,9 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 			transaction.latitude = lastFix != null ? lastFix.getLatitude() : 0;
 			transaction.longitude = lastFix != null ? lastFix.getLongitude() : 0;
 		}
+        if (isShowPayee) {
+            transaction.payeeId = db.insertPayee(text(payeeText));
+        }
 		if (isShowNote) {
 			transaction.note = text(noteText);
 		}
@@ -833,6 +860,20 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 			transaction.recurrence = recurrence;
 			transaction.notificationOptions = notificationOptions;
 		}
-	}	
-	
+	}
+
+    protected void selectPayee(long payeeId) {
+        if (isShowPayee) {
+            Payee p = db.em().get(Payee.class, payeeId);
+            selectPayee(p);
+        }
+    }
+
+    protected void selectPayee(Payee p) {
+        if (p != null) {
+            payeeText.setText(p.title);
+            transaction.payeeId = p.id;
+        }
+    }
+
 }

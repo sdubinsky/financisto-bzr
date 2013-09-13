@@ -139,6 +139,7 @@ public class TransactionInfoDialog {
         add(layout, R.string.account_to, ti.toAccount.title, toAccountType);
         amountView = add(layout, R.string.amount_to, "");
         u.setAmountText(amountView, ti.toAccount.currency, ti.toAmount, true);
+        add(layout, R.string.payee, ti.payee.title);
         add(layout, R.string.category, ti.category.title);
     }
 

@@ -183,6 +183,11 @@ public class MyPreferences {
         return sharedPreferences.getBoolean("ntsl_show_payee", true);
     }
 
+    public static boolean isShowPayeeInTransfers(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("ntsl_show_payee_in_transfers", false);
+    }
+
     public static boolean isShowCurrency(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean("ntsl_show_currency", true);
