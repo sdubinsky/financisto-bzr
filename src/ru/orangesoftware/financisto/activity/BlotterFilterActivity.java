@@ -322,8 +322,9 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ListAdapter adapter = TransactionUtils.createCategoryAdapter(db, this, cursor);
 			Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
             if (c != null) {
-                x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns.left.name(),
-                        c.getLongValue1());
+                Category cat = db.getCategoryByLeft(c.getLongValue1());
+                x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns._id.name(),
+                        cat.id);
             } else {
                 c = filter.get(BlotterFilter.CATEGORY_ID);
                 x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns._id.name(),
@@ -423,7 +424,7 @@ public class BlotterFilterActivity extends AbstractActivity {
             if (selectedId == 0) {
                 filter.put(new SingleCategoryCriteria(0));
             } else {
-			    Category cat = db.getCategoryByLeft(selectedId);
+			    Category cat = db.getCategory(selectedId);
 			    filter.put(Criteria.btw(BlotterFilter.CATEGORY_LEFT, String.valueOf(cat.left), String.valueOf(cat.right)));
             }
 			updateCategoryFromFilter();
