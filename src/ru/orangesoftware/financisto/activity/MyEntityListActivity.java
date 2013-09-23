@@ -20,7 +20,7 @@ import ru.orangesoftware.financisto.adapter.EntityListAdapter;
 import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.model.MyEntity;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public abstract class MyEntityListActivity<T extends MyEntity> extends AbstractListActivity {
 
@@ -29,7 +29,7 @@ public abstract class MyEntityListActivity<T extends MyEntity> extends AbstractL
 
     private final Class<T> clazz;
 
-	private ArrayList<T> entities;
+	private List<T> entities;
 
 	public MyEntityListActivity(Class<T> clazz) {
 		super(R.layout.project_list);
@@ -42,7 +42,7 @@ public abstract class MyEntityListActivity<T extends MyEntity> extends AbstractL
 		entities = loadEntities();
 	}
 
-    protected abstract ArrayList<T> loadEntities();
+    protected abstract List<T> loadEntities();
 
     @Override
 	protected void addItem() {

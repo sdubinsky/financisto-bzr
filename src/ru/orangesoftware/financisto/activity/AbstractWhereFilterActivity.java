@@ -1,42 +1,39 @@
-/*******************************************************************************
- * Copyright (c) 2010 Denis Solonenko.
+/*
+ * Copyright (c) 2013 Denis Solonenko.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v2.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
- * Contributors:
- *     Denis Solonenko - initial API and implementation
- ******************************************************************************/
+ */
 package ru.orangesoftware.financisto.activity;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.*;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.blotter.BlotterFilter;
+import ru.orangesoftware.financisto.datetime.DateUtils;
+import ru.orangesoftware.financisto.datetime.Period;
+import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
+import ru.orangesoftware.financisto.filter.Criteria;
+import ru.orangesoftware.financisto.filter.DateTimeCriteria;
+import ru.orangesoftware.financisto.filter.SingleCategoryCriteria;
+import ru.orangesoftware.financisto.filter.WhereFilter;
+import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.utils.EnumUtils;
+import ru.orangesoftware.financisto.utils.TransactionUtils;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.widget.*;
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.filter.SingleCategoryCriteria;
-import ru.orangesoftware.financisto.filter.WhereFilter;
-import ru.orangesoftware.financisto.filter.Criteria;
-import ru.orangesoftware.financisto.filter.DateTimeCriteria;
-import ru.orangesoftware.financisto.db.DatabaseHelper.CategoryViewColumns;
-import ru.orangesoftware.financisto.model.*;
-import ru.orangesoftware.financisto.datetime.DateUtils;
-import ru.orangesoftware.financisto.utils.EnumUtils;
-import ru.orangesoftware.financisto.utils.TransactionUtils;
-import ru.orangesoftware.financisto.datetime.Period;
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.view.View.OnClickListener;
 
-
-public class BlotterFilterActivity extends AbstractActivity {	
+public abstract class AbstractWhereFilterActivity extends AbstractActivity {
 	
     public static final String IS_ACCOUNT_FILTER = "IS_ACCOUNT_FILTER";
 	private static final TransactionStatus[] statuses = TransactionStatus.values();
@@ -57,8 +54,8 @@ public class BlotterFilterActivity extends AbstractActivity {
 	private String[] sortBlotterEntries;
 
     private String filterValueNotFound;
-    private long accountId;
-    private boolean isAccountFilter;
+    protected long accountId;
+    protected boolean isAccountFilter;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +76,9 @@ public class BlotterFilterActivity extends AbstractActivity {
 		project = x.addFilterNodeMinus(layout, R.id.project, R.id.project_clear, R.string.project, R.string.no_filter);
 		location = x.addFilterNodeMinus(layout, R.id.location, R.id.location_clear, R.string.location, R.string.no_filter);
 		status = x.addFilterNodeMinus(layout, R.id.status, R.id.status_clear, R.string.transaction_status, R.string.no_filter);
-		sortOrder = x.addFilterNodeMinus(layout, R.id.sort_order, R.id.sort_order_clear, R.string.sort_order, sortBlotterEntries[0]);
+        if (isShowSortOrder()) {
+		    sortOrder = x.addFilterNodeMinus(layout, R.id.sort_order, R.id.sort_order_clear, R.string.sort_order, sortBlotterEntries[0]);
+        }
 
 		Button bOk = (Button)findViewById(R.id.bOK);
 		bOk.setOnClickListener(new OnClickListener(){
@@ -129,16 +128,18 @@ public class BlotterFilterActivity extends AbstractActivity {
 			updateProjectFromFilter();
             updatePayeeFromFilter();
 			updateLocationFromFilter();
-			updateSortOrderFromFilter();
 			updateStatusFromFilter();
+            if (isShowSortOrder()) {
+                updateSortOrderFromFilter();
+            }
             disableAccountResetButtonIfNeeded();
 		}
 		
 	}
 
-    private boolean isAccountFilter() {
-        return isAccountFilter && accountId > 0;
-    }
+    protected abstract boolean isShowSortOrder();
+
+    protected abstract boolean isAccountFilter();
 
     private void getAccountIdFromFilter(Intent intent) {
         isAccountFilter = intent.getBooleanExtra(IS_ACCOUNT_FILTER, false);
@@ -322,9 +323,8 @@ public class BlotterFilterActivity extends AbstractActivity {
 			ListAdapter adapter = TransactionUtils.createCategoryAdapter(db, this, cursor);
 			Criteria c = filter.get(BlotterFilter.CATEGORY_LEFT);
             if (c != null) {
-                Category cat = db.getCategoryByLeft(c.getLongValue1());
-                x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns._id.name(),
-                        cat.id);
+                x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns.left.name(),
+                        c.getLongValue1());
             } else {
                 c = filter.get(BlotterFilter.CATEGORY_ID);
                 x.select(this, R.id.category, R.string.category, cursor, adapter, CategoryViewColumns._id.name(),
@@ -424,7 +424,7 @@ public class BlotterFilterActivity extends AbstractActivity {
             if (selectedId == 0) {
                 filter.put(new SingleCategoryCriteria(0));
             } else {
-			    Category cat = db.getCategory(selectedId);
+			    Category cat = db.getCategoryByLeft(selectedId);
 			    filter.put(Criteria.btw(BlotterFilter.CATEGORY_LEFT, String.valueOf(cat.left), String.valueOf(cat.right)));
             }
 			updateCategoryFromFilter();

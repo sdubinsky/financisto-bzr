@@ -47,7 +47,7 @@ public class PayeeByPeriodReport extends Report2DChart {
 	public void setFilterIds() {
 		filterIds = new ArrayList<Long>();
 		currentFilterOrder = 0;
-		ArrayList<Payee> payees = em.getAllPayeeList();
+		List<Payee> payees = em.getAllPayeeList();
 		if (payees.size() > 0) {
             for (Payee p : payees) {
                 filterIds.add(p.getId());

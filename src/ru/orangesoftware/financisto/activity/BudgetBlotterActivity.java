@@ -66,8 +66,7 @@ public class BudgetBlotterActivity extends BlotterActivity {
                     try {
                         long budgetId = blotterFilter.getBudgetId();
                         Budget b = em.load(Budget.class, budgetId);
-                        Currency c = CurrencyCache.getCurrency(em, b.currencyId);
-                        Total total = new Total(c);
+                        Total total = new Total(b.getBudgetCurrency());
                         total.balance = db.fetchBudgetBalance(categories, projects, b);
                         return total;
                     } finally {

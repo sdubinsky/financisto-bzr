@@ -136,7 +136,7 @@ public class BudgetListActivity extends AbstractListActivity {
 
 	@Override
 	protected ListAdapter createAdapter(Cursor cursor) {
-		return new BudgetListAdapter(this, db, budgets);
+		return new BudgetListAdapter(this, budgets);
 	}
 	
 	@Override

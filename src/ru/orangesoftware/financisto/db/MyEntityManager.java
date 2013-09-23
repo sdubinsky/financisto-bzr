@@ -535,7 +535,7 @@ public class MyEntityManager extends EntityManager {
         return q.asc("title").execute();
     }
 
-    public ArrayList<Payee> getAllPayeeList() {
+    public List<Payee> getAllPayeeList() {
         return getAllEntitiesList(Payee.class, true);
     }
 

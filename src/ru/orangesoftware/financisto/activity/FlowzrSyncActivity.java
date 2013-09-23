@@ -10,6 +10,8 @@ package ru.orangesoftware.financisto.activity;
 
 import java.io.IOException;
 
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -60,6 +62,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
 
 
 public class FlowzrSyncActivity extends Activity  {
@@ -196,7 +200,7 @@ public class FlowzrSyncActivity extends Activity  {
             	if (useCredential==null) {
             		//progressDialog.dismiss();            		
     				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_choose_account);              		
-            	} else if (!isOnline()) {        
+            	} else if (!isOnline(FlowzrSyncActivity.this)) {
             		            		
         			//progressDialog.dismiss();
     				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);                                         				
@@ -222,54 +226,49 @@ public class FlowzrSyncActivity extends Activity  {
         
 
         
-        TextView textViewAbout = (TextView) findViewById(R.id.aboutServerSync);
+        Button textViewAbout = (Button) findViewById(R.id.buySubscription);
         textViewAbout.setOnClickListener(new View.OnClickListener() {        		
         	public void onClick(View v) {
-	        		if (isOnline()) {
-	        			String url=FLOWZR_BASE_URL + "/paywall/";
-	        			if (useCredential!=null) {
-	        				url=url + useCredential.name;
-	        			}
-	            		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-	            		startActivity(intent);                                     
+	        		if (isOnline(FlowzrSyncActivity.this)) {
+                        visitFlowzr(useCredential);
 	        		} else {         			
 	    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);            			           			
 	        		}        			
         		}
 		});
 
-        TextView textViewAboutAnon = (TextView) findViewById(R.id.aboutServerSyncAnon);
-        textViewAboutAnon.setOnClickListener(new View.OnClickListener() {        		
+        Button textViewAboutAnon = (Button) findViewById(R.id.visitFlowzr);
+        textViewAboutAnon.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
-	        		if (isOnline()) {
-	        			String url="http://www.flowzr.com/paywall/";
-	            		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-	            		startActivity(intent);                                     
-	        		} else {         			
-	    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);            			           			
-	        		}        			
+	        		if (isOnline(FlowzrSyncActivity.this)) {
+                        visitFlowzr(null);
+	        		} else {
+	    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
+	        		}
         		}
-		});	
-	
-	}	
-	
-	@Override
+		});
+
+        TextView textViewNotes = (TextView) findViewById(R.id.flowzrPleaseNote);
+        textViewNotes.setMovementMethod(LinkMovementMethod.getInstance());
+        textViewNotes.setText(Html.fromHtml(getString(R.string.flowzr_terms_of_use)));
+
+	}
+
+    private void visitFlowzr(Account useCredential) {
+        String url=FLOWZR_BASE_URL + "/paywall/";
+        if (useCredential !=null) {
+            url=url + useCredential.name;
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(intent);
+    }
+
+    @Override
 	protected void onResume() {
 		super.onResume();
         restorePreferences();		
 	}
 
-	public boolean isOnline() {
-	    ConnectivityManager cm =
-	        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-	        return true;
-	    }
-	    return false;
-	}
-
-	
 	private class GetAuthTokenCallback implements AccountManagerCallback<Bundle> {
 		public void run(AccountManagerFuture<Bundle> result) {
 			Bundle bundle;

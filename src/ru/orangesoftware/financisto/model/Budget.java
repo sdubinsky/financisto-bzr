@@ -13,10 +13,11 @@ package ru.orangesoftware.financisto.model;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
 import ru.orangesoftware.financisto.utils.RecurUtils;
 import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
-import ru.orangesoftware.financisto.utils.Utils;
 
 import javax.persistence.*;
 import java.util.Map;
+
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 @Entity
 @Table(name = "budget")
@@ -35,10 +36,16 @@ public class Budget {
 	@Column(name = "project_id")
 	public String projects;
 
-	@Column(name = "currency_id")
-	public long currencyId = -1;
-	
-	@Column(name = "amount")
+    @Column(name = "currency_id")
+    public long currencyId = -1;
+
+    @JoinColumn(name = "budget_currency_id", required = false)
+	public Currency currency;
+
+    @JoinColumn(name = "budget_account_id", required = false)
+    public Account account;
+
+    @Column(name = "amount")
 	public long amount;
 	
 	@Column(name = "include_subcategories")
@@ -74,6 +81,7 @@ public class Budget {
 	@Column(name = "remote_key")
  	public String remoteKey ;		
 	
+
 	@Transient
 	public String categoriesText = "";
 
@@ -82,7 +90,7 @@ public class Budget {
 	
 	@Transient
 	public long spent = 0;
-	
+
 	@Transient
 	public volatile boolean updated = false;
 
@@ -93,12 +101,18 @@ public class Budget {
 	public static String createWhere(Budget b, Map<Long, Category> categories, Map<Long, Project> projects) {
 		StringBuilder sb = new StringBuilder();
 		// currency
-		sb.append(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID).append("=").append(b.currencyId);
+        if (b.currency != null) {
+		    sb.append(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID).append("=").append(b.currency.id);
+        }
+        // currency
+        if (b.account != null) {
+            sb.append(BlotterFilter.FROM_ACCOUNT_ID).append("=").append(b.account.id);
+        }
 		// categories & projects
 		String categoriesWhere = createCategoriesWhere(b, categories);
-		boolean hasCategories = !Utils.isEmpty(categoriesWhere); 
+		boolean hasCategories = isNotEmpty(categoriesWhere);
 		String projectWhere = createProjectsWhere(b, projects);
-		boolean hasProjects = !Utils.isEmpty(projectWhere);
+		boolean hasProjects = isNotEmpty(projectWhere);
 		if (hasCategories && hasProjects) {
 			sb.append(" AND ((").append(categoriesWhere).append(") ");
 			sb.append(b.expanded ? "OR" : "AND");
@@ -170,4 +184,7 @@ public class Budget {
 		return null;
 	}
 
+    public Currency getBudgetCurrency() {
+        return currency != null ? currency : (account != null ? account.currency : null);
+    }
 }

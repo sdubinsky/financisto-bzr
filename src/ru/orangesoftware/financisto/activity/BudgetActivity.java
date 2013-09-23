@@ -11,7 +11,6 @@
 package ru.orangesoftware.financisto.activity;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,10 +19,10 @@ import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.utils.RecurUtils;
 import ru.orangesoftware.financisto.utils.RecurUtils.Recur;
-import ru.orangesoftware.financisto.utils.TransactionUtils;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.widget.AmountInput;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,37 +31,38 @@ public class BudgetActivity extends AbstractActivity {
 	public static final String BUDGET_ID_EXTRA = "budgetId";
 
 	private static final int NEW_CATEGORY_REQUEST = 1;
-	private static final int NEW_CURRENCY_REQUEST = 2;
-	private static final int NEW_PROJECT_REQUEST = 3;
-	private static final int RECUR_REQUEST = 4;
+	private static final int NEW_PROJECT_REQUEST = 2;
+	private static final int RECUR_REQUEST = 3;
 	
 	private AmountInput amountInput;
 
 	private EditText titleText;
 	private TextView categoryText;
 	private TextView projectText;
-	private TextView currencyText;
+	private TextView accountText;
 	private TextView periodRecurText;
 	private CheckBox cbMode;
 	private CheckBox cbIncludeSubCategories;
 	private CheckBox cbIncludeCredit;
-	private ListAdapter currencyAdapter;
-	private Cursor currencyCursor;
+    private CheckBox cbSavingBudget;
 
 	private Budget budget = new Budget();
-	
+
+    private List<AccountOption> accountOptions;
 	private List<Category> categories;
 	private List<Project> projects;
+
+    private ListAdapter accountAdapter;
+    private int selectedAccountOption;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.budget);
 
-		currencyCursor = em.getAllCurrencies("name");
-		startManagingCursor(currencyCursor);
-		currencyAdapter = TransactionUtils.createCurrencyAdapter(this, currencyCursor);
-		
+        accountOptions = createAccountsList();
+        accountAdapter = new ArrayAdapter<AccountOption>(this, android.R.layout.simple_spinner_dropdown_item, accountOptions);
+
 		categories = db.getCategoriesList(true);
 		projects = em.getActiveProjectsList(true);
 		
@@ -71,8 +71,8 @@ public class BudgetActivity extends AbstractActivity {
 		titleText = new EditText(this);
 		x.addEditNode(layout, R.string.title, titleText);
 
-		currencyText = x.addListNodePlus(layout, R.id.currency,
-				R.id.currency_add, R.string.currency, R.string.select_currency);
+		accountText = x.addListNode(layout, R.id.account,
+				R.string.account, R.string.select_account);
 		categoryText = x.addListNodePlus(layout, R.id.category,
 				R.id.category_add, R.string.categories, R.string.no_categories);
 		projectText = x.addListNodePlus(layout, R.id.project,
@@ -80,11 +80,14 @@ public class BudgetActivity extends AbstractActivity {
 		cbIncludeSubCategories = x.addCheckboxNode(layout,
 				R.id.include_subcategories, R.string.include_subcategories,
 				R.string.include_subcategories_summary, true);
-		cbIncludeCredit = x.addCheckboxNode(layout,
-				R.id.include_credit, R.string.include_credit,
-				R.string.include_credit_summary, true);
-		cbMode = x.addCheckboxNode(layout, R.id.budget_mode, R.string.budget_mode, 
+		cbMode = x.addCheckboxNode(layout, R.id.budget_mode, R.string.budget_mode,
 				R.string.budget_mode_summary, false);
+        cbIncludeCredit = x.addCheckboxNode(layout,
+                R.id.include_credit, R.string.include_credit,
+                R.string.include_credit_summary, true);
+        cbSavingBudget = x.addCheckboxNode(layout,
+                R.id.type, R.string.budget_type_saving,
+                R.string.budget_type_saving_summary, true);
 
 		amountInput = new AmountInput(this);
 		amountInput.setOwner(this);
@@ -98,7 +101,7 @@ public class BudgetActivity extends AbstractActivity {
 		bOK.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				if (checkSelectedId(budget.currencyId, R.string.select_currency)) {
+				if (checkSelected(budget.currency != null ? budget.currency : budget.account, R.string.select_account)) {
 					updateBudgetFromUI();
 					long id = em.insertBudget(budget);
 					Intent intent = new Intent();
@@ -132,18 +135,33 @@ public class BudgetActivity extends AbstractActivity {
 
 	}
 
-	private void editBudget() {
+    private List<AccountOption> createAccountsList() {
+        List<AccountOption> accounts = new ArrayList<AccountOption>();
+        List<Currency> currenciesList = em.getAllCurrenciesList("name");
+        for (Currency currency : currenciesList) {
+            String title = getString(R.string.account_by_currency, currency.name);
+            accounts.add(new AccountOption(title, currency, null));
+        }
+        List<Account> accountsList = em.getAllAccountsList();
+        for (Account account : accountsList) {
+            accounts.add(new AccountOption(account.title, null, account));
+        }
+        return accounts;
+    }
+
+    private void editBudget() {
 		titleText.setText(budget.title);
 		amountInput.setAmount(budget.amount);
 		updateEntities(this.categories, budget.categories);
 		selectCategories();
 		updateEntities(this.projects, budget.projects);
 		selectProjects();
-		selectCurrency(budget.currencyId);
+		selectAccount(budget);
 		selectRecur(budget.recur);
 		cbIncludeSubCategories.setChecked(budget.includeSubcategories);
 		cbIncludeCredit.setChecked(budget.includeCredit);
 		cbMode.setChecked(budget.expanded);
+        cbSavingBudget.setChecked(budget.amount < 0);
 	}
 
 	private void updateEntities(List<? extends MyEntity> list, String selected) {
@@ -177,6 +195,9 @@ public class BudgetActivity extends AbstractActivity {
 	protected void updateBudgetFromUI() {
 		budget.title = titleText.getText().toString();
 		budget.amount = amountInput.getAmount();
+        if (cbSavingBudget.isChecked()) {
+            budget.amount = -budget.amount;
+        }
 		budget.includeSubcategories = cbIncludeSubCategories.isChecked();
 		budget.includeCredit = cbIncludeCredit.isChecked();
 		budget.expanded = cbMode.isChecked();
@@ -184,7 +205,7 @@ public class BudgetActivity extends AbstractActivity {
 		budget.projects = getSelectedAsString(projects);
 	}
 
-	@Override
+    @Override
 	protected void onClick(View v, int id) {
 		switch (id) {
 		case R.id.include_subcategories:
@@ -196,6 +217,9 @@ public class BudgetActivity extends AbstractActivity {
 		case R.id.budget_mode:
 			cbMode.performClick();
 			break;
+        case R.id.type:
+            cbSavingBudget.performClick();
+            break;
 		case R.id.category:
 			x.selectMultiChoice(this, R.id.category, R.string.categories, categories);
 			break;
@@ -210,14 +234,8 @@ public class BudgetActivity extends AbstractActivity {
 			Intent intent = new Intent(this, ProjectActivity.class);
 			startActivityForResult(intent, NEW_PROJECT_REQUEST);
 			} break;
-		case R.id.currency:
-			x.select(this, R.id.currency, R.string.currency, currencyCursor,
-					currencyAdapter, "_id", budget.currencyId);
-			break;
-		case R.id.currency_add: {
-			Intent intent = new Intent(this, CurrencyActivity.class);
-			startActivityForResult(intent, NEW_CURRENCY_REQUEST);
-			}	
+		case R.id.account:
+			x.selectPosition(this, R.id.account, R.string.account, accountAdapter, selectedAccountOption);
 			break;
 		case R.id.period_recur: {
 			Intent intent = new Intent(this, RecurActivity.class);
@@ -229,16 +247,16 @@ public class BudgetActivity extends AbstractActivity {
 		}
 	}
 
-	@Override
-	public void onSelectedId(int id, long selectedId) {
-		switch (id) {
-		case R.id.currency:
-			selectCurrency(selectedId);
-			break;
-		}
-	}
-	
-	@Override
+    @Override
+    public void onSelectedPos(int id, int selectedPos) {
+        switch (id) {
+            case R.id.account:
+                selectAccount(selectedPos);
+                break;
+        }
+    }
+
+    @Override
 	public void onSelected(int id, List<? extends MultiChoiceItem> items) {
 		switch (id) {
 		case R.id.category:
@@ -250,20 +268,29 @@ public class BudgetActivity extends AbstractActivity {
 		}
 	}
 
-	private void selectCurrency(long currencyId) {
-        Currency currency = em.get(Currency.class, currencyId);
-		if (currency != null) {
-			selectCurrency(currency);
-		}
-	}
+    private void selectAccount(Budget budget) {
+        for (int i=0; i<accountOptions.size(); i++) {
+            AccountOption option = accountOptions.get(i);
+            if (option.matches(budget)) {
+                selectAccount(i);
+                break;
+            }
+        }
+    }
 
-	private void selectCurrency(Currency currency) {
-		currencyText.setText(currency.name);
-		amountInput.setCurrency(currency);
-		budget.currencyId = currency.id;
-	}
+    private void selectAccount(int selectedPos) {
+        AccountOption option = accountOptions.get(selectedPos);
+        option.updateBudget(budget);
+        selectedAccountOption = selectedPos;
+        accountText.setText(option.title);
+        if (option.currency != null) {
+            amountInput.setCurrency(option.currency);
+        } else {
+            amountInput.setCurrency(option.account.currency);
+        }
+    }
 
-	private void selectProjects() {
+    private void selectProjects() {
 		String selectedProjects = getCheckedEntities(this.projects);
 		if (Utils.isEmpty(selectedProjects)) {
 			projectText.setText(R.string.no_projects);
@@ -310,27 +337,20 @@ public class BudgetActivity extends AbstractActivity {
 				return;
 			}
 			switch (requestCode) {
-			case NEW_CURRENCY_REQUEST:
-				currencyCursor.requery();
-				long currencyId = data.getLongExtra(CurrencyActivity.CURRENCY_ID_EXTRA, -1);
-				if (currencyId != -1) {
-					selectCurrency(currencyId);
-				}
-				break;
-			case NEW_CATEGORY_REQUEST:
-                categories = merge(categories, db.getCategoriesList(true));
-				break;
-			case NEW_PROJECT_REQUEST:
-                projects = merge(projects, em.getActiveProjectsList(true));
-				break;
-			case RECUR_REQUEST:
-                String recur = data.getStringExtra(RecurActivity.EXTRA_RECUR);
-                if (recur != null) {
-                    selectRecur(recur);
-                }
-				break;
-			default:
-				break;
+                case NEW_CATEGORY_REQUEST:
+                    categories = merge(categories, db.getCategoriesList(true));
+                    break;
+                case NEW_PROJECT_REQUEST:
+                    projects = merge(projects, em.getActiveProjectsList(true));
+                    break;
+                case RECUR_REQUEST:
+                    String recur = data.getStringExtra(RecurActivity.EXTRA_RECUR);
+                    if (recur != null) {
+                        selectRecur(recur);
+                    }
+                    break;
+                default:
+                    break;
 			}
 		}
 	}
@@ -348,5 +368,34 @@ public class BudgetActivity extends AbstractActivity {
 		}
 		return newList;
 	}
+
+    private static class AccountOption {
+
+        public final String title;
+        public final Currency currency;
+        public final Account account;
+
+        private AccountOption(String title, Currency currency, Account account) {
+            this.title = title;
+            this.currency = currency;
+            this.account = account;
+        }
+
+        @Override
+        public String toString() {
+            return title;
+        }
+
+        public boolean matches(Budget budget) {
+            return (currency != null && budget.currency != null && currency.id == budget.currency.id) ||
+                   (account != null && budget.account != null && account.id == budget.account.id);
+        }
+
+        public void updateBudget(Budget budget) {
+            budget.currency = currency;
+            budget.account = account;
+        }
+
+    }
 
 }

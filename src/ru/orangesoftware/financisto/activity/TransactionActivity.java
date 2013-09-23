@@ -10,54 +10,29 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
-import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
-import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
-import static ru.orangesoftware.financisto.utils.Utils.text;
-import greendroid.widget.QuickActionGrid;
-import greendroid.widget.QuickActionWidget;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseHelper;
-import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.Category;
-import ru.orangesoftware.financisto.model.Currency;
-import ru.orangesoftware.financisto.model.MyEntity;
-import ru.orangesoftware.financisto.model.Payee;
-import ru.orangesoftware.financisto.model.Transaction;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
-import ru.orangesoftware.financisto.utils.MyPreferences;
-import ru.orangesoftware.financisto.utils.SplitAdjuster;
-import ru.orangesoftware.financisto.utils.TransactionUtils;
-import ru.orangesoftware.financisto.utils.Utils;
-import ru.orangesoftware.financisto.widget.AmountInput;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import greendroid.widget.QuickActionGrid;
+import greendroid.widget.QuickActionWidget;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.db.DatabaseHelper;
+import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.model.Currency;
+import ru.orangesoftware.financisto.utils.*;
+import ru.orangesoftware.financisto.widget.AmountInput;
+
+import java.io.*;
+import java.util.*;
+
+import static ru.orangesoftware.financisto.utils.AndroidUtils.isGreenDroidSupported;
+import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 public class TransactionActivity extends AbstractTransactionActivity {
 
@@ -73,11 +48,8 @@ public class TransactionActivity extends AbstractTransactionActivity {
     private long idSequence = 0;
     private final IdentityHashMap<View, Transaction> viewToSplitMap = new IdentityHashMap<View, Transaction>();
 
-    private AutoCompleteTextView payeeText;
-    private SimpleCursorAdapter payeeAdapter;
 	private TextView differenceText;
 	private boolean isUpdateBalanceMode = false;
-    private boolean isShowPayee = true;
 	private long currentBalance;
 	private Utils u;
 
@@ -205,12 +177,7 @@ public class TransactionActivity extends AbstractTransactionActivity {
         //payee
         isShowPayee = MyPreferences.isShowPayee(this);
         if (isShowPayee) {
-            payeeAdapter = TransactionUtils.createPayeeAdapter(this, db);
-            payeeText = new AutoCompleteTextView(this);
-            payeeText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS |
-                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
-                    InputType.TYPE_TEXT_VARIATION_FILTER);
-            payeeText.setThreshold(1);
+            createPayeeNode(layout);
             payeeText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
@@ -219,16 +186,6 @@ public class TransactionActivity extends AbstractTransactionActivity {
                     }
                 }
             });
-            payeeText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean hasFocus) {
-                    if (hasFocus) {
-                        payeeText.setAdapter(payeeAdapter);
-                        payeeText.selectAll();
-                    }
-                }
-            });
-            x.addEditNode(layout, R.string.payee, payeeText);
         }
 		//category
         categorySelector.createNode(layout, true);
@@ -388,9 +345,6 @@ public class TransactionActivity extends AbstractTransactionActivity {
 
     private void updateTransactionFromUI() {
 		updateTransactionFromUI(transaction);
-        if (isShowPayee) {
-            transaction.payeeId = db.insertPayee(text(payeeText));
-        }
         transaction.fromAccountId = selectedAccount.id;
 		long amount = rateView.getFromAmount();
 		if (isUpdateBalanceMode) {
@@ -432,20 +386,6 @@ public class TransactionActivity extends AbstractTransactionActivity {
             selectOriginalCurrency(selectedOriginCurrencyId);
         }
         return a;
-    }
-
-    private void selectPayee(long payeeId) {
-        if (isShowPayee) {
-            Payee p = db.em().get(Payee.class, payeeId);
-            selectPayee(p);
-        }
-    }
-
-    private void selectPayee(Payee p) {
-        if (p != null) {
-            payeeText.setText(p.title);
-            transaction.payeeId = p.id;
-        }
     }
 
 	@Override

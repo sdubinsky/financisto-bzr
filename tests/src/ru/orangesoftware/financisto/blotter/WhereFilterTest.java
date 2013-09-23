@@ -8,6 +8,7 @@
 
 package ru.orangesoftware.financisto.blotter;
 
+import android.content.Intent;
 import android.test.AndroidTestCase;
 import ru.orangesoftware.financisto.filter.Criteria;
 import ru.orangesoftware.financisto.filter.WhereFilter;
@@ -22,9 +23,29 @@ import java.util.Arrays;
 public class WhereFilterTest extends AndroidTestCase {
 
     public void test_filter_should_support_raw_criteria() {
+        WhereFilter filter = givenFilterWithRawCriteria();
+        assertFilterSelection(filter);
+    }
+
+    public void test_should_save_and_restore_raw_criteria() {
+        //given
+        WhereFilter filter = givenFilterWithRawCriteria();
+        Intent intent = new Intent();
+        //when
+        filter.toIntent(intent);
+        WhereFilter copy = WhereFilter.fromIntent(intent);
+        //then
+        assertFilterSelection(copy);
+    }
+
+    private WhereFilter givenFilterWithRawCriteria() {
         WhereFilter filter = WhereFilter.empty();
         filter.put(Criteria.eq("from_account_id", "1"));
         filter.put(Criteria.raw("parent_id=0 OR is_transfer=-1"));
+        return filter;
+    }
+
+    private void assertFilterSelection(WhereFilter filter) {
         assertEquals("from_account_id =? AND (parent_id=0 OR is_transfer=-1)", filter.getSelection());
         assertEquals(new String[]{"1"}, filter.getSelectionArgs());
     }

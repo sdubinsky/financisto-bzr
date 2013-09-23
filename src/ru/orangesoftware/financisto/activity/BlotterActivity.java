@@ -71,9 +71,8 @@ public class BlotterActivity extends AbstractListActivity {
 
 	protected boolean saveFilter;
 	protected WhereFilter blotterFilter = WhereFilter.empty();
-	private boolean filterAccounts = false;
-    private boolean isAccountBlotter = false;
 
+    private boolean isAccountBlotter = false;
     private boolean showAllBlotterButtons = true;
 
     public BlotterActivity(int layoutId) {
@@ -165,7 +164,6 @@ public class BlotterActivity extends AbstractListActivity {
 		if (intent != null) {			
 			blotterFilter = WhereFilter.fromIntent(intent);
 			saveFilter = intent.getBooleanExtra(SAVE_FILTER, false);
-			filterAccounts = intent.getBooleanExtra(EXTRA_FILTER_ACCOUNTS, false);
             isAccountBlotter = intent.getBooleanExtra(BlotterFilterActivity.IS_ACCOUNT_FILTER, false);
 		}
 		if (savedInstanceState != null) {

@@ -27,7 +27,7 @@ public class MyDatabaseTest extends AbstractDbTest {
         // when
         Payee p1 = em.insertPayee(payee);
         Payee p2 = em.insertPayee(payee);
-        ArrayList<Payee> payees = em.getAllPayeeList();
+        List<Payee> payees = em.getAllPayeeList();
         // then
         assertEquals("Ids should be the same!", p1.id, p2.id);
         assertEquals("List should be of size 1!", 1, payees.size());

@@ -7,10 +7,6 @@
  */
 package ru.orangesoftware.financisto.activity;
 
-import java.io.File;
-
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.utils.PinProtection;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -20,6 +16,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.utils.PinProtection;
+
+import java.io.File;
 
 public abstract class AbstractImportActivity extends Activity {
 

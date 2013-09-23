@@ -46,6 +46,7 @@ public class TransferActivity extends AbstractTransactionActivity {
 
     protected void fetchCategories() {
         categorySelector.fetchCategories(false);
+        categorySelector.doNotShowSplitCategory();
     }
 
 	protected int getLayoutId() {
@@ -58,7 +59,12 @@ public class TransferActivity extends AbstractTransactionActivity {
         accountToText = x.addListNode(layout, R.id.account_to, R.string.account_to, R.string.select_account);
         // amounts
         rateView.createTransferUI();
-		//category
+        // payee
+        isShowPayee = MyPreferences.isShowPayeeInTransfers(this);
+        if (isShowPayee) {
+            createPayeeNode(layout);
+        }
+		// category
         if (MyPreferences.isShowCategoryInTransferScreen(this)) {
             categorySelector.createNode(layout, false);
         } else {
@@ -83,6 +89,7 @@ public class TransferActivity extends AbstractTransactionActivity {
             rateView.setToAmount(transaction.toAmount);
             selectedAccountToId = transaction.toAccountId;
         }
+        selectPayee(transaction.payeeId);
     }
 
 	@Override

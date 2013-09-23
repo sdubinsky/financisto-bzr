@@ -29,6 +29,7 @@ import ru.orangesoftware.financisto.utils.TransactionUtils;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ReportFilterActivity extends AbstractActivity {
 
@@ -271,7 +272,7 @@ public class ReportFilterActivity extends AbstractActivity {
                 clear(BlotterFilter.PROJECT_ID, project);
                 break;
             case R.id.payee: {
-                ArrayList<Payee> payees = em.getAllPayeeList();
+                List<Payee> payees = em.getAllPayeeList();
                 ListAdapter adapter = TransactionUtils.createPayeeAdapter(this, payees);
                 Criteria c = filter.get(BlotterFilter.PAYEE_ID);
                 long selectedId = c != null ? c.getLongValue1() : -1;

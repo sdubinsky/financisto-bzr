@@ -27,6 +27,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 
 public class PinView implements OnClickListener {
 	
@@ -39,6 +40,7 @@ public class PinView implements OnClickListener {
 		void onSuccess(String pinBase64);
 	}
 
+    private final Context context;
 	private final PinListener listener;
 	private final View v;	
 	private final ViewSwitcher switcher;
@@ -55,6 +57,7 @@ public class PinView implements OnClickListener {
 	}
 	
 	public PinView(Context context, PinListener listener, String pin, int layoutId) {
+        this.context = context;
 		this.listener = listener;
 		this.confirmPin = pin == null;
 		this.pin1 = pin;
@@ -83,7 +86,7 @@ public class PinView implements OnClickListener {
 	public void onClick(View v) {
 		Button b = (Button)v;
 		char c = b.getText().charAt(0);
-        if (vibrator != null) {
+        if (vibrator != null && MyPreferences.isPinHapticFeedbackEnabled(context)) {
             vibrator.vibrate(20);
         }
 		switch (c) {

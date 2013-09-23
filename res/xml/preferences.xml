@@ -140,6 +140,10 @@
                                     android:title="@string/show_category_in_transfer"
                                     android:summary="@string/show_category_in_transfer_summary"
                                     android:defaultValue="true"/>
+                <CheckBoxPreference android:key="ntsl_show_payee_in_transfers"
+                                    android:title="@string/show_payee_in_transfer"
+                                    android:summary="@string/show_payee_in_transfer_summary"
+                                    android:defaultValue="false"/>
                 <CheckBoxPreference android:key="ntsl_open_calculator_for_template_transactions"
                                     android:title="@string/open_calculator_for_template_transactions"
                                     android:summary="@string/open_calculator_for_template_transactions_summary"
@@ -169,6 +173,11 @@
                         android:entryValues="@array/lock_time_values"
                         android:dependency="pin_protection"
                         android:defaultValue="5"/>
+        <CheckBoxPreference android:key="pin_protection_haptic_feedback"
+                            android:title="@string/pin_protection_haptic_feedback"
+                            android:summary="@string/pin_protection_haptic_feedback_summary"
+                            android:dependency="pin_protection"
+                            android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/home_screen">
         <Preference android:title="@string/shortcut_new_transaction"

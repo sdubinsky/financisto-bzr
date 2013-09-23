@@ -10,8 +10,6 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.model;
 
-import ru.orangesoftware.financisto.model.MyEntity;
-
 import ru.orangesoftware.financisto.db.DatabaseHelper.AttributeColumns;
 import android.content.ContentValues;
 import android.database.Cursor;

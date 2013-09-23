@@ -13,7 +13,6 @@ import android.util.Log;
 import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.rates.ExchangeRate;
 import ru.orangesoftware.financisto.rates.ExchangeRateProvider;
-import ru.orangesoftware.financisto.utils.CurrencyCache;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -70,7 +69,7 @@ public class BudgetsTotalCalculator {
     public Total[] calculateTotals() {
         Map<Currency, Total> totals = new HashMap<Currency, Total>();
         for (Budget b : budgets) {
-            Currency c = CurrencyCache.getCurrency(em, b.currencyId);
+            Currency c = b.getBudgetCurrency();
             Total total = totals.get(c);
             if (total == null) {
                 total = new Total(c, true);
@@ -91,7 +90,7 @@ public class BudgetsTotalCalculator {
             ExchangeRateProvider rates = db.getLatestRates();
             Currency homeCurrency = em.getHomeCurrency();
             for (Budget b : budgets) {
-                Currency currency = CurrencyCache.getCurrency(em, b.currencyId);
+                Currency currency = b.getBudgetCurrency();
                 ExchangeRate r = rates.getRate(currency, homeCurrency);
                 if (r == ExchangeRate.NA) {
                     return new Total(homeCurrency, TotalError.lastRateError(currency));

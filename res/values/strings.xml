@@ -601,7 +601,7 @@
 	<string name="report_by_payee_summary">Transactions report by payee</string>
 	<string name="report_by_payee_by_period">By Payee / Period</string>
 	<string name="report_by_payee_by_period_summary">Transactions report by payee and period</string>
-	<string name="no_payee">No payees</string>
+	<string name="no_payee">No payee</string>
 	<string name="report_no_payee">There is no payee available for filtering in the report.</string>
 	<string name="donate">Make a donation</string>
 	<string name="donate_error">Android Market is not available on your device</string>
@@ -671,19 +671,20 @@
     <string name="import_export">Import/Export</string>
     <string name="qif_import_disclaimer">*WARNING* Please note that all existing data will be removed!</string>
 	
-	<string name="flowzr_sync">Cloud sync</string>
+	<string name="flowzr_sync">Flowzr sync</string>
     <string name="flowzr_sync_error">Sync error</string>
     <string name="flowzr_sync_error_no_network">Network is not available</string>
     <string name="flowzr_sync_inprogress">Synchronizing data ...</string>      	
-    <string name="about_server_sync">Request subscription</string>
-    <string name="about_server_sync_anon">or visit anonymously</string>
+    <string name="buy_subscription">Purchase a subscription</string>
+    <string name="visit_flowzr">Visit Flowzr</string>
     <string name="account_required">An account is required.</string>
     <string name="flowzr_sync_success">Successfully synchronized</string>    
-    <string name="flowzr_choose_account">Register an Account on Flowzr.com ...</string>
-    <string name="sync_from_zero">Resume sync</string>
+    <string name="flowzr_choose_account">Choose account to use on Flowzr.com</string>
+    <string name="sync_from_zero">Force sync</string>
     <string name="flowzr_account_setup">Account now set up, please restart sync.</string>            
     <string name="flowzr_subscription_required">Subscription required.</string>
-      
+    <string name="flowzr_terms_of_use">A &lt;b&gt;paid subscription&lt;/b&gt; is required to use Flowzr sync service. The subscription can be cancelled free of charge during the trial period of &lt;b&gt;14 days&lt;/b&gt;. Flowzr is a third-party service, not affiliated with Financisto. By using the service you agree to Flowzr &lt;a href="http://www.flowzr.com/static/en/mobile/privacypolicy.html"&gt;Privacy Policy&lt;/a&gt; and &lt;a href="http://www.flowzr.com/static/en/mobile/tos.html"&gt;Terms Of Use Agreement&lt;/a&gt;.</string>
+
     <string name="remember_last_category_for_payee">Last category</string>
     <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee (or account if payee is disabled)</string>
 
@@ -843,5 +844,15 @@
     <string name="downloading_rates_result">Downloaded exchange rates</string>
 
     <string name="export_splits">Export splits</string>
+
+    <string name="account_by_currency">All %s Accounts</string>
+    <string name="budget_type_saving">Saving</string>
+    <string name="budget_type_saving_summary">Budget with a goal to save money</string>
+    <string name="pin_protection_haptic_feedback">Haptic feedback</string>
+    <string name="pin_protection_haptic_feedback_summary">Enable vibration when tapping pin buttons</string>
+    <string name="offline_rate">No network connection, the latest offline rate applied...</string>
+
+    <string name="show_payee_in_transfer">Transfer Payee</string>
+    <string name="show_payee_in_transfer_summary">Show payee field in New Transfer screen</string>
 
 </resources>

@@ -88,6 +88,7 @@ public class DatabaseBackupTest extends AbstractImportExportTest {
         List<Account> accounts = em.getAllAccountsList();
         assertEquals(1, accounts.size());
         assertEquals("My Cash Account", accounts.get(0).title);
+        assertEquals("AAA BBB:CCC", accounts.get(0).note);
     }
 
 }
