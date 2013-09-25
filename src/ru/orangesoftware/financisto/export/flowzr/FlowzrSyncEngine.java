@@ -1,4 +1,5 @@
 /*
+
  * Copyright (c) 2012 Emmanuel Florent.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v2.0
@@ -8,16 +9,18 @@
 
 package ru.orangesoftware.financisto.export.flowzr;
 
-
-import static ru.orangesoftware.financisto.db.DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE;
-
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,24 +33,49 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
 
+import android.preference.PreferenceManager;
+import android.text.Html;
+import android.util.Log;
+
+import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.AccountWidget;
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.MyEntityManager;
-import ru.orangesoftware.financisto.export.ProgressListener;
 import ru.orangesoftware.financisto.model.Account;
-import ru.orangesoftware.financisto.model.AccountType;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Budget;
 import ru.orangesoftware.financisto.model.Category;
@@ -62,19 +90,26 @@ import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.rates.ExchangeRate;
 import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.IntegrityFix;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.Html;
-import android.util.Log;
+import ru.orangesoftware.financisto.utils.MyPreferences;
+
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.InputStreamContent;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.ParentReference;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 
 public class FlowzrSyncEngine  {
-	private String TAG;
-	String FLOWZR_API_URL;
+	private String TAG="flowzr";
 	private final String FLOWZR_MSG_NET_ERROR="FLOWZR_MSG_NET_ERROR";
-	public final FlowzrSyncOptions options;
+
     private final SQLiteDatabase db;
     private final DatabaseAdapter dba;
     private final MyEntityManager em;
@@ -83,61 +118,126 @@ public class FlowzrSyncEngine  {
     static JSONObject jObj = null;
     static String json = "";
     private final long KEY_CREATE=-1;
-    private ProgressListener progressListener;
+
     private Context context;
     private FlowzrSyncActivity flowzrSyncActivity; 
     private String[] tableNames= {"attributes","currency","category","category","project","payee","account","LOCATIONS","transactions","currency_exchange_rate",DatabaseHelper.BUDGET_TABLE};  
 	private Class[] clazzArray = {Attribute.class,Currency.class,Category.class,Category.class,Project.class,Payee.class,Account.class,MyLocation.class,Transaction.class,null,Budget.class};        
-
+	 
 	static JsonReader reader = null;
 	static InputStream is = null;
+	static final int REQUEST_AUTHORIZATION = 2;
+
+	public String rootFolderId=null;	
+	static final int REQUEST_ACCOUNT_PICKER = 8;
+	private static Drive driveService;
+	private GoogleAccountCredential credential;
+	public static final java.io.File PICTURES_DIR = new java.io.File(Environment.getExternalStorageDirectory(), "financisto/pictures");	  
+
+	public FlowzrSyncTask flowzrSyncTask;
+	public FlowzrSyncOptions options;
+	public boolean isCanceled=false;
     
-    public FlowzrSyncEngine(FlowzrSyncActivity a, Context c, DatabaseAdapter dba, FlowzrSyncOptions o, DefaultHttpClient pHttp_client) {
-    	this.dba=dba;
+	public FlowzrSyncEngine(FlowzrSyncActivity a, Context c) {
+		android.accounts.Account useCredential = null;
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(a);		
+    	this.options = FlowzrSyncOptions.fromPrefs(preferences);
+    	this.options.startTimestamp=System.currentTimeMillis(); 
     	this.context=c;
     	this.flowzrSyncActivity=a;
-    	this.em=dba.em();
-		this.db = dba.db();			
-		this.options = o;
-		this.http_client=pHttp_client;
-		this.options.startTimestamp=System.currentTimeMillis();	
-		this.TAG=flowzrSyncActivity.TAG;
-    	this.FLOWZR_API_URL=flowzrSyncActivity.FLOWZR_API_URL;
+        this.dba = new DatabaseAdapter(context);
+        dba.open();
+    	this.em=dba.em();		
+        this.db = dba.db();	
+			
+        http_client=new DefaultHttpClient();
+        
+        BasicHttpParams params = new BasicHttpParams();
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
+        schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
+        ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+        DefaultHttpClient httpclient = new DefaultHttpClient(cm, params);
+	
+        if (options.appVersion==null) {
+        	try {
+				options.appVersion=context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+			} catch (NameNotFoundException e) {
+				options.appVersion="undef";
+				e.printStackTrace();
+			}
+        }
+
+		options.FLOWZR_API_URL=options.FLOWZR_API_URL + options.appVersion + "/";
+
+    	Log.i(TAG,"init sync engine, last sync was " + new Date(options.lastSyncLocalTimestamp).toLocaleString());
+    	
+    	AccountManager accountManager = AccountManager.get(context);
+		android.accounts.Account[] accounts = accountManager.getAccountsByType("com.google");
+	    for (int i = 0; i < accounts.length; i++) {
+	    	 if (preferences.getString(FlowzrSyncOptions.PROPERTY_USE_CREDENTIAL,"").equals(((android.accounts.Account) accounts[i]).name)) {
+	    		 useCredential=accounts[i];
+	    	 }
+	     }	    	
+    	    	
+    	AccountManager.get(context).getAuthToken(useCredential, "ah" , null, 
+   	    		flowzrSyncActivity, new GetAuthTokenCallback(), null);   	
     }
+       
     
     public Object doSync() throws Exception {
     	Object o=null;
     	
-    	fixCreatedEntities();
-    	if (o instanceof Exception) {
-    		return o;
-    	}    		
-		
-    	pullDelete(options.lastSyncLocalTimestamp);
- 	
-        progressListener.onProgress(10);        
-    	o=pushDelete();
-        if (o instanceof Exception) {
-        	return o;
-        }
-        progressListener.onProgress(20);        
-    	o=pullUpdate();
-        progressListener.onProgress(35);
-        o=pushUpdate();      
-        progressListener.onProgress(50);
-        o=pushRetry();      
-        progressListener.onProgress(75);
-        
+    	flowzrSyncActivity.isRunning=true;    	
 
-		ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("action","balancesRecalc"));
-		nameValuePairs.add(new BasicNameValuePair("lastSyncLocalTimestamp",String.valueOf(options.lastSyncLocalTimestamp)));        
-		httpPush(nameValuePairs);    
-        progressListener.onProgress(95);        
-        IntegrityFix fix = new IntegrityFix(dba);
-        fix.fix();        
-        progressListener.onProgress(100);
+        if (!isCanceled) {
+        	flowzrSyncActivity.notifyUser("fix created entities",5);
+	    	fixCreatedEntities();
+        }
+        if (!isCanceled) {		
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",20);
+	        o=pullUpdate();
+        }
+        if (!isCanceled) {
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",35);
+	        o=pushUpdate();      
+        }
+        if (!isCanceled) {
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",50);        
+	        o=pushRetry();      
+        }
+        if (!isCanceled) {
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",60);
+	        pullDelete(options.lastSyncLocalTimestamp);
+        }
+        if (!isCanceled) {
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",75);
+	        pushDelete();
+        }
+        if (!isCanceled) {        
+        	flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + "..." ,80);
+        	//nm.notify(NOTIFICATION_ID, mNotifyBuilder.build()); 
+        	ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        	nameValuePairs.add(new BasicNameValuePair("action","balancesRecalc"));
+        	nameValuePairs.add(new BasicNameValuePair("lastSyncLocalTimestamp",String.valueOf(options.lastSyncLocalTimestamp)));        
+        	httpPush(nameValuePairs);    
+        }	    	
+        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.integrity_fix),85);
+        new IntegrityFix(dba).fix();
+        
+        flowzrSyncActivity.notifyUser("Widgets ...",90);     
         AccountWidget.updateWidgets(context);        
+     
+        if (!isCanceled && MyPreferences.doGoogleDriveUpload(context)) {
+            flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " Google Drive",95);  
+        	pushAllBlobs();
+        }
+
+        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_success),100);
+        
+        flowzrSyncActivity.isRunning=false;
+        flowzrSyncActivity.setReady();
         return null;
     }
 
@@ -149,7 +249,9 @@ public class FlowzrSyncEngine  {
     	int i=0;
     	for (String t : tableNames) {     
             o=pushUpdate(t,clazzArray[i],false);
-            progressListener.onProgress(Math.round(i*tableNames.length/100));
+            
+        	flowzrSyncActivity.notifyUser("pushing " + t, 0);   
+
             if (o instanceof Exception) {
             	return o;
             }
@@ -169,19 +271,17 @@ public class FlowzrSyncEngine  {
     			Cursor cursorCursor2=db.rawQuery(sql, null);
     			cursorCursor2.moveToFirst();
     			toRePush=cursorCursor2.getInt(0);
-    			Log.i(TAG,"retry push " + t + "(" + String.valueOf(toRePush) + ") entities (attempts " + String.valueOf(j) + ")");
     			if (toRePush==0) {
     				break;
     			}
-    			Log.i(TAG,"retry " + String.valueOf(j) + " has " + String.valueOf(cursorCursor2.getLong(0)) + " entities ");
     			cursorCursor2.close();
     		}
     	    i++;
     	    if (toRePush>0) {
     	        	return new Exception("some entities failed to be pushed after 3 attempts, please try again later ...");
-    	    }
+    	    }   	    
+        	flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_inprogress),95);
 		}
-	      progressListener.onProgress(Math.round(i*tableNames.length/100));
 	      if (o instanceof Exception) {
 	      	return o;
 	      }     
@@ -229,11 +329,9 @@ public class FlowzrSyncEngine  {
 		Object o=null;
 		int i=0;
 		if (cursorCursor.moveToFirst()) {			
-			do {								
-				if (progressListener != null) {	            
-	                progressListener.onProgress((int)(Math.round(i*100/total)));	                
-	            }  	
-				if (((FlowzrSyncActivity)context).isCanceled)
+			do {								 	
+				flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " " + tableName, (int)(Math.round(i*100/total)));
+				if (isCanceled)
 				{
 					return new Exception("operation canceled");
 				}
@@ -243,7 +341,7 @@ public class FlowzrSyncEngine  {
      				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
      				nameValuePairs.add(new BasicNameValuePair("action","error"));
      				nameValuePairs.add(new BasicNameValuePair("stack",e.getStackTrace().toString()));					
-     		        HttpPost httppost = new HttpPost(FLOWZR_API_URL + options.useCredential + "/error/");
+     		        HttpPost httppost = new HttpPost(options.FLOWZR_API_URL + options.useCredential + "/error/");
      		        e.printStackTrace();
      		        try {
      					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.UTF_8));
@@ -376,8 +474,11 @@ public class FlowzrSyncEngine  {
 				}
 			} else if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
 	            Map<Long, String> attributesMap = dba.getAllAttributesForTransaction(c.getInt(0));
+	            //LinkedList<TransactionAttribute> attributes = new LinkedList<TransactionAttribute>();
 	            String transaction_attribute="";
 	            for (long attributeId : attributesMap.keySet()) {
+	                //String attr_key = dba.getAttribute(attributeId).remoteKey;	                
+	                //String attr_value = attributesMap.get(attributeId);
 	                transaction_attribute+= dba.getAttribute(attributeId).remoteKey + "=" + attributesMap.get(attributeId) +";";
 	            }
 	            nameValuePairs.add(new BasicNameValuePair("transaction_attribute",transaction_attribute));	 
@@ -477,16 +578,16 @@ public class FlowzrSyncEngine  {
 					db.execSQL(sql);
 					Log.e(TAG,"pushing to datastore failed, response was: " + strResponse);
 					Log.i(TAG,"marked for re-push");
-					//for (NameValuePair p : nameValuePairs) {
-					//	Log.e(TAG,p.toString());
-					//}
+					for (NameValuePair p : nameValuePairs) {
+						Log.e(TAG,p.toString());
+					}
 				}
 			}			 			
 			return null;		    	    	
     }
 
     private String httpPush (ArrayList<NameValuePair> nameValuePairs) {
-	        HttpPost httppost = new HttpPost(FLOWZR_API_URL + options.useCredential);
+	        HttpPost httppost = new HttpPost(options.FLOWZR_API_URL + options.useCredential);
 	        try {
 				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.UTF_8));
 			} catch (UnsupportedEncodingException e) {
@@ -501,7 +602,8 @@ public class FlowzrSyncEngine  {
 	            int code = response.getStatusLine().getStatusCode();
 		        BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
 				strResponse = reader.readLine(); 				 			
-		        entity.consumeContent();			
+		        entity.consumeContent();		
+
 		        if (code!=200) {
 		        	return "500 " + Html.fromHtml(strResponse).toString();
 		        }
@@ -527,9 +629,7 @@ public class FlowzrSyncEngine  {
     	String del_list="";
     	if (cursor.moveToFirst()) {
     		do {
-				if (progressListener != null) {	            
-	                progressListener.onProgress((int)(Math.round(i*100/total)));	                
-	            }  
+				flowzrSyncActivity.notifyUser("push delete",(int)(Math.round(i*100/total)));
 				del_list+=cursor.getString(1) + ";";
     			i++;
     		} while (cursor.moveToNext());
@@ -554,13 +654,15 @@ public class FlowzrSyncEngine  {
     	Object o=null;
     	int i=0;
     	for (String tableName : tableNames) {      	   		
-        	if (tableName=="transactions") {
+    		flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " " + tableName,Math.round(i*100/tableNames.length));
+    		
+    		if (tableName=="transactions") {
         		//pull all remote accounts, accounts by accounts
         		String sql="select remote_key from account";		
         		Cursor c=db.rawQuery(sql, null);        		
         		if (c.moveToFirst()) {
 	        		do {
-        				if (((FlowzrSyncActivity)context).isCanceled)
+        				if (isCanceled)
         				{
         					c.close();
         					return new Exception("operation canceled");
@@ -570,14 +672,10 @@ public class FlowzrSyncEngine  {
         		c.close();
         		}
         	} else {
-        		//otherwhise pull the table
-				if (((FlowzrSyncActivity)context).isCanceled)
-				{
-					return new Exception("operation canceled");
-				}
         		o=pullUpdate(tableName,clazzArray[i],options.lastSyncLocalTimestamp,null,null);           
         	}
-        	progressListener.onProgress(Math.round(i*tableNames.length/100));        	
+        	
+  	
         	if (o instanceof Exception) {
         		return o;
         	}
@@ -702,16 +800,20 @@ public class FlowzrSyncEngine  {
 			return null;
 		}
 		try {
-			Currency toCurrency=em.load(Currency.class, getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("to_currency")));
-			Currency fromCurrency=em.load(Currency.class, getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("from_currency")));
-			long effective_date=jsonObjectEntity.getLong("effective_date")*1000;
-			double rate=jsonObjectEntity.getDouble("rate");
-			ExchangeRate exRate= new ExchangeRate();				
-			exRate.toCurrencyId=toCurrency.id;
-			exRate.fromCurrencyId=fromCurrency.id;
-			exRate.rate=rate;
-			exRate.date=effective_date;
-			dba.saveRate(exRate);
+			long toCurrencyId= getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("to_currency"));
+			long fromCurrencyId= getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("from_currency"));
+			if (toCurrencyId>-1 && fromCurrencyId>-1) {
+				Currency toCurrency=em.load(Currency.class,toCurrencyId);
+				Currency fromCurrency=em.load(Currency.class, fromCurrencyId);
+				long effective_date=jsonObjectEntity.getLong("effective_date")*1000;
+				double rate=jsonObjectEntity.getDouble("rate");
+				ExchangeRate exRate= new ExchangeRate();				
+				exRate.toCurrencyId=toCurrency.id;
+				exRate.fromCurrencyId=fromCurrency.id;
+				exRate.rate=rate;
+				exRate.date=effective_date;
+				dba.saveRate(exRate);
+			}
 		} catch (Exception e) {
 			Log.e(TAG,"unable to load a currency rate from server...");
 			e.printStackTrace();
@@ -782,7 +884,7 @@ public class FlowzrSyncEngine  {
 			}
 			if (jsonObjectEntity.has("amount2")) {			
 				try {
-					tEntity.amount=(long)jsonObjectEntity.getInt("amount2");
+					tEntity.amount=jsonObjectEntity.getInt("amount2");
 				} catch (Exception e) {
 					Log.e(TAG,"Error parsing Budget.amount");								
 				}
@@ -839,14 +941,10 @@ public class FlowzrSyncEngine  {
 			if (jsonObjectEntity.has("recurNum")) {
 				try {
 					tEntity.recurNum=jsonObjectEntity.getInt("recurNum");
-					if (tEntity.recurNum>0) {
-						return null;
-					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
 			}
 			if (jsonObjectEntity.has("isCurrent")) {
 				try {
@@ -1081,7 +1179,6 @@ public class FlowzrSyncEngine  {
 			CurrencyCache.initialize(em);			
 			//card_issuer
 		 	if (jsonObjectAccount.has("card_issuer")) {
-		 		
 		 		tEntity.cardIssuer=jsonObjectAccount.getString("card_issuer");
 		 	} 
 		 	//issuer
@@ -1177,15 +1274,16 @@ public class FlowzrSyncEngine  {
 
 				if (jsonObjectResponse.has("key")) {
 					tEntity.remoteKey=jsonObjectResponse.getString("key");					
-				} 
+				}   			       									
 
 				if (jsonObjectResponse.has("amount")) {
-					tEntity.fromAmount=jsonObjectResponse.getLong("amount");
+						tEntity.fromAmount=jsonObjectResponse.getLong("amount");
 				}
-			
+
 				if (jsonObjectResponse.has("to_amount")) {
 					tEntity.toAmount=jsonObjectResponse.getLong("to_amount");
 				}
+				
 				
 				/**
 			    @Column(name = "original_currency_id")
@@ -1208,12 +1306,12 @@ public class FlowzrSyncEngine  {
 				//parent_tr
 				if (jsonObjectResponse.has("parent_tr")) {
 					try {					
-						tEntity.parentId=getLocalKey(DatabaseHelper.TRANSACTION_TABLE, jsonObjectResponse.getString("parent_tr"));
-						Transaction parent_tr=em.load(Transaction.class, tEntity.parentId);
-						if (parent_tr.categoryId!=Category.SPLIT_CATEGORY_ID) {
-							parent_tr.categoryId=Category.SPLIT_CATEGORY_ID;
-							em.saveOrUpdate(parent_tr);					
-						}				
+					tEntity.parentId=getLocalKey(DatabaseHelper.TRANSACTION_TABLE, jsonObjectResponse.getString("parent_tr"));
+					Transaction parent_tr=em.load(Transaction.class, tEntity.parentId);
+					if (parent_tr.categoryId!=Category.SPLIT_CATEGORY_ID) {
+						parent_tr.categoryId=Category.SPLIT_CATEGORY_ID;
+						em.saveOrUpdate(parent_tr);					
+					}
 					} catch (Exception e) {
 						//Log.e("financisto","Error parsing/saving Transaction.parent_tr with : " + jsonObjectResponse.getString("parent_tr"));						
 					}
@@ -1246,7 +1344,7 @@ public class FlowzrSyncEngine  {
 				//project_id,
 				if (jsonObjectResponse.has("project")) {
 					try {
-						((Transaction)tEntity).projectId=getLocalKey(DatabaseHelper.PROJECT_TABLE, jsonObjectResponse.getString("project"));
+						tEntity.projectId=getLocalKey(DatabaseHelper.PROJECT_TABLE, jsonObjectResponse.getString("project"));
 					} catch (Exception e1) {					
 						Log.e("financisto","Error parsing Transaction.ProjectId with : " + jsonObjectResponse.getString("project"));		
 					} 					
@@ -1268,10 +1366,10 @@ public class FlowzrSyncEngine  {
 					try {
 						long lid=getLocalKey(DatabaseHelper.LOCATIONS_TABLE, jsonObjectResponse.getString("location_id"));
 						if (lid>0) {
-							((Transaction)tEntity).locationId=lid;
+							tEntity.locationId=lid;
 						}
 					} catch (Exception e1) {					
-						//Log.e("financisto","Error parsing Transaction.location_id with : " + jsonObjectResponse.getString("location_id"));					
+						Log.e("financisto","Error parsing Transaction.location_id with : " + jsonObjectResponse.getString("location_id"));					
 					} 						
 				}
 				//accuracy,provider,latitude,longitude
@@ -1331,22 +1429,26 @@ public class FlowzrSyncEngine  {
 			    			attributes.add(a);
 			    		} else {
 			    			Log.e(TAG,"transaction attribute: invalid array size");
+			    			Log.e(TAG,jsonObjectResponse.getString("transaction_attribute"));
 			    		}
 			    		
 			    	}
 				}
 				// end main transaction data				
 				if (!jsonObjectResponse.has("from_crebit")) {
-					id=em.saveOrUpdate((Transaction)tEntity);        		
+					id=em.saveOrUpdate(tEntity);
+					//dba.insertOrUpdate(tEntity,attributes);
+					
 					if (attributes!=null) {
 			            dba.db().delete(DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE, DatabaseHelper.TransactionAttributeColumns.TRANSACTION_ID+"=?",
 			                    new String[]{String.valueOf(id)});
 			    		for (TransactionAttribute a : attributes) {
 			    			a.transactionId=id;
 			    			ContentValues values = a.toValues();
-							dba.db().insert(TRANSACTION_ATTRIBUTE_TABLE, null, values);
+							dba.db().insert(DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE, null, values);
 						}
 					}
+					
 				}
 			} catch (Exception e) {				
 				e.printStackTrace();
@@ -1385,7 +1487,7 @@ public class FlowzrSyncEngine  {
     }
 
 	private <T> Object pullUpdate(String tableName,Class<T> clazz,long  lastSyncLocalTimestamp,String account,String gotoDate)  {	
-		String url=FLOWZR_API_URL + options.useCredential + "/?action=pull" + tableName + "&account=" + account + "&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp ;
+		String url=options.FLOWZR_API_URL + options.useCredential + "/?action=pull" + tableName + "&account=" + account + "&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp ;
 		if (gotoDate!=null) {
 			url=url + "&gotoDate="+ gotoDate ;
 		}
@@ -1471,7 +1573,7 @@ public class FlowzrSyncEngine  {
    				reader.endArray();
    			}
    		}
-   		if (gotoDate!=null && ! flowzrSyncActivity.isCanceled) {			
+   		if (gotoDate!=null && ! isCanceled) {			
    			pullUpdate(tableName, clazz,lastSyncLocalTimestamp,account,gotoDate);
    		}
  return null;         
@@ -1565,23 +1667,16 @@ public class FlowzrSyncEngine  {
 			((Exception) o2).printStackTrace();
 			//return o2;
 		}
-		if (progressListener != null) {	
-			if (i>100) {
-				i=100;
-			}
-            progressListener.onProgress(i);
-        }	   
+		if (i>100) {
+			i=100;
+		}
+		if (clazz!=null ) {
+			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " " + clazz.toString().substring(clazz.toString().lastIndexOf('.') + 1),i);   
+		}
 	}
      
-    
-    //@param progressListener    
-    public void setProgressListener(ProgressListener progressListener) {
-        this.progressListener = progressListener;
-    }
-
-
     public void pullDelete(long lastSyncLocalTimestamp)  throws IOException {
-		String url=FLOWZR_API_URL + options.useCredential + "?action=pullDelete&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp ;
+		String url=options.FLOWZR_API_URL + options.useCredential + "?action=pullDelete&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp ;
 		HttpGet httpGet = new HttpGet(url);
         try {
         	HttpResponse httpResponse = http_client.execute(httpGet);
@@ -1649,7 +1744,240 @@ public class FlowzrSyncEngine  {
 			}
 		}
     }
+   
+   public void pushAllBlobs() {
+	   String sql="select attached_picture,datetime,remote_key " +
+	   		"from transactions " +
+	   		"where attached_picture is not null " +
+	   		"and blob_key is null and (updated_on > " + options.lastSyncLocalTimestamp 
+	   		+  " and updated_on<" + options.startTimestamp + ")";
 
-	
+	   Cursor cursorCursor=db.rawQuery(sql, null);
+	   int i=0;
+	   if (cursorCursor.moveToFirst()) {			
+			do {
+				i=i+10;
+				flowzrSyncActivity.notifyUser(cursorCursor.getString(0) + " >> Google Drive ",i);
+				if (i==100) {
+					i=10;
+				}					
+				saveFileToDrive(cursorCursor.getString(0),cursorCursor.getLong(1),cursorCursor.getString(2));				
+			} while (cursorCursor.moveToNext());	
+		}
+		cursorCursor.close();
+   }
+   
+   
+   public void saveFileToDrive(String pictureFileName,long l,String remoteKey) {
+	   java.io.File pictureFile = new java.io.File(PICTURES_DIR, pictureFileName);
+	   Uri fileUri=Uri.fromFile(pictureFile);
+	   RunUpload runUpload = new RunUpload(fileUri,l,remoteKey);
+	   runUpload.run();
+   }   
 
+   public class RunUpload implements Runnable {
+
+	   	private Uri fileUri;
+	   	private long trDate;
+	   	private String remote_key;
+	   	
+	   	public RunUpload(Uri _fileUri,long l,String _remote_key) {
+	   		    this.fileUri = _fileUri;
+	   		    this.trDate = l;
+	   		    this.remote_key=_remote_key;
+	   	}
+	   	
+	   	
+	   
+	   	public void run() {
+	   		String targetFolderId=null;
+	   		try {
+	   			if (driveService==null) {
+	   				driveService=getDriveService();
+	   			}
+	   			String ROOT_FOLDER=MyPreferences.getGoogleDriveFolder(flowzrSyncActivity);
+	   			// ensure to have the app root folder in drive ...
+	   			if (rootFolderId==null) {
+	   				//search root folder ...
+	   				FileList folders=driveService.files().list().setQ("mimeType='application/vnd.google-apps.folder'").execute();
+	   				for(File fl: folders.getItems()){
+	   					if (fl.getTitle().equals(ROOT_FOLDER)) {
+	   						rootFolderId=fl.getId();
+	   					}
+	   				}
+	   				//if not found create it
+	   				if (rootFolderId==null) {
+	   					File body = new File();
+	   					body.setTitle(ROOT_FOLDER);
+	   					body.setMimeType("application/vnd.google-apps.folder");
+	   					File file = driveService.files().insert(body).execute();
+	   					rootFolderId=file.getId();
+	   				}
+	   			} 
+	   			//search for the target folder (depending of the date)    		      
+	   			Calendar cal = Calendar.getInstance();
+	   			cal.setTime(new Date(trDate));	    		      
+	   			int month=cal.get(Calendar.MONTH) + 1;
+	   			String targetFolder=String.valueOf(cal.get(Calendar.YEAR)) + "-"  + (month<10?("0"+month):(month));
+
+	   			FileList subfolders=driveService.files().list().setQ("mimeType='application/vnd.google-apps.folder' and '" + rootFolderId + "' in parents").execute();
+	   			for(File fl: subfolders.getItems()){
+	   				if (fl.getTitle().equals(targetFolder)) {
+	   					targetFolderId=fl.getId();
+	   				}
+	   			}
+	   			//create the target folder if not exist
+	   			if (targetFolderId==null) {
+	   				//create folder
+	   				File body = new File();
+	   				body.setTitle(targetFolder);
+	   				ArrayList<ParentReference> pList=new ArrayList<ParentReference>();
+	   				pList.add(new ParentReference().setId(rootFolderId)) ;   		        	  
+	   				body.setParents(pList);
+	   				body.setMimeType("application/vnd.google-apps.folder");
+	   				File file = driveService.files().insert(body).execute();
+	   				targetFolder=file.getId();
+	   			}
+
+	   			// File's binary content
+	   			java.io.File fileContent = new java.io.File(fileUri.getPath());
+
+	   			InputStreamContent mediaContent = new InputStreamContent("image/jpeg", new   BufferedInputStream(
+	   					new FileInputStream(fileContent)));   		        	
+	   			mediaContent.setLength(fileContent.length());    		          
+
+	   			// File's metadata.
+	   			File body = new File();
+	   			body.setTitle(fileContent.getName());
+	   			body.setMimeType("image/jpeg");    
+	   			body.setFileSize(fileContent.length());
+	   			ArrayList<ParentReference> pList2=new ArrayList<ParentReference>();
+	   			pList2.add(new ParentReference().setId(targetFolderId)) ;   		        		          
+	   			body.setParents(pList2);
+	   			File file = driveService.files().insert(body, mediaContent).execute();   		              		           		          
+	   		} catch (UserRecoverableAuthIOException e) {
+	   			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_account_setup), 100);
+	   			flowzrSyncActivity.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+	   		} catch (Exception e) {
+	   			flowzrSyncActivity.notifyUser(e.getMessage(), 0);
+	   		}    		
+
+	   		String uploadedId=null;
+	   		FileList files;
+	   		try {
+	   			files = driveService.files().list().setQ("mimeType='image/jpeg' and '" + targetFolderId + "' in parents").execute();
+
+	   			for(File fl: files.getItems()){
+	   				if (fl.getTitle().equals(fileUri.getLastPathSegment())) {
+	   					uploadedId=fl.getId();	    		    		  
+	   				}
+	   			}  
+	   			if (!uploadedId.equals("null")) {
+	   				String sql="update transactions set blob_key='" + uploadedId + "' where remote_key='" + remote_key+"'";
+	   				db.execSQL(sql);    	
+	   			}
+	   		} catch (Exception e) {
+	   			e.printStackTrace();
+	   		}    	
+	   	}
+	   }
+
+	   private Drive getDriveService() {
+		   credential = GoogleAccountCredential.usingOAuth2(context, Arrays.asList(DriveScopes.DRIVE));
+		   credential.setSelectedAccountName(options.useCredential);
+		   return new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential).build();
+	   }
+
+   public class GetAuthTokenCallback implements AccountManagerCallback<Bundle> {
+		public void run(AccountManagerFuture<Bundle> result) {
+			Bundle bundle;
+			
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);	
+			FlowzrSyncOptions options = FlowzrSyncOptions.fromPrefs(preferences);	
+			flowzrSyncTask= new FlowzrSyncTask(flowzrSyncActivity,FlowzrSyncEngine.this,  options,http_client);
+			flowzrSyncActivity.flowzrSyncTask=flowzrSyncTask;
+			
+			try {
+				bundle = result.getResult();
+				Intent intent = (Intent)bundle.get(AccountManager.KEY_INTENT);
+				if(intent != null) {
+					// User input required
+					flowzrSyncActivity.startActivity(intent);
+				} else {
+	            	AccountManager.get(context).invalidateAuthToken(bundle.getString(AccountManager.KEY_ACCOUNT_TYPE), bundle.getString(AccountManager.KEY_AUTHTOKEN));
+	            	AccountManager.get(context).invalidateAuthToken("ah", bundle.getString(AccountManager.KEY_AUTHTOKEN));
+	            	onGetAuthToken(bundle);
+				}
+			} catch (OperationCanceledException e) {
+				flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_error_no_network), 100);
+				//showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (AuthenticatorException e) {
+				flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_error_no_network), 100);			
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_error_no_network), 100);		
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+   
+
+	protected void onGetAuthToken(Bundle bundle) {
+		String auth_token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+		
+		new GetCookieTask().execute(auth_token);
+	}
+   
+	private class GetCookieTask extends AsyncTask<String, Void, Boolean> {
+		protected Boolean doInBackground(String... tokens) {
+			flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_take_a_while), 15);
+			try {								
+				http_client.getParams().setParameter("http.protocol.content-charset","UTF-8");
+				// Don't follow redirects
+				http_client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
+				
+				HttpGet http_get = new HttpGet(options.FLOWZR_BASE_URL + "/_ah/login?continue=" + options.FLOWZR_BASE_URL +"/&auth=" + tokens[0]);
+				HttpResponse response;
+				flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_take_a_while), 20);
+				response = http_client.execute(http_get);
+				if(response.getStatusLine().getStatusCode() != 302) {
+					// Response should be a redirect
+					return false;
+				}
+				for(Cookie cookie : http_client.getCookieStore().getCookies()) {
+					if(cookie.getName().equals("ACSID")) {
+						flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_take_a_while), 25);						
+						return true;
+					}
+				}
+			} catch (ClientProtocolException e) {
+				Log.e("financisto",e.getMessage());				
+				return false;
+			} catch (IOException e) {  				
+				Log.e("financisto",e.getMessage());
+				return false;
+			} finally {
+				http_client.getParams().setParameter("http.protocol.content-charset","UTF-8");				
+				http_client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, true);				
+			}
+			return false;
+		}
+
+		protected void onPostExecute(Boolean result) {
+			flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_auth_inprogress), 30);			
+			flowzrSyncTask.execute();   												
+		}
+
+
+	}
 }
+
+
+
+
+

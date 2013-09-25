@@ -35,6 +35,7 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import java.util.Date;
 
 import static ru.orangesoftware.financisto.service.DailyAutoBackupScheduler.scheduleNextAutoBackup;
+import static ru.orangesoftware.financisto.service.FlowzrAutoSyncScheduler.scheduleNextAutoSync;
 
 public class FinancistoService extends WakefulIntentService {
 
@@ -43,7 +44,9 @@ public class FinancistoService extends WakefulIntentService {
     public static final String ACTION_SCHEDULE_ONE = "ru.orangesoftware.financisto.SCHEDULE_ONE";
     public static final String ACTION_SCHEDULE_AUTO_BACKUP = "ru.orangesoftware.financisto.ACTION_SCHEDULE_AUTO_BACKUP";
     public static final String ACTION_AUTO_BACKUP = "ru.orangesoftware.financisto.ACTION_AUTO_BACKUP";
-
+    public static final String ACTION_SCHEDULE_AUTO_SYNC = "ru.orangesoftware.financisto.ACTION_SCHEDULE_AUTO_SYNC";
+    public static final String ACTION_AUTO_SYNC = "ru.orangesoftware.financisto.ACTION_AUTO_SYNC";
+    
 	private static final int RESTORED_NOTIFICATION_ID = 0;
 
 	private DatabaseAdapter db;
@@ -82,6 +85,10 @@ public class FinancistoService extends WakefulIntentService {
             scheduleNextAutoBackup(this);
         } else if (ACTION_AUTO_BACKUP.equals(action)) {
             doAutoBackup();
+        } else if (ACTION_SCHEDULE_AUTO_SYNC.equals(action)) {
+            scheduleNextAutoSync(this);
+        } else if (ACTION_AUTO_SYNC.equals(action)) {
+            doAutoSync();
         }
     }
 
@@ -102,7 +109,18 @@ public class FinancistoService extends WakefulIntentService {
             }
         }
     }
-
+    
+    private void doAutoSync() {
+    	try {
+    		long t0 = System.currentTimeMillis();
+    		Log.e(TAG, "Auto-sync started at " + new Date());
+    		Log.e(TAG, "Auto-backup completed in " +(System.currentTimeMillis()-t0)+"ms");
+    	} finally {
+    		scheduleNextAutoBackup(this);
+    	}
+    }
+    
+    
     private void doAutoBackup() {
         try {
             try {

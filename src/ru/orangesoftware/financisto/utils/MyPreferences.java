@@ -596,5 +596,19 @@ public class MyPreferences {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(name, defaultValue);
     }
+    
+    public static String getGoogleDriveFolder(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString("googledrive_folder", "financial_docs");
+    }    
 
+    public static boolean doGoogleDriveUpload(Context context) {
+        return getBoolean(context, "googledrive_upload", false);
+    }    
+
+    public static boolean isAutoSync(Context context) {
+        return getBoolean(context, "auto_sync_enabled", true);
+    }  
+    
+    
 }

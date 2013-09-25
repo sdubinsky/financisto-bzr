@@ -9,7 +9,6 @@
 package ru.orangesoftware.financisto.export.flowzr;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -28,59 +27,68 @@ import org.apache.http.protocol.HTTP;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import ru.orangesoftware.financisto.export.ProgressListener;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.widget.Toast;
+import android.util.Log;
 
 public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
 	protected final Context context;
-	protected final ProgressDialog dialog;
     private final FlowzrSyncOptions options;
     private final DefaultHttpClient http_client;
     private final FlowzrSyncActivity flowzrSyncActivity;
     FlowzrSyncEngine flowzrSync;
-    
-    public FlowzrSyncTask(FlowzrSyncActivity flowzrSyncActivity, Handler handler, ProgressDialog dialog, FlowzrSyncOptions options, DefaultHttpClient pHttp_client) {
+    public ProgressDialog mProgress;
+	public static final String TAG = "flowzr";
+	
+    public FlowzrSyncTask(FlowzrSyncActivity flowzrSyncActivity, FlowzrSyncEngine _flowzrSyncEngine, FlowzrSyncOptions options, DefaultHttpClient pHttp_client) {
         this.options = options;
         this.http_client=pHttp_client;
-        this.context=flowzrSyncActivity;
-        this.dialog=dialog;        
+        this.context=flowzrSyncActivity;     
         this.flowzrSyncActivity=flowzrSyncActivity;
+        this.flowzrSync=_flowzrSyncEngine;
+        mProgress = new ProgressDialog(this.context);     
+        mProgress.setTitle(flowzrSyncActivity.getString(R.string.flowzr_sync));
+        mProgress.setMessage(flowzrSyncActivity.getString(R.string.flowzr_sync_take_a_while));
+        mProgress.setCancelable(true);
+        mProgress.setCanceledOnTouchOutside(false);
+        mProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);   
+        mProgress.show();
     }
 
+
+    
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
     	
-        try {	
-        	flowzrSync = new FlowzrSyncEngine(flowzrSyncActivity,context, db, options, http_client);
-            flowzrSync.setProgressListener(new ProgressListener() {
-                @Override                
-                public void onProgress(int percentage) {
-                    publishProgress(String.valueOf(percentage));
-                }
-            });    
-            if (checkSubscriptionFromWeb()) {
+        try {	 
+			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_take_a_while), 30);
+        	if (checkSubscriptionFromWeb()) {      		
             	return flowzrSync.doSync();
             } else {
             	return new Exception(context.getString(R.string.flowzr_subscription_required));
-            }
-
-            
+            }            
         } catch (Exception e) {
             return e;
         }
     }
 
     public boolean checkSubscriptionFromWeb() {
-		String url=flowzrSync.FLOWZR_API_URL + "?action=checkSubscription";
-	    InputStream isHttpcontent = null;
+	    final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+	    String registrationId = prefs.getString(FlowzrSyncOptions.PROPERTY_REG_ID, "");
+	    if (registrationId=="") {
+	        Log.i(TAG, "Registration not found.");
+	    }
+    	
+		String url=FlowzrSyncOptions.FLOWZR_API_URL + "?action=checkSubscription&regid=" + registrationId;
+		
 		try {
-          HttpGet httpGet = new HttpGet(url); 
+          HttpGet httpGet = new HttpGet(url);
+			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_subscription_required), 40);            
+          
           HttpResponse httpResponse = http_client.execute(httpGet);      
+			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_inprogress), 50);            
           int code = httpResponse.getStatusLine().getStatusCode();
           if (code==402) {
           	return false;
@@ -110,7 +118,7 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
-        dialog.setProgress(Integer.parseInt(values[0]));        
+        mProgress.setProgress(Integer.parseInt(values[0]));        
     }
 
     static String getStackTrace(Throwable t) {
@@ -126,21 +134,17 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
 	protected void onPostExecute(Object result) {
 		
 		if (result instanceof Exception)  {			
-			dialog.setTitle((context.getString(R.string.flowzr_sync_error)));
-			dialog.setMessage(((Exception) result).getMessage());
-         	dialog.setCancelable(true);
-         	dialog.setProgress(100);
+			
          	final String msg=getStackTrace((Exception)result);
          	((Exception)result).printStackTrace();
-         	
-         	
+         	         	
          	Thread trd = new Thread(new Runnable(){
          		  @Override
          		  public void run(){
          				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
          				nameValuePairs.add(new BasicNameValuePair("action","error"));
          				nameValuePairs.add(new BasicNameValuePair("stack",msg));					
-         		        HttpPost httppost = new HttpPost(flowzrSync.FLOWZR_API_URL + options.useCredential + "/error/");
+         		        HttpPost httppost = new HttpPost(FlowzrSyncOptions.FLOWZR_API_URL + options.useCredential + "/error/");
          		        try {
          					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.UTF_8));
          				} catch (UnsupportedEncodingException e) {
@@ -164,19 +168,11 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
          	
          	return;
 		} else {
-			if (isCancelled()) {
-		        flowzrSyncActivity.finish();			
-				return;
-			}
-			flowzrSync.finishDelete();
-	    	
-	        flowzrSyncActivity.finish();         	
-	        Toast.makeText(context.getApplicationContext(), R.string.flowzr_sync_success, Toast.LENGTH_SHORT).show();  
-	        		
-			dialog.dismiss();			
+			flowzrSync.finishDelete();	        		
+			mProgress.dismiss();			
 	        options.lastSyncLocalTimestamp=System.currentTimeMillis();
 			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-			editor.putLong(FlowzrSyncActivity.LAST_SYNC_LOCAL_TIMESTAMP, System.currentTimeMillis());
+			editor.putLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, System.currentTimeMillis());
 			editor.commit();
 		}
 	}

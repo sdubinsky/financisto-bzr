@@ -47,6 +47,9 @@ public class Transaction extends TransactionBase {
     @Column(name = "payee_id")
     public long payeeId;
 
+    @Column(name = "blob_key")
+    public String blobKey;    
+    
     @Column(name = "original_currency_id")
     public long originalCurrencyId;
 
@@ -91,6 +94,7 @@ public class Transaction extends TransactionBase {
 		values.put(TransactionColumns.last_recurrence.name(), lastRecurrence);
 		values.put(TransactionColumns.updated_on.name(), updatedOn);
 		values.put(TransactionColumns.remote_key.name(), remoteKey);		
+		values.put(TransactionColumns.blob_key.name(), blobKey);	
 		return values;
 	}
 

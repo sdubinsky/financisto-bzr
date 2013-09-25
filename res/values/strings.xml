@@ -671,10 +671,14 @@
     <string name="import_export">Import/Export</string>
     <string name="qif_import_disclaimer">*WARNING* Please note that all existing data will be removed!</string>
 	
-	<string name="flowzr_sync">Flowzr sync</string>
+	<string name="flowzr_sync">Flowzr</string>
     <string name="flowzr_sync_error">Sync error</string>
+    <string name="flowzr_sync_take_a_while">This can take a while. Hit back button to do something else while syncing...</string>
     <string name="flowzr_sync_error_no_network">Network is not available</string>
+    <string name="flowzr_sync_auth_inprogress">Checking authentification ...</string>      	
     <string name="flowzr_sync_inprogress">Synchronizing data ...</string>      	
+    <string name="flowzr_sync_sending">Sending </string>  
+    <string name="flowzr_sync_receiving">Receiving </string>  
     <string name="buy_subscription">Purchase a subscription</string>
     <string name="visit_flowzr">Visit Flowzr</string>
     <string name="account_required">An account is required.</string>
@@ -684,6 +688,17 @@
     <string name="flowzr_account_setup">Account now set up, please restart sync.</string>            
     <string name="flowzr_subscription_required">Subscription required.</string>
     <string name="flowzr_terms_of_use">A &lt;b&gt;paid subscription&lt;/b&gt; is required to use Flowzr sync service. The subscription can be cancelled free of charge during the trial period of &lt;b&gt;14 days&lt;/b&gt;. Flowzr is a third-party service, not affiliated with Financisto. By using the service you agree to Flowzr &lt;a href="http://www.flowzr.com/static/en/mobile/privacypolicy.html"&gt;Privacy Policy&lt;/a&gt; and &lt;a href="http://www.flowzr.com/static/en/mobile/tos.html"&gt;Terms Of Use Agreement&lt;/a&gt;.</string>
+
+    <string name="auto_sync">Auto-sync</string>
+    <string name="auto_sync_enabled">Enable auto-sync</string>
+    <string name="auto_sync_enabled_summary">Push changes every five minutes if any</string>
+
+    <string name="googledrive">Google Drive</string>
+    <string name="googledrive_authorize">Enable Sync to Google Drive</string>
+    <string name="googledrive_authorize_summary">Sync your picture in Drive</string>
+    <string name="googledrive_upload">Allow upload</string>
+    <string name="googledrive_folder">Folder</string>
+    <string name="googledrive_folder_summary">Select a Google Drive folder to store Documents</string>
 
     <string name="remember_last_category_for_payee">Last category</string>
     <string name="remember_last_category_for_payee_summary">Remember the last category for the chosen payee (or account if payee is disabled)</string>

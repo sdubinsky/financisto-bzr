@@ -572,6 +572,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 				PICTURES_DIR.mkdirs();
 				PICTURES_THUMB_DIR.mkdirs();				
 				pictureFileName = PICTURE_FILE_NAME_FORMAT.format(new Date())+".jpg";
+				transaction.blobKey=null;		
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, 
 						Uri.fromFile(new File(PICTURES_DIR, pictureFileName)));
@@ -744,6 +745,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 			pictureView.setImageBitmap(thumb);
 			pictureView.setTag(pictureFileName);
 			transaction.attachedPicture = pictureFileName;
+			
 		}				
 	}
 	
@@ -757,6 +759,7 @@ public abstract class AbstractTransactionActivity extends AbstractActivity imple
 		}		
 		pictureFileName = null;
 		transaction.attachedPicture = null;
+		transaction.blobKey=null;	
 		pictureView.setImageBitmap(null);		
 		pictureView.setTag(null);
 	}
