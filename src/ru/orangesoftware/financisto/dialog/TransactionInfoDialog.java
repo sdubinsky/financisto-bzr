@@ -28,6 +28,7 @@ import ru.orangesoftware.financisto.model.*;
 import ru.orangesoftware.financisto.model.TransactionAttributeInfo;
 import ru.orangesoftware.financisto.model.TransactionInfo;
 import ru.orangesoftware.financisto.recur.Recurrence;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.financisto.utils.ThumbnailUtil;
 import ru.orangesoftware.financisto.utils.Utils;
 import ru.orangesoftware.financisto.view.NodeInflater;
@@ -139,8 +140,12 @@ public class TransactionInfoDialog {
         add(layout, R.string.account_to, ti.toAccount.title, toAccountType);
         amountView = add(layout, R.string.amount_to, "");
         u.setAmountText(amountView, ti.toAccount.currency, ti.toAmount, true);
-        add(layout, R.string.payee, ti.payee.title);
-        add(layout, R.string.category, ti.category.title);
+        if (MyPreferences.isShowPayeeInTransfers(context)) {
+            add(layout, R.string.payee, ti.payee != null ? ti.payee.title : "");
+        }
+        if (MyPreferences.isShowCategoryInTransferScreen(context)) {
+            add(layout, R.string.category, ti.category != null ? ti.category.title : "");
+        }
     }
 
     private void createAdditionalInfoNodes(TransactionInfo ti, LinearLayout layout) {
