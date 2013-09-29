@@ -238,7 +238,7 @@
         <EditTextPreference android:key="googledrive_folder"
                             android:title="@string/googledrive_folder"
                             android:summary="@string/googledrive_folder_summary"
-                            android:hint="financial_docs"/>                                                        
+                            android:defaultValue="financial_docs"/>                                                        
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/exchange_rates">

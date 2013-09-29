@@ -15,9 +15,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
+
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.AbstractTransactionActivity;
 import ru.orangesoftware.financisto.activity.AccountWidget;
@@ -62,7 +68,7 @@ public class FinancistoService extends WakefulIntentService {
         db = new DatabaseAdapter(this);
         db.open();
         scheduler = new RecurrenceScheduler(db);
-        Log.d(TAG, "Created..");
+        Log.i(TAG, "Created Finacisto service ...");
     }
 
     @Override
@@ -70,7 +76,7 @@ public class FinancistoService extends WakefulIntentService {
         if (db != null) {
             db.close();
         }
-        Log.d(TAG, "Destroyed..");
+        Log.i(TAG, "Finacisto service ...");
         super.onDestroy();
     }
 
@@ -112,14 +118,26 @@ public class FinancistoService extends WakefulIntentService {
     
     private void doAutoSync() {
     	try {
-    		long t0 = System.currentTimeMillis();
-    		Log.e(TAG, "Auto-sync started at " + new Date());
-    		Log.e(TAG, "Auto-backup completed in " +(System.currentTimeMillis()-t0)+"ms");
+    		Log.i(TAG, "Auto-sync started at " + new Date());
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);		
+			FlowzrSyncOptions o =FlowzrSyncOptions.fromPrefs(preferences);    		
+			if (isPushSyncNeed(o.lastSyncLocalTimestamp)) {
+				FlowzrSyncEngine.builAndRun(getApplicationContext());
+    		} else {
+				Log.i(TAG,"no changes to push since " + new Date(o.lastSyncLocalTimestamp).toString());
+			}
     	} finally {
-    		scheduleNextAutoBackup(this);
+    		scheduleNextAutoSync(this);
     	}
     }
     
+    private boolean isPushSyncNeed(long lastSyncLocalTimestamp) {    	    	
+		String sql="select count(*) from transactions where updated_on > " + lastSyncLocalTimestamp;		
+		Cursor cursorCursor=db.db().rawQuery(sql, null);
+		cursorCursor.moveToFirst();
+		long total=cursorCursor.getLong(0);    	
+		return total!=0;
+	}
     
     private void doAutoBackup() {
         try {

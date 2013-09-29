@@ -24,6 +24,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
+
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
@@ -40,8 +43,9 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     private final DefaultHttpClient http_client;
     private final FlowzrSyncActivity flowzrSyncActivity;
     FlowzrSyncEngine flowzrSync;
-    public ProgressDialog mProgress;
+    public static ProgressDialog mProgress;
 	public static final String TAG = "flowzr";
+
 	
     public FlowzrSyncTask(FlowzrSyncActivity flowzrSyncActivity, FlowzrSyncEngine _flowzrSyncEngine, FlowzrSyncOptions options, DefaultHttpClient pHttp_client) {
         this.options = options;
@@ -49,53 +53,69 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
         this.context=flowzrSyncActivity;     
         this.flowzrSyncActivity=flowzrSyncActivity;
         this.flowzrSync=_flowzrSyncEngine;
-        mProgress = new ProgressDialog(this.context);     
+        mProgress = new ProgressDialog(this.flowzrSyncActivity); 
+        mProgress.setIcon(R.drawable.icon);
         mProgress.setTitle(flowzrSyncActivity.getString(R.string.flowzr_sync));
-        mProgress.setMessage(flowzrSyncActivity.getString(R.string.flowzr_sync_take_a_while));
+        mProgress.setMessage(flowzrSyncActivity.getString(R.string.flowzr_sync_inprogress));
         mProgress.setCancelable(true);
         mProgress.setCanceledOnTouchOutside(false);
         mProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);   
+        try {
         mProgress.show();
+        } catch(Exception e) {
+        	Log.e(TAG,"avoid a leaked window");
+        }
+
     }
 
 
     
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
     	
-        try {	 
-			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_take_a_while), 30);
-        	if (checkSubscriptionFromWeb()) {      		
-            	return flowzrSync.doSync();
-            } else {
-            	return new Exception(context.getString(R.string.flowzr_subscription_required));
-            }            
-        } catch (Exception e) {
-            return e;
-        }
+    	try {	 
+    		flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_auth_inprogress), 30);
+    		//FlowzrBilling flowzrBilling = new FlowzrBilling(flowzrSyncActivity, flowzrSyncActivity.getApplicationContext(), http_client, options.useCredential);  
+    		//if (flowzrBilling.checkSubscription()) {  
+    		//        	Boolean sync=false;
+    		//            if (flowzrBilling!=null) {
+    		//            	sync=flowzrBilling.checkSubscription();
+    		//            } else {
+    		//            	sync=false;
+    		//            	return new Exception(context.getString(R.string.flowzr_account_setup));
+    		//            }
+    		if (this.checkSubscriptionFromWeb()) {
+    			return flowzrSync.doSync();
+    		} else {
+    			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_subscription_required), 100);
+    			flowzrSyncActivity.setRunning();
+    			return new Exception(context.getString(R.string.flowzr_subscription_required));
+    		}        	
+    	} catch (Exception e) {
+    		return e;
+    	}
     }
 
     public boolean checkSubscriptionFromWeb() {
-	    final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-	    String registrationId = prefs.getString(FlowzrSyncOptions.PROPERTY_REG_ID, "");
-	    if (registrationId=="") {
-	        Log.i(TAG, "Registration not found.");
-	    }
-    	
-		String url=FlowzrSyncOptions.FLOWZR_API_URL + "?action=checkSubscription&regid=" + registrationId;
-		
-		try {
-          HttpGet httpGet = new HttpGet(url);
-			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_subscription_required), 40);            
-          
-          HttpResponse httpResponse = http_client.execute(httpGet);      
-			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_inprogress), 50);            
-          int code = httpResponse.getStatusLine().getStatusCode();
-          if (code==402) {
-          	return false;
-          }
-      } catch (Exception e) {
-          e.printStackTrace();
-      } 
+    	final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    	String registrationId = prefs.getString(FlowzrSyncOptions.PROPERTY_REG_ID, "");
+    	if (registrationId=="") {
+    		Log.i(TAG, "Registration not found.");
+    	}
+
+    	String url=FlowzrSyncOptions.FLOWZR_API_URL + "?action=checkSubscription&regid=" + registrationId;
+
+    	try {
+    		flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_auth_inprogress), 40);            
+    		HttpGet httpGet = new HttpGet(url);
+    		HttpResponse httpResponse = http_client.execute(httpGet);      
+    		flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_inprogress), 50);            
+    		int code = httpResponse.getStatusLine().getStatusCode();
+    		if (code==402) {
+    			return false;
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} 
     	return true;
     }
     
@@ -168,7 +188,8 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
          	
          	return;
 		} else {
-			flowzrSync.finishDelete();	        		
+			flowzrSync.finishDelete();
+			flowzrSyncActivity.nm.cancel(FlowzrSyncActivity.NOTIFICATION_ID);
 			mProgress.dismiss();			
 	        options.lastSyncLocalTimestamp=System.currentTimeMillis();
 			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
@@ -177,3 +198,4 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
 		}
 	}
 }
+

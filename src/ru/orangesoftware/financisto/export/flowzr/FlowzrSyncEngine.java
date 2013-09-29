@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,6 +54,8 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -66,6 +69,8 @@ import android.os.Bundle;
 import android.os.Environment;
 
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.text.Html;
 import android.util.Log;
 
@@ -92,6 +97,11 @@ import ru.orangesoftware.financisto.utils.CurrencyCache;
 import ru.orangesoftware.financisto.utils.IntegrityFix;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncTask;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine.GetAuthTokenCallback;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine.RunUpload;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
@@ -107,7 +117,7 @@ import com.google.gson.stream.JsonToken;
 
 
 public class FlowzrSyncEngine  {
-	private String TAG="flowzr";
+	private static String TAG="flowzr";
 	private final String FLOWZR_MSG_NET_ERROR="FLOWZR_MSG_NET_ERROR";
 
     private final SQLiteDatabase db;
@@ -132,24 +142,38 @@ public class FlowzrSyncEngine  {
 	static final int REQUEST_ACCOUNT_PICKER = 8;
 	private static Drive driveService;
 	private GoogleAccountCredential credential;
-	public static final java.io.File PICTURES_DIR = new java.io.File(Environment.getExternalStorageDirectory(), "financisto/pictures");	  
+	public static final java.io.File PICTURES_DIR = new java.io.File(Environment.getExternalStorageDirectory(), "financisto/pictures");
+	private static final String ACTIVITY_FLOWZR_SYNC = null;
+	private static final int SYNC_NOTIFICATION_ID = 0;	  
 
 	public FlowzrSyncTask flowzrSyncTask;
 	public FlowzrSyncOptions options;
 	public boolean isCanceled=false;
     
-	public FlowzrSyncEngine(FlowzrSyncActivity a, Context c) {
+	
+	public FlowzrSyncEngine(FlowzrSyncActivity a) {
 		android.accounts.Account useCredential = null;
+		if (a==null) {
+			a=(FlowzrSyncActivity) FlowzrSyncActivity.getMySelf();
+		}
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(a);		
     	this.options = FlowzrSyncOptions.fromPrefs(preferences);
     	this.options.startTimestamp=System.currentTimeMillis(); 
-    	this.context=c;
+    	this.context=a;
     	this.flowzrSyncActivity=a;
+    	flowzrSyncActivity.isRunning=true;
         this.dba = new DatabaseAdapter(context);
         dba.open();
     	this.em=dba.em();		
         this.db = dba.db();	
-			
+		
+        if (flowzrSyncActivity==null) {
+        	Log.e("flowzr","no activity :(");
+        	Intent intent = new Intent(context, FlowzrSyncActivity.class);
+   		 	context.startActivity(intent);
+        	return;
+        }
+        
         http_client=new DefaultHttpClient();
         
         BasicHttpParams params = new BasicHttpParams();
@@ -169,7 +193,7 @@ public class FlowzrSyncEngine  {
 			}
         }
 
-		options.FLOWZR_API_URL=options.FLOWZR_API_URL + options.appVersion + "/";
+		//options.FLOWZR_API_URL=options.FLOWZR_API_URL + options.appVersion + "/";
 
     	Log.i(TAG,"init sync engine, last sync was " + new Date(options.lastSyncLocalTimestamp).toLocaleString());
     	
@@ -180,9 +204,12 @@ public class FlowzrSyncEngine  {
 	    		 useCredential=accounts[i];
 	    	 }
 	     }	    	
-    	    	
+    	if (useCredential!=null) {
     	AccountManager.get(context).getAuthToken(useCredential, "ah" , null, 
    	    		flowzrSyncActivity, new GetAuthTokenCallback(), null);   	
+    	} else {
+    		Log.e(TAG,"No account selected");
+    	}
     }
        
     
@@ -304,11 +331,13 @@ public class FlowzrSyncEngine  {
     
 	private <T extends MyEntity> Object pushUpdate(String tableName,Class<T> clazz,boolean doPushRetryOnly)  {	
 		SQLiteDatabase db2=dba.db();
-		Log.i(TAG,"push " + tableName );
+	
 
 		String sql="select count(*) from " + tableName  + " where updated_on<0 or (updated_on > " + options.lastSyncLocalTimestamp  + " and updated_on<" + options.startTimestamp + ")" ;			
 		if (doPushRetryOnly) {
 			sql="select count(*) from " + tableName  + " where updated_on<0 " ;
+		} else {
+			Log.i(TAG,"push " + tableName );
 		}
 		
 		Cursor cursorCursor=db.rawQuery(sql, null);
@@ -1746,17 +1775,24 @@ public class FlowzrSyncEngine  {
     }
    
    public void pushAllBlobs() {
-	   String sql="select attached_picture,datetime,remote_key " +
+	   Log.i(TAG,"selecting blobs");
+	   String sql="select attached_picture,datetime,remote_key,blob_key " +
 	   		"from transactions " +
 	   		"where attached_picture is not null " +
-	   		"and blob_key is null and (updated_on > " + options.lastSyncLocalTimestamp 
-	   		+  " and updated_on<" + options.startTimestamp + ")";
+	   		"and blob_key is null limit 3"; 
+	   //if (options.lastSyncLocalTimestamp>0) {
+	   //		sql=sql + " and updated_on > " + options.lastSyncLocalTimestamp  + "";
+	   //}
+	   //test
+//	   String sql="select attached_picture,datetime,remote_key,blob_key " +
+//  		"from transactions where attached_picture is not null" ;
 
 	   Cursor cursorCursor=db.rawQuery(sql, null);
 	   int i=0;
 	   if (cursorCursor.moveToFirst()) {			
 			do {
 				i=i+10;
+				//Log.e("flowzr",cursorCursor.getString(3));
 				flowzrSyncActivity.notifyUser(cursorCursor.getString(0) + " >> Google Drive ",i);
 				if (i==100) {
 					i=10;
@@ -1857,24 +1893,86 @@ public class FlowzrSyncEngine  {
 	   			File file = driveService.files().insert(body, mediaContent).execute();   		              		           		          
 	   		} catch (UserRecoverableAuthIOException e) {
 	   			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_account_setup), 100);
+	   			e.getIntent().setClass(context, FlowzrSyncActivity.class);
 	   			flowzrSyncActivity.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+	   			flowzrSyncActivity.setReady();
+	   			e.printStackTrace();
 	   		} catch (Exception e) {
 	   			flowzrSyncActivity.notifyUser(e.getMessage(), 0);
 	   		}    		
 
+	   	   Thread thread=  new Thread(){
+	           @Override
+	           public void run(){
+	               try {
+	                   synchronized(this){
+	                       wait(3000);
+	                   }
+	               }
+	               catch(InterruptedException ex){                    
+	               }        
+	           }
+	       };
+	       thread.start(); 
+	   		
 	   		String uploadedId=null;
 	   		FileList files;
 	   		try {
 	   			files = driveService.files().list().setQ("mimeType='image/jpeg' and '" + targetFolderId + "' in parents").execute();
-
+	   			String file_url="";
+	   			String thumbnail_url="";
 	   			for(File fl: files.getItems()){
 	   				if (fl.getTitle().equals(fileUri.getLastPathSegment())) {
-	   					uploadedId=fl.getId();	    		    		  
+	   					uploadedId=fl.getId();	    
+	   					try {
+	   						file_url=fl.getAlternateLink();
+	   						thumbnail_url=fl.getIconLink();
+	   					} catch (Exception e) {
+	   						file_url="https://drive.google.com/#folders/" + targetFolderId +"/";
+	   					}
+//	   					try {
+//	   						Log.i(TAG,"dl url" + fl.getDownloadUrl());
+//	   					} catch (Exception e) {
+//	   						
+//	   					}
+//	   					try {
+//	   						
+//	   						Log.i(TAG,"web content " +fl.getWebContentLink());
+//	   					} catch (Exception e) {
+//	   						
+//	   					}
+//	   					try {
+//	   						Log.i(TAG,"alternate" + fl.getAlternateLink());
+//	   					} catch (Exception e) {
+//	   						
+//	   					}
 	   				}
 	   			}  
 	   			if (!uploadedId.equals("null")) {
 	   				String sql="update transactions set blob_key='" + uploadedId + "' where remote_key='" + remote_key+"'";
-	   				db.execSQL(sql);    	
+	   				db.execSQL(sql);	   				
+	   				sql="select from_account_id,attached_picture from " + DatabaseHelper.TRANSACTION_TABLE +  " where remote_key='" + remote_key+"'";	
+	   				Cursor c=db.rawQuery(sql, null);	   			
+	   				if (c.moveToFirst()) {	   					   				
+	   					String account_key=getRemoteKey(DatabaseHelper.ACCOUNT_TABLE, String.valueOf(c.getLong(0)));
+	   					String file_type="image/jpeg";
+	   					String file_name=c.getString(1);
+	   					if (file_url==null) {
+	   						file_url="";
+	   					}
+	   					if (thumbnail_url==null) {
+	   						thumbnail_url="";
+	   					}
+	   						
+	   					String url=options.FLOWZR_API_URL + "?action=attach_blob2&url=" +  URLEncoder.encode(file_url, "UTF-8") + "&thumbnail_url=" + URLEncoder.encode(thumbnail_url, "UTF-8") + "&account="+account_key+"&crebit="+ remote_key + "&name="+ file_name + "&blob_key=" + uploadedId + "type=" + file_type;
+	   			    	try {         
+	   			    		HttpGet httpGet = new HttpGet(url);
+	   			    		http_client.execute(httpGet);
+	   			    		Log.i(TAG,"linked to :" + file_url);
+	   			    	} catch (Exception e) {
+	   			    		e.printStackTrace();
+	   			    	} 
+	   				}
 	   			}
 	   		} catch (Exception e) {
 	   			e.printStackTrace();
@@ -1883,7 +1981,7 @@ public class FlowzrSyncEngine  {
 	   }
 
 	   private Drive getDriveService() {
-		   credential = GoogleAccountCredential.usingOAuth2(context, Arrays.asList(DriveScopes.DRIVE));
+		   credential = GoogleAccountCredential.usingOAuth2(flowzrSyncActivity.getApplicationContext(), Arrays.asList(DriveScopes.DRIVE));
 		   credential.setSelectedAccountName(options.useCredential);
 		   return new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential).build();
 	   }
@@ -1896,7 +1994,7 @@ public class FlowzrSyncEngine  {
 			FlowzrSyncOptions options = FlowzrSyncOptions.fromPrefs(preferences);	
 			flowzrSyncTask= new FlowzrSyncTask(flowzrSyncActivity,FlowzrSyncEngine.this,  options,http_client);
 			flowzrSyncActivity.flowzrSyncTask=flowzrSyncTask;
-			
+	        
 			try {
 				bundle = result.getResult();
 				Intent intent = (Intent)bundle.get(AccountManager.KEY_INTENT);
@@ -1911,15 +2009,15 @@ public class FlowzrSyncEngine  {
 			} catch (OperationCanceledException e) {
 				flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_error_no_network), 100);
 				//showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
-				// TODO Auto-generated catch block
+				flowzrSyncActivity.setReady();
 				e.printStackTrace();
 			} catch (AuthenticatorException e) {
 				flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_error_no_network), 100);			
-				// TODO Auto-generated catch block
+				flowzrSyncActivity.setReady();				
 				e.printStackTrace();
 			} catch (IOException e) {
 				flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_error_no_network), 100);		
-				// TODO Auto-generated catch block
+				flowzrSyncActivity.setReady();				
 				e.printStackTrace();
 			}
 		}
@@ -1929,13 +2027,12 @@ public class FlowzrSyncEngine  {
 
 	protected void onGetAuthToken(Bundle bundle) {
 		String auth_token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-		
 		new GetCookieTask().execute(auth_token);
 	}
    
 	private class GetCookieTask extends AsyncTask<String, Void, Boolean> {
 		protected Boolean doInBackground(String... tokens) {
-			flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_take_a_while), 15);
+			flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_auth_inprogress), 15);
 			try {								
 				http_client.getParams().setParameter("http.protocol.content-charset","UTF-8");
 				// Don't follow redirects
@@ -1943,7 +2040,7 @@ public class FlowzrSyncEngine  {
 				
 				HttpGet http_get = new HttpGet(options.FLOWZR_BASE_URL + "/_ah/login?continue=" + options.FLOWZR_BASE_URL +"/&auth=" + tokens[0]);
 				HttpResponse response;
-				flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_take_a_while), 20);
+				flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_auth_inprogress), 20);
 				response = http_client.execute(http_get);
 				if(response.getStatusLine().getStatusCode() != 302) {
 					// Response should be a redirect
@@ -1951,7 +2048,7 @@ public class FlowzrSyncEngine  {
 				}
 				for(Cookie cookie : http_client.getCookieStore().getCookies()) {
 					if(cookie.getName().equals("ACSID")) {
-						flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_take_a_while), 25);						
+						flowzrSyncActivity.notifyUser(context.getString(R.string.flowzr_sync_receiving), 25);						
 						return true;
 					}
 				}
@@ -1973,6 +2070,47 @@ public class FlowzrSyncEngine  {
 			flowzrSyncTask.execute();   												
 		}
 
+
+	}
+
+	public static void builAndRun(Context context) {
+		final FlowzrSyncActivity fa = FlowzrSyncActivity.getMySelf();
+		if (fa == null) {
+			NotificationManager nm = (NotificationManager) context
+					.getSystemService(Context.NOTIFICATION_SERVICE);
+
+			Intent notificationIntent = new Intent(context,
+					FlowzrSyncActivity.class);
+			PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+					notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+			Builder mNotifyBuilder = new NotificationCompat.Builder(context);
+			mNotifyBuilder
+					.setContentIntent(contentIntent)
+					.setSmallIcon(R.drawable.flowzr)
+					.setWhen(System.currentTimeMillis())
+					.setAutoCancel(true)
+					.setContentTitle(context.getString(R.string.flowzr_sync))
+					.setContentText(
+							context.getString(R.string.flowzr_sync_require_tap));
+			nm.notify(SYNC_NOTIFICATION_ID, mNotifyBuilder.build());
+			Log.e(TAG, "Sync unactive: the required activity is missing.");
+			return;
+		} else {
+			if (fa.isRunning) {
+				Log.i(TAG, "Sync already in progress");
+			} else {
+				Log.i(TAG, "Starting Auto-Sync Task");
+				fa.runOnUiThread(new Runnable() {
+				     public void run() {
+							fa.setRunning();
+				    }
+				});
+
+				fa.initProgressDialog();
+				new FlowzrSyncEngine(fa);
+			}
+		}
 
 	}
 }

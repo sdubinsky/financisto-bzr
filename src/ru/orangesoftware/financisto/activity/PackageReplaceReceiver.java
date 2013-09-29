@@ -31,6 +31,7 @@ public class PackageReplaceReceiver extends BroadcastReceiver {
                 Log.d("PackageReplaceReceiver", "Re-scheduling all transactions");
                 requestScheduleAll(context);
                 requestScheduleAutoBackup(context);
+                requestScheduleAutoSync(context);                
             }
 		}
 	}
@@ -44,5 +45,9 @@ public class PackageReplaceReceiver extends BroadcastReceiver {
         Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_AUTO_BACKUP);
         WakefulIntentService.sendWakefulWork(context, serviceIntent);
     }
-
+    
+    protected void requestScheduleAutoSync(Context context) {
+        Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_AUTO_SYNC);
+        WakefulIntentService.sendWakefulWork(context, serviceIntent);
+    }  
 }

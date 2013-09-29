@@ -9,9 +9,14 @@ package ru.orangesoftware.financisto.activity;
 
 
 import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
+import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
 
 import java.io.IOException;
+import java.util.Date;
+
 import org.apache.http.impl.client.DefaultHttpClient;
+
+import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -67,29 +72,32 @@ public class FlowzrSyncActivity extends Activity  {
 	public String TAG="flowzr";
 
 	public NotificationCompat.Builder mNotifyBuilder;
-	static final int NOTIFICATION_ID=0;
+	public static final int NOTIFICATION_ID=0;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;	
-	NotificationManager nm;	
+	public NotificationManager nm;	
 	
-	public boolean isRunning=false;
+	public static boolean isRunning=false;
 	
-	String regid;
+	public String regid="";
 	GoogleCloudMessaging gcm; 
-	
-	
-	
+		
 	public String FLOWZR_BASE_URL="https://flowzr-hrd.appspot.com";
-	public FlowzrSyncTask flowzrSyncTask;
-	FlowzrSyncEngine flowzrSyncEngine;	
+	public static FlowzrSyncTask flowzrSyncTask;
+	static FlowzrSyncEngine flowzrSyncEngine;	
+	
+	private static FlowzrSyncActivity me=null;
+
 	
 	public void setRunning() {
 		bOk.setEnabled(false);
+		bOk.setText(R.string.flowzr_sync_inprogress);
 		setProgressBarIndeterminateVisibility(true);		
 	}
 	
 	public void setReady() {
 		  runOnUiThread(new Runnable() {
 			     public void run() {
+			    	bOk.setText(R.string.ok);
 			 		bOk.setEnabled(true);	
 					setProgressBarIndeterminateVisibility(false);						   					
 			    }
@@ -116,16 +124,51 @@ public class FlowzrSyncActivity extends Activity  {
     	}
     }
 	
-	@Override
-	public void onBackPressed() {
-		startActivity(new Intent(this, MainActivity.class));
-	}
+//	@Override
+//	public void onBackPressed() {
+//		startActivity(new Intent(this, MainActivity.class));
+//	}
 	
+    public static FlowzrSyncActivity getMySelf() {
+        return FlowzrSyncActivity.me;
+    }
+	
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if ( flowzrSyncTask!=null &&  flowzrSyncTask.mProgress!=null && flowzrSyncTask.mProgress.isShowing() ){
+            flowzrSyncTask.mProgress.cancel();
+        }
+    }
+
+    public void initProgressDialog() {
+    	Intent notificationIntent = new Intent(getApplicationContext(),FlowzrSyncActivity.class);
+    	PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),
+    	        0, notificationIntent,
+    	        PendingIntent.FLAG_CANCEL_CURRENT);			    	
+    	
+    	mNotifyBuilder.setContentIntent(contentIntent)
+    	            .setSmallIcon(R.drawable.icon)
+    	            .setWhen(System.currentTimeMillis())
+    	            .setAutoCancel(true)
+    	            .setContentTitle(getApplicationContext().getString(R.string.flowzr_sync))
+    	            .setContentText(getApplicationContext().getString(R.string.flowzr_sync_auth_inprogress));
+    	nm.notify(NOTIFICATION_ID, mNotifyBuilder.build()); 
+    }
+    
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.flowzr_sync);
-        restoreUIFromPref();        
+        FlowzrSyncActivity.me=this;
+    	mNotifyBuilder = new NotificationCompat.Builder(getApplicationContext());        
+    	nm = (NotificationManager) getApplicationContext()
+    	        .getSystemService(Context.NOTIFICATION_SERVICE);
+    	setContentView(R.layout.flowzr_sync);
+        restoreUIFromPref();      
+        if (useCredential!=null) {
+        	
+        }
+
         		
         AccountManager accountManager = AccountManager.get(getApplicationContext());
         final Account[] accounts = accountManager.getAccountsByType("com.google");
@@ -172,34 +215,26 @@ public class FlowzrSyncActivity extends Activity  {
             public void onClick(View view) {
        
             	setRunning();   	
-		    	nm = (NotificationManager) getApplicationContext()
-		    	        .getSystemService(Context.NOTIFICATION_SERVICE);
-
-		    	Intent notificationIntent = new Intent(getApplicationContext(),FlowzrSyncActivity.class);
-		    	PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),
-		    	        0, notificationIntent,
-		    	        PendingIntent.FLAG_CANCEL_CURRENT);			    	
-		    	
-		    	mNotifyBuilder = new NotificationCompat.Builder(getApplicationContext());
-
-		    	mNotifyBuilder.setContentIntent(contentIntent)
-		    	            .setSmallIcon(R.drawable.icon)
-		    	            .setWhen(System.currentTimeMillis())
-		    	            .setAutoCancel(true)
-		    	            .setContentTitle(getApplicationContext().getString(R.string.flowzr_sync))
-		    	            .setContentText(getApplicationContext().getString(R.string.flowzr_sync_auth_inprogress));
-		    	
-		    	nm.notify(NOTIFICATION_ID, mNotifyBuilder.build());             	
-            	       	
-           	 	
-            	if (useCredential==null) {
-    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_choose_account);              		
-            	} else if (!isOnline(FlowzrSyncActivity.this)) {
-    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);                                         				
+            	initProgressDialog();
+//                if (useCredential!=null) {
+//                	flowzrBilling=new FlowzrBilling(FlowzrSyncActivity.this, getApplicationContext(), http_client, useCredential.toString());  
+//                }            	
+            	if (useCredential==null) {  
+            		showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_choose_account);
+            		notifyUser(getString(R.string.flowzr_choose_account), 100);
+    				setReady();            		
+            	} else if (!isOnline(FlowzrSyncActivity.this)) {          
+            		showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
+    				notifyUser(getString(R.string.flowzr_sync_error_no_network), 100);
+    				setReady();
         		} else {
                     saveOptionsFromUI();	
-                    //main start here !
-                    flowzrSyncEngine=new FlowzrSyncEngine(FlowzrSyncActivity.this, getApplicationContext());
+                    //Play Service Billing
+                    //FlowzrBilling flowzrBilling = new FlowzrBilling(FlowzrSyncActivity.this, getApplicationContext(), http_client, useCredential.toString());  
+                    //if (flowzrSyncTask.checkSubscription()) {
+                    	flowzrSyncEngine=new FlowzrSyncEngine(FlowzrSyncActivity.this);
+                    //}
+
         		}
             }
         });
@@ -207,11 +242,12 @@ public class FlowzrSyncActivity extends Activity  {
         Button bCancel = (Button) findViewById(R.id.bCancel);
         bCancel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-            	if (flowzrSyncEngine!=null) {
-            		flowzrSyncEngine.isCanceled=true;
-            	}
-                setResult(RESULT_CANCELED);    
-                setReady();
+//            	if (flowzrSyncEngine!=null) {
+//            		flowzrSyncEngine.isCanceled=true;
+//            	}
+//            	isRunning=false;
+//                setResult(RESULT_CANCELED);    
+//                setReady();
                 finish();
             }
         });    
@@ -369,6 +405,18 @@ public class FlowzrSyncActivity extends Activity  {
     @Override
 	protected void onResume() {
 		super.onResume();
+        TextView tv = (TextView) findViewById(R.id.textView);
+        if (flowzrSyncEngine!=null && flowzrSyncEngine.options!=null) {
+        	tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(flowzrSyncEngine.options.lastSyncLocalTimestamp).toLocaleString());
+        }
+		if (this.isRunning) {
+			setRunning();
+	        try {
+	            flowzrSyncTask.mProgress.show();	            
+	            } catch(Exception e) {
+	            	Log.e(TAG,"avoid a leaked window (2)");
+	            }
+		}
         restoreUIFromPref();
         checkPlayServices();        
 	}
@@ -437,5 +485,4 @@ public class FlowzrSyncActivity extends Activity  {
 	    }
 	    return true;
 	}
-   
 }
