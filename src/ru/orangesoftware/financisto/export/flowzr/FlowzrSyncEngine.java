@@ -115,7 +115,6 @@ import com.google.api.services.drive.model.ParentReference;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
-
 public class FlowzrSyncEngine  {
 	private static String TAG="flowzr";
 	private final String FLOWZR_MSG_NET_ERROR="FLOWZR_MSG_NET_ERROR";
@@ -222,6 +221,10 @@ public class FlowzrSyncEngine  {
         	flowzrSyncActivity.notifyUser("fix created entities",5);
 	    	fixCreatedEntities();
         }
+        if (!isCanceled) {
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",75);
+	        pushDelete();
+        }        
         if (!isCanceled) {		
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",20);
 	        o=pullUpdate();
@@ -237,10 +240,6 @@ public class FlowzrSyncEngine  {
         if (!isCanceled) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",60);
 	        pullDelete(options.lastSyncLocalTimestamp);
-        }
-        if (!isCanceled) {
-	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",75);
-	        pushDelete();
         }
         if (!isCanceled) {        
         	flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + "..." ,80);
@@ -443,6 +442,12 @@ public class FlowzrSyncEngine  {
 		if (colName.equals("budget_id")) {
 			return Budget.class;
 		}		
+		if (colName.equals("budget_account_id")) {
+			return Account.class;
+		}
+		if (colName.equals("budget_currency_id")) {
+			return Currency.class;
+		}		
 		return null;
 	}
 	
@@ -570,9 +575,9 @@ public class FlowzrSyncEngine  {
 			}
 			nameValuePairs.add(new BasicNameValuePair("lastSyncLocalTimestamp",String.valueOf(options.lastSyncLocalTimestamp)));
 			//debug ...
-			//for (NameValuePair p : nameValuePairs) {
-			//	Log.i(TAG,p.toString());
-			//}
+			for (NameValuePair p : nameValuePairs) {
+				Log.i(TAG,p.toString());
+			}
 			String strResponse=httpPush(nameValuePairs);							
 							
 			if (!tableName.equals("currency_exchange_rate")) {
@@ -882,7 +887,7 @@ public class FlowzrSyncEngine  {
 					if (tEntity.categories.endsWith(",")) {
 						tEntity.categories=tEntity.categories.substring(0, tEntity.categories.length()-1);
 					}
-
+					Log.e(TAG,"Error parsing Budget categories" + tEntity.categories);
 				} catch (Exception e) {
 					Log.e(TAG,"Error parsing Budget categories");
 					e.printStackTrace();
@@ -911,11 +916,31 @@ public class FlowzrSyncEngine  {
 					e.printStackTrace();
 				}
 			}
+			if (jsonObjectEntity.has("budget_account_id")) {				
+				try {
+					tEntity.account=em.load(Account.class,getLocalKey(DatabaseHelper.ACCOUNT_TABLE, jsonObjectEntity.getString("budget_account_id")));
+				} catch (Exception e) {
+					Log.e(TAG,"Error parsing Budget.budget_account_id ");				
+					e.printStackTrace();
+				}
+			}
+			if (jsonObjectEntity.has("budget_currency_id")) {				
+				try {
+					tEntity.currency=em.load(Currency.class,getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("budget_currency_id")));
+					tEntity.currencyId=getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("budget_currency_id"));
+				} catch (Exception e) {
+					Log.e(TAG,"Error parsing Budget.budget_account_id ");				
+					e.printStackTrace();
+				}
+			}
+			
+			
 			if (jsonObjectEntity.has("amount2")) {			
 				try {
 					tEntity.amount=jsonObjectEntity.getInt("amount2");
 				} catch (Exception e) {
 					Log.e(TAG,"Error parsing Budget.amount");								
+					e.printStackTrace();
 				}
 			}
 			
@@ -986,8 +1011,7 @@ public class FlowzrSyncEngine  {
 			if (jsonObjectEntity.has("parent_budget_id")) {
 				try {
 					tEntity.parentBudgetId=getLocalKey(DatabaseHelper.BUDGET_TABLE, jsonObjectEntity.getString("parent_budget_id"));
-				} catch (Exception e) {
-					
+				} catch (Exception e) {					
 					Log.e(TAG,"Error parsing Budget.parentBudgetId ");				
 					e.printStackTrace();
 				}
@@ -1775,24 +1799,16 @@ public class FlowzrSyncEngine  {
     }
    
    public void pushAllBlobs() {
-	   Log.i(TAG,"selecting blobs");
 	   String sql="select attached_picture,datetime,remote_key,blob_key " +
 	   		"from transactions " +
 	   		"where attached_picture is not null " +
 	   		"and blob_key is null limit 3"; 
-	   //if (options.lastSyncLocalTimestamp>0) {
-	   //		sql=sql + " and updated_on > " + options.lastSyncLocalTimestamp  + "";
-	   //}
-	   //test
-//	   String sql="select attached_picture,datetime,remote_key,blob_key " +
-//  		"from transactions where attached_picture is not null" ;
 
 	   Cursor cursorCursor=db.rawQuery(sql, null);
 	   int i=0;
 	   if (cursorCursor.moveToFirst()) {			
 			do {
 				i=i+10;
-				//Log.e("flowzr",cursorCursor.getString(3));
 				flowzrSyncActivity.notifyUser(cursorCursor.getString(0) + " >> Google Drive ",i);
 				if (i==100) {
 					i=10;

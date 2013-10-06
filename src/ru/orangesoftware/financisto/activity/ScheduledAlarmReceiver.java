@@ -55,6 +55,11 @@ public class ScheduledAlarmReceiver extends PackageReplaceReceiver {
     private void requestAutoSync(Context context) {
         Intent serviceIntent = new Intent(FinancistoService.ACTION_AUTO_SYNC);
         WakefulIntentService.sendWakefulWork(context, serviceIntent);
-    }     
+    }  
+    
+    protected void requestScheduleAutoSync(Context context) {
+        Intent serviceIntent = new Intent(FinancistoService.ACTION_SCHEDULE_AUTO_SYNC);
+        WakefulIntentService.sendWakefulWork(context, serviceIntent);
+    }  
     
 }

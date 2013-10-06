@@ -426,7 +426,7 @@ public class MyEntityManager extends EntityManager {
 				budget.parentBudgetId = id;
 				budget.recurNum = i;
 				budget.startDate = p.start;
-				budget.endDate = p.end;			
+				budget.endDate = p.end;	
 				long bid = super.saveOrUpdate(budget);
 				if (i == 0) {
 					id = bid;

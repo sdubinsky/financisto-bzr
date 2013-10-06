@@ -1,10 +1,9 @@
 package ru.orangesoftware.financisto.export.flowzr;
 
-import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -23,7 +22,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 	    NotificationCompat.Builder builder;
 
 	    public GCMIntentService() {
-	        super("GcmIntentService");
+	        super("GCMIntentService");
 	    }
 
 	    @Override

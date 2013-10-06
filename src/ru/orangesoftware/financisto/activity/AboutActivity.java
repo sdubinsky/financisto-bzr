@@ -26,7 +26,7 @@ import ru.orangesoftware.financisto.utils.Utils;
 public class AboutActivity extends TabActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
         setTitle("Financisto ("+getAppVersion(this)+")");
 

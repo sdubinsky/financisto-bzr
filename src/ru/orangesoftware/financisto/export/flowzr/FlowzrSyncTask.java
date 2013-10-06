@@ -189,12 +189,14 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
          	return;
 		} else {
 			flowzrSync.finishDelete();
-			flowzrSyncActivity.nm.cancel(FlowzrSyncActivity.NOTIFICATION_ID);
-			mProgress.dismiss();			
+
 	        options.lastSyncLocalTimestamp=System.currentTimeMillis();
 			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 			editor.putLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, System.currentTimeMillis());
 			editor.commit();
+			flowzrSyncActivity.setReady();			
+			flowzrSyncActivity.nm.cancel(FlowzrSyncActivity.NOTIFICATION_ID);
+ 			mProgress.hide();
 		}
 	}
 }

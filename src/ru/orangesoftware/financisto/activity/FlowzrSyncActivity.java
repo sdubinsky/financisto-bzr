@@ -97,9 +97,14 @@ public class FlowzrSyncActivity extends Activity  {
 	public void setReady() {
 		  runOnUiThread(new Runnable() {
 			     public void run() {
+			        TextView tv = (TextView) findViewById(R.id.sync_was);
+			        if (flowzrSyncEngine!=null && flowzrSyncEngine.options!=null) {
+			         	tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(flowzrSyncEngine.options.lastSyncLocalTimestamp).toLocaleString());
+			        }
 			    	bOk.setText(R.string.ok);
 			 		bOk.setEnabled(true);	
-					setProgressBarIndeterminateVisibility(false);						   					
+					setProgressBarIndeterminateVisibility(false);	
+					
 			    }
 			});
 	}
@@ -405,10 +410,6 @@ public class FlowzrSyncActivity extends Activity  {
     @Override
 	protected void onResume() {
 		super.onResume();
-        TextView tv = (TextView) findViewById(R.id.textView);
-        if (flowzrSyncEngine!=null && flowzrSyncEngine.options!=null) {
-        	tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(flowzrSyncEngine.options.lastSyncLocalTimestamp).toLocaleString());
-        }
 		if (this.isRunning) {
 			setRunning();
 	        try {
@@ -416,6 +417,8 @@ public class FlowzrSyncActivity extends Activity  {
 	            } catch(Exception e) {
 	            	Log.e(TAG,"avoid a leaked window (2)");
 	            }
+		} else {
+			setReady();
 		}
         restoreUIFromPref();
         checkPlayServices();        

@@ -93,7 +93,7 @@
                 <category android:name="ru.orangesoftware.financisto" />
             </intent-filter>
         </receiver>
-        <service android:name=".GcmIntentService" />
+        <service android:name=".GCMIntentService" />
 
 		
 		<receiver android:name=".activity.PackageReplaceReceiver">
@@ -274,7 +274,7 @@
 
         <activity android:name=".activity.PurgeAccountActivity" android:label="@string/delete_old_transactions"/>
 
-        <activity android:name=".activity.FlowzrSyncActivity" android:label="@string/flowzr_sync" android:configChanges="keyboardHidden|orientation|screenLayout"/>
+        <activity android:name=".activity.FlowzrSyncActivity" android:label="@string/flowzr_sync" android:configChanges="keyboardHidden|orientation|screenLayout" android:launchMode="singleTop"/>
 
 
         <activity android:name="org.achartengine.GraphicalActivity"/>

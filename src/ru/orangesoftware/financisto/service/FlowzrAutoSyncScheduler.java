@@ -22,7 +22,9 @@ public class FlowzrAutoSyncScheduler {
 
     public static void scheduleNextAutoSync(Context context) {
         if (MyPreferences.isAutoSync(context)) {
-            new FlowzrAutoSyncScheduler(System.currentTimeMillis() + (10*60*1000)).scheduleSync(context);
+            new FlowzrAutoSyncScheduler(System.currentTimeMillis() + (1*60*1000)).scheduleSync(context);
+        } else {
+        	Log.i("flowzr","autosync disabled in prefs.");
         }
     }
     
@@ -38,7 +40,7 @@ public class FlowzrAutoSyncScheduler {
     }
 
     private PendingIntent createPendingIntent(Context context) {
-        Intent intent = new Intent("com.flowzr.SCHEDULED_SYNC");
+        Intent intent = new Intent("ru.orangesoftware.financisto.SCHEDULED_SYNC");
         return PendingIntent.getBroadcast(context, -100, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
