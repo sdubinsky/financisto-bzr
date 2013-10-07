@@ -112,6 +112,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
+import com.google.api.services.drive.model.Permission;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
@@ -1826,7 +1827,7 @@ public class FlowzrSyncEngine  {
 	   RunUpload runUpload = new RunUpload(fileUri,l,remoteKey);
 	   runUpload.run();
    }   
-
+   
    public class RunUpload implements Runnable {
 
 	   	private Uri fileUri;
@@ -1889,6 +1890,15 @@ public class FlowzrSyncEngine  {
 	   				body.setMimeType("application/vnd.google-apps.folder");
 	   				File file = driveService.files().insert(body).execute();
 	   				targetFolder=file.getId();
+//	   				Permission p= new Permission();
+//	   				p.setValue(file.getOwners().get(0).toString());
+//	   				p.setType("user");
+//	   				p.setRole("owner");	   				
+//	   				try {
+//	   			      driveService.permissions().insert(targetFolder, p).execute();
+//	   			    } catch (IOException e) {
+//	   			      System.out.println("An error occurred: " + e);
+//	   			    }
 	   			}
 
 	   			// File's binary content
