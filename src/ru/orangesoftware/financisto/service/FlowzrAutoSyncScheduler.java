@@ -22,10 +22,8 @@ public class FlowzrAutoSyncScheduler {
 
     public static void scheduleNextAutoSync(Context context) {
         if (MyPreferences.isAutoSync(context)) {
-            new FlowzrAutoSyncScheduler(System.currentTimeMillis() + (1*60*1000)).scheduleSync(context);
-        } else {
-        	Log.i("flowzr","autosync disabled in prefs.");
-        }
+            new FlowzrAutoSyncScheduler(System.currentTimeMillis() + (5*60*1000)).scheduleSync(context);
+        } 
     }
     
     public FlowzrAutoSyncScheduler(long now) {

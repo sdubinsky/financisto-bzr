@@ -25,6 +25,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncTask;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -282,18 +283,19 @@ public class FlowzrSyncActivity extends Activity  {
         TextView textViewNotes = (TextView) findViewById(R.id.flowzrPleaseNote);
         textViewNotes.setMovementMethod(LinkMovementMethod.getInstance());
         textViewNotes.setText(Html.fromHtml(getString(R.string.flowzr_terms_of_use)));
-
-        if (checkPlayServices()) {
-            gcm = GoogleCloudMessaging.getInstance(this);
-            regid = getRegistrationId(getApplicationContext());
-
-            if (regid.equals("")) {
-                registerInBackground();
-            }
-            Log.i(TAG,"Google Cloud Messaging registered as :" + regid);
-        } else {
-            Log.i(TAG, "No valid Google Play Services APK found.");
-        }	
+        if (MyPreferences.isAutoSync(this)) {
+	        if (checkPlayServices()) {
+	            gcm = GoogleCloudMessaging.getInstance(this);
+	            regid = getRegistrationId(getApplicationContext());
+	
+	            if (regid.equals("")) {
+	                registerInBackground();
+	            }
+	            Log.i(TAG,"Google Cloud Messaging registered as :" + regid);
+	        } else {
+	            Log.i(TAG, "No valid Google Play Services APK found.");
+	        }
+        }
 	}
 
 	private String getRegistrationId(Context context) {
