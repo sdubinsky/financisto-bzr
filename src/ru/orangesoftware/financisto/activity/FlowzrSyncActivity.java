@@ -90,9 +90,13 @@ public class FlowzrSyncActivity extends Activity  {
 
 	
 	public void setRunning() {
-		bOk.setEnabled(false);
-		bOk.setText(R.string.flowzr_sync_inprogress);
-		setProgressBarIndeterminateVisibility(true);		
+		  runOnUiThread(new Runnable() {
+		  public void run() {
+			bOk.setEnabled(false);
+			bOk.setText(R.string.flowzr_sync_inprogress);
+			setProgressBarIndeterminateVisibility(true);		
+				    }
+			});
 	}
 	
 	public void setReady() {
