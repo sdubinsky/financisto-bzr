@@ -84,7 +84,8 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     		//            	return new Exception(context.getString(R.string.flowzr_account_setup));
     		//            }
     		if (this.checkSubscriptionFromWeb()) {
-    			return flowzrSync.doSync();
+    			flowzrSync.doSync();
+    			return null;
     		} else {
     			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_subscription_required), 100);
     			flowzrSyncActivity.setRunning();

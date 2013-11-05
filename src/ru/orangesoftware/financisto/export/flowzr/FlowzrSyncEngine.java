@@ -143,7 +143,6 @@ public class FlowzrSyncEngine  {
 	private static Drive driveService;
 	private GoogleAccountCredential credential;
 	public static final java.io.File PICTURES_DIR = new java.io.File(Environment.getExternalStorageDirectory(), "financisto/pictures");
-	private static final String ACTIVITY_FLOWZR_SYNC = null;
 	private static final int SYNC_NOTIFICATION_ID = 0;	  
 
 	public FlowzrSyncTask flowzrSyncTask;
@@ -175,15 +174,7 @@ public class FlowzrSyncEngine  {
         }
         
         http_client=new DefaultHttpClient();
-        
-        BasicHttpParams params = new BasicHttpParams();
-        SchemeRegistry schemeRegistry = new SchemeRegistry();
-        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
-        schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
-        ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-        DefaultHttpClient httpclient = new DefaultHttpClient(cm, params);
-	
+        	
         if (options.appVersion==null) {
         	try {
 				options.appVersion=context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
@@ -213,10 +204,9 @@ public class FlowzrSyncEngine  {
     }
        
     
-    public Object doSync() throws Exception {
-    	Object o=null;
+    public void doSync() throws Exception {
     	
-    	flowzrSyncActivity.isRunning=true;    	
+    	FlowzrSyncActivity.isRunning=true;    	
 
         if (!isCanceled) {
         	flowzrSyncActivity.notifyUser("fix created entities",5);
@@ -226,22 +216,23 @@ public class FlowzrSyncEngine  {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",75);
 	        pushDelete();
         }        
-        if (!isCanceled) {		
-	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",20);
-	        o=pullUpdate();
-        }
-        if (!isCanceled) {
-	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",35);
-	        o=pushUpdate();      
-        }
-        if (!isCanceled) {
-	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",50);        
-	        o=pushRetry();      
-        }
         if (!isCanceled) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",60);
 	        pullDelete(options.lastSyncLocalTimestamp);
         }
+        if (!isCanceled) {		
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",20);
+	        pullUpdate();
+        }
+        if (!isCanceled) {
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",35);
+	        pushUpdate();      
+        }
+        if (!isCanceled) {
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",50);        
+	        pushRetry();      
+        }
+
         if (!isCanceled) {        
         	flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + "..." ,80);
         	//nm.notify(NOTIFICATION_ID, mNotifyBuilder.build()); 
@@ -265,7 +256,7 @@ public class FlowzrSyncEngine  {
         
         flowzrSyncActivity.isRunning=false;
         flowzrSyncActivity.setReady();
-        return null;
+   
     }
 
     /*
@@ -924,14 +915,15 @@ public class FlowzrSyncEngine  {
 					Log.e(TAG,"Error parsing Budget.budget_account_id ");				
 					e.printStackTrace();
 				}
-			}
-			if (jsonObjectEntity.has("budget_currency_id")) {				
-				try {
-					tEntity.currency=em.load(Currency.class,getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("budget_currency_id")));
-					tEntity.currencyId=getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("budget_currency_id"));
-				} catch (Exception e) {
-					Log.e(TAG,"Error parsing Budget.budget_account_id ");				
-					e.printStackTrace();
+			} else {
+				if (jsonObjectEntity.has("budget_currency_id")) {				
+					try {
+						tEntity.currency=em.load(Currency.class,getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("budget_currency_id")));
+						tEntity.currencyId=getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("budget_currency_id"));
+					} catch (Exception e) {
+						Log.e(TAG,"Error parsing Budget.budget_account_id ");				
+						e.printStackTrace();
+					}
 				}
 			}
 			
@@ -1555,24 +1547,12 @@ public class FlowzrSyncEngine  {
 		}	
     }    
     
- 
-    
-
     public <T> void getJSONFromUrl(String url,String tableName, Class<T> clazz,String account,long lastSyncLocalTimestamp) throws IOException {
-
-    		HttpGet httpGet = new HttpGet(url);
-            try {
-	        	HttpResponse httpResponse = http_client.execute(httpGet);
-	            HttpEntity httpEntity = httpResponse.getEntity();
-	            is = httpEntity.getContent(); 
-	        } catch (UnsupportedEncodingException e) {
-	            e.printStackTrace();
-	        } catch (ClientProtocolException e) {
-	            e.printStackTrace();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-
+		HttpGet httpGet = new HttpGet(url);
+        try {
+        	HttpResponse httpResponse = http_client.execute(httpGet);
+            HttpEntity httpEntity = httpResponse.getEntity();
+            is = httpEntity.getContent(); 
             try {
                 reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
                 reader.beginObject();
@@ -1580,7 +1560,6 @@ public class FlowzrSyncEngine  {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-
             try {
 	             readMessage(reader,tableName,clazz,account,lastSyncLocalTimestamp);
             }
@@ -1588,6 +1567,14 @@ public class FlowzrSyncEngine  {
             {
                 e.printStackTrace();
             }
+	        httpEntity.consumeContent();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }  
     }
 
     public <T> Object readMessage(JsonReader reader,String tableName,Class<T> clazz,String account,long lastSyncLocalTimestamp) throws IOException {    
@@ -1730,33 +1717,33 @@ public class FlowzrSyncEngine  {
 	}
      
     public void pullDelete(long lastSyncLocalTimestamp)  throws IOException {
-		String url=options.FLOWZR_API_URL + options.useCredential + "?action=pullDelete&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp ;
+    	String url=options.FLOWZR_API_URL + options.useCredential + "?action=pullDelete&lastSyncLocalTimestamp=" + lastSyncLocalTimestamp ;
 		HttpGet httpGet = new HttpGet(url);
         try {
         	HttpResponse httpResponse = http_client.execute(httpGet);
             HttpEntity httpEntity = httpResponse.getEntity();
             is = httpEntity.getContent(); 
+            try {
+                reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
+                reader.beginObject();
+            } catch (UnsupportedEncodingException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+            try {
+                 readDelete(reader);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            httpEntity.consumeContent();        
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
-            reader.beginObject();
-        } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-
-        try {
-             readDelete(reader);
-        }
-        catch (IOException e)
-        {
             e.printStackTrace();
         }
     }
@@ -2113,7 +2100,7 @@ public class FlowzrSyncEngine  {
 			Builder mNotifyBuilder = new NotificationCompat.Builder(context);
 			mNotifyBuilder
 					.setContentIntent(contentIntent)
-					.setSmallIcon(R.drawable.flowzr)
+					.setSmallIcon(R.drawable.icon)
 					.setWhen(System.currentTimeMillis())
 					.setAutoCancel(true)
 					.setContentTitle(context.getString(R.string.flowzr_sync))

@@ -9,7 +9,7 @@ package ru.orangesoftware.financisto.activity;
 
 
 import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
-import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
+
 
 import java.io.IOException;
 import java.util.Date;
@@ -252,12 +252,12 @@ public class FlowzrSyncActivity extends Activity  {
         Button bCancel = (Button) findViewById(R.id.bCancel);
         bCancel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-//            	if (flowzrSyncEngine!=null) {
-//            		flowzrSyncEngine.isCanceled=true;
-//            	}
-//            	isRunning=false;
-//                setResult(RESULT_CANCELED);    
-//                setReady();
+            	if (flowzrSyncEngine!=null) {
+            		flowzrSyncEngine.isCanceled=true;
+            	}
+            	isRunning=false;
+                setResult(RESULT_CANCELED);    
+                setReady();
                 finish();
             }
         });    

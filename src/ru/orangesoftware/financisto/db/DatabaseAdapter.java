@@ -506,9 +506,11 @@ public class DatabaseAdapter {
             }
             db.delete(TRANSACTION_ATTRIBUTE_TABLE, TransactionAttributeColumns.TRANSACTION_ID + "=?",
                     new String[]{String.valueOf(split.id)});
+            writeDeleteLog(TRANSACTION_TABLE, split.remoteKey);              
         }
         
         db.delete(TRANSACTION_TABLE, TransactionColumns.parent_id + "=?", new String[]{String.valueOf(parentId)});
+
     }
 
     private void revertFromAccountBalance(Transaction t) {
