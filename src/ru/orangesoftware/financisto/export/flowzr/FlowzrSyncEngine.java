@@ -245,16 +245,21 @@ public class FlowzrSyncEngine  {
         	flowzrSyncActivity.notifyUser("fix created entities",5);
 	    	fixCreatedEntities();
         }
-	      if (!isCanceled) {
+        /**
+         * pull delete
+         */ 
+        if (!isCanceled) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",10);
 	        try {
-				pullDelete(options.last_sync_ts);
-				recordSyncTime=false;				
+				pullDelete(options.last_sync_ts);				
 			} catch (Exception e) {
 				sendBackTrace(e);
+				recordSyncTime=false;
 			}
 	      }
-        
+        /**
+         * push delete
+         */        
         if (!isCanceled) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",15);
 	        try {
@@ -264,7 +269,9 @@ public class FlowzrSyncEngine  {
 				recordSyncTime=false;				
 			}
         }        
-
+        /**
+         * pull update
+         */
         if (!isCanceled) {		
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",20);
 				try {
@@ -277,6 +284,9 @@ public class FlowzrSyncEngine  {
 					recordSyncTime=false;					
 				}
         }
+        /**
+         * push update
+         */
         if (!isCanceled) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",35);
 	        try {
@@ -295,6 +305,9 @@ public class FlowzrSyncEngine  {
 				recordSyncTime=false;
 			}      
         }
+        /**
+         * send account balances boundaries
+         */
         if (!isCanceled) {        
         	flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + "..." ,80);
         	//nm.notify(NOTIFICATION_ID, mNotifyBuilder.build()); 
@@ -315,8 +328,11 @@ public class FlowzrSyncEngine  {
             flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " Google Drive",95);  
         	pushAllBlobs();
         }
+        Log.i(TAG,String.valueOf(isCanceled));
+        Log.i(TAG,String.valueOf(recordSyncTime));        
         if (isCanceled==false) {
             if (recordSyncTime==true) {
+            	Log.i(TAG,"Storing last sync time");
             	options.last_sync_ts=System.currentTimeMillis();
 	        	SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 	        	editor.putLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, System.currentTimeMillis());
@@ -360,11 +376,9 @@ public class FlowzrSyncEngine  {
 		int i=0;
 		if (cursorCursor.moveToFirst() && isCanceled!=true) {			
 			do {								 	
-				if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
-					flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " " + tableName + ". " + flowzrSyncActivity.getString(R.string.hint_run_background), (int)(Math.round(i*100/total)));
-				} else {
+				if (i%10==0) {					
 					flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " " + tableName, (int)(Math.round(i*100/total)));
-				}
+				}				
 				resultSet.put(cursorToDict(tableName,cursorCursor));
 				i++;
 				if (i%MAX_PUSH_SIZE==0) {
@@ -1421,16 +1435,9 @@ public class FlowzrSyncEngine  {
 	    			a.attributeId=getLocalKey(DatabaseHelper.ATTRIBUTES_TABLE, strArrAttr[0]);
 	    			a.transactionId=tEntity.id;
 	    			attributes.add(a);
-	    		} 
-	    		//dont add attribute if value is null
-	    		//else {
-	    		//	Log.e(TAG,"transaction attribute: invalid array size");
-	    		//	Log.e(TAG,jsonObjectResponse.getString("transaction_attribute"));
-	    		//} 		
+	    		} 		
 	    	}
 		}
-		// end main transaction data				
-		//if (!jsonObjectResponse.has("from_crebit")) {
 		id=em.saveOrUpdate(tEntity);			
 		if (attributes!=null) {
             dba.db().delete(DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE, DatabaseHelper.TransactionAttributeColumns.TRANSACTION_ID+"=?",
@@ -1441,35 +1448,9 @@ public class FlowzrSyncEngine  {
 				dba.db().insert(DatabaseHelper.TRANSACTION_ATTRIBUTE_TABLE, null, values);
 			}
 		}	
-		//}
 		return tEntity;
 	}
-	
-//	public long getLocalKey2(String tableName,String remoteKey) {
-//		long id= getLocalKey(tableName,remoteKey);
-//		if (id>KEY_CREATE) {
-//			return id;			
-//		} else {
-//			Log.e(TAG,"need requery");
-//			String url=options.FLOWZR_API_URL + options.getNamespace() + "/key/?key=" + remoteKey + "&tableName=" + tableName;
-//			try {
-//				getJSONFromUrl(url,tableName,clsForTbl(tableName),0);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			} 			
-//			return KEY_CREATE;
-//		}		
-//	}
-
-//	private Class clsForTbl(String tableName) {
-//		for (int i = 0; i < clazzArray.length; i++) {
-//			  if (clazzArray[i].equals(tableName)) {
-//			    return clazzArray[i];
-//			  }
-//			}
-//		return null;		
-//	}
-	
+		
     public long getLocalKey(String tableName,String remoteKey) {
 		Cursor c = db.query(tableName, new String[] { "_id" }, "remote_key = ?",
 		          new String[]{ remoteKey }, null, null, null, null);		
@@ -1543,30 +1524,7 @@ public class FlowzrSyncEngine  {
 		int i=MAX_PULL_SIZE;
         while (i!=0) {
         	i=getJSONFromUrl(url, tableName,clazz,last_sync_ts);
-        } 
-
-//        	int i=MAX_PULL_SIZE;
-//            while (i==MAX_PULL_SIZE) {
-//        		HttpGet httpGet = new HttpGet(url);
-//            	HttpResponse httpResponse = http_client.execute(httpGet);
-//                HttpEntity httpEntity = httpResponse.getEntity();
-//                is = httpEntity.getContent();             	            	
-//                try {
-//                    reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
-//                    reader.beginObject();
-//                } catch (UnsupportedEncodingException e1) {
-//                    e1.printStackTrace();
-//                }
-//                try {
-//    	             i=readMessage(reader,tableName,clazz,last_sync_ts);
-//    	             Log.i(TAG,String.valueOf(i));
-//                }
-//                catch (IOException e)
-//                {
-//                    e.printStackTrace();
-//                }
-//    	        httpEntity.consumeContent();  
-//            }     
+        }    
     }
     
     public <T> int readMessage(JsonReader reader,String tableName,Class<T> clazz,long last_sync_ts) throws IOException, JSONException {    
@@ -1659,12 +1617,14 @@ public class FlowzrSyncEngine  {
 			reader.endObject();
 			if (o.has("key")) {
 				i=i+1;
-//				j=j+1;
-//				if (j%100==0) {
-//					j=1;
-//				}
+				j=j+1;
+				if (j%100==0) {
+					j=2;
+				}
 				saveEntityFromJson(o, tableName, clazz,i);
-				//flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " " + tableName + ". " + flowzrSyncActivity.getString(R.string.hint_run_background), (int)(Math.round(j)));
+				if (i%10==0) {
+					flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " " + tableName + ". " + flowzrSyncActivity.getString(R.string.hint_run_background), (int)(Math.round(j)));
+				}
 			}
 		}
 		reader.endArray();
