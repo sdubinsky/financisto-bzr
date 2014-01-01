@@ -70,7 +70,7 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
 
 
     
-    protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
+    protected Object work(Context context, DatabaseAdapter db, String... params) {
     	
     	try {	 
     		flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_auth_inprogress), 30);
@@ -114,6 +114,7 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     		if (code==402) {
     			return false;
     		}
+    		httpResponse.getEntity().consumeContent();
     	} catch (Exception e) {
     		e.printStackTrace();
     	} 
@@ -126,10 +127,7 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     	DatabaseAdapter db = new DatabaseAdapter(context);
 		db.open();
 		try {
-			return work(context, db, params);
-		} catch(Exception ex){		
-			ex.printStackTrace();
-			return ex;
+			return work(context, db, params);	
 		} finally {
 			db.close();
 		}			
@@ -142,59 +140,16 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
         mProgress.setProgress(Integer.parseInt(values[0]));        
     }
 
-    static String getStackTrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw, true);
-        t.printStackTrace(pw);
-        pw.flush();
-        sw.flush();
-        return sw.toString();
-    }
+
     
 	@Override
 	protected void onPostExecute(Object result) {
 		
 		if (result instanceof Exception)  {			
 			
-         	final String msg=getStackTrace((Exception)result);
-         	((Exception)result).printStackTrace();
-         	         	
-         	Thread trd = new Thread(new Runnable(){
-         		  @Override
-         		  public void run(){
-         				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-         				nameValuePairs.add(new BasicNameValuePair("action","error"));
-         				nameValuePairs.add(new BasicNameValuePair("stack",msg));					
-         		        HttpPost httppost = new HttpPost(FlowzrSyncOptions.FLOWZR_API_URL + options.useCredential + "/error/");
-         		        try {
-         					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.UTF_8));
-         				} catch (UnsupportedEncodingException e) {
-         					e.printStackTrace();
-         				}
-         		        
-         		        try {
-         					http_client.execute(httppost);
-         				} catch (ClientProtocolException e1) {
-         					// TODO Auto-generated catch block
-         					e1.printStackTrace();
-         				} catch (IOException e1) {
-         					// TODO Auto-generated catch block
-         					e1.printStackTrace();
-         				} catch (Exception e) {
-         					e.printStackTrace();
-         				}
-         		  }
-         		});
-         	trd.start();
-         	
-         	return;
+
 		} else {
 			flowzrSync.finishDelete();
-
-	        options.lastSyncLocalTimestamp=System.currentTimeMillis();
-			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-			editor.putLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, System.currentTimeMillis());
-			editor.commit();
 			flowzrSyncActivity.setReady();			
 			flowzrSyncActivity.nm.cancel(FlowzrSyncActivity.NOTIFICATION_ID);
  			mProgress.hide();

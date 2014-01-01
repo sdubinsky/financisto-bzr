@@ -689,10 +689,10 @@
     <string name="flowzr_account_setup">Account now set up, please restart sync.</string>            
     <string name="flowzr_subscription_required">Subscription required.</string>
     <string name="flowzr_terms_of_use">A &lt;b&gt;paid subscription&lt;/b&gt; is required to use Flowzr sync service. The subscription can be cancelled free of charge during the trial period of &lt;b&gt;14 days&lt;/b&gt;. Flowzr is a third-party service, not affiliated with Financisto. By using the service you agree to Flowzr &lt;a href="http://www.flowzr.com/static/en/mobile/privacypolicy.html"&gt;Privacy Policy&lt;/a&gt; and &lt;a href="http://www.flowzr.com/static/en/mobile/tos.html"&gt;Terms Of Use Agreement&lt;/a&gt;.</string>
-
     <string name="auto_sync">Auto-sync</string>
     <string name="auto_sync_enabled">Enable auto-sync</string>
     <string name="auto_sync_enabled_summary">Push changes every five minutes if any</string>
+    <string name="hint_run_background">Hit Back button to work in background.</string>
 
     <string name="googledrive">Google Drive</string>
     <string name="googledrive_authorize">Enable Sync to Google Drive</string>

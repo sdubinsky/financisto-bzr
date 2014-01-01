@@ -16,7 +16,7 @@ import android.content.SharedPreferences;
 
 public class FlowzrSyncOptions {
 	
-	public long lastSyncLocalTimestamp=-1; //zero is default server ...
+	public long last_sync_ts=-1; //zero is default server ...
 	public long startTimestamp=-1; //useful only for not pushing what have just been pooled
 	public String useCredential;
 	public String rootFolderId;
@@ -27,14 +27,14 @@ public class FlowzrSyncOptions {
     public static final String PROPERTY_LAST_SYNC_TIMESTAMP = "LAST_SYNC_LOCAL_TIMESTAMP";   
     public static final String PROPERTY_APP_VERSION = "appVersion";
     
-	public static final String FLOWZR_BASE_URL="https://flowzr-hrd.appspot.com";
+	public static final String FLOWZR_BASE_URL="https://flowzr-dev.appspot.com";
 	public static final String GCM_SENDER_ID = "98966630416";	
 	public static final String PROPERTY_REG_ID = "registration_id";
-	public static String FLOWZR_API_URL=FLOWZR_BASE_URL + "/financisto/"; //will add version at runtime
+	public static String FLOWZR_API_URL=FLOWZR_BASE_URL + "/financisto2/";
 	public String appVersion="";
 	
     public FlowzrSyncOptions(String strUseCredential, long lastSyncLocalTimestamp, DefaultHttpClient pHttp_client,String pRootFolderId,String _appVersion) {
-        this.lastSyncLocalTimestamp = lastSyncLocalTimestamp;
+        this.last_sync_ts = lastSyncLocalTimestamp;
         this.useCredential=strUseCredential;
         this.http_client=pHttp_client;
         this.rootFolderId=pRootFolderId;
@@ -45,9 +45,11 @@ public class FlowzrSyncOptions {
     	long lastSyncLocalTimestamp=preferences.getLong(PROPERTY_LAST_SYNC_TIMESTAMP,0);    	
         String useCredential=preferences.getString(PROPERTY_USE_CREDENTIAL,"");
         String rootFolderId=preferences.getString(PROPERTY_ROOT_FOLDER_ID,"");
-        String appVersion=preferences.getString(PROPERTY_APP_VERSION,"");      
-        //FLOWZR_API_URL=FLOWZR_API_URL+appVersion+"/";
+        String appVersion=preferences.getString(PROPERTY_APP_VERSION,"");
         return new FlowzrSyncOptions(useCredential,lastSyncLocalTimestamp,null,rootFolderId,appVersion);            		 		    	
     }          		 		    	
     
+    public String getNamespace() {
+    	return this.useCredential.split("@")[0];
+    }    
 }

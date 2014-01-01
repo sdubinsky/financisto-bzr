@@ -121,10 +121,10 @@ public class FinancistoService extends WakefulIntentService {
     		Log.i(TAG, "Auto-sync started at " + new Date());
 			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);		
 			FlowzrSyncOptions o =FlowzrSyncOptions.fromPrefs(preferences);    		
-			if (isPushSyncNeed(o.lastSyncLocalTimestamp)) {
+			if (isPushSyncNeed(o.last_sync_ts)) {
 				FlowzrSyncEngine.builAndRun(getApplicationContext());
     		} else {
-				Log.i(TAG,"no changes to push since " + new Date(o.lastSyncLocalTimestamp).toString());
+				Log.i(TAG,"no changes to push since " + new Date(o.last_sync_ts).toString());
 			}
     	} finally {
     		scheduleNextAutoSync(this);
