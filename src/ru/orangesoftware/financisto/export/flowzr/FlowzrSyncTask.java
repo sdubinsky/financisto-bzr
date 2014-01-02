@@ -8,21 +8,10 @@
 
 package ru.orangesoftware.financisto.export.flowzr;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
@@ -144,16 +133,10 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     
 	@Override
 	protected void onPostExecute(Object result) {
-		
-		if (result instanceof Exception)  {			
-			
-
-		} else {
 			flowzrSync.finishDelete();
 			flowzrSyncActivity.setReady();			
 			flowzrSyncActivity.nm.cancel(FlowzrSyncActivity.NOTIFICATION_ID);
- 			mProgress.hide();
-		}
+ 			mProgress.hide();		
 	}
 }
 

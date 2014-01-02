@@ -27,7 +27,7 @@ public class FlowzrSyncOptions {
     public static final String PROPERTY_LAST_SYNC_TIMESTAMP = "LAST_SYNC_LOCAL_TIMESTAMP";   
     public static final String PROPERTY_APP_VERSION = "appVersion";
     
-	public static final String FLOWZR_BASE_URL="https://flowzr-dev.appspot.com";
+	public static final String FLOWZR_BASE_URL="https://flowzr-hrd.appspot.com";
 	public static final String GCM_SENDER_ID = "98966630416";	
 	public static final String PROPERTY_REG_ID = "registration_id";
 	public static String FLOWZR_API_URL=FLOWZR_BASE_URL + "/financisto2/";
