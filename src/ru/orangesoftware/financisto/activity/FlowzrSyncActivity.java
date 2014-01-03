@@ -114,6 +114,11 @@ public class FlowzrSyncActivity extends Activity  {
 			});
 	}
 	  
+	public void renderLastTime(long lastTime) {
+	    TextView tv = (TextView) findViewById(R.id.sync_was);
+	    tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(lastTime).toLocaleString());			
+	}	
+	
     public void notifyUser(final String msg, final int pct) {
     	mNotifyBuilder.setContentText(msg);
     	if (pct!=0) {
