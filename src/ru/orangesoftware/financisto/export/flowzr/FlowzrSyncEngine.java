@@ -154,7 +154,8 @@ public class FlowzrSyncEngine  {
 		}
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(a);		
     	this.options = FlowzrSyncOptions.fromPrefs(preferences);
-    	this.options.startTimestamp=System.currentTimeMillis(); 
+    	this.options.startTimestamp=
+    			System.currentTimeMillis(); 
     	this.context=a;
     	this.flowzrSyncActivity=a;
     	FlowzrSyncActivity.isRunning=true;
@@ -238,7 +239,7 @@ public class FlowzrSyncEngine  {
     }
 	
     public void doSync()  {
-    	
+    	long start_time=System.currentTimeMillis();
     	FlowzrSyncActivity.isRunning=true;    	
     	boolean recordSyncTime=true;
         if (!isCanceled) {
@@ -355,7 +356,7 @@ public class FlowzrSyncEngine  {
         }        
         if (isCanceled==false) {
             if (recordSyncTime==true) {
-            	options.last_sync_ts=System.currentTimeMillis();
+            	options.last_sync_ts=start_time;            	
 	        	SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 	        	editor.putLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, System.currentTimeMillis());
 	        	editor.commit();        
