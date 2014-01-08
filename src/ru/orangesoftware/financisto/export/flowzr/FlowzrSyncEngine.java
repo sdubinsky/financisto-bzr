@@ -154,8 +154,6 @@ public class FlowzrSyncEngine  {
 		}
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(a);		
     	this.options = FlowzrSyncOptions.fromPrefs(preferences);
-    	this.options.startTimestamp=
-    			System.currentTimeMillis(); 
     	this.context=a;
     	this.flowzrSyncActivity=a;
     	FlowzrSyncActivity.isRunning=true;
@@ -181,7 +179,7 @@ public class FlowzrSyncEngine  {
 				e.printStackTrace();
 			}
         }
-    	Log.i(TAG,"init sync engine, last sync was " + new Date(options.last_sync_ts).toLocaleString());
+    	Log.i(TAG,"init sync engine, last sync was " + new Date(FlowzrSyncOptions.last_sync_ts).toLocaleString());
     	
     	AccountManager accountManager = AccountManager.get(context);
 		android.accounts.Account[] accounts = accountManager.getAccountsByType("com.google");
@@ -239,7 +237,7 @@ public class FlowzrSyncEngine  {
     }
 	
     public void doSync()  {
-    	long start_time=System.currentTimeMillis();
+    	FlowzrSyncOptions.startTimestamp=System.currentTimeMillis(); 
     	FlowzrSyncActivity.isRunning=true;    	
     	boolean recordSyncTime=true;
         if (!isCanceled) {
@@ -252,7 +250,7 @@ public class FlowzrSyncEngine  {
         if (!isCanceled) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",10);
 	        try {
-				pullDelete(options.last_sync_ts);				
+				pullDelete(FlowzrSyncOptions.last_sync_ts);				
 			} catch (Exception e) {
 				sendBackTrace(e);
 				recordSyncTime=false;
@@ -273,7 +271,7 @@ public class FlowzrSyncEngine  {
         /**
          * push update (if not force sync)
          */
-        if (!isCanceled && options.last_sync_ts>0) {
+        if (!isCanceled && FlowzrSyncOptions.last_sync_ts>0) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",35);
 	        try {
 				pushUpdate();
@@ -312,7 +310,7 @@ public class FlowzrSyncEngine  {
         /**
          * push update (if force sync)
          */
-        if (!isCanceled && options.last_sync_ts==0) {
+        if (!isCanceled && FlowzrSyncOptions.last_sync_ts==0) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",35);
 	        try {
 				pushUpdate();
@@ -339,7 +337,7 @@ public class FlowzrSyncEngine  {
         	//nm.notify(NOTIFICATION_ID, mNotifyBuilder.build()); 
         	ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         	nameValuePairs.add(new BasicNameValuePair("action","balancesRecalc"));
-        	nameValuePairs.add(new BasicNameValuePair("last_sync_ts",String.valueOf(options.last_sync_ts)));        
+        	nameValuePairs.add(new BasicNameValuePair("last_sync_ts",String.valueOf(FlowzrSyncOptions.last_sync_ts)));        
         	try {
 				httpPush(nameValuePairs,"balances");
 			} catch (Exception e) {
@@ -356,7 +354,7 @@ public class FlowzrSyncEngine  {
         }        
         if (isCanceled==false) {
             if (recordSyncTime==true) {
-            	options.last_sync_ts=start_time;            	
+            	FlowzrSyncOptions.last_sync_ts=FlowzrSyncOptions.startTimestamp;         	
 	        	SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 	        	editor.putLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, System.currentTimeMillis());
 	        	editor.commit();        
@@ -365,7 +363,7 @@ public class FlowzrSyncEngine  {
         flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_success),100);        
         FlowzrSyncActivity.isRunning=false;
         flowzrSyncActivity.setReady();   
-        flowzrSyncActivity.renderLastTime(options.last_sync_ts);        
+        flowzrSyncActivity.renderLastTime(FlowzrSyncOptions.last_sync_ts);        
     }
 
     /*
@@ -386,11 +384,11 @@ public class FlowzrSyncEngine  {
 		String sql;
 		long total;
 
-		sql="select count(*) from " + tableName  + " where updated_on<0 or (updated_on > " + options.last_sync_ts  + " and updated_on<" + options.startTimestamp + ")" ;		
+		sql="select count(*) from " + tableName  + " where updated_on<0 or (updated_on > " + FlowzrSyncOptions.last_sync_ts  + " and updated_on<" + options.startTimestamp + ")" ;		
 		cursorCursor=db.rawQuery(sql, null);
 		cursorCursor.moveToFirst();
 		total=cursorCursor.getLong(0);
-		sql="select * from " + tableName +  " where updated_on<0 or (updated_on > " + options.last_sync_ts +  " and updated_on<" + options.startTimestamp + ")";		
+		sql="select * from " + tableName +  " where updated_on<0 or (updated_on > " + FlowzrSyncOptions.last_sync_ts +  " and updated_on<" + options.startTimestamp + ")";		
 		if (!tableName.equals("currency_exchange_rate")) {
 			sql+= " order by _id asc";	
 		}		
@@ -593,7 +591,7 @@ public class FlowzrSyncEngine  {
      * so default is set as zero and this pre-sync function make all 0 at last_sync_ts + 1
      */    
     private void fixCreatedEntities() {        	
-    	long ctime=options.last_sync_ts + 1;
+    	long ctime=FlowzrSyncOptions.last_sync_ts + 1;
     	for (String t : tableNames) {         		
     		db.execSQL("update "  + t + " set updated_on=" + ctime + " where updated_on=0");
     	}
@@ -1534,7 +1532,7 @@ public class FlowzrSyncEngine  {
 				flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " " + tableName, (int)(Math.round(i*100/tableNames.length)));
 			}    		
       		if (!isCanceled) {
-      			pullUpdate(tableName,clazzArray[i],options.last_sync_ts); 
+      			pullUpdate(tableName,clazzArray[i],FlowzrSyncOptions.last_sync_ts); 
       		}
         	i++;
         }
@@ -2063,14 +2061,18 @@ public class FlowzrSyncEngine  {
 			if (fa.isRunning) {
 				Log.i(TAG, "Sync already in progress");
 			} else {
-				Log.i(TAG, "Starting Auto-Sync Task");
-				fa.runOnUiThread(new Runnable() {
-				     public void run() {
-							fa.setRunning();
-				    }
-				});
-				fa.initProgressDialog();
-				new FlowzrSyncEngine(fa);
+				if ((System.currentTimeMillis() - FlowzrSyncOptions.last_sync_ts  )>30*1000) {
+					Log.i(TAG, "Starting Auto-Sync Task");
+					fa.runOnUiThread(new Runnable() {
+					     public void run() {
+								fa.setRunning();
+					    }
+					});
+					fa.initProgressDialog();
+					new FlowzrSyncEngine(fa);
+				} else {
+					Log.i(TAG, "Sync have just been done");
+				}
 			}
 		}
 	}
