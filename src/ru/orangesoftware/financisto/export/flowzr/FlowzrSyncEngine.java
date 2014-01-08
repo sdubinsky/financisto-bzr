@@ -130,7 +130,7 @@ public class FlowzrSyncEngine  {
 	private Class[] clazzArray = {Attribute.class,Currency.class,Project.class,Payee.class,Account.class,MyLocation.class,Category.class,Transaction.class,Budget.class};        
 	
 	private int MAX_PULL_SIZE=50;
-	private int MAX_PUSH_SIZE=20;
+	private int MAX_PUSH_SIZE=50;
 	static JsonReader reader = null;
 	static InputStream is = null;
 	static final int REQUEST_AUTHORIZATION = 2;
@@ -386,9 +386,12 @@ public class FlowzrSyncEngine  {
 		cursorCursor.moveToFirst();
 		total=cursorCursor.getLong(0);
 		sql="select * from " + tableName +  " where updated_on<0 or (updated_on > " + FlowzrSyncOptions.last_sync_ts +  " and updated_on<" + options.startTimestamp + ")";		
-		if (!tableName.equals("currency_exchange_rate")) {
-			sql+= " order by _id asc";	
-		}		
+	
+		if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
+			sql+= " order by datetime asc, parent_id asc";	
+		} else 	if (!tableName.equals("currency_exchange_rate")) {
+			sql+= " order by  _id asc";	
+		}
 		cursorCursor=db2.rawQuery(sql, null);
 		JSONArray resultSet 	= new JSONArray();
 		
