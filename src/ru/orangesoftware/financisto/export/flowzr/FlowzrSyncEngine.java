@@ -269,6 +269,24 @@ public class FlowzrSyncEngine  {
 			}
         }        
         /**
+         * pull update
+         */
+        if (!isCanceled && FlowzrSyncOptions.last_sync_ts==0) {		
+	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",20);
+				try {
+					pullUpdate();
+				} catch (IOException e) {
+					sendBackTrace(e);
+					recordSyncTime=false;					
+				} catch (JSONException e) {
+					sendBackTrace(e);
+					recordSyncTime=false;					
+				} catch (Exception e) {
+					sendBackTrace(e);
+					recordSyncTime=false;					
+				}				
+        }
+        /**
          * push update
          */
         if (!isCanceled) {
@@ -291,7 +309,7 @@ public class FlowzrSyncEngine  {
         /**
          * pull update
          */
-        if (!isCanceled) {		
+        if (!isCanceled && FlowzrSyncOptions.last_sync_ts>0) {		
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_receiving) + " ...",20);
 				try {
 					pullUpdate();
@@ -1297,7 +1315,12 @@ public class FlowzrSyncEngine  {
 		} else {
 			return null; //REQUIRED
 		}
-		//parent_tr
+//		if (tEntity.updatedOn>(jsonObjectResponse.getLong("updated_on")*1000) && tEntity.updatedOn<FlowzrSyncOptions.startTimestamp) {
+//			Log.i(TAG,"skipping local transaction is newest:" + String.valueOf(tEntity.updatedOn) + "/" + String.valueOf(jsonObjectResponse.getLong("updated_on")*1000) + " local/server");
+//			return tEntity;
+//		} 
+		
+		//parent_tr		
 		if (jsonObjectResponse.has("parent_tr")) {		
 				long pid=getLocalKey(DatabaseHelper.TRANSACTION_TABLE, jsonObjectResponse.getString("parent_tr"));
 				if (pid>KEY_CREATE) {
