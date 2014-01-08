@@ -269,9 +269,9 @@ public class FlowzrSyncEngine  {
 			}
         }        
         /**
-         * push update (if not force sync)
+         * push update
          */
-        if (!isCanceled && FlowzrSyncOptions.last_sync_ts>0) {
+        if (!isCanceled) {
 	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",35);
 	        try {
 				pushUpdate();
@@ -304,30 +304,9 @@ public class FlowzrSyncEngine  {
 				} catch (Exception e) {
 					sendBackTrace(e);
 					recordSyncTime=false;					
-				}
-				
+				}				
         }
-        /**
-         * push update (if force sync)
-         */
-        if (!isCanceled && FlowzrSyncOptions.last_sync_ts==0) {
-	        flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_sending) + " ...",35);
-	        try {
-				pushUpdate();
-			} catch (ClientProtocolException e) {
-				sendBackTrace(e);
-				recordSyncTime=false;
-			} catch (IOException e) {
-				sendBackTrace(e);
-				recordSyncTime=false;
-			} catch (JSONException e) {
-				sendBackTrace(e);
-				recordSyncTime=false;
-			} catch (Exception e) {
-				sendBackTrace(e);
-				recordSyncTime=false;
-			}      
-        }
+
         /**
          * send account balances boundaries
          */
