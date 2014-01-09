@@ -388,7 +388,7 @@ public class FlowzrSyncEngine  {
 		sql="select * from " + tableName +  " where updated_on<0 or (updated_on > " + FlowzrSyncOptions.last_sync_ts +  " and updated_on<" + options.startTimestamp + ")";		
 	
 		if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
-			sql+= " order by datetime asc, parent_id asc";	
+			sql+= " order by  parent_id asc,_id asc";	
 		} else 	if (!tableName.equals("currency_exchange_rate")) {
 			sql+= " order by  _id asc";	
 		}
