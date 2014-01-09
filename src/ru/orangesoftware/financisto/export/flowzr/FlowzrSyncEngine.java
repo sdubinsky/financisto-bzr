@@ -130,7 +130,7 @@ public class FlowzrSyncEngine  {
 	private Class[] clazzArray = {Attribute.class,Currency.class,Project.class,Payee.class,Account.class,MyLocation.class,Category.class,Transaction.class,Budget.class};        
 	
 	private int MAX_PULL_SIZE=50;
-	private int MAX_PUSH_SIZE=50;
+	private int MAX_PUSH_SIZE=10;
 	static JsonReader reader = null;
 	static InputStream is = null;
 	static final int REQUEST_AUTHORIZATION = 2;
