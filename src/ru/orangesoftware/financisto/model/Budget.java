@@ -81,7 +81,6 @@ public class Budget {
 	@Column(name = "remote_key")
  	public String remoteKey ;		
 	
-
 	@Transient
 	public String categoriesText = "";
 

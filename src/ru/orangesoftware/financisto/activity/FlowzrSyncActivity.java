@@ -8,51 +8,40 @@
 package ru.orangesoftware.financisto.activity;
 
 
+import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
+
+
 import java.io.IOException;
+import java.util.Date;
 
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.db.DatabaseAdapter;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncTask;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -61,63 +50,137 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
 
 
 public class FlowzrSyncActivity extends Activity  {
-
+	
+	public static final String PROPERTY_REG_ID = "registration_id";	
     public static final int CLASS_ACCOUNT = 1;
     public static final int CLASS_CATEGORY = 2;
     public static final int CLASS_TRANSACTION = 3;
     public static final int CLASS_PAYEE= 4;
     public static final int CLASS_PROJECT = 5;
-    public static final String AUTO_SYNC = "AUTO_SYNC";    
-    public static final String USE_CREDENTIAL = "USE_CREDENTIAL";   
-    public static final String LAST_SYNC_LOCAL_TIMESTAMP = "LAST_SYNC_LOCAL_TIMESTAMP";   
-    public static final int FLOWZR_SYNC_REQUEST_CODE = 36;    
-    private DatabaseAdapter db;
+    public static final int FLOWZR_SYNC_REQUEST_CODE = 6;    
+ 
     private long lastSyncLocalTimestamp=0;
-    private Account useCredential;
+    public Account useCredential;
 	DefaultHttpClient http_client ;
-    public ProgressDialog progressDialog ;
 	public Button bOk;    
-	public FlowzrSyncTask flowzrSyncTask;
-	public boolean isCanceled=false;
-	protected PowerManager.WakeLock vWakeLock;	
+	
 	public String TAG="flowzr";
+
+	public NotificationCompat.Builder mNotifyBuilder;
+	public static final int NOTIFICATION_ID=0;
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;	
+	public NotificationManager nm;	
+	
+	public static boolean isRunning=false;
+	
+	public String regid="";
+	GoogleCloudMessaging gcm; 
+		
 	public String FLOWZR_BASE_URL="https://flowzr-hrd.appspot.com";
-	public String FLOWZR_API_URL=FLOWZR_BASE_URL + "/financisto/";
-     	
+	public static FlowzrSyncTask flowzrSyncTask;
+	static FlowzrSyncEngine flowzrSyncEngine;	
+	
+	private static FlowzrSyncActivity me=null;
+
+	
+	public void setRunning() {
+		  runOnUiThread(new Runnable() {
+		  public void run() {
+			bOk.setEnabled(false);
+			bOk.setText(R.string.flowzr_sync_inprogress);
+			setProgressBarIndeterminateVisibility(true);		
+				    }
+			});
+	}
+	
+	public void setReady() {
+		  runOnUiThread(new Runnable() {
+			     public void run() {
+			        TextView tv = (TextView) findViewById(R.id.sync_was);
+			        if (flowzrSyncEngine!=null && flowzrSyncEngine.options!=null) {
+			         	tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(flowzrSyncEngine.options.last_sync_ts).toLocaleString());
+			        }
+			    	bOk.setText(R.string.ok);
+			 		bOk.setEnabled(true);	
+					setProgressBarIndeterminateVisibility(false);	
+					
+			    }
+			});
+	}
+	  
+	public void renderLastTime(long lastTime) {
+	    TextView tv = (TextView) findViewById(R.id.sync_was);
+	    tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(lastTime).toLocaleString());			
+	}	
+	
+    public void notifyUser(final String msg, final int pct) {
+    	mNotifyBuilder.setContentText(msg);
+    	if (pct!=0) {
+    	mNotifyBuilder.setProgress(100, pct,false);
+    	}
+    	nm.notify(NOTIFICATION_ID, mNotifyBuilder.build()); 
+
+    	if (flowzrSyncTask.mProgress!=null) {
+	    	runOnUiThread(new Runnable() {
+	            @Override
+	            public void run() {
+	            	if (pct!=0) {
+	            		flowzrSyncTask.mProgress.setProgress(pct);
+	            	}
+	            	flowzrSyncTask.mProgress.setMessage(msg);
+	            }
+	        });   
+    	}
+    }
+	
+//	@Override
+//	public void onBackPressed() {
+//		startActivity(new Intent(this, MainActivity.class));
+//	}
+	
+    public static FlowzrSyncActivity getMySelf() {
+        return FlowzrSyncActivity.me;
+    }
+	
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if ( flowzrSyncTask!=null &&  flowzrSyncTask.mProgress!=null && flowzrSyncTask.mProgress.isShowing() ){
+            flowzrSyncTask.mProgress.cancel();
+        }
+    }
+
+    public void initProgressDialog() {
+    	Intent notificationIntent = new Intent(getApplicationContext(),FlowzrSyncActivity.class);
+    	PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),
+    	        0, notificationIntent,
+    	        PendingIntent.FLAG_CANCEL_CURRENT);			    	
+    	
+    	mNotifyBuilder.setContentIntent(contentIntent)
+    	            .setSmallIcon(R.drawable.icon)
+    	            .setWhen(System.currentTimeMillis())
+    	            .setAutoCancel(true)
+    	            .setContentTitle(getApplicationContext().getString(R.string.flowzr_sync))
+    	            .setContentText(getApplicationContext().getString(R.string.flowzr_sync_auth_inprogress));
+    	nm.notify(NOTIFICATION_ID, mNotifyBuilder.build()); 
+    }
+    
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    	try {
-			this.FLOWZR_API_URL=this.FLOWZR_API_URL + getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).versionName + "/";
-		} catch (NameNotFoundException e) {
+        FlowzrSyncActivity.me=this;
+    	mNotifyBuilder = new NotificationCompat.Builder(getApplicationContext());        
+    	nm = (NotificationManager) getApplicationContext()
+    	        .getSystemService(Context.NOTIFICATION_SERVICE);
+    	setContentView(R.layout.flowzr_sync);
+        restoreUIFromPref();      
+        if (useCredential!=null) {
+        	
+        }
 
-		}
-        setContentView(R.layout.flowzr_sync);
-
-        http_client=new DefaultHttpClient();
-        
-        BasicHttpParams params = new BasicHttpParams();
-        SchemeRegistry schemeRegistry = new SchemeRegistry();
-        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
-        schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
-        ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-        DefaultHttpClient httpclient = new DefaultHttpClient(cm, params);
-        
-        final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        this.vWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, this.TAG);
-        this.vWakeLock.acquire();          
-
-        restorePreferences();        
-
-        db = new DatabaseAdapter(this);
-        db.open();
         		
         AccountManager accountManager = AccountManager.get(getApplicationContext());
         final Account[] accounts = accountManager.getAccountsByType("com.google");
@@ -134,28 +197,20 @@ public class FlowzrSyncActivity extends Activity  {
 			})
 			.show();
 		}
+		//radio crendentials
 		RadioGroup radioGroupCredentials = (RadioGroup)findViewById(R.id.radioCredentials);
-
-		//LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(1, 1);
-    	//String[] mAccountNames = new String[accounts.length];
-
 		OnClickListener radio_listener = new OnClickListener() {
 		    public void onClick(View v) {
-
 		    	RadioButton radioButtonSelected = (RadioButton)findViewById(v.getId());
-		    	// ((RadioGroup)findViewById(R.id.radioCredentials)).clearCheck();
-		    	//radioButtonSelected.setChecked(true);
-		    			    	
-		    	for (Account account: accounts) {
+	    	for (Account account: accounts) {
 		    		if (account.name==radioButtonSelected.getText()) {
 		    			useCredential=account;    			
 		    		}
 		    	}		    			    	
 		    }
 		};		
-
+		//initialize value
 	     for (int i = 0; i < accounts.length; i++) {
-
 	    	 	RadioButton rb = new RadioButton(this);
 	            radioGroupCredentials.addView(rb); //, 0, lp); 
 	    	 	rb.setOnClickListener(radio_listener);
@@ -165,52 +220,33 @@ public class FlowzrSyncActivity extends Activity  {
 		                rb.toggle(); //.setChecked(true);
 		        	} 
 	    		}
-
 		}
-	    
-
-        	
+	            	
         bOk = (Button) findViewById(R.id.bOK);
         bOk.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-            	Toast.makeText(FlowzrSyncActivity.this, R.string.flowzr_sync_inprogress, Toast.LENGTH_SHORT).show();
-            	isCanceled=false;
-	        	progressDialog = new ProgressDialog(FlowzrSyncActivity.this);
-				progressDialog.setCancelable(false);
-	        	progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	        	progressDialog.setMessage(getString(R.string.flowzr_sync_inprogress));
-	        	progressDialog.setProgress(10);
-	        	progressDialog.setTitle(getString(R.string.flowzr_sync));
-	        	progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
-	        	    @Override
-	        	    public void onClick(DialogInterface dialog, int which) {
-	                    setResult(RESULT_CANCELED);    
-	                    if (flowzrSyncTask!=null) {
-	                    	flowzrSyncTask.cancel(true);
-	                    	
-	                    }
-	                    isCanceled=true;
-	        	        dialog.dismiss();
-	        	        //finish();
-	        	    }
-	        	});	        	
-           	
-     	
-	        	//
-            	if (useCredential==null) {
-            		//progressDialog.dismiss();            		
-    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_choose_account);              		
-            	} else if (!isOnline(FlowzrSyncActivity.this)) {
-            		            		
-        			//progressDialog.dismiss();
-    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);                                         				
+       
+            	setRunning();   	
+            	initProgressDialog();
+//                if (useCredential!=null) {
+//                	flowzrBilling=new FlowzrBilling(FlowzrSyncActivity.this, getApplicationContext(), http_client, useCredential.toString());  
+//                }            	
+            	if (useCredential==null) {  
+            		showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_choose_account);
+            		notifyUser(getString(R.string.flowzr_choose_account), 100);
+    				setReady();            		
+            	} else if (!isOnline(FlowzrSyncActivity.this)) {          
+            		showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
+    				notifyUser(getString(R.string.flowzr_sync_error_no_network), 100);
+    				setReady();
         		} else {
-                    savePreferences();	
-                    progressDialog.show(); 
-                    
+                    saveOptionsFromUI();	
+                    //Play Service Billing
+                    //FlowzrBilling flowzrBilling = new FlowzrBilling(FlowzrSyncActivity.this, getApplicationContext(), http_client, useCredential.toString());  
+                    //if (flowzrSyncTask.checkSubscription()) {
+                    	flowzrSyncEngine=new FlowzrSyncEngine(FlowzrSyncActivity.this);
+                    //}
 
-               	    AccountManager.get(getApplicationContext()).getAuthToken(useCredential, "ah" , null, FlowzrSyncActivity.this, new GetAuthTokenCallback(), null);
-  
         		}
             }
         });
@@ -218,14 +254,16 @@ public class FlowzrSyncActivity extends Activity  {
         Button bCancel = (Button) findViewById(R.id.bCancel);
         bCancel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-            	isCanceled=true;
+            	if (flowzrSyncEngine!=null) {
+            		flowzrSyncEngine.isCanceled=true;
+            	}
+            	isRunning=false;
                 setResult(RESULT_CANCELED);    
+                setReady();
                 finish();
             }
         });    
-        
-
-        
+           
         Button textViewAbout = (Button) findViewById(R.id.buySubscription);
         textViewAbout.setOnClickListener(new View.OnClickListener() {        		
         	public void onClick(View v) {
@@ -245,15 +283,129 @@ public class FlowzrSyncActivity extends Activity  {
 	        		} else {
 	    				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
 	        		}
-        		}
+        	}
 		});
 
         TextView textViewNotes = (TextView) findViewById(R.id.flowzrPleaseNote);
         textViewNotes.setMovementMethod(LinkMovementMethod.getInstance());
         textViewNotes.setText(Html.fromHtml(getString(R.string.flowzr_terms_of_use)));
-
+        if (MyPreferences.isAutoSync(this)) {
+	        if (checkPlayServices()) {
+	            gcm = GoogleCloudMessaging.getInstance(this);
+	            regid = getRegistrationId(getApplicationContext());
+	
+	            if (regid.equals("")) {
+	                registerInBackground();
+	            }
+	            Log.i(TAG,"Google Cloud Messaging registered as :" + regid);
+	        } else {
+	            Log.i(TAG, "No valid Google Play Services APK found.");
+	        }
+        }
 	}
 
+	private String getRegistrationId(Context context) {
+	    final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+	    String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+	    if (registrationId=="") {
+	        Log.i(TAG, "GCM Registration not found in prefs.");
+	        return "";
+	    }
+	    // Check if app was updated; if so, it must clear the registration ID
+	    // since the existing regID is not guaranteed to work with the new
+	    // app version.
+	    String registeredVersion = prefs.getString(FlowzrSyncOptions.PROPERTY_APP_VERSION, "");
+	    String currentVersion;
+		try {
+			currentVersion = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).versionName;
+		    if (!registeredVersion.equals(currentVersion)) {
+		        Log.i(TAG, "App version changed.");
+		        return "";
+		    }
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    return registrationId;
+	}
+
+	
+	/**
+	 * Registers the application with GCM servers asynchronously.
+	 * <p>
+	 * Stores the registration ID and app versionCode in the application's
+	 * shared preferences.
+	 */
+	@SuppressWarnings("unchecked")
+	private void registerInBackground() {
+	    AsyncTask execute = new AsyncTask() {
+
+			@Override
+			protected Object doInBackground(Object... params) {
+				 String msg = "";
+		            try {
+		                if (gcm == null) {
+		                    gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+		                }
+				        Log.i(TAG, "Registering GCM in background ...");		                
+		                regid = gcm.register(FlowzrSyncOptions.GCM_SENDER_ID);
+		                msg = "Device registered, registration ID=" + regid;
+
+		                // You should send the registration ID to your server over HTTP,
+		                // so it can use GCM/HTTP or CCS to send messages to your app.
+		                // The request to your server should be authenticated if your app
+		                // is using accounts.
+		                sendRegistrationIdToBackend();
+
+		                // For this demo: we don't need to send it because the device
+		                // will send upstream messages to a server that echo back the
+		                // message using the 'from' address in the message.
+
+		                // Persist the regID - no need to register again.
+		                storeRegistrationId(getApplicationContext(), regid);
+		            } catch (IOException ex) {
+		                msg = "Error :" + ex.getMessage();
+		                // If there is an error, don't just keep trying to register.
+		                // Require the user to click a button again, or perform
+		                // exponential back-off.
+				        Log.i(TAG, msg);		                
+		            }
+		            return msg;
+				
+				
+			}
+	    }.execute(null, null, null);
+	   
+	}
+    private void sendRegistrationIdToBackend() {
+    	//@TODO Sending GCM registration key to server ...
+        Log.i(TAG, "Sending GCM registration key to server ...");	
+      }
+
+    /**
+     * Stores the registration ID and app versionCode in the application's
+     * {@code SharedPreferences}.
+     *
+     * @param context application's context.
+     * @param regId registration ID
+     */
+    private void storeRegistrationId(Context context, String regId) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String appVersion;
+		try {
+			appVersion = context.getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).versionName;
+	        Log.i(TAG, "Saving regId on app version " + appVersion);
+	        SharedPreferences.Editor editor = prefs.edit();
+	        editor.putString(PROPERTY_REG_ID, regId);
+	        editor.putString(FlowzrSyncOptions.PROPERTY_APP_VERSION, appVersion);
+	        editor.commit();
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+    }    
+    
+    
     private void visitFlowzr(Account useCredential) {
         String url=FLOWZR_BASE_URL + "/paywall/";
         if (useCredential !=null) {
@@ -266,58 +418,21 @@ public class FlowzrSyncActivity extends Activity  {
     @Override
 	protected void onResume() {
 		super.onResume();
-        restorePreferences();		
+		if (this.isRunning) {
+			setRunning();
+	        try {
+	            flowzrSyncTask.mProgress.show();	            
+	            } catch(Exception e) {
+	            	Log.e(TAG,"avoid a leaked window (2)");
+	            }
+		} else {
+			setReady();
+		}
+        restoreUIFromPref();
+        checkPlayServices();        
 	}
 
-	private class GetAuthTokenCallback implements AccountManagerCallback<Bundle> {
-		public void run(AccountManagerFuture<Bundle> result) {
-			Bundle bundle;
-			try {
-				bundle = result.getResult();
-				Intent intent = (Intent)bundle.get(AccountManager.KEY_INTENT);
-				if(intent != null) {
-					// User input required
-					startActivity(intent);
-				} else {
-                	AccountManager.get(getApplicationContext()).invalidateAuthToken(bundle.getString(AccountManager.KEY_ACCOUNT_TYPE), bundle.getString(AccountManager.KEY_AUTHTOKEN));
-                	AccountManager.get(getApplicationContext()).invalidateAuthToken("ah", bundle.getString(AccountManager.KEY_AUTHTOKEN));                	  
-                	onGetAuthToken(bundle);
-				}
-			} catch (OperationCanceledException e) {
-				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (AuthenticatorException e) {
-				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);				
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);				
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	};
 
-	protected void onGetAuthToken(Bundle bundle) {
-		String auth_token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-		
-		new GetCookieTask().execute(auth_token);
-	}
-
-    /**
-	 * Treat asynchronous requests to popup error messages
-	 * */
-	private Handler handler = new Handler() {
-		/**
-		 * Schedule the popup of the given error message
-		 * @param msg The message to display
-		 **/
-		@Override
-		public void handleMessage(Message msg) {
-			showErrorPopup(FlowzrSyncActivity.this, msg.what);
-		}
-	};
 
 	private void showErrorPopup(Context context, int message) {
 		new AlertDialog.Builder(context)
@@ -326,95 +441,59 @@ public class FlowzrSyncActivity extends Activity  {
 		.setPositiveButton(R.string.ok, null)
 		.setCancelable(true)
 		.create().show();
-	}
-	
-	
-	private class GetCookieTask extends AsyncTask<String, Void, Boolean> {
-		protected Boolean doInBackground(String... tokens) {
-			try {				
-				
-				http_client.getParams().setParameter("http.protocol.content-charset","UTF-8");
-				// Don't follow redirects
-				http_client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
-				
-				HttpGet http_get = new HttpGet(FLOWZR_BASE_URL + "/_ah/login?continue=" + FLOWZR_BASE_URL +"/&auth=" + tokens[0]);
-				HttpResponse response;
-				response = http_client.execute(http_get);
-				if(response.getStatusLine().getStatusCode() != 302) {
-					// Response should be a redirect
-					return false;
-				}
-				for(Cookie cookie : http_client.getCookieStore().getCookies()) {
-					if(cookie.getName().equals("ACSID")) {
-						return true;
-					}
-				}
-			} catch (ClientProtocolException e) {
-				Log.e("financisto",e.getMessage());				
-				return false;
-			} catch (IOException e) {  				
-				Log.e("financisto",e.getMessage());
-				return false;
-			} finally {
-				http_client.getParams().setParameter("http.protocol.content-charset","UTF-8");				
-				http_client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, true);				
-			}
-			return false;
-		}
+	}	
 
-		protected void onPostExecute(Boolean result) {
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());	
-			FlowzrSyncOptions options = FlowzrSyncOptions.fromPrefs(preferences);	
-			progressDialog.setProgress(5);
-			flowzrSyncTask= new FlowzrSyncTask(FlowzrSyncActivity.this, handler, progressDialog, options,http_client);
-			flowzrSyncTask.execute();   												
-		}
-	}
-    
-     
+	     
     protected void updateResultIntentFromUi(Intent data) {
-        data.putExtra(LAST_SYNC_LOCAL_TIMESTAMP, lastSyncLocalTimestamp);
-        data.putExtra(USE_CREDENTIAL, useCredential.name);
+        data.putExtra(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, lastSyncLocalTimestamp);
+        data.putExtra(FlowzrSyncOptions.PROPERTY_USE_CREDENTIAL, useCredential.name);
     }    
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FLOWZR_SYNC_REQUEST_CODE) {
             if (resultCode == RESULT_OK && data != null) {                
-                        savePreferences();
+                        saveOptionsFromUI();
             }
         }
     }    
-    
-    @Override
-    protected void onDestroy() {
-        db.close();
-        this.vWakeLock.release();          
-        super.onDestroy();
-    }
 
-	protected void savePreferences() {
+
+
+	protected void saveOptionsFromUI() {
 		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
-        editor.putString(USE_CREDENTIAL, useCredential.name);  
-  
+        editor.putString(FlowzrSyncOptions.PROPERTY_USE_CREDENTIAL, useCredential.name);  
         CheckBox chk=(CheckBox)findViewById(R.id.chk_sync_from_zero);
         if (chk.isChecked()) {
-    		editor.putLong(FlowzrSyncActivity.LAST_SYNC_LOCAL_TIMESTAMP, 0);  
+    		editor.putLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, 0);  
     		lastSyncLocalTimestamp=0;
         }
         editor.commit();          
 	}
 
-    protected void restorePreferences() {
-		//SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+    protected void restoreUIFromPref() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());		
-		lastSyncLocalTimestamp=preferences.getLong(LAST_SYNC_LOCAL_TIMESTAMP,0);
+		lastSyncLocalTimestamp=preferences.getLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP,0);
         AccountManager accountManager = AccountManager.get(getApplicationContext());
 		Account[] accounts = accountManager.getAccountsByType("com.google");
 	    for (int i = 0; i < accounts.length; i++) {
-	    	 if (preferences.getString(USE_CREDENTIAL,"").equals(((Account) accounts[i]).name)) {
+	    	 if (preferences.getString(FlowzrSyncOptions.PROPERTY_USE_CREDENTIAL,"").equals(((Account) accounts[i]).name)) {
 	    		 useCredential=accounts[i];
 	    	 }
-	     }		 		
-	    
+	     }		 		    
+	}
+    	
+	private boolean checkPlayServices() {
+	    int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+	    if (resultCode != ConnectionResult.SUCCESS) {
+	        if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+	            GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+	                    PLAY_SERVICES_RESOLUTION_REQUEST).show();
+	        } else {
+	            Log.w(TAG, "This device is does not support Google Play Services.");
+	            finish();
+	        }
+	        return false;
+	    }
+	    return true;
 	}
 }

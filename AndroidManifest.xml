@@ -41,11 +41,17 @@
 	<uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />    
+	<permission android:name="ru.orangesoftware.financisto.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="ru.orangesoftware.financisto.permission.C2D_MESSAGE"/>
+
+
     <application
             android:icon="@drawable/icon" android:label="@string/app_name"
 		    android:description="@string/app_description">
 		
 		<uses-library android:name="com.google.android.maps" android:required="false" />
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 		
 		<receiver android:name=".activity.AccountWidget" android:label="@string/widget_2x1" >
 		    <intent-filter>
@@ -75,9 +81,21 @@
 		    <intent-filter>
 		        <action android:name="ru.orangesoftware.financisto.SCHEDULED_ALARM" />
                 <action android:name="ru.orangesoftware.financisto.SCHEDULED_BACKUP" />
+                <action android:name="ru.orangesoftware.financisto.SCHEDULED_SYNC" />
 		        <action android:name="android.intent.action.BOOT_COMPLETED" />
 		    </intent-filter>
   		</receiver>		
+
+        <receiver
+            android:name=".export.flowzr.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="ru.orangesoftware.financisto" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".export.flowzr.GCMIntentService" />
+
 		
 		<receiver android:name=".activity.PackageReplaceReceiver">
 			<intent-filter>
@@ -92,6 +110,8 @@
                 <action android:name="ru.orangesoftware.financisto.SCHEDULE_ALL" />
                 <action android:name="ru.orangesoftware.financisto.ACTION_SCHEDULE_AUTO_BACKUP" />
                 <action android:name="ru.orangesoftware.financisto.ACTION_AUTO_BACKUP" />
+                <action android:name="ru.orangesoftware.financisto.ACTION_SCHEDULE_AUTO_SYNC" />
+                <action android:name="ru.orangesoftware.financisto.ACTION_AUTO_SYNC" />                                
             </intent-filter>
 		</service>
 
@@ -255,7 +275,7 @@
 
         <activity android:name=".activity.PurgeAccountActivity" android:label="@string/delete_old_transactions"/>
 
-        <activity android:name=".activity.FlowzrSyncActivity" android:label="@string/flowzr_sync" android:configChanges="keyboardHidden|orientation|screenLayout"/>
+        <activity android:name=".activity.FlowzrSyncActivity" android:label="@string/flowzr_sync" android:configChanges="keyboardHidden|orientation|screenLayout" android:launchMode="singleTop"/>
 
 
         <activity android:name="org.achartengine.GraphicalActivity"/>

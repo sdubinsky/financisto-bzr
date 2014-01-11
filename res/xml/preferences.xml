@@ -222,6 +222,39 @@
                             android:summary="@string/openexchangerates_app_id_summary"
                             android:enabled="false"/>
     </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/flowzr_sync">
+
+        <CheckBoxPreference android:key="auto_sync_enabled"
+                            android:title="@string/auto_sync_enabled"
+                            android:summary="@string/auto_sync_enabled_summary"
+                            android:defaultValue="true"/>
+
+        <CheckBoxPreference android:key="googledrive_upload"
+                            android:title="@string/googledrive_upload" android:summary="@string/googledrive_upload"
+                            android:defaultValue="true"/>
+
+        <EditTextPreference android:key="googledrive_folder"
+                            android:title="@string/googledrive_folder"
+                            android:summary="@string/googledrive_folder_summary"
+                            android:defaultValue="financial_docs"/>                                                        
+    </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/exchange_rates">
+        <ListPreference android:key="exchange_rate_provider"
+                        android:title="@string/exchange_rate_provider"
+                        android:summary="@string/exchange_rate_provider_summary"
+                        android:entries="@array/exchange_rate_provider_entities"
+                        android:entryValues="@array/exchange_rate_provider_values"
+                        android:defaultValue="webservicex"/>
+        <EditTextPreference android:key="openexchangerates_app_id"
+                            android:title="@string/openexchangerates_app_id"
+                            android:summary="@string/openexchangerates_app_id_summary"
+                            android:enabled="false"/>
+    </PreferenceCategory>
+
+
     <PreferenceCategory android:title="@string/location">
         <CheckBoxPreference android:key="use_gps"
                             android:title="@string/use_gps" android:summary="@string/use_gps_summary"

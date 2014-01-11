@@ -65,6 +65,7 @@ import java.util.List;
 
 import static ru.orangesoftware.financisto.export.docs.GoogleDocsClient.createDocsClient;
 import static ru.orangesoftware.financisto.service.DailyAutoBackupScheduler.scheduleNextAutoBackup;
+import static ru.orangesoftware.financisto.service.FlowzrAutoSyncScheduler.scheduleNextAutoSync;
 import static ru.orangesoftware.financisto.utils.EnumUtils.showPickOneDialog;
 
 public class MainActivity extends TabActivity implements TabHost.OnTabChangeListener {
@@ -112,7 +113,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         MyPreferences.StartupScreen screen = MyPreferences.getStartupScreen(this);
         tabHost.setCurrentTabByTag(screen.tag);
 
-		tabHost.setOnTabChangedListener(this);
+		tabHost.setOnTabChangedListener(this);		
+		
+		//scheduleNextAutoSync(this);
+		
     }
 
     @Override
@@ -160,7 +164,8 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
 			}
 		} else if (requestCode == CHANGE_PREFERENCES) {
             scheduleNextAutoBackup(this);
-        }
+            scheduleNextAutoSync(this);
+		}
 	}
 	
 	private void initialLoad() {

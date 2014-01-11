@@ -15,9 +15,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
+
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.AbstractTransactionActivity;
 import ru.orangesoftware.financisto.activity.AccountWidget;
@@ -35,6 +41,7 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import java.util.Date;
 
 import static ru.orangesoftware.financisto.service.DailyAutoBackupScheduler.scheduleNextAutoBackup;
+import static ru.orangesoftware.financisto.service.FlowzrAutoSyncScheduler.scheduleNextAutoSync;
 
 public class FinancistoService extends WakefulIntentService {
 
@@ -43,7 +50,9 @@ public class FinancistoService extends WakefulIntentService {
     public static final String ACTION_SCHEDULE_ONE = "ru.orangesoftware.financisto.SCHEDULE_ONE";
     public static final String ACTION_SCHEDULE_AUTO_BACKUP = "ru.orangesoftware.financisto.ACTION_SCHEDULE_AUTO_BACKUP";
     public static final String ACTION_AUTO_BACKUP = "ru.orangesoftware.financisto.ACTION_AUTO_BACKUP";
-
+    public static final String ACTION_SCHEDULE_AUTO_SYNC = "ru.orangesoftware.financisto.ACTION_SCHEDULE_AUTO_SYNC";
+    public static final String ACTION_AUTO_SYNC = "ru.orangesoftware.financisto.ACTION_AUTO_SYNC";
+    
 	private static final int RESTORED_NOTIFICATION_ID = 0;
 
 	private DatabaseAdapter db;
@@ -59,7 +68,7 @@ public class FinancistoService extends WakefulIntentService {
         db = new DatabaseAdapter(this);
         db.open();
         scheduler = new RecurrenceScheduler(db);
-        Log.d(TAG, "Created..");
+        Log.i(TAG, "Created Finacisto service ...");
     }
 
     @Override
@@ -67,7 +76,7 @@ public class FinancistoService extends WakefulIntentService {
         if (db != null) {
             db.close();
         }
-        Log.d(TAG, "Destroyed..");
+        Log.i(TAG, "Finacisto service ...");
         super.onDestroy();
     }
 
@@ -82,6 +91,10 @@ public class FinancistoService extends WakefulIntentService {
             scheduleNextAutoBackup(this);
         } else if (ACTION_AUTO_BACKUP.equals(action)) {
             doAutoBackup();
+        } else if (ACTION_SCHEDULE_AUTO_SYNC.equals(action)) {
+            scheduleNextAutoSync(this);
+        } else if (ACTION_AUTO_SYNC.equals(action)) {
+            doAutoSync();
         }
     }
 
@@ -102,7 +115,30 @@ public class FinancistoService extends WakefulIntentService {
             }
         }
     }
-
+    
+    private void doAutoSync() {
+    	try {
+    		Log.i(TAG, "Auto-sync started at " + new Date());
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);		
+			FlowzrSyncOptions o =FlowzrSyncOptions.fromPrefs(preferences);    		
+			if (isPushSyncNeed(o.last_sync_ts)) {
+				FlowzrSyncEngine.builAndRun(getApplicationContext());
+    		} else {
+				Log.i(TAG,"no changes to push since " + new Date(o.last_sync_ts).toString());
+			}
+    	} finally {
+    		scheduleNextAutoSync(this);
+    	}
+    }
+    
+    private boolean isPushSyncNeed(long lastSyncLocalTimestamp) {    	    	
+		String sql="select count(*) from transactions where updated_on > " + lastSyncLocalTimestamp;		
+		Cursor cursorCursor=db.db().rawQuery(sql, null);
+		cursorCursor.moveToFirst();
+		long total=cursorCursor.getLong(0);    	
+		return total!=0;
+	}
+    
     private void doAutoBackup() {
         try {
             try {

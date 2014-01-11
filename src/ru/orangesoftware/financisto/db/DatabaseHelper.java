@@ -96,7 +96,8 @@ public class DatabaseHelper extends DatabaseSchemaEvolution {
         is_ccard_payment,
         last_recurrence,
 		updated_on,
-		remote_key;
+		remote_key,
+		blob_key;
 		
 		public static String[] NORMAL_PROJECTION = asStringArray(TransactionColumns.values());
 
