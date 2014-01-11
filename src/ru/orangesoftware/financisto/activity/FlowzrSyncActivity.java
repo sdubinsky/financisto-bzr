@@ -102,12 +102,10 @@ public class FlowzrSyncActivity extends Activity  {
 	public void setReady() {
 		  runOnUiThread(new Runnable() {
 			     public void run() {
-			        TextView tv = (TextView) findViewById(R.id.sync_was);
-			        if (flowzrSyncEngine!=null && flowzrSyncEngine.options!=null) {
-			         	tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(flowzrSyncEngine.options.last_sync_ts).toLocaleString());
-			        }
 			    	bOk.setText(R.string.ok);
 			 		bOk.setEnabled(true);	
+			        CheckBox chk=(CheckBox)findViewById(R.id.chk_sync_from_zero);
+			        chk.setChecked(false);			 		
 					setProgressBarIndeterminateVisibility(false);	
 					
 			    }
