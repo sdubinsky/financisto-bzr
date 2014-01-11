@@ -102,10 +102,10 @@ public class Budget {
 		// currency
         if (b.currency != null) {
 		    sb.append(BlotterFilter.FROM_ACCOUNT_CURRENCY_ID).append("=").append(b.currency.id);
-        }
-        // currency
-        if (b.account != null) {
+        } else if (b.account != null) {
             sb.append(BlotterFilter.FROM_ACCOUNT_ID).append("=").append(b.account.id);
+        } else {
+            sb.append(" 1=1 ");
         }
 		// categories & projects
 		String categoriesWhere = createCategoriesWhere(b, categories);
