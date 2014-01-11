@@ -130,7 +130,7 @@ public class FlowzrSyncEngine  {
 	private Class[] clazzArray = {Attribute.class,Currency.class,Project.class,Payee.class,Account.class,MyLocation.class,Category.class,Transaction.class,Budget.class};        
 	
 	private int MAX_PULL_SIZE=50;
-	private int MAX_PUSH_SIZE=10;
+	private int MAX_PUSH_SIZE=20;
 	static JsonReader reader = null;
 	static InputStream is = null;
 	static final int REQUEST_AUTHORIZATION = 2;
@@ -881,7 +881,6 @@ public class FlowzrSyncEngine  {
 	
 	public Object saveOrUpdateBudgetFromJSON(long id,JSONObject jsonObjectEntity) {
 		Budget tEntity=em.get(Budget.class, id);
-		Log.i(TAG,"loading budget" + String.valueOf(id));
 		if (tEntity==null) {
 			tEntity = new Budget();
 			tEntity.id=KEY_CREATE; 									
@@ -1035,7 +1034,6 @@ public class FlowzrSyncEngine  {
 			}
 		}
 		em.saveOrUpdate(tEntity);
-		//em.insertBudget();
 		return tEntity;	 						
 	}	
 	
@@ -1319,12 +1317,7 @@ public class FlowzrSyncEngine  {
 			tEntity.dateTime=jsonObjectResponse.getLong("dateTime")*1000;
 		} else {
 			return null; //REQUIRED
-		}
-//		if (tEntity.updatedOn>(jsonObjectResponse.getLong("updated_on")*1000) && tEntity.updatedOn<FlowzrSyncOptions.startTimestamp) {
-//			Log.i(TAG,"skipping local transaction is newest:" + String.valueOf(tEntity.updatedOn) + "/" + String.valueOf(jsonObjectResponse.getLong("updated_on")*1000) + " local/server");
-//			return tEntity;
-//		} 
-		
+		}		
 		//parent_tr		
 		if (jsonObjectResponse.has("parent_tr")) {		
 				long pid=getLocalKey(DatabaseHelper.TRANSACTION_TABLE, jsonObjectResponse.getString("parent_tr"));
