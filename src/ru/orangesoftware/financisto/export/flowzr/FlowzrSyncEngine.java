@@ -483,12 +483,7 @@ public class FlowzrSyncEngine  {
        	    			if (colName.endsWith("_id") || colName.equals("parent")) {
        	    				if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
        	    					if (colName.equals("parent_budget_id")) {
-	       	    					String k=getRemoteKey(getTableForColName(colName),c.getString(i));
-		       	    				if (k!=null) {
-		       	    					rowObject.put(colName ,  k);	       	    				
-		       	    				} else {
-		       	    					rowObject.put(colName ,  c.getInt(i));
-		       	    				}       	    						
+	       	    					rowObject.put(colName ,  c.getInt(i));    	    						
        	    					} else if (!colName.equals("_id")) {
 	       	    					String[] entities=c.getString(c.getColumnIndex(colName)).split(",");	
 	    							String keys="";
@@ -913,7 +908,6 @@ public class FlowzrSyncEngine  {
 				if (tEntity.categories.endsWith(",")) {
 					tEntity.categories=tEntity.categories.substring(0, tEntity.categories.length()-1);
 				}
-				Log.e(TAG,"Error parsing Budget categories" + tEntity.categories);
 			} catch (Exception e) {
 				Log.e(TAG,"Error parsing Budget categories");
 				e.printStackTrace();
