@@ -389,9 +389,12 @@ public class FlowzrSyncEngine  {
 	
 		if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
 			sql+= " order by  parent_id asc,_id asc";	
+		} else 	if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
+			sql+= " order by  parent_budget_id asc";	
 		} else 	if (!tableName.equals("currency_exchange_rate")) {
 			sql+= " order by  _id asc";	
-		}
+		} 
+		
 		cursorCursor=db2.rawQuery(sql, null);
 		JSONArray resultSet 	= new JSONArray();
 		
@@ -479,7 +482,14 @@ public class FlowzrSyncEngine  {
        	    		if( c.getString(i) != null ) {
        	    			if (colName.endsWith("_id") || colName.equals("parent")) {
        	    				if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
-       	    					if (!colName.equals("_id")) {
+       	    					if (colName.equals("parent_budget_id")) {
+	       	    					String k=getRemoteKey(getTableForColName(colName),c.getString(i));
+		       	    				if (k!=null) {
+		       	    					rowObject.put(colName ,  k);	       	    				
+		       	    				} else {
+		       	    					rowObject.put(colName ,  c.getInt(i));
+		       	    				}       	    						
+       	    					} else if (!colName.equals("_id")) {
 	       	    					String[] entities=c.getString(c.getColumnIndex(colName)).split(",");	
 	    							String keys="";
 	    							for (String entity_id2: entities) {
@@ -488,9 +498,6 @@ public class FlowzrSyncEngine  {
 	    							if (keys.endsWith(",")) {
 	    								keys=keys.substring(0,keys.length()-1);
 	    							}
-	    							Log.e(TAG,"budget key");
-	    							Log.w(TAG,colName);
-	    							Log.w(TAG,keys);
 	           	    				rowObject.put(colName ,  keys );       	    					
        	    					}
        	    				} else {
@@ -927,14 +934,14 @@ public class FlowzrSyncEngine  {
 				e.printStackTrace();
 			}
 		}
-		if (jsonObjectEntity.has("currency")) {				
-			try {
-				tEntity.currencyId=getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("currency"));
-			} catch (Exception e) {
-				Log.e(TAG,"Error parsing Budget.currency ");				
-				e.printStackTrace();
-			}
-		}
+//		if (jsonObjectEntity.has("currency")) {				
+//			try {
+//				tEntity.currencyId=getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("currency"));
+//			} catch (Exception e) {
+//				Log.e(TAG,"Error parsing Budget.currency ");				
+//				e.printStackTrace();
+//			}
+//		}
 		if (jsonObjectEntity.has("budget_account_id")) {				
 			try {
 				tEntity.account=em.load(Account.class,getLocalKey(DatabaseHelper.ACCOUNT_TABLE, jsonObjectEntity.getString("budget_account_id")));
@@ -1026,7 +1033,7 @@ public class FlowzrSyncEngine  {
 			}
 		}
 		if (jsonObjectEntity.has("parent_budget_id")) {
-			try {
+			try {				
 				tEntity.parentBudgetId=getLocalKey(DatabaseHelper.BUDGET_TABLE, jsonObjectEntity.getString("parent_budget_id"));
 			} catch (Exception e) {					
 				Log.e(TAG,"Error parsing Budget.parentBudgetId ");				
