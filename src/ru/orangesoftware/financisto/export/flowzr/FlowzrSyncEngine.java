@@ -886,7 +886,7 @@ public class FlowzrSyncEngine  {
 	
 	public Object saveOrUpdateBudgetFromJSON(long id,JSONObject jsonObjectEntity) {
 		Budget tEntity=em.get(Budget.class, id);
-		Log.e(TAG,"loading budget" + String.valueOf(id));
+		Log.i(TAG,"loading budget" + String.valueOf(id));
 		if (tEntity==null) {
 			tEntity = new Budget();
 			tEntity.id=KEY_CREATE; 									
@@ -1040,7 +1040,8 @@ public class FlowzrSyncEngine  {
 				e.printStackTrace();
 			}
 		}
-		em.insertBudget(tEntity);
+		em.saveOrUpdate(tEntity);
+		//em.insertBudget();
 		return tEntity;	 						
 	}	
 	
