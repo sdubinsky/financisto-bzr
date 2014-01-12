@@ -13,6 +13,7 @@ import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -30,9 +31,12 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -102,7 +106,14 @@ public class FlowzrSyncActivity extends Activity  {
 	
 	public void setIsFinished() {
 		setReady();
-		startActivity(new Intent(getApplicationContext(), MainActivity.class));
+		  ActivityManager am = (ActivityManager) this .getSystemService(ACTIVITY_SERVICE);
+		  List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+		  ComponentName componentInfo = taskInfo.get(0).topActivity;
+		  if (taskInfo.get(0).topActivity.getClassName().equals(this.getClass().getName())) {
+			  startActivity(new Intent(getApplicationContext(), MainActivity.class));
+		  } else if (taskInfo.get(0).topActivity.getShortClassName().equals(".BudgetListActivity.class")) {
+			  startActivity(new Intent(getApplicationContext(), BudgetListActivity.class));			  
+		  }
 	}
 	
 	public void setReady() {

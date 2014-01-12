@@ -229,11 +229,11 @@
         <CheckBoxPreference android:key="auto_sync_enabled"
                             android:title="@string/auto_sync_enabled"
                             android:summary="@string/auto_sync_enabled_summary"
-                            android:defaultValue="true"/>
+                            android:defaultValue="false"/>
 
         <CheckBoxPreference android:key="googledrive_upload"
                             android:title="@string/googledrive_upload" android:summary="@string/googledrive_upload"
-                            android:defaultValue="true"/>
+                            android:defaultValue="false"/>
 
         <EditTextPreference android:key="googledrive_folder"
                             android:title="@string/googledrive_folder"
