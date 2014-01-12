@@ -879,7 +879,7 @@ public class FlowzrSyncEngine  {
 		return null;
 	}
 	
-	public Object saveOrUpdateBudgetFromJSON(long id,JSONObject jsonObjectEntity) {
+	public Object saveOrUpdateBudgetFromJSON(long id,JSONObject jsonObjectEntity) throws JSONException {
 		Budget tEntity=em.get(Budget.class, id);
 		if (tEntity==null) {
 			tEntity = new Budget();
@@ -948,7 +948,7 @@ public class FlowzrSyncEngine  {
 					tEntity.currency=em.load(Currency.class,getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("budget_currency_id")));
 					tEntity.currencyId=getLocalKey(DatabaseHelper.CURRENCY_TABLE, jsonObjectEntity.getString("budget_currency_id"));
 				} catch (Exception e) {
-					Log.e(TAG,"Error parsing Budget.budget_account_id ");				
+					Log.e(TAG,"Error parsing Budget.budget_currency_id ");				
 					e.printStackTrace();
 				}
 			}
@@ -962,29 +962,14 @@ public class FlowzrSyncEngine  {
 			}
 		}
 		if (jsonObjectEntity.has("includeSubcategories")) {
-			try {
-				tEntity.includeSubcategories=jsonObjectEntity.getBoolean("includeSubcategories");
-			} catch (JSONException e) {
-				
-				e.printStackTrace();
-			}
+			tEntity.includeSubcategories=jsonObjectEntity.getBoolean("includeSubcategories");
 		} 		
 		if (jsonObjectEntity.has("expanded")) {
-			try {
-				tEntity.expanded=jsonObjectEntity.getBoolean("expanded");
-			} catch (JSONException e) {
-				
-				e.printStackTrace();
-			}
+			tEntity.expanded=jsonObjectEntity.getBoolean("expanded");
 		} 
-		if (jsonObjectEntity.has("include_credit")) {
-			try {
-				tEntity.includeSubcategories=jsonObjectEntity.getBoolean("include_credit");
-			} catch (JSONException e) {
-				
-				e.printStackTrace();
-			}
-		} 		
+		if (jsonObjectEntity.has("includeCredit")) {
+				tEntity.includeCredit=jsonObjectEntity.getBoolean("includeCredit");
+		} 			
 		if (jsonObjectEntity.has("startDate")) {
 			try {
 				tEntity.startDate = jsonObjectEntity.getLong("startDate")*1000;
@@ -1001,14 +986,7 @@ public class FlowzrSyncEngine  {
 				e1.printStackTrace();					
 			}
 		}
-		if (jsonObjectEntity.has("recur")) {
-			try {
-				tEntity.recur=jsonObjectEntity.getString("recur");
-			} catch (JSONException e) {
-				
-				e.printStackTrace();
-			}
-		}
+
 		if (jsonObjectEntity.has("recurNum")) {
 			try {
 				tEntity.recurNum=jsonObjectEntity.getInt("recurNum");
@@ -1026,14 +1004,22 @@ public class FlowzrSyncEngine  {
 			}
 		}
 		if (jsonObjectEntity.has("parent_budget_id")) {
-			try {				
+			try {
 				tEntity.parentBudgetId=getLocalKey(DatabaseHelper.BUDGET_TABLE, jsonObjectEntity.getString("parent_budget_id"));
 			} catch (Exception e) {					
 				Log.e(TAG,"Error parsing Budget.parentBudgetId ");				
 				e.printStackTrace();
 			}
-		}
-		em.saveOrUpdate(tEntity);
+		} 
+		if (jsonObjectEntity.has("recur")) {
+				try {
+					tEntity.recur=jsonObjectEntity.getString("recur");
+				} catch (JSONException e) {
+					
+					e.printStackTrace();
+				}
+		}			
+		em.insertBudget(tEntity);
 		return tEntity;	 						
 	}	
 	
