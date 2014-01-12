@@ -17,6 +17,7 @@ import java.util.Date;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -97,6 +98,11 @@ public class FlowzrSyncActivity extends Activity  {
 			setProgressBarIndeterminateVisibility(true);		
 				    }
 			});
+	}
+	
+	public void setIsFinished() {
+		setReady();
+		startActivity(new Intent(getApplicationContext(), MainActivity.class));
 	}
 	
 	public void setReady() {
@@ -265,7 +271,8 @@ public class FlowzrSyncActivity extends Activity  {
             	isRunning=false;
                 setResult(RESULT_CANCELED);    
                 setReady();
-                finish();
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));                
+                //finish();
             }
         });    
            

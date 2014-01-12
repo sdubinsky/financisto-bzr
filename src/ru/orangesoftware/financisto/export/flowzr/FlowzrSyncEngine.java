@@ -359,7 +359,7 @@ public class FlowzrSyncEngine  {
         }        
         flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_success),100);        
         FlowzrSyncActivity.isRunning=false;
-        flowzrSyncActivity.setReady();   
+        flowzrSyncActivity.setIsFinished();         
         flowzrSyncActivity.renderLastTime(FlowzrSyncOptions.last_sync_ts);        
     }
 
