@@ -1,3 +1,4 @@
+package ru.orangesoftware.financisto.export.flowzr;
 /*
 
  * Copyright (c) 2012 Emmanuel Florent.
@@ -7,7 +8,6 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
-package ru.orangesoftware.financisto.export.flowzr;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -483,7 +483,7 @@ public class FlowzrSyncEngine  {
        	    			if (colName.endsWith("_id") || colName.equals("parent")) {
        	    				if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
        	    					if (colName.equals("parent_budget_id")) {
-	       	    					rowObject.put(colName ,  c.getInt(i));    	    						
+	       	    					rowObject.put(colName ,  c.getInt(i));    
        	    					} else if (!colName.equals("_id")) {
 	       	    					String[] entities=c.getString(c.getColumnIndex(colName)).split(",");	
 	    							String keys="";
@@ -523,6 +523,7 @@ public class FlowzrSyncEngine  {
 	       	 				if (cat.getParentId()>KEY_CREATE) {
 	       	 					Category pcat=em.load(Category.class, cat.getParentId());
 	       	 					rowObject.put( "parent" ,  pcat.remoteKey); 
+	       	 					rowObject.put( "parent_id" ,  pcat.id); 
 	       	 				}
 	       	 				String attrPushString="";
 	       	 				
@@ -1750,14 +1751,14 @@ public class FlowzrSyncEngine  {
 	   String sql="select attached_picture,datetime,remote_key,blob_key " +
 	   		"from transactions " +
 	   		"where attached_picture is not null " +
-	   		"and blob_key is null limit 3"; 
+	   		"and blob_key is null"; 
 
 	   Cursor cursorCursor=db.rawQuery(sql, null);
 	   int i=0;
 	   if (cursorCursor.moveToFirst()) {			
 			do {
 				i=i+10;
-				flowzrSyncActivity.notifyUser(cursorCursor.getString(0) + " >> Google Drive ",i);
+				flowzrSyncActivity.notifyUser(cursorCursor.getString(0) + " >> Google Drive. " +  flowzrSyncActivity.getString(R.string.hint_run_background),i);
 				if (i==100) {
 					i=10;
 				}					
@@ -1835,15 +1836,6 @@ public class FlowzrSyncEngine  {
 	   				body.setMimeType("application/vnd.google-apps.folder");
 	   				File file = driveService.files().insert(body).execute();
 	   				targetFolder=file.getId();
-//	   				Permission p= new Permission();
-//	   				p.setValue(file.getOwners().get(0).toString());
-//	   				p.setType("user");
-//	   				p.setRole("owner");	   				
-//	   				try {
-//	   			      driveService.permissions().insert(targetFolder, p).execute();
-//	   			    } catch (IOException e) {
-//	   			      System.out.println("An error occurred: " + e);
-//	   			    }
 	   			}
 	   			// File's binary content
 	   			java.io.File fileContent = new java.io.File(fileUri.getPath());
@@ -2044,7 +2036,7 @@ public class FlowzrSyncEngine  {
 			Log.e(TAG, "Sync unactive: the required activity is missing.");
 			return;
 		} else {
-			if (fa.isRunning) {
+			if (FlowzrSyncActivity.isRunning) {
 				Log.i(TAG, "Sync already in progress");
 			} else {
 				if ((System.currentTimeMillis() - FlowzrSyncOptions.last_sync_ts  )>30*1000) {
