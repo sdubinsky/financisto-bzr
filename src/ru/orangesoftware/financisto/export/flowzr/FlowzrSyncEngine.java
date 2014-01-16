@@ -1751,7 +1751,7 @@ public class FlowzrSyncEngine  {
 	   String sql="select attached_picture,datetime,remote_key,blob_key " +
 	   		"from transactions " +
 	   		"where attached_picture is not null " +
-	   		"and blob_key is null"; 
+	   		"and blob_key is null limit 3"; 
 
 	   Cursor cursorCursor=db.rawQuery(sql, null);
 	   int i=0;
