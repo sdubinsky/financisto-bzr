@@ -268,19 +268,16 @@
                         android:entryValues="@array/sort_locations_values"
                         android:defaultValue="NAME"/>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/gdocs_backup">
-        <EditTextPreference android:key="user_login"
-                            android:title="@string/user_login"
-                            android:summary="@string/user_login_summary"
-                            android:hint="user@gmail.com"/>
-        <EditTextPreference
-                android:key="user_password"
-                android:title="@string/user_password"
-                android:password="true"
-                android:summary="@string/user_password_summary"/>
+        <Preference android:key="google_drive_backup_account"
+                        android:title="@string/google_drive_backup_account"
+                        android:summary="@string/google_drive_backup_account_summary"/>
         <EditTextPreference android:key="backup_folder"
-                            android:title="@string/backup_folder" android:summary="@string/backup_folder_summary"/>
+                            android:title="@string/backup_folder"
+                            android:summary="@string/backup_folder_summary"/>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/other">
         <CheckBoxPreference android:key="include_transfers_into_reports"
                             android:title="@string/include_transfers_into_reports"

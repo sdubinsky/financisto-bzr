@@ -20,6 +20,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.dropbox.client2.session.AccessTokenPair;
+import ru.orangesoftware.financisto.activity.PreferencesActivity;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.rates.ExchangeRateProviderFactory;
@@ -84,7 +85,7 @@ public class MyPreferences {
     static {
         // hack for 1.5/1.6 devices
         try {
-            hasSystemFeatureMethod = PackageManager.class.getMethod("hasSystemFeature", new Class[] { String.class } );
+            hasSystemFeatureMethod = PackageManager.class.getMethod("hasSystemFeature", String.class);
        } catch (NoSuchMethodException ex) {
             hasSystemFeatureMethod = null;
        }
@@ -608,7 +609,17 @@ public class MyPreferences {
 
     public static boolean isAutoSync(Context context) {
         return getBoolean(context, "auto_sync_enabled", true);
-    }  
-    
-    
+    }
+
+    public static String getGoogleDriveAccount(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString("google_drive_backup_account", null);
+    }
+
+    public static void setGoogleDriveAccount(Context context, String accountName) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putString("google_drive_backup_account", accountName).commit();
+    }
+
+
 }

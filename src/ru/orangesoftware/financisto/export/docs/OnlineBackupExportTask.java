@@ -12,9 +12,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Handler;
-import api.wireless.gdata.parser.ParseException;
-import api.wireless.gdata.util.AuthenticationException;
-import api.wireless.gdata.util.ServiceException;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.api.services.drive.Drive;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MainActivity;
 import ru.orangesoftware.financisto.backup.DatabaseExport;
@@ -25,7 +24,7 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.io.IOException;
 
-import static ru.orangesoftware.financisto.export.docs.GoogleDocsClient.createDocsClient;
+import static ru.orangesoftware.financisto.export.docs.GoogleDriveClient.create;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,28 +49,24 @@ public class OnlineBackupExportTask extends ImportExportAsyncTask {
             if (folder == null || folder.equals("")) {
                 throw new SettingsNotConfiguredException("folder-is-null");
             }
-            return export.exportOnline(createDocsClient(context), folder);
-        } catch (AuthenticationException e) { // connection error
-            handler.sendEmptyMessage(R.string.gdocs_login_failed);
+            Drive drive = create(context);
+            if (drive == null) {
+                throw new SettingsNotConfiguredException("drive-is-null");
+            }
+            return export.exportOnline(drive, folder);
+        } catch (GoogleAuthException e) { // connection error
+            handler.sendEmptyMessage(R.string.gdocs_connection_failed);
             throw e;
         } catch (SettingsNotConfiguredException e) { // missing login or password
-            if (e.getMessage().equals("login"))
-                handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
-            else if (e.getMessage().equals("password"))
-                handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
-            else if (e.getMessage().equals("folder-is-null"))
+            if (e.getMessage().equals("folder-is-null"))
                 handler.sendEmptyMessage(R.string.gdocs_folder_not_configured);
             else if (e.getMessage().equals("folder-not-found"))
                 handler.sendEmptyMessage(R.string.gdocs_folder_not_found);
-            throw e;
-        } catch (ParseException e) {
-            handler.sendEmptyMessage(R.string.gdocs_folder_error);
+            else if (e.getMessage().equals("drive-is-null"))
+                handler.sendEmptyMessage(R.string.google_drive_permission_required);
             throw e;
         } catch (PackageManager.NameNotFoundException e) {
             handler.sendEmptyMessage(R.string.package_info_error);
-            throw e;
-        } catch (ServiceException e) {
-            handler.sendEmptyMessage(R.string.gdocs_service_error);
             throw e;
         } catch (IOException e) {
             handler.sendEmptyMessage(R.string.gdocs_io_error);

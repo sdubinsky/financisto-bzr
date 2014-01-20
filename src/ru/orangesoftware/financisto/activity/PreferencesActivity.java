@@ -10,7 +10,13 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.preference.PreferenceScreen;
+import android.util.Log;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.AccountPicker;
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.dialog.FolderBrowser;
 import ru.orangesoftware.financisto.export.Export;
@@ -27,16 +33,22 @@ import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 
-public class PreferencesActivity extends PreferenceActivity {	
-    
+public class PreferencesActivity extends PreferenceActivity {
+
+    private static final String[] ACCOUNT_TYPE = new String[] {GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE};
+
     private static final int SELECT_DATABASE_FOLDER = 100;
+    private static final int CHOOSE_ACCOUNT = 101;
 
     Preference pOpenExchangeRatesAppId;
+    GoogleAccountManager googleAccountManager;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);   
 		addPreferencesFromResource(R.xml.preferences);
+
+        googleAccountManager = new GoogleAccountManager(this);
 
         PreferenceScreen preferenceScreen = getPreferenceScreen();
         Preference pLocale = preferenceScreen.findPreference("ui_language");
@@ -102,10 +114,35 @@ public class PreferencesActivity extends PreferenceActivity {
                 return ExchangeRateProviderFactory.openexchangerates.name().equals(provider);
             }
         });
+        Preference pDriveAccount = preferenceScreen.findPreference("google_drive_backup_account");
+        pDriveAccount.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference arg0) {
+                chooseAccount();
+                return true;
+            }
+        });
         linkToDropbox();
         setCurrentDatabaseBackupFolder();
         enableOpenExchangeApp();
+        selectAccount();
 	}
+
+    private void chooseAccount() {
+        Account selectedAccount = getSelectedAccount();
+        Intent intent = AccountPicker.newChooseAccountIntent(selectedAccount, null, ACCOUNT_TYPE, true,
+                null, null, null, null);
+        startActivityForResult(intent, CHOOSE_ACCOUNT);
+    }
+
+    private Account getSelectedAccount() {
+        Account selectedAccount = null;
+        String account = MyPreferences.getGoogleDriveAccount(this);
+        if (account != null) {
+            selectedAccount = googleAccountManager.getAccountByName(account);
+        }
+        return selectedAccount;
+    }
 
     private void linkToDropbox() {
         boolean dropboxAuthorized = MyPreferences.isDropboxAuthorized(this);
@@ -138,10 +175,34 @@ public class PreferencesActivity extends PreferenceActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SELECT_DATABASE_FOLDER && resultCode == RESULT_OK) {
-            String databaseBackupFolder = data.getStringExtra(FolderBrowser.PATH);
-            MyPreferences.setDatabaseBackupFolder(this, databaseBackupFolder);
-            setCurrentDatabaseBackupFolder();
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case SELECT_DATABASE_FOLDER:
+                    String databaseBackupFolder = data.getStringExtra(FolderBrowser.PATH);
+                    MyPreferences.setDatabaseBackupFolder(this, databaseBackupFolder);
+                    setCurrentDatabaseBackupFolder();
+                    break;
+                case CHOOSE_ACCOUNT:
+                    if (data != null) {
+                        Bundle b = data.getExtras();
+                        String accountName = b.getString(AccountManager.KEY_ACCOUNT_NAME);
+                        Log.d("Preferences", "Selected account: " + accountName);
+                        if (accountName != null && accountName.length() > 0) {
+                            Account account = googleAccountManager.getAccountByName(accountName);
+                            MyPreferences.setGoogleDriveAccount(this, account.name);
+                            selectAccount();
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void selectAccount() {
+        Preference pDriveAccount = getPreferenceScreen().findPreference("google_drive_backup_account");
+        Account account = getSelectedAccount();
+        if (account != null) {
+            pDriveAccount.setSummary(account.name);
         }
     }
 

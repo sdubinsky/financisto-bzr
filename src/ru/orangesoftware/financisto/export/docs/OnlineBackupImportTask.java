@@ -11,21 +11,16 @@ package ru.orangesoftware.financisto.export.docs;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
-import api.wireless.gdata.docs.data.DocumentEntry;
-import api.wireless.gdata.parser.ParseException;
-import api.wireless.gdata.util.AuthenticationException;
-import api.wireless.gdata.util.ServiceException;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MainActivity;
 import ru.orangesoftware.financisto.backup.DatabaseImport;
-import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
 
 import java.io.IOException;
-
-import static ru.orangesoftware.financisto.export.docs.GoogleDocsClient.createDocsClient;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,10 +29,10 @@ import static ru.orangesoftware.financisto.export.docs.GoogleDocsClient.createDo
  */
 public class OnlineBackupImportTask extends ImportExportAsyncTask {
 
-    private final DocumentEntry entry;
+    private final com.google.api.services.drive.model.File entry;
     private final Handler handler;
 
-    public OnlineBackupImportTask(final MainActivity mainActivity, Handler handler, ProgressDialog dialog, DocumentEntry entry) {
+    public OnlineBackupImportTask(final MainActivity mainActivity, Handler handler, ProgressDialog dialog, File entry) {
         super(mainActivity, dialog);
         setListener(new ImportExportAsyncTaskListener() {
             @Override
@@ -52,23 +47,12 @@ public class OnlineBackupImportTask extends ImportExportAsyncTask {
     @Override
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
         try {
-            DatabaseImport.createFromGDocsBackup(context, db, createDocsClient(context), entry).importDatabase();
-        } catch (SettingsNotConfiguredException e) { // error configuring connection parameters
-            if (e.getMessage().equals("login"))
-                handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
-            else if (e.getMessage().equals("password"))
-                handler.sendEmptyMessage(R.string.gdocs_credentials_not_configured);
-            throw e;
-        } catch (AuthenticationException e) { // authentication error
-            handler.sendEmptyMessage(R.string.gdocs_login_failed);
-            throw e;
-        } catch (ParseException e) {
-            handler.sendEmptyMessage(R.string.gdocs_folder_error);
-            throw e;
+            Drive drive = GoogleDriveClient.create(context);
+            DatabaseImport.createFromGDocsBackup(context, db, drive, entry).importDatabase();
         } catch (IOException e) {
             handler.sendEmptyMessage(R.string.gdocs_io_error);
             throw e;
-        } catch (ServiceException e) {
+        } catch (Exception e) {
             handler.sendEmptyMessage(R.string.gdocs_service_error);
             throw e;
         }

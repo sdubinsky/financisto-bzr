@@ -13,21 +13,26 @@ package ru.orangesoftware.financisto.export;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
-import api.wireless.gdata.docs.client.DocsClient;
-import api.wireless.gdata.docs.data.DocumentEntry;
-import api.wireless.gdata.docs.data.FolderEntry;
+import com.google.api.client.http.InputStreamContent;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.*;
 import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
+import ru.orangesoftware.financisto.export.docs.GoogleDriveClient;
 import ru.orangesoftware.financisto.export.dropbox.Dropbox;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.io.*;
+import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 public abstract class Export {
 	
 	public static final File DEFAULT_EXPORT_PATH =  new File(Environment.getExternalStorageDirectory(), "financisto");
+    public static final String BACKUP_MIME_TYPE = "application/x-gzip";
 
     private final Context context;
     private final boolean useGzip;
@@ -62,13 +67,13 @@ public abstract class Export {
 	/**
 	 * Backup database to google docs
 	 * 
-	 * @param docsClient Google docs connection
-	 * @param folder Google docs folder name 
+	 * @param drive Google docs connection
+	 * @param targetFolder Google docs folder name
 	 * */
-	public String exportOnline(DocsClient docsClient, String folder) throws Exception {
-		// check folder first
-		FolderEntry fd = docsClient.getFolderByTitle(folder);
-		if (fd == null) {
+	public String exportOnline(Drive drive, String targetFolder) throws Exception {
+		// get folder first
+        String folderId = GoogleDriveClient.getOrCreateDriveFolder(drive, targetFolder);
+		if (folderId == null) {
 			throw new SettingsNotConfiguredException("folder-not-found");
 		}
 
@@ -80,11 +85,18 @@ public abstract class Export {
 
 		// transforming streams
 		InputStream backup = new ByteArrayInputStream(outputStream.toByteArray());
-		
-		// creating document on Google Docs
-		DocumentEntry entry = new DocumentEntry();
-		entry.setTitle(fileName);
-        docsClient.createFileDocument(fileName, backup, "application/zip", outputStream.size(), fd.getKey());
+
+        InputStreamContent mediaContent = new InputStreamContent(BACKUP_MIME_TYPE, new  BufferedInputStream(backup));
+        mediaContent.setLength(outputStream.size());
+        // File's metadata.
+        com.google.api.services.drive.model.File body = new com.google.api.services.drive.model.File();
+        body.setTitle(fileName);
+        body.setMimeType(BACKUP_MIME_TYPE);
+        body.setFileSize((long)outputStream.size());
+        List<ParentReference> parentReference = new ArrayList<ParentReference>();
+        parentReference.add(new ParentReference().setId(folderId)) ;
+        body.setParents(parentReference);
+        com.google.api.services.drive.model.File file = drive.files().insert(body, mediaContent).execute();
 
 		return fileName;
 	}

@@ -12,11 +12,9 @@ package ru.orangesoftware.financisto.backup;
 
 import android.content.ContentValues;
 import android.content.Context;
-import api.wireless.gdata.docs.client.DocsClient;
-import api.wireless.gdata.docs.data.DocumentEntry;
-import api.wireless.gdata.parser.ParseException;
-import api.wireless.gdata.util.ContentType;
-import api.wireless.gdata.util.ServiceException;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.services.drive.Drive;
 import ru.orangesoftware.financisto.db.Database;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseSchemaEvolution;
@@ -39,9 +37,10 @@ public class DatabaseImport extends FullDatabaseImport {
         return new DatabaseImport(context, dbAdapter, inputStream);
     }
 
-    public static DatabaseImport createFromGDocsBackup(Context context, DatabaseAdapter dbAdapter, DocsClient docsClient, DocumentEntry entry)
-            throws IOException, ParseException, ServiceException {
-        InputStream inputStream = docsClient.getFileContent(entry, ContentType.ZIP);
+    public static DatabaseImport createFromGDocsBackup(Context context, DatabaseAdapter dbAdapter, Drive drive, com.google.api.services.drive.model.File file)
+            throws IOException {
+        HttpResponse response = drive.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
+        InputStream inputStream = response.getContent();
         InputStream in = new GZIPInputStream(inputStream);
         return new DatabaseImport(context, dbAdapter, in);
     }

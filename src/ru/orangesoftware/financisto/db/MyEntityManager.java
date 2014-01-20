@@ -35,8 +35,8 @@ import ru.orangesoftware.orb.Query;
 
 import java.util.*;
 
-import static api.wireless.gdata.util.common.base.StringUtil.capitalize;
 import static ru.orangesoftware.financisto.db.DatabaseHelper.*;
+import static ru.orangesoftware.financisto.utils.StringUtil.capitalize;
 
 public class MyEntityManager extends EntityManager {
 	
@@ -591,20 +591,17 @@ public class MyEntityManager extends EntityManager {
         }
         return homeCurrency;
     }
-    
-    private long writeDeleteLog(String tableName,String remoteKey) {
-    	     	if (remoteKey==null) {
-    	     		return 0;
-    	     	}
-    	     	if (remoteKey=="") {
-    	     		return 0;
-    	     	}    	
-    	     	ContentValues row = new ContentValues();
-    	 		row.put(DatabaseHelper.deleteLogColumns.TABLE_NAME, tableName);				
-    	     	row.put(DatabaseHelper.deleteLogColumns.REMOTE_KEY,remoteKey);				
-    	     	row.put(DatabaseHelper.deleteLogColumns.DELETED_ON, System.currentTimeMillis());
-    	     	return db().insert(DatabaseHelper.DELETE_LOG_TABLE, null, row);
-    	     }
+
+    private long writeDeleteLog(String tableName, String remoteKey) {
+        if (remoteKey == null || remoteKey.length() == 0) {
+            return 0;
+        }
+        ContentValues row = new ContentValues();
+        row.put(DatabaseHelper.deleteLogColumns.TABLE_NAME, tableName);
+        row.put(DatabaseHelper.deleteLogColumns.REMOTE_KEY, remoteKey);
+        row.put(DatabaseHelper.deleteLogColumns.DELETED_ON, System.currentTimeMillis());
+        return db().insert(DatabaseHelper.DELETE_LOG_TABLE, null, row);
+    }
 
     private static <T extends MyEntity> Map<String, T> entitiesAsTitleMap(List<T> entities) {
         Map<String, T> map = new HashMap<String, T>();
