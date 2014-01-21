@@ -10,14 +10,12 @@ package ru.orangesoftware.financisto.export.flowzr;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
-
 import android.content.SharedPreferences;
 
 public class FlowzrSyncOptions {
 	
-	public long last_sync_ts=-1; //zero is default server ...
-	public long startTimestamp=-1; //useful only for not pushing what have just been pooled
+	public static long last_sync_ts=-1; //zero is default server ...
+	public static long startTimestamp=-1; //useful only for not pushing what have just been pooled
 	public String useCredential;
 	public String rootFolderId;
 	public 	DefaultHttpClient http_client;

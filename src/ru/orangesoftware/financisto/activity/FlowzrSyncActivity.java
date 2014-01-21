@@ -13,6 +13,7 @@ import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -27,9 +28,12 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -96,15 +100,29 @@ public class FlowzrSyncActivity extends Activity  {
 			});
 	}
 	
+	public void setIsFinished() {
+		setReady();
+		  ActivityManager am = (ActivityManager) this .getSystemService(ACTIVITY_SERVICE);
+		  List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+		  ComponentName componentInfo = taskInfo.get(0).topActivity;
+		  if (taskInfo.get(0).topActivity.getClassName().equals(this.getClass().getName())) {
+			  startActivity(new Intent(getApplicationContext(), MainActivity.class));
+		  } else if (taskInfo.get(0).topActivity.getShortClassName().equals(".BudgetListActivity.class")) {
+			  startActivity(new Intent(getApplicationContext(), BudgetListActivity.class));			  
+		  }
+	}
+	
 	public void setReady() {
 		  runOnUiThread(new Runnable() {
 			     public void run() {
 			        TextView tv = (TextView) findViewById(R.id.sync_was);
 			        if (flowzrSyncEngine!=null && flowzrSyncEngine.options!=null) {
 			         	tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(flowzrSyncEngine.options.last_sync_ts).toLocaleString());
-			        }
+			        }			    	 
 			    	bOk.setText(R.string.ok);
 			 		bOk.setEnabled(true);	
+			        CheckBox chk=(CheckBox)findViewById(R.id.chk_sync_from_zero);
+			        chk.setChecked(false);			 		
 					setProgressBarIndeterminateVisibility(false);	
 					
 			    }
@@ -260,7 +278,8 @@ public class FlowzrSyncActivity extends Activity  {
             	isRunning=false;
                 setResult(RESULT_CANCELED);    
                 setReady();
-                finish();
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));                
+                //finish();
             }
         });    
            
