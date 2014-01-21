@@ -1947,7 +1947,7 @@ public class FlowzrSyncEngine  {
 	   }
 
 	   private Drive getDriveService() {
-		   credential = GoogleAccountCredential.usingOAuth2(flowzrSyncActivity.getApplicationContext(), Arrays.asList(DriveScopes.DRIVE));
+		   credential = GoogleAccountCredential.usingOAuth2(flowzrSyncActivity.getApplicationContext(), Arrays.asList(DriveScopes.DRIVE_FILE));
 		   credential.setSelectedAccountName(options.useCredential);
 		   return new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential).build();
 	   }
