@@ -494,12 +494,14 @@ public class FlowzrSyncActivity extends Activity  {
 		lastSyncLocalTimestamp=preferences.getLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP,0);
         AccountManager accountManager = AccountManager.get(getApplicationContext());
 		Account[] accounts = accountManager.getAccountsByType("com.google");
-	    for (int i = 0; i < accounts.length; i++) {
-	    	 if (preferences.getString(FlowzrSyncOptions.PROPERTY_USE_CREDENTIAL,"").equals(((Account) accounts[i]).name)) {
-	    		 useCredential=accounts[i];
-	    	 }
-	     }		 		    
-	}
+        for (Account account : accounts) {
+            if (preferences.getString(FlowzrSyncOptions.PROPERTY_USE_CREDENTIAL, "").equals(account.name)) {
+                useCredential = account;
+            }
+        }
+        TextView tv = (TextView) findViewById(R.id.sync_was);
+        tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(lastSyncLocalTimestamp).toLocaleString());
+    }
     	
 	private boolean checkPlayServices() {
 	    int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
