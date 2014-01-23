@@ -608,7 +608,7 @@ public class MyPreferences {
     }    
 
     public static boolean isAutoSync(Context context) {
-        return getBoolean(context, "auto_sync_enabled", true);
+        return getBoolean(context, "auto_sync_enabled", false);
     }
 
     public static String getGoogleDriveAccount(Context context) {
