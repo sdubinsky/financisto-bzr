@@ -151,6 +151,7 @@
             </PreferenceCategory>
         </PreferenceScreen>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/protection">
         <CheckBoxPreference android:key="enable_widget"
                             android:title="@string/enable_widget" android:summary="@string/enable_widget_summary"
@@ -179,12 +180,14 @@
                             android:dependency="pin_protection"
                             android:defaultValue="true"/>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/home_screen">
         <Preference android:title="@string/shortcut_new_transaction"
                     android:key="shortcut_new_transaction" android:summary="@string/shortcut_summary"/>
         <Preference android:title="@string/shortcut_new_transfer"
                     android:key="shortcut_new_transfer" android:summary="@string/shortcut_summary"/>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/database_backup">
         <Preference android:key="database_backup_folder"
                     android:title="@string/database_backup_folder"
@@ -198,6 +201,7 @@
                                                             android:summary="@string/auto_backup_time_summary"
                                                             android:dependency="auto_backup_enabled"/>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/dropbox">
         <Preference android:title="@string/dropbox_authorize"
                     android:key="dropbox_authorize" android:summary="@string/dropbox_authorize_summary"/>
@@ -210,19 +214,19 @@
                             android:title="@string/dropbox_upload_autobackup" android:summary="@string/dropbox_upload_autobackup_summary"
                             android:defaultValue="false"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/exchange_rates">
-        <ListPreference android:key="exchange_rate_provider"
-                        android:title="@string/exchange_rate_provider"
-                        android:summary="@string/exchange_rate_provider_summary"
-                        android:entries="@array/exchange_rate_provider_entities"
-                        android:entryValues="@array/exchange_rate_provider_values"
-                        android:defaultValue="webservicex"/>
-        <EditTextPreference android:key="openexchangerates_app_id"
-                            android:title="@string/openexchangerates_app_id"
-                            android:summary="@string/openexchangerates_app_id_summary"
-                            android:enabled="false"/>
-    </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/gdocs_backup">
+        <Preference android:key="google_drive_backup_account"
+                    android:title="@string/google_drive_backup_account"
+                    android:summary="@string/google_drive_backup_account_summary"/>
+        <CheckBoxPreference android:key="google_drive_backup_full_readonly"
+                            android:title="@string/google_drive_backup_full_readonly"
+                            android:summary="@string/google_drive_backup_full_readonly_summary"
+                            android:defaultValue="false"/>
+        <EditTextPreference android:key="backup_folder"
+                            android:title="@string/backup_folder"
+                            android:summary="@string/backup_folder_summary"/>
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/flowzr_sync">
 
@@ -232,15 +236,17 @@
                             android:defaultValue="false"/>
 
         <CheckBoxPreference android:key="googledrive_upload"
-                            android:title="@string/googledrive_upload" android:summary="@string/googledrive_upload"
+                            android:title="@string/googledrive_upload"
+                            android:summary="@string/googledrive_upload_summary"
                             android:defaultValue="false"/>
 
         <EditTextPreference android:key="googledrive_folder"
                             android:title="@string/googledrive_folder"
                             android:summary="@string/googledrive_folder_summary"
-                            android:defaultValue="financial_docs"/>                                                        
+                            android:defaultValue="financial_docs"
+                />
     </PreferenceCategory>
-    
+
     <PreferenceCategory android:title="@string/exchange_rates">
         <ListPreference android:key="exchange_rate_provider"
                         android:title="@string/exchange_rate_provider"
@@ -253,7 +259,6 @@
                             android:summary="@string/openexchangerates_app_id_summary"
                             android:enabled="false"/>
     </PreferenceCategory>
-
 
     <PreferenceCategory android:title="@string/location">
         <CheckBoxPreference android:key="use_gps"
@@ -267,15 +272,6 @@
                         android:entries="@array/sort_locations_entities"
                         android:entryValues="@array/sort_locations_values"
                         android:defaultValue="NAME"/>
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/gdocs_backup">
-        <Preference android:key="google_drive_backup_account"
-                        android:title="@string/google_drive_backup_account"
-                        android:summary="@string/google_drive_backup_account_summary"/>
-        <EditTextPreference android:key="backup_folder"
-                            android:title="@string/backup_folder"
-                            android:summary="@string/backup_folder_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/other">
@@ -292,4 +288,5 @@
                             android:summary="@string/send_error_reports_summary"
                             android:defaultValue="true"/>
     </PreferenceCategory>
+
 </PreferenceScreen>

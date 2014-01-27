@@ -60,11 +60,15 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, String, Ob
 	
 	protected abstract String getSuccessMessage(Object result);
 
-    protected void doUploadToDropbox(Context context, String backupFileName) {
+    protected void doUploadToDropbox(Context context, String backupFileName) throws Exception {
         if (MyPreferences.isDropboxUploadBackups(context)) {
-            publishProgress(context.getString(R.string.dropbox_uploading_file));
-            uploadBackupFileToDropbox(context, backupFileName);
+            doForceUploadToDropbox(context, backupFileName);
         }
+    }
+
+    protected void doForceUploadToDropbox(Context context, String backupFileName) throws Exception {
+        publishProgress(context.getString(R.string.dropbox_uploading_file));
+        uploadBackupFileToDropbox(context, backupFileName);
     }
 
     @Override
@@ -76,6 +80,21 @@ public abstract class ImportExportAsyncTask extends AsyncTask<String, String, Ob
 	@Override
 	protected void onPostExecute(Object result) {
 		dialog.dismiss();
+
+        if (result instanceof ImportExportException) {
+            ImportExportException exception = (ImportExportException) result;
+            StringBuilder sb = new StringBuilder();
+            sb.append(context.getString(exception.errorResId));
+            if (exception.cause != null) {
+                sb.append(" : ").append(exception.cause);
+            }
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.fail)
+                    .setMessage(sb.toString())
+                    .setPositiveButton(R.string.ok, null)
+                    .show();
+            return;
+        }
 
 		if (result instanceof Exception) 
 			return;

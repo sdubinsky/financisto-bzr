@@ -10,7 +10,7 @@ package ru.orangesoftware.financisto.export.docs;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.Handler;
+import com.google.android.gms.auth.GoogleAuthException;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import ru.orangesoftware.financisto.R;
@@ -19,6 +19,7 @@ import ru.orangesoftware.financisto.backup.DatabaseImport;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
+import ru.orangesoftware.financisto.export.ImportExportException;
 
 import java.io.IOException;
 
@@ -27,12 +28,11 @@ import java.io.IOException;
  * User: Denis Solonenko
  * Date: 11/9/11 2:16 AM
  */
-public class OnlineBackupImportTask extends ImportExportAsyncTask {
+public class DriveRestoreTask extends ImportExportAsyncTask {
 
     private final com.google.api.services.drive.model.File entry;
-    private final Handler handler;
 
-    public OnlineBackupImportTask(final MainActivity mainActivity, Handler handler, ProgressDialog dialog, File entry) {
+    public DriveRestoreTask(final MainActivity mainActivity, ProgressDialog dialog, File entry) {
         super(mainActivity, dialog);
         setListener(new ImportExportAsyncTaskListener() {
             @Override
@@ -41,7 +41,6 @@ public class OnlineBackupImportTask extends ImportExportAsyncTask {
             }
         });
         this.entry = entry;
-        this.handler = handler;
     }
 
     @Override
@@ -49,12 +48,14 @@ public class OnlineBackupImportTask extends ImportExportAsyncTask {
         try {
             Drive drive = GoogleDriveClient.create(context);
             DatabaseImport.createFromGDocsBackup(context, db, drive, entry).importDatabase();
+        } catch (ImportExportException e) {
+            throw e;
+        } catch (GoogleAuthException e) {
+            throw new ImportExportException(R.string.gdocs_connection_failed);
         } catch (IOException e) {
-            handler.sendEmptyMessage(R.string.gdocs_io_error);
-            throw e;
+            throw new ImportExportException(R.string.gdocs_io_error);
         } catch (Exception e) {
-            handler.sendEmptyMessage(R.string.gdocs_service_error);
-            throw e;
+            throw new ImportExportException(R.string.gdocs_service_error, e);
         }
         return true;
     }

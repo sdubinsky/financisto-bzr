@@ -16,7 +16,7 @@ import android.os.Environment;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.*;
-import ru.orangesoftware.financisto.backup.SettingsNotConfiguredException;
+import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.export.docs.GoogleDriveClient;
 import ru.orangesoftware.financisto.export.dropbox.Dropbox;
 import ru.orangesoftware.financisto.utils.MyPreferences;
@@ -74,7 +74,7 @@ public abstract class Export {
 		// get folder first
         String folderId = GoogleDriveClient.getOrCreateDriveFolder(drive, targetFolder);
 		if (folderId == null) {
-			throw new SettingsNotConfiguredException("folder-not-found");
+            throw new ImportExportException(R.string.gdocs_folder_not_found);
 		}
 
 		// generation backup file
@@ -143,7 +143,7 @@ public abstract class Export {
         return new File(path, backupFileName);
     }
 
-    public static void uploadBackupFileToDropbox(Context context, String backupFileName) {
+    public static void uploadBackupFileToDropbox(Context context, String backupFileName) throws Exception {
         File file = getBackupFile(context, backupFileName);
         Dropbox dropbox = new Dropbox(context);
         dropbox.uploadFile(file);

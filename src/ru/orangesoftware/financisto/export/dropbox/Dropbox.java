@@ -12,10 +12,11 @@ import android.content.Context;
 import android.util.Log;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session;
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.export.ImportExportException;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.io.File;
@@ -84,17 +85,18 @@ public class Dropbox {
         return false;
     }
 
-    public void uploadFile(File file) {
+    public void uploadFile(File file) throws Exception {
         if (authSession()) {
             try {
                 InputStream is = new FileInputStream(file);
                 DropboxAPI.Entry newEntry = dropboxApi.putFile(file.getName(), is, file.length(), null, null);
                 Log.i("Financisto", "Dropbox: The uploaded file's rev is: " + newEntry.rev);
-            } catch (DropboxException e) {
-                Log.e("Financisto", "Dropbox: Something wrong", e);
             } catch (Exception e) {
-                Log.e("Financisto", "Dropbox: Something wrong with uploading", e);
+                Log.e("Financisto", "Dropbox: Something wrong", e);
+                throw new ImportExportException(R.string.dropbox_error, e);
             }
+        } else {
+            throw new ImportExportException(R.string.dropbox_auth_error);
         }
     }
     

@@ -12,8 +12,10 @@ package ru.orangesoftware.financisto.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ActivityNotFoundException;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.widget.Toast;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
@@ -129,10 +131,14 @@ public class PreferencesActivity extends PreferenceActivity {
 	}
 
     private void chooseAccount() {
-        Account selectedAccount = getSelectedAccount();
-        Intent intent = AccountPicker.newChooseAccountIntent(selectedAccount, null, ACCOUNT_TYPE, true,
-                null, null, null, null);
-        startActivityForResult(intent, CHOOSE_ACCOUNT);
+        try {
+            Account selectedAccount = getSelectedAccount();
+            Intent intent = AccountPicker.newChooseAccountIntent(selectedAccount, null, ACCOUNT_TYPE, true,
+                    null, null, null, null);
+            startActivityForResult(intent, CHOOSE_ACCOUNT);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.google_drive_account_select_error, Toast.LENGTH_LONG).show();
+        }
     }
 
     private Account getSelectedAccount() {

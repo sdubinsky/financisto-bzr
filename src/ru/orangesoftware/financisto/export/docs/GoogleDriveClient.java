@@ -23,10 +23,12 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.FileList;
 import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.export.ImportExportException;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,10 +37,18 @@ import java.util.Arrays;
  */
 public class GoogleDriveClient {
 
-    public static Drive create(Context context) throws IOException, GoogleAuthException {
+    public static Drive create(Context context) throws IOException, GoogleAuthException, ImportExportException {
         String googleDriveAccount = MyPreferences.getGoogleDriveAccount(context);
+        if (googleDriveAccount == null) {
+            throw new ImportExportException(R.string.google_drive_account_required);
+        }
         try {
-            GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(context, Arrays.asList(DriveScopes.DRIVE_FILE));
+            List<String> scope = new ArrayList<String>();
+            scope.add(DriveScopes.DRIVE_FILE);
+            if (MyPreferences.isGoogleDriveFullReadonly(context)) {
+                scope.add(DriveScopes.DRIVE_READONLY);
+            }
+            GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(context, scope);
             credential.setSelectedAccountName(googleDriveAccount);
             credential.getToken();
             return new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential).build();
@@ -57,7 +67,7 @@ public class GoogleDriveClient {
                     .setContentText(context.getString(R.string.google_drive_permission_requested_for_account, googleDriveAccount))
                     .setContentIntent(pendingIntent).setAutoCancel(true).build();
             notificationManager.notify(0, notification);
-            return null;
+            throw new ImportExportException(R.string.google_drive_permission_required);
         }
     }
 

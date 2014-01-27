@@ -42,9 +42,10 @@ import ru.orangesoftware.financisto.export.csv.CsvExportOptions;
 import ru.orangesoftware.financisto.export.csv.CsvExportTask;
 import ru.orangesoftware.financisto.export.csv.CsvImportOptions;
 import ru.orangesoftware.financisto.export.csv.CsvImportTask;
-import ru.orangesoftware.financisto.export.docs.ListGoogleDriveFilesTask;
-import ru.orangesoftware.financisto.export.docs.OnlineBackupExportTask;
-import ru.orangesoftware.financisto.export.docs.OnlineBackupImportTask;
+import ru.orangesoftware.financisto.export.docs.DriveBackupTask;
+import ru.orangesoftware.financisto.export.docs.DriveListFilesTask;
+import ru.orangesoftware.financisto.export.docs.DriveRestoreTask;
+import ru.orangesoftware.financisto.export.dropbox.DropboxBackupTask;
 import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.export.qif.QifExportTask;
 import ru.orangesoftware.financisto.export.qif.QifImportOptions;
@@ -71,8 +72,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int MENU_BACKUP = Menu.FIRST + 3;
     private static final int MENU_RESTORE = Menu.FIRST + 4;
     private static final int MENU_SCHEDULED_TRANSACTIONS = Menu.FIRST + 5;
-    private static final int MENU_BACKUP_GDOCS = Menu.FIRST + 6;
-    private static final int MENU_RESTORE_GDOCS = Menu.FIRST + 7;
     private static final int MENU_ENTITIES = Menu.FIRST + 8;
     private static final int MENU_MASS_OP = Menu.FIRST + 9;
     private static final int MENU_DONATE = Menu.FIRST + 10;
@@ -81,6 +80,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int MENU_INTEGRITY_FIX = Menu.FIRST + 13;
     private static final int MENU_PLANNER = Menu.FIRST + 14;
     private static final int MENU_CLOUD_SYNC = Menu.FIRST + 15;
+    private static final int MENU_BACKUP_RESTORE_ONLINE = Menu.FIRST + 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,10 +254,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         menu.addSubMenu(0, MENU_PLANNER, 0, R.string.planner);
         menu.addSubMenu(0, MENU_PREFERENCES, 0, R.string.preferences);
         menu.addSubMenu(0, MENU_RESTORE, 0, R.string.restore_database);
-        menu.addSubMenu(0, MENU_BACKUP_GDOCS, 0, R.string.backup_database_gdocs);
-        menu.addSubMenu(0, MENU_RESTORE_GDOCS, 0, R.string.restore_database_gdocs);
-        menu.addSubMenu(0, MENU_BACKUP_TO, 0, R.string.backup_database_to);
+        menu.addSubMenu(0, MENU_BACKUP_RESTORE_ONLINE, 0, R.string.backup_restore_database_online);
         menu.addSubMenu(0, MENU_IMPORT_EXPORT, 0, R.string.import_export);
+        menu.addSubMenu(0, MENU_BACKUP_TO, 0, R.string.backup_database_to);
         menu.addSubMenu(0, MENU_INTEGRITY_FIX, 0, R.string.integrity_fix);
         menu.addSubMenu(0, MENU_DONATE, 0, R.string.donate);
         menu.addSubMenu(0, MENU_ABOUT, 0, R.string.about);
@@ -311,14 +310,11 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
             case MENU_BACKUP_TO:
                 doBackupTo();
                 break;
-            case MENU_BACKUP_GDOCS:
-                doBackupOnline();
-                break;
             case MENU_RESTORE:
                 doImport();
                 break;
-            case MENU_RESTORE_GDOCS:
-                doImportFromGoogleDocs();
+            case MENU_BACKUP_RESTORE_ONLINE:
+                showPickOneDialog(this, R.string.backup_restore_database_online, BackupRestoreEntities.values(), this);
                 break;
             case MENU_INTEGRITY_FIX:
                 doIntegrityFix();
@@ -399,11 +395,6 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         startActivity(Intent.createChooser(intent, getString(R.string.backup_database_to_title)));
     }
 
-    private void doBackupOnline() {
-        ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_gdocs_inprogress), true);
-        new OnlineBackupExportTask(this, handler, d).execute((String[]) null);
-    }
-
     private void doCsvExport(CsvExportOptions options) {
         ProgressDialog progressDialog = ProgressDialog.show(this, null, getString(R.string.csv_export_inprogress), true);
         new CsvExportTask(this, progressDialog, options).execute();
@@ -471,12 +462,14 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
                 .show();
     }
 
-    /**
-     * Retrieves the backup file from the Google Docs account registered on preferences
-     */
-    private void doImportFromGoogleDocs() {
+    private void doBackupOnGoogleDrive() {
+        ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_gdocs_inprogress), true);
+        new DriveBackupTask(this, d).execute();
+    }
+
+    private void doRestoreFromGoogleDrive() {
         ProgressDialog d = ProgressDialog.show(MainActivity.this, null, getString(R.string.google_drive_loading_files), true);
-        new ListGoogleDriveFilesTask(this, d).execute();
+        new DriveListFilesTask(this, d).execute();
     }
 
     public void doImportFromGoogleDrive(final com.google.api.services.drive.model.File[] backupFiles) {
@@ -489,7 +482,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
                         public void onClick(DialogInterface dialog, int which) {
                             if (selectedOnlineBackupFile != null) {
                                 ProgressDialog d = ProgressDialog.show(MainActivity.this, null, getString(R.string.restore_database_inprogress_gdocs), true);
-                                new OnlineBackupImportTask(MainActivity.this, handler, d, selectedOnlineBackupFile).execute();
+                                new DriveRestoreTask(MainActivity.this, d, selectedOnlineBackupFile).execute();
                             }
                         }
                     })
@@ -512,6 +505,17 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
             titles[i] = backupFiles[i].getTitle();
         }
         return titles;
+    }
+
+    private void doBackupOnDropbox() {
+        ProgressDialog d = ProgressDialog.show(this, null, getString(R.string.backup_database_dropbox_inprogress), true);
+        new DropboxBackupTask(this, d).execute();
+    }
+
+    private void doRestoreFromDropbox() {
+    }
+
+    public void doImportFromDropbox() {
     }
 
     private enum MenuEntities implements EntityEnum {
@@ -557,16 +561,16 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
                 mainActivity.doCsvExport();
             }
         },
-        QIF_EXPORT(R.string.qif_export, R.drawable.ic_menu_back) {
-            @Override
-            public void execute(MainActivity mainActivity) {
-                mainActivity.doQifExport();
-            }
-        },
         CSV_IMPORT(R.string.csv_import, R.drawable.ic_menu_forward) {
             @Override
             public void execute(MainActivity mainActivity) {
                 mainActivity.doCsvImport();
+            }
+        },
+        QIF_EXPORT(R.string.qif_export, R.drawable.ic_menu_back) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doQifExport();
             }
         },
         QIF_IMPORT(R.string.qif_import, R.drawable.ic_menu_forward) {
@@ -580,6 +584,53 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         private final int iconId;
 
         private ImportExportEntities(int titleId, int iconId) {
+            this.titleId = titleId;
+            this.iconId = iconId;
+        }
+
+        @Override
+        public int getTitleId() {
+            return titleId;
+        }
+
+        @Override
+        public int getIconId() {
+            return iconId;
+        }
+
+    }
+
+    private enum BackupRestoreEntities implements ExecutableEntityEnum<MainActivity> {
+
+        GOOGLE_DRIVE_BACKUP(R.string.backup_database_online_google_drive, R.drawable.ic_menu_back) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doBackupOnGoogleDrive();
+            }
+        },
+        GOOGLE_DRIVE_RESTORE(R.string.restore_database_online_google_drive, R.drawable.ic_menu_forward) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doRestoreFromGoogleDrive();
+            }
+        },
+        DROPBOX_BACKUP(R.string.backup_database_online_dropbox, R.drawable.ic_menu_back) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doBackupOnDropbox();
+            }
+        },
+        DROPBOX_RESTORE(R.string.restore_database_online_dropbox, R.drawable.ic_menu_forward) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doRestoreFromDropbox();
+            }
+        };
+
+        private final int titleId;
+        private final int iconId;
+
+        private BackupRestoreEntities(int titleId, int iconId) {
             this.titleId = titleId;
             this.iconId = iconId;
         }

@@ -10,15 +10,17 @@ package ru.orangesoftware.financisto.export.docs;
 
 import android.app.Dialog;
 import android.os.AsyncTask;
+import com.google.android.gms.auth.GoogleAuthException;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MainActivity;
 import ru.orangesoftware.financisto.export.Export;
-import ru.orangesoftware.financisto.export.csv.Csv;
+import ru.orangesoftware.financisto.export.ImportExportException;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +30,14 @@ import java.util.List;
  * Date: 1/20/14
  * Time: 11:58 PM
  */
-public class ListGoogleDriveFilesTask extends AsyncTask<Void, Void, File[]> {
+public class DriveListFilesTask extends AsyncTask<Void, Void, File[]> {
 
     private final MainActivity context;
     private final Dialog dialog;
 
     private volatile int error = 0;
 
-    public ListGoogleDriveFilesTask(MainActivity context, Dialog dialog) {
+    public DriveListFilesTask(MainActivity context, Dialog dialog) {
         this.context = context;
         this.dialog = dialog;
     }
@@ -45,14 +47,8 @@ public class ListGoogleDriveFilesTask extends AsyncTask<Void, Void, File[]> {
         try {
             Drive drive = GoogleDriveClient.create(context);
 
-            if (drive == null) {
-                error = R.string.google_drive_permission_required;
-                return null;
-            }
-
-            // get the list of files in the repository
             String targetFolder = MyPreferences.getBackupFolder(context);
-            // check the backup folder registered on preferences
+
             if (targetFolder == null || targetFolder.equals("")) {
                 error = R.string.gdocs_folder_not_configured;
                 return null;
@@ -71,11 +67,17 @@ public class ListGoogleDriveFilesTask extends AsyncTask<Void, Void, File[]> {
             }
             return backupFiles.toArray(new File[backupFiles.size()]);
 
-        } catch (Csv.IOException e) {
+        } catch (ImportExportException e) {
+            error = e.errorResId;
+            return null;
+        } catch (GoogleAuthException e) {
+            error = R.string.gdocs_connection_failed;
+            return null;
+        } catch (IOException e) {
             error = R.string.gdocs_io_error;
             return null;
         } catch (Exception e) {
-            error = R.string.gdocs_connection_failed;
+            error = R.string.gdocs_service_error;
             return null;
         }
     }

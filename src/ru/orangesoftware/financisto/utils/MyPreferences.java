@@ -20,7 +20,6 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.dropbox.client2.session.AccessTokenPair;
-import ru.orangesoftware.financisto.activity.PreferencesActivity;
 import ru.orangesoftware.financisto.export.Export;
 import ru.orangesoftware.financisto.model.Currency;
 import ru.orangesoftware.financisto.rates.ExchangeRateProviderFactory;
@@ -621,5 +620,8 @@ public class MyPreferences {
         sharedPreferences.edit().putString("google_drive_backup_account", accountName).commit();
     }
 
+    public static boolean isGoogleDriveFullReadonly(Context context) {
+        return getBoolean(context, "google_drive_backup_full_readonly", false);
+    }
 
 }

@@ -131,13 +131,17 @@ public class FinancistoService extends WakefulIntentService {
     	}
     }
     
-    private boolean isPushSyncNeed(long lastSyncLocalTimestamp) {    	    	
-		String sql="select count(*) from transactions where updated_on > " + lastSyncLocalTimestamp;		
-		Cursor cursorCursor=db.db().rawQuery(sql, null);
-		cursorCursor.moveToFirst();
-		long total=cursorCursor.getLong(0);    	
-		return total!=0;
-	}
+    private boolean isPushSyncNeed(long lastSyncLocalTimestamp) {
+        String sql = "select count(*) from transactions where updated_on > " + lastSyncLocalTimestamp;
+        Cursor c = db.db().rawQuery(sql, null);
+        try {
+            c.moveToFirst();
+            long total = c.getLong(0);
+            return total != 0;
+        } finally {
+            c.close();
+        }
+    }
     
     private void doAutoBackup() {
         try {
