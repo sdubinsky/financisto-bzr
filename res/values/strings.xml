@@ -264,6 +264,7 @@
 	<string name="restore_database_inprogress">Restoring database...</string>
 	<string name="restore_database_gdocs">Restore from Google Drive</string>
 	<string name="restore_database_inprogress_gdocs">Restoring database...</string>
+    <string name="restore_database_inprogress_dropbox">Restoring database...</string>
 	<string name="restore_database_success">Database has been successfully restored.</string>
 	<string name="gdocs_connection_failed">Can not connect to Google Drive.</string>
 	<string name="gdocs_folder_not_found">The backup folder on Google Drive was not found.</string>
@@ -747,6 +748,7 @@
     <string name="dropbox_uploading_file">Uploading file to Dropbox...</string>
     <string name="dropbox_error">Error while working with Dropbox</string>
     <string name="dropbox_auth_error">Not authorized to upload to Dropbox. Please check your Preferences.</string>
+    <string name="dropbox_loading_files">Loading files from Dropbox...</string>
 
     <string name="exchange_rates">Exchange rates</string>
     <string name="no_exchange_rates">No exchange rates</string>

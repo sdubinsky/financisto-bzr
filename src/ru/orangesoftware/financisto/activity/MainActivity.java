@@ -46,6 +46,8 @@ import ru.orangesoftware.financisto.export.docs.DriveBackupTask;
 import ru.orangesoftware.financisto.export.docs.DriveListFilesTask;
 import ru.orangesoftware.financisto.export.docs.DriveRestoreTask;
 import ru.orangesoftware.financisto.export.dropbox.DropboxBackupTask;
+import ru.orangesoftware.financisto.export.dropbox.DropboxListFilesTask;
+import ru.orangesoftware.financisto.export.dropbox.DropboxRestoreTask;
 import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.export.qif.QifExportTask;
 import ru.orangesoftware.financisto.export.qif.QifImportOptions;
@@ -436,7 +438,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     }
 
     private String selectedBackupFile;
-    private com.google.api.services.drive.model.File selectedOnlineBackupFile;
+    private com.google.api.services.drive.model.File selectedDriveFile;
 
     private void doImport() {
         final String[] backupFiles = Backup.listBackups(this);
@@ -480,9 +482,9 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
                     .setPositiveButton(R.string.restore, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (selectedOnlineBackupFile != null) {
+                            if (selectedDriveFile != null) {
                                 ProgressDialog d = ProgressDialog.show(MainActivity.this, null, getString(R.string.restore_database_inprogress_gdocs), true);
-                                new DriveRestoreTask(MainActivity.this, d, selectedOnlineBackupFile).execute();
+                                new DriveRestoreTask(MainActivity.this, d, selectedDriveFile).execute();
                             }
                         }
                     })
@@ -490,7 +492,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (which >= 0 && which < backupFiles.length) {
-                                selectedOnlineBackupFile = backupFiles[which];
+                                selectedDriveFile = backupFiles[which];
                             }
                         }
                     })
@@ -513,9 +515,35 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     }
 
     private void doRestoreFromDropbox() {
+        ProgressDialog d = ProgressDialog.show(MainActivity.this, null, getString(R.string.dropbox_loading_files), true);
+        new DropboxListFilesTask(this, d).execute();
     }
 
-    public void doImportFromDropbox() {
+    private String selectedDropboxFile;
+
+    public void doImportFromDropbox(final String[] backupFiles) {
+        if (backupFiles != null) {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle(R.string.restore_database)
+                    .setPositiveButton(R.string.restore, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (selectedDropboxFile != null) {
+                                ProgressDialog d = ProgressDialog.show(MainActivity.this, null, getString(R.string.restore_database_inprogress_dropbox), true);
+                                new DropboxRestoreTask(MainActivity.this, d, selectedDropboxFile).execute();
+                            }
+                        }
+                    })
+                    .setSingleChoiceItems(backupFiles, -1, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (which >= 0 && which < backupFiles.length) {
+                                selectedDropboxFile = backupFiles[which];
+                            }
+                        }
+                    })
+                    .show();
+        }
     }
 
     private enum MenuEntities implements EntityEnum {

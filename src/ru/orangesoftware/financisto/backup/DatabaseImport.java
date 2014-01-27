@@ -19,6 +19,7 @@ import ru.orangesoftware.financisto.db.Database;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseSchemaEvolution;
 import ru.orangesoftware.financisto.export.Export;
+import ru.orangesoftware.financisto.export.dropbox.Dropbox;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;
@@ -37,7 +38,7 @@ public class DatabaseImport extends FullDatabaseImport {
         return new DatabaseImport(context, dbAdapter, inputStream);
     }
 
-    public static DatabaseImport createFromGDocsBackup(Context context, DatabaseAdapter dbAdapter, Drive drive, com.google.api.services.drive.model.File file)
+    public static DatabaseImport createFromGoogleDriveBackup(Context context, DatabaseAdapter dbAdapter, Drive drive, com.google.api.services.drive.model.File file)
             throws IOException {
         HttpResponse response = drive.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
         InputStream inputStream = response.getContent();
@@ -45,7 +46,14 @@ public class DatabaseImport extends FullDatabaseImport {
         return new DatabaseImport(context, dbAdapter, in);
     }
 
-	private DatabaseImport(Context context, DatabaseAdapter dbAdapter, InputStream backupStream) {
+    public static DatabaseImport createFromDropboxBackup(Context context, DatabaseAdapter dbAdapter, Dropbox dropbox, String backupFile)
+            throws Exception {
+        InputStream inputStream = dropbox.getFileAsStream(backupFile);
+        InputStream in = new GZIPInputStream(inputStream);
+        return new DatabaseImport(context, dbAdapter, in);
+    }
+
+    private DatabaseImport(Context context, DatabaseAdapter dbAdapter, InputStream backupStream) {
         super(context, dbAdapter);
         this.schemaEvolution = new DatabaseSchemaEvolution(context, Database.DATABASE_NAME, null, Database.DATABASE_VERSION);
         this.backupStream = backupStream;

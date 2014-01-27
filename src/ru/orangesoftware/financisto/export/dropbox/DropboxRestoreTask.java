@@ -1,38 +1,32 @@
 /*
- * Copyright (c) 2011 Denis Solonenko.
+ * Copyright (c) 2014 Denis Solonenko.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v2.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
-package ru.orangesoftware.financisto.export.docs;
+package ru.orangesoftware.financisto.export.dropbox;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MainActivity;
 import ru.orangesoftware.financisto.backup.DatabaseImport;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
-import ru.orangesoftware.financisto.export.ImportExportException;
-
-import java.io.IOException;
 
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
  * Date: 11/9/11 2:16 AM
  */
-public class DriveRestoreTask extends ImportExportAsyncTask {
+public class DropboxRestoreTask extends ImportExportAsyncTask {
 
-    private final com.google.api.services.drive.model.File entry;
+    private final String backupFile;
 
-    public DriveRestoreTask(final MainActivity mainActivity, ProgressDialog dialog, File entry) {
+    public DropboxRestoreTask(final MainActivity mainActivity, ProgressDialog dialog, String backupFile) {
         super(mainActivity, dialog);
         setListener(new ImportExportAsyncTaskListener() {
             @Override
@@ -40,23 +34,13 @@ public class DriveRestoreTask extends ImportExportAsyncTask {
                 mainActivity.onTabChanged(mainActivity.getTabHost().getCurrentTabTag());
             }
         });
-        this.entry = entry;
+        this.backupFile = backupFile;
     }
 
     @Override
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
-        try {
-            Drive drive = GoogleDriveClient.create(context);
-            DatabaseImport.createFromGoogleDriveBackup(context, db, drive, entry).importDatabase();
-        } catch (ImportExportException e) {
-            throw e;
-        } catch (GoogleAuthException e) {
-            throw new ImportExportException(R.string.gdocs_connection_failed);
-        } catch (IOException e) {
-            throw new ImportExportException(R.string.gdocs_io_error);
-        } catch (Exception e) {
-            throw new ImportExportException(R.string.gdocs_service_error, e);
-        }
+        Dropbox dropbox = new Dropbox(context);
+        DatabaseImport.createFromDropboxBackup(context, db, dropbox, backupFile).importDatabase();
         return true;
     }
 

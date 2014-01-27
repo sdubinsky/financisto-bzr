@@ -22,6 +22,7 @@ import ru.orangesoftware.financisto.utils.MyPreferences;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -99,5 +100,43 @@ public class Dropbox {
             throw new ImportExportException(R.string.dropbox_auth_error);
         }
     }
-    
+
+    public List<String> listFiles() throws Exception {
+        if (authSession()) {
+            try {
+                List<String> files = new ArrayList<String>();
+                List<DropboxAPI.Entry> entries = dropboxApi.search("/", ".backup", 1000, false);
+                for (DropboxAPI.Entry entry : entries) {
+                    if (entry.fileName() != null) {
+                        files.add(entry.fileName());
+                    }
+                }
+                Collections.sort(files, new Comparator<String>() {
+                    @Override
+                    public int compare(String s1, String s2) {
+                        return s2.compareTo(s1);
+                    }
+                });
+                return files;
+            } catch (Exception e) {
+                Log.e("Financisto", "Dropbox: Something wrong", e);
+                throw new ImportExportException(R.string.dropbox_error, e);
+            }
+        } else {
+            throw new ImportExportException(R.string.dropbox_auth_error);
+        }
+    }
+
+    public InputStream getFileAsStream(String backupFile) throws Exception {
+        if (authSession()) {
+            try {
+                return dropboxApi.getFileStream("/"+backupFile, null);
+            } catch (Exception e) {
+                Log.e("Financisto", "Dropbox: Something wrong", e);
+                throw new ImportExportException(R.string.dropbox_error, e);
+            }
+        } else {
+            throw new ImportExportException(R.string.dropbox_auth_error);
+        }
+    }
 }
