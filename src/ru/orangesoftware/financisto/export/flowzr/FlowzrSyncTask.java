@@ -8,13 +8,9 @@
 
 package ru.orangesoftware.financisto.export.flowzr;
 
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-
-import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
-import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
@@ -133,10 +129,12 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     
 	@Override
 	protected void onPostExecute(Object result) {
-			flowzrSync.finishDelete();
-			flowzrSyncActivity.setReady();			
-			flowzrSyncActivity.nm.cancel(FlowzrSyncActivity.NOTIFICATION_ID);
- 			mProgress.hide();		
-	}
+        flowzrSync.finishDelete();
+        flowzrSyncActivity.setReady();
+        if (!(result instanceof Exception)) {
+            flowzrSyncActivity.nm.cancel(FlowzrSyncActivity.NOTIFICATION_ID);
+            mProgress.hide();
+        }
+    }
 }
 
