@@ -253,7 +253,7 @@
                         android:summary="@string/exchange_rate_provider_summary"
                         android:entries="@array/exchange_rate_provider_entities"
                         android:entryValues="@array/exchange_rate_provider_values"
-                        android:defaultValue="webservicex"/>
+                        android:defaultValue="flowzr"/>
         <EditTextPreference android:key="openexchangerates_app_id"
                             android:title="@string/openexchangerates_app_id"
                             android:summary="@string/openexchangerates_app_id_summary"
