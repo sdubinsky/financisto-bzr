@@ -45,8 +45,8 @@ public class DriveListFilesTask extends AsyncTask<Void, Void, File[]> {
     @Override
     protected File[] doInBackground(Void... contexts) {
         try {
-            Drive drive = GoogleDriveClient.create(context);
-
+            String googleDriveAccount = MyPreferences.getGoogleDriveAccount(context);
+            Drive drive = GoogleDriveClient.create(context,googleDriveAccount);
             String targetFolder = MyPreferences.getBackupFolder(context);
 
             if (targetFolder == null || targetFolder.equals("")) {

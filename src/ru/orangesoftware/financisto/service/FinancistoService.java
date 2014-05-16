@@ -10,19 +10,10 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.service;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.os.IBinder;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import com.commonsware.cwac.wakeful.WakefulIntentService;
-import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
-import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
+import static ru.orangesoftware.financisto.service.DailyAutoBackupScheduler.scheduleNextAutoBackup;
+import static ru.orangesoftware.financisto.service.FlowzrAutoSyncScheduler.scheduleNextAutoSync;
+
+import java.util.Date;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.AbstractTransactionActivity;
@@ -30,18 +21,25 @@ import ru.orangesoftware.financisto.activity.AccountWidget;
 import ru.orangesoftware.financisto.activity.MassOpActivity;
 import ru.orangesoftware.financisto.backup.DatabaseExport;
 import ru.orangesoftware.financisto.blotter.BlotterFilter;
-import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.Export;
-import ru.orangesoftware.financisto.model.TransactionStatus;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncTask;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.model.TransactionInfo;
+import ru.orangesoftware.financisto.model.TransactionStatus;
 import ru.orangesoftware.financisto.recur.NotificationOptions;
 import ru.orangesoftware.financisto.utils.MyPreferences;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.IBinder;
+import android.util.Log;
 
-import java.util.Date;
-
-import static ru.orangesoftware.financisto.service.DailyAutoBackupScheduler.scheduleNextAutoBackup;
-import static ru.orangesoftware.financisto.service.FlowzrAutoSyncScheduler.scheduleNextAutoSync;
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 public class FinancistoService extends WakefulIntentService {
 
@@ -118,13 +116,15 @@ public class FinancistoService extends WakefulIntentService {
     
     private void doAutoSync() {
     	try {
-    		Log.i(TAG, "Auto-sync started at " + new Date());
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);		
-			FlowzrSyncOptions o =FlowzrSyncOptions.fromPrefs(preferences);    		
-			if (isPushSyncNeed(o.last_sync_ts)) {
-				FlowzrSyncEngine.builAndRun(getApplicationContext());
+    		Log.i(TAG, "Auto-sync started at " + new Date());    		
+			if (isPushSyncNeed(MyPreferences.getFlowzrLastSync(getApplicationContext()))) {
+        		if (FlowzrSyncEngine.isRunning) {
+	        		Log.i(TAG,"sync already in progess");
+        			return;
+        		}
+				new FlowzrSyncTask(getApplicationContext()).execute();
     		} else {
-				Log.i(TAG,"no changes to push since " + new Date(o.last_sync_ts).toString());
+				Log.i(TAG,"no changes to push since " + new Date(MyPreferences.getFlowzrLastSync(getApplicationContext())).toString());
 			}
     	} finally {
     		scheduleNextAutoSync(this);

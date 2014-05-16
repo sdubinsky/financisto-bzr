@@ -8,8 +8,8 @@
 package ru.orangesoftware.financisto.activity;
 
 
-import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
 
+import static ru.orangesoftware.financisto.utils.NetworkUtils.isOnline;
 
 import java.io.IOException;
 import java.util.Date;
@@ -17,9 +17,6 @@ import java.util.List;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncOptions;
@@ -54,6 +51,11 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 
 public class FlowzrSyncActivity extends Activity  {
@@ -102,29 +104,31 @@ public class FlowzrSyncActivity extends Activity  {
 	
 	public void setIsFinished() {
 		setReady();
-		  ActivityManager am = (ActivityManager) this .getSystemService(ACTIVITY_SERVICE);
-		  List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-		  ComponentName componentInfo = taskInfo.get(0).topActivity;
-		  if (taskInfo.get(0).topActivity.getClassName().equals(this.getClass().getName())) {
-			  startActivity(new Intent(getApplicationContext(), MainActivity.class));
-		  } else if (taskInfo.get(0).topActivity.getShortClassName().equals(".BudgetListActivity.class")) {
-			  startActivity(new Intent(getApplicationContext(), BudgetListActivity.class));			  
-		  }
+		if (MainActivity.activity !=null) {
+			  runOnUiThread(new Runnable() {
+				     public void run() {
+				    	 ((MainActivity)MainActivity.activity).refreshCurrentTab();
+				    }
+				});		
+					
+		}
 	}
 	
 	public void setReady() {
 		  runOnUiThread(new Runnable() {
 			     public void run() {
 			        TextView tv = (TextView) findViewById(R.id.sync_was);
-			        if (flowzrSyncEngine!=null && flowzrSyncEngine.options!=null) {
-			         	tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(flowzrSyncEngine.options.last_sync_ts).toLocaleString());
-			        }			    	 
+					//SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());		
+					//lastSyncLocalTimestamp=preferences.getLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP,0);
+					lastSyncLocalTimestamp=MyPreferences.getFlowzrLastSync(FlowzrSyncActivity.this)+ 1400236028;
+
+			        tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(lastSyncLocalTimestamp).toLocaleString());
+			        Log.e("flowzr","writing new timestamp " + String.valueOf(lastSyncLocalTimestamp));
 			    	bOk.setText(R.string.ok);
 			 		bOk.setEnabled(true);	
 			        CheckBox chk=(CheckBox)findViewById(R.id.chk_sync_from_zero);
 			        chk.setChecked(false);			 		
 					setProgressBarIndeterminateVisibility(false);	
-					
 			    }
 			});
 	}
@@ -134,42 +138,13 @@ public class FlowzrSyncActivity extends Activity  {
 	    tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(lastTime).toLocaleString());			
 	}	
 	
-    public void notifyUser(final String msg, final int pct) {
-    	mNotifyBuilder.setContentText(msg);
-    	if (pct!=0) {
-    	mNotifyBuilder.setProgress(100, pct,false);
-    	}
-    	nm.notify(NOTIFICATION_ID, mNotifyBuilder.build()); 
 
-    	if (flowzrSyncTask.mProgress!=null) {
-	    	runOnUiThread(new Runnable() {
-	            @Override
-	            public void run() {
-	            	if (pct!=0) {
-	            		flowzrSyncTask.mProgress.setProgress(pct);
-	            	}
-	            	flowzrSyncTask.mProgress.setMessage(msg);
-	            }
-	        });   
-    	}
-    }
-	
-//	@Override
-//	public void onBackPressed() {
-//		startActivity(new Intent(this, MainActivity.class));
-//	}
 	
     public static FlowzrSyncActivity getMySelf() {
         return FlowzrSyncActivity.me;
     }
 	
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        if ( flowzrSyncTask!=null &&  flowzrSyncTask.mProgress!=null && flowzrSyncTask.mProgress.isShowing() ){
-            flowzrSyncTask.mProgress.cancel();
-        }
-    }
+
 
     public void initProgressDialog() {
     	Intent notificationIntent = new Intent(getApplicationContext(),FlowzrSyncActivity.class);
@@ -190,15 +165,12 @@ public class FlowzrSyncActivity extends Activity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FlowzrSyncActivity.me=this;
+        
     	mNotifyBuilder = new NotificationCompat.Builder(getApplicationContext());        
     	nm = (NotificationManager) getApplicationContext()
     	        .getSystemService(Context.NOTIFICATION_SERVICE);
     	setContentView(R.layout.flowzr_sync);
         restoreUIFromPref();      
-        if (useCredential!=null) {
-        	
-        }
-
         		
         AccountManager accountManager = AccountManager.get(getApplicationContext());
         final Account[] accounts = accountManager.getAccountsByType("com.google");
@@ -233,8 +205,10 @@ public class FlowzrSyncActivity extends Activity  {
 	            radioGroupCredentials.addView(rb); //, 0, lp); 
 	    	 	rb.setOnClickListener(radio_listener);
 	        	rb.setText(((Account) accounts[i]).name);
-	    		if (useCredential!=null) {	        	
-		        	if ( accounts[i].name.equals(useCredential.name)) {
+	        	String prefAccount=MyPreferences.getFlowzrAccount(this);
+	    		if (prefAccount!=null) {	        	
+		        	if ( accounts[i].name.equals(prefAccount)) {
+		        		useCredential=accounts[i];
 		                rb.toggle(); //.setChecked(true);
 		        	} 
 	    		}
@@ -243,29 +217,8 @@ public class FlowzrSyncActivity extends Activity  {
         bOk = (Button) findViewById(R.id.bOK);
         bOk.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-       
-            	setRunning();   	
-            	initProgressDialog();
-//                if (useCredential!=null) {
-//                	flowzrBilling=new FlowzrBilling(FlowzrSyncActivity.this, getApplicationContext(), http_client, useCredential.toString());  
-//                }            	
-            	if (useCredential==null) {  
-            		showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_choose_account);
-            		notifyUser(getString(R.string.flowzr_choose_account), 100);
-    				setReady();            		
-            	} else if (!isOnline(FlowzrSyncActivity.this)) {          
-            		showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
-    				notifyUser(getString(R.string.flowzr_sync_error_no_network), 100);
-    				setReady();
-        		} else {
-                    saveOptionsFromUI();	
-                    //Play Service Billing
-                    //FlowzrBilling flowzrBilling = new FlowzrBilling(FlowzrSyncActivity.this, getApplicationContext(), http_client, useCredential.toString());  
-                    //if (flowzrSyncTask.checkSubscription()) {
-                    	flowzrSyncEngine=new FlowzrSyncEngine(FlowzrSyncActivity.this);
-                    //}
-
-        		}
+            	startSync();
+            	
             }
         });
 
@@ -323,6 +276,42 @@ public class FlowzrSyncActivity extends Activity  {
         }
 	}
 
+	
+	public void startSync () {
+    	if (FlowzrSyncEngine.isRunning) {
+    		Toast.makeText(this, R.string.flowzr_sync_inprogress, Toast.LENGTH_SHORT).show();   
+    		return;
+    	}
+	    String accountName=useCredential.name;
+	    MyPreferences.setFlowzrAccount(getApplicationContext(), accountName);
+        if (accountName == null) {     	
+        	Toast.makeText(this, R.string.flowzr_choose_account, Toast.LENGTH_SHORT).show();         	
+        	return;
+        }
+		if (isOnline(FlowzrSyncActivity.this)) {
+	        //checkPlayServices();    
+		} else {         			
+			showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);            			           			
+			return;
+		}   
+  	
+		if (FlowzrSyncEngine.isRunning) {
+			showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_auth_inprogress);  				       
+			return;
+		}
+		
+    	Thread myThread = new Thread(new Runnable(){
+    	    @Override
+    	    public void run()
+    	    {
+    	    	Object o = new FlowzrSyncTask(FlowzrSyncActivity.this).execute();
+    	    }
+    	});
+    	myThread.start();
+        Toast.makeText(this, R.string.flowzr_sync_inprogress, Toast.LENGTH_SHORT).show();    	
+    	finish();
+    }
+	
 	private String getRegistrationId(Context context) {
 	    final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 	    String registrationId = prefs.getString(PROPERTY_REG_ID, "");
@@ -439,11 +428,7 @@ public class FlowzrSyncActivity extends Activity  {
 		super.onResume();
 		if (this.isRunning) {
 			setRunning();
-	        try {
-	            flowzrSyncTask.mProgress.show();	            
-	            } catch(Exception e) {
-	            	Log.e(TAG,"avoid a leaked window (2)");
-	            }
+
 		} else {
 			setReady();
 		}
@@ -461,12 +446,7 @@ public class FlowzrSyncActivity extends Activity  {
 		.setCancelable(true)
 		.create().show();
 	}	
-
-	     
-    protected void updateResultIntentFromUi(Intent data) {
-        data.putExtra(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP, lastSyncLocalTimestamp);
-        data.putExtra(FlowzrSyncOptions.PROPERTY_USE_CREDENTIAL, useCredential.name);
-    }    
+   
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FLOWZR_SYNC_REQUEST_CODE) {
@@ -491,7 +471,8 @@ public class FlowzrSyncActivity extends Activity  {
 
     protected void restoreUIFromPref() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());		
-		lastSyncLocalTimestamp=preferences.getLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP,0);
+		lastSyncLocalTimestamp=MyPreferences.getFlowzrLastSync(getApplicationContext());
+				preferences.getLong(FlowzrSyncOptions.PROPERTY_LAST_SYNC_TIMESTAMP,0);
         AccountManager accountManager = AccountManager.get(getApplicationContext());
 		Account[] accounts = accountManager.getAccountsByType("com.google");
         for (Account account : accounts) {
@@ -501,6 +482,7 @@ public class FlowzrSyncActivity extends Activity  {
         }
         TextView tv = (TextView) findViewById(R.id.sync_was);
         tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(lastSyncLocalTimestamp).toLocaleString());
+        Log.e("flowzr","restore timestamp to :" + String.valueOf(lastSyncLocalTimestamp));
     }
     	
 	private boolean checkPlayServices() {
