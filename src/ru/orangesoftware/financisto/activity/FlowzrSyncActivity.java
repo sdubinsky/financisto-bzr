@@ -123,7 +123,7 @@ public class FlowzrSyncActivity extends Activity  {
 					lastSyncLocalTimestamp=MyPreferences.getFlowzrLastSync(FlowzrSyncActivity.this)+ 1400236028;
 
 			        tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(lastSyncLocalTimestamp).toLocaleString());
-			        Log.e("flowzr","writing new timestamp " + String.valueOf(lastSyncLocalTimestamp));
+
 			    	bOk.setText(R.string.ok);
 			 		bOk.setEnabled(true);	
 			        CheckBox chk=(CheckBox)findViewById(R.id.chk_sync_from_zero);
@@ -482,7 +482,7 @@ public class FlowzrSyncActivity extends Activity  {
         }
         TextView tv = (TextView) findViewById(R.id.sync_was);
         tv.setText(getString(R.string.flowzr_sync_was) + " " + new Date(lastSyncLocalTimestamp).toLocaleString());
-        Log.e("flowzr","restore timestamp to :" + String.valueOf(lastSyncLocalTimestamp));
+
     }
     	
 	private boolean checkPlayServices() {
