@@ -316,12 +316,11 @@ public class FlowzrSyncEngine  {
         notifyUser(context.getString(R.string.flowzr_sync_success),100);
         if (isCanceled==false) {
             if (recordSyncTime==true) {
-            	last_sync_ts=startTimestamp;         	
+            	last_sync_ts=System.currentTimeMillis();         	
 	        	SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 	        	editor.putLong("PROPERTY_LAST_SYNC_TIMESTAMP", last_sync_ts);
 	        	editor.commit();        
-	        	Log.i("flowzr","setting last sync timestap to : " + String.valueOf(last_sync_ts));
-            }        	
+           }        	
         }        
         //
         mNotificationManager.cancel(NOTIFICATION_ID);
@@ -907,7 +906,7 @@ public class FlowzrSyncEngine  {
 	}
 	
 	public static Object saveOrUpdateCurrencyRateFromJSON(JSONObject jsonObjectEntity) {		
-		Log.i("FlowzrSyncEngine",jsonObjectEntity.toString());
+
 		if (!jsonObjectEntity.has("effective_date")) {
 			//return null;
 		}
@@ -1385,7 +1384,6 @@ public class FlowzrSyncEngine  {
 						e.printStackTrace();
 						//throw new Exception("Got key " + jsonObjectResponse.getString("parent_tr") + " but couldn't find related parent tr");						
 					}
-					Log.i(TAG,"Done.");
 					
 				}
 		}				
@@ -1567,7 +1565,7 @@ public class FlowzrSyncEngine  {
     private static void pullUpdate() throws IOException, JSONException, Exception {    	
     	int i=0;
     	for (String tableName : tableNames) {      	   		
-    		Log.i("flowzr",  context.getString(R.string.flowzr_sync_receiving) + tableName );
+    		Log.i("flowzr",  context.getString(R.string.flowzr_sync_receiving) + " " + tableName );
    
     		if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
 				notifyUser(context.getString(R.string.flowzr_sync_receiving) + " " + tableName + ". " + context.getString(R.string.hint_run_background), (int)(Math.round(i*100/tableNames.length)));
@@ -1813,8 +1811,8 @@ public class FlowzrSyncEngine  {
 	   String sql="select attached_picture,datetime,remote_key,blob_key " +
 	   		"from transactions " +
 	   		"where attached_picture is not null " +
-	   		"and blob_key is null limit 3"; 
-	   Log.i("flowzr",sql);
+	   		"and blob_key is null"; 
+
 	   Cursor cursorCursor=db.rawQuery(sql, null);
 	   int i=0;
 	   if (cursorCursor.moveToFirst()) {			
