@@ -8,103 +8,103 @@
 
 package ru.orangesoftware.financisto.export.flowzr;
 
+
+import java.io.IOException;
+
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.SocketFactory;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
 
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.FlowzrSyncActivity;
 import ru.orangesoftware.financisto.db.DatabaseAdapter;
-import android.app.ProgressDialog;
+import ru.orangesoftware.financisto.export.ImportExportException;
+import ru.orangesoftware.financisto.utils.MyPreferences;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
+import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 
 public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
+
 	protected final Context context;
-    private final FlowzrSyncOptions options;
-    private final DefaultHttpClient http_client;
-    private final FlowzrSyncActivity flowzrSyncActivity;
-    FlowzrSyncEngine flowzrSync;
-    public static ProgressDialog mProgress;
 	public static final String TAG = "flowzr";
-
+	public static  DefaultHttpClient  http_client;
+	private static DatabaseAdapter dba;
 	
-    public FlowzrSyncTask(FlowzrSyncActivity flowzrSyncActivity, FlowzrSyncEngine _flowzrSyncEngine, FlowzrSyncOptions options, DefaultHttpClient pHttp_client) {
-        this.options = options;
-        this.http_client=pHttp_client;
-        this.context=flowzrSyncActivity;     
-        this.flowzrSyncActivity=flowzrSyncActivity;
-        this.flowzrSync=_flowzrSyncEngine;
-        mProgress = new ProgressDialog(this.flowzrSyncActivity); 
-        mProgress.setIcon(R.drawable.icon);
-        mProgress.setTitle(flowzrSyncActivity.getString(R.string.flowzr_sync));
-        mProgress.setMessage(flowzrSyncActivity.getString(R.string.flowzr_sync_inprogress));
-        mProgress.setCancelable(true);
-        mProgress.setCanceledOnTouchOutside(false);
-        mProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);   
-        try {
-        mProgress.show();
-        } catch(Exception e) {
-        	Log.e(TAG,"avoid a leaked window");
-        }
-
-    }
-
-
-    
-    protected Object work(Context context, DatabaseAdapter db, String... params) {
+    public FlowzrSyncTask(Context context) {
+    	this.context=context;
     	
-    	try {	 
-    		flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_auth_inprogress), 30);
-    		//FlowzrBilling flowzrBilling = new FlowzrBilling(flowzrSyncActivity, flowzrSyncActivity.getApplicationContext(), http_client, options.useCredential);  
-    		//if (flowzrBilling.checkSubscription()) {  
-    		//        	Boolean sync=false;
-    		//            if (flowzrBilling!=null) {
-    		//            	sync=flowzrBilling.checkSubscription();
-    		//            } else {
-    		//            	sync=false;
-    		//            	return new Exception(context.getString(R.string.flowzr_account_setup));
-    		//            }
-    		if (this.checkSubscriptionFromWeb()) {
-    			flowzrSync.doSync();
-    			return null;
-    		} else {
-    			flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_subscription_required), 100);
-    			flowzrSyncActivity.setRunning();
-    			return new Exception(context.getString(R.string.flowzr_subscription_required));
-    		}        	
-    	} catch (Exception e) {
-    		return e;
-    	}
+    	BasicHttpParams params = new BasicHttpParams();
+    	SchemeRegistry schemeRegistry = new SchemeRegistry();
+    	schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+    	final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
+    	schemeRegistry.register(new Scheme("https", (SocketFactory) sslSocketFactory, 443));
+    	ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+    	this.http_client = new DefaultHttpClient(cm, params);
+    	this.dba=new DatabaseAdapter(context);
+    }
+    
+    protected Object work(Context context, DatabaseAdapter dba, String... params) throws ImportExportException {    	
+
+    	AccountManager accountManager = AccountManager.get(context);
+		android.accounts.Account[] accounts = accountManager.getAccountsByType("com.google");
+		
+	    String accountName=MyPreferences.getFlowzrAccount(context);
+        if (accountName == null) {
+			NotificationManager nm = (NotificationManager) context
+					.getSystemService(Context.NOTIFICATION_SERVICE);
+
+			Intent notificationIntent = new Intent(context,
+					FlowzrSyncActivity.class);
+			PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+					notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+			Builder mNotifyBuilder = new NotificationCompat.Builder(context);
+			mNotifyBuilder
+					.setContentIntent(contentIntent)
+					.setSmallIcon(R.drawable.icon)
+					.setWhen(System.currentTimeMillis())
+					.setAutoCancel(true)
+					.setContentTitle(context.getString(R.string.flowzr_sync))
+					.setContentText(
+							context.getString(R.string.flowzr_choose_account));
+			nm.notify(0, mNotifyBuilder.build());		
+			Log.i("Financisto","account name is null");
+            throw new ImportExportException(R.string.flowzr_choose_account);
+        }
+		Account useCredential = null;
+		for (int i = 0; i < accounts.length; i++) {
+	    	 if (accountName.equals(((android.accounts.Account) accounts[i]).name)) {
+	    		 useCredential=accounts[i];
+	    	 }
+	     }	    	
+		accountManager.getAuthToken(useCredential, "ah", false, new GetAuthTokenCallback(), null);    	
+    	return null;
     }
 
-    public boolean checkSubscriptionFromWeb() {
-    	final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-    	String registrationId = prefs.getString(FlowzrSyncOptions.PROPERTY_REG_ID, "");
-    	if (registrationId=="") {
-    		Log.i(TAG, "Registration not found.");
-    	}
-
-    	String url=FlowzrSyncOptions.FLOWZR_API_URL + "?action=checkSubscription&regid=" + registrationId;
-
-    	try {
-    		flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_auth_inprogress), 40);            
-    		HttpGet httpGet = new HttpGet(url);
-    		HttpResponse httpResponse = http_client.execute(httpGet);      
-    		flowzrSyncActivity.notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_inprogress), 50);            
-    		int code = httpResponse.getStatusLine().getStatusCode();
-    		if (code==402) {
-    			return false;
-    		}
-    		httpResponse.getEntity().consumeContent();
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	} 
-    	return true;
-    }
     
     @Override
 	protected Object doInBackground(String... params) {
@@ -112,7 +112,12 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     	DatabaseAdapter db = new DatabaseAdapter(context);
 		db.open();
 		try {
-			return work(context, db, params);	
+			try {
+				return work(context, db, params);
+			} catch (ImportExportException e) {
+				e.printStackTrace();
+				return e;
+			}	
 		} finally {
 			db.close();
 		}			
@@ -122,19 +127,101 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
-        mProgress.setProgress(Integer.parseInt(values[0]));        
     }
 
 
     
 	@Override
-	protected void onPostExecute(Object result) {
-        flowzrSync.finishDelete();
-        flowzrSyncActivity.setReady();
-        if (!(result instanceof Exception)) {
-            flowzrSyncActivity.nm.cancel(FlowzrSyncActivity.NOTIFICATION_ID);
-            mProgress.hide();
-        }
-    }
-}
+	protected void onPostExecute(Object result) {		
+			if (!(result instanceof Exception)) {
+				
+				
+			}
+	}
 
+
+public class GetAuthTokenCallback implements AccountManagerCallback<Bundle> {
+		public void run(AccountManagerFuture<Bundle> result) {
+			Bundle bundle;	        
+			try {
+				bundle = result.getResult();
+				Intent intent = (Intent)bundle.get(AccountManager.KEY_INTENT);
+				if(intent != null) {
+					// User input required
+					context.startActivity(intent);
+				} else {
+	            	AccountManager.get(context).invalidateAuthToken(bundle.getString(AccountManager.KEY_ACCOUNT_TYPE), bundle.getString(AccountManager.KEY_AUTHTOKEN));
+	            	AccountManager.get(context).invalidateAuthToken("ah", bundle.getString(AccountManager.KEY_AUTHTOKEN));
+	            	onGetAuthToken(bundle);
+				}
+			} catch (OperationCanceledException e) {
+				//notifyUser(context.getString(R.string.flowzr_sync_error_no_network), 100);
+				//showErrorPopup(FlowzrSyncActivity.this, R.string.flowzr_sync_error_no_network);
+				//context.setReady();
+				e.printStackTrace();
+			} catch (AuthenticatorException e) {
+				//notifyUser(context.getString(R.string.flowzr_sync_error_no_network), 100);			
+				//flowzrSyncActivity.setReady();				
+				e.printStackTrace();
+			} catch (IOException e) {
+				//notifyUser(flowzrSyncActivity.getString(R.string.flowzr_sync_error_no_network), 100);		
+				//flowzrSyncActivity.setReady();				
+				e.printStackTrace();
+			}
+		}
+	}
+
+	protected void onGetAuthToken(Bundle bundle) {
+		String auth_token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+		new GetCookieTask().execute(auth_token);
+	}
+ 
+	private class GetCookieTask extends AsyncTask<String, Void, Boolean> {
+		protected Boolean doInBackground(String... tokens) {
+			//notifyUser(context.getString(R.string.flowzr_sync_auth_inprogress), 15);
+			try {								
+				http_client.getParams().setParameter("http.protocol.content-charset","UTF-8");
+				// Don't follow redirects
+				http_client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
+				HttpGet http_get = new HttpGet(FlowzrSyncEngine.FLOWZR_BASE_URL + "/_ah/login?continue=" 
+												+ FlowzrSyncEngine.FLOWZR_BASE_URL +"/&auth=" + tokens[0]);
+				HttpResponse response;
+				response = http_client.execute(http_get);
+				response.getEntity().consumeContent();
+				if(response.getStatusLine().getStatusCode() != 302) {
+					// Response should be a redirect
+					return false;
+				}
+				for(Cookie cookie : http_client.getCookieStore().getCookies()) {
+					if(cookie.getName().equals("ACSID")) {					
+						return true;
+					}
+				}
+			} catch (ClientProtocolException e) {
+				Log.e("flowzr",e.getMessage());				
+				return false;
+			} catch (IOException e) {  				
+				Log.e("flowzr",e.getMessage());
+				return false;
+			} finally {
+				http_client.getParams().setParameter("http.protocol.content-charset","UTF-8");				
+				http_client.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, true);				
+			}
+			return false;
+		}
+
+		protected void onPostExecute(Boolean result) {
+
+        	Thread myThread = new Thread(new Runnable(){
+        	    @Override
+        	    public void run()
+        	    {
+        	    	FlowzrSyncEngine.create(context,dba,http_client);
+        	    }
+        	});
+
+        	myThread.start();
+		
+		}
+	}
+}

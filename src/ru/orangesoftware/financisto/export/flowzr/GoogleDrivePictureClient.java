@@ -6,14 +6,22 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
-package ru.orangesoftware.financisto.export.docs;
+package ru.orangesoftware.financisto.export.flowzr;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import ru.orangesoftware.financisto.R;
+import ru.orangesoftware.financisto.export.ImportExportException;
+import ru.orangesoftware.financisto.utils.MyPreferences;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -22,22 +30,16 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.FileList;
-import ru.orangesoftware.financisto.R;
-import ru.orangesoftware.financisto.export.ImportExportException;
-import ru.orangesoftware.financisto.utils.MyPreferences;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
  * User: Denis Solonenko
  * Date: 11/9/11 2:19 AM
  */
-public class GoogleDriveClient {
+public class GoogleDrivePictureClient {
 
-    public static Drive create(Context context, String googleDriveAccount) throws IOException, GoogleAuthException, ImportExportException {
+    public static Drive create(Context context) throws IOException, GoogleAuthException, ImportExportException {
+        String googleDriveAccount = MyPreferences.getGoogleDriveAccount(context);
         if (googleDriveAccount == null) {
             throw new ImportExportException(R.string.google_drive_account_required);
         }

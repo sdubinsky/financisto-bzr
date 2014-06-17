@@ -10,6 +10,7 @@
  ******************************************************************************/
 package ru.orangesoftware.financisto.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
@@ -48,6 +49,7 @@ import ru.orangesoftware.financisto.export.docs.DriveRestoreTask;
 import ru.orangesoftware.financisto.export.dropbox.DropboxBackupTask;
 import ru.orangesoftware.financisto.export.dropbox.DropboxListFilesTask;
 import ru.orangesoftware.financisto.export.dropbox.DropboxRestoreTask;
+import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
 import ru.orangesoftware.financisto.export.qif.QifExportOptions;
 import ru.orangesoftware.financisto.export.qif.QifExportTask;
 import ru.orangesoftware.financisto.export.qif.QifImportOptions;
@@ -84,9 +86,14 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
     private static final int MENU_CLOUD_SYNC = Menu.FIRST + 15;
     private static final int MENU_BACKUP_RESTORE_ONLINE = Menu.FIRST + 16;
 
+    public static Activity activity ;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        activity=this;
+        
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         initialLoad();
@@ -203,7 +210,7 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         Log.d("Financisto", "Tab " + tabId + " updated in " + (t1 - t0) + "ms");
     }
 
-    private void refreshCurrentTab() {
+    public void refreshCurrentTab() {
         Context c = getTabHost().getCurrentView().getContext();
         if (c instanceof RefreshSupportedActivity) {
             RefreshSupportedActivity activity = (RefreshSupportedActivity) c;
@@ -474,6 +481,10 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
         new DriveListFilesTask(this, d).execute();
     }
 
+    private void doBackupPicture() {
+    	FlowzrSyncEngine.pushAllBlobs();
+    }
+    
     public void doImportFromGoogleDrive(final com.google.api.services.drive.model.File[] backupFiles) {
         if (backupFiles != null) {
             String[] backupFilesNames = getBackupFilesTitles(backupFiles);
@@ -653,8 +664,15 @@ public class MainActivity extends TabActivity implements TabHost.OnTabChangeList
             public void execute(MainActivity mainActivity) {
                 mainActivity.doRestoreFromDropbox();
             }
+        },
+        PICTURE_BACKUP(R.string.googledrive_upload, R.drawable.ic_menu_forward) {
+            @Override
+            public void execute(MainActivity mainActivity) {
+                mainActivity.doBackupPicture();
+            }
         };
-
+        
+        
         private final int titleId;
         private final int iconId;
 

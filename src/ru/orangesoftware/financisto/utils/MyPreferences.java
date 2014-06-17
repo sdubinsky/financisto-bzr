@@ -606,9 +606,6 @@ public class MyPreferences {
         return getBoolean(context, "googledrive_upload", false);
     }    
 
-    public static boolean isAutoSync(Context context) {
-        return getBoolean(context, "auto_sync_enabled", false);
-    }
 
     public static String getGoogleDriveAccount(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -624,4 +621,41 @@ public class MyPreferences {
         return getBoolean(context, "google_drive_backup_full_readonly", false);
     }
 
+    public static void setFlowzrAccount(Context context, String accountName) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putString("flowzr_account", accountName).commit();
+    }
+
+    public static void unsetAutoSync(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putBoolean("auto_sync_enabled", false).commit();
+    }
+    
+    
+    public static String getFlowzrAccount(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString("flowzr_account", null);
+    }
+
+    public static String getSyncApiUrl(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString("sync_api_url", "flowzr-hrd.appspot.com");
+    }
+    
+    public static void setSyncApiUrl(Context context, String serverName) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putString("sync_api_url", serverName).commit();
+    }
+    
+
+    public static long getFlowzrLastSync(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getLong("PROPERTY_LAST_SYNC_TIMESTAMP",0);
+    }    
+
+    public static boolean isAutoSync(Context context) {
+        return getBoolean(context, "auto_sync_enabled", false);
+    }
+    
+    
 }

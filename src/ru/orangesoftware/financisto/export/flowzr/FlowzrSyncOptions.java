@@ -28,7 +28,7 @@ public class FlowzrSyncOptions {
 	public static final String FLOWZR_BASE_URL="https://flowzr-hrd.appspot.com";
 	public static final String GCM_SENDER_ID = "98966630416";	
 	public static final String PROPERTY_REG_ID = "registration_id";
-	public static String FLOWZR_API_URL=FLOWZR_BASE_URL + "/financisto2/";
+	public static String FLOWZR_API_URL=FLOWZR_BASE_URL + "/financisto3/";
 	public String appVersion="";
 	
     public FlowzrSyncOptions(String strUseCredential, long lastSyncLocalTimestamp, DefaultHttpClient pHttp_client,String pRootFolderId,String _appVersion) {

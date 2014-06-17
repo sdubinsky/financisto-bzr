@@ -42,7 +42,8 @@ public class DriveBackupTask extends ImportExportAsyncTask {
             if (folder == null || folder.equals("")) {
                 throw new ImportExportException(R.string.gdocs_folder_not_configured);
             }
-            Drive drive = GoogleDriveClient.create(context);
+            String googleDriveAccount = MyPreferences.getGoogleDriveAccount(context);
+            Drive drive = GoogleDriveClient.create(context, googleDriveAccount);
             return export.exportOnline(drive, folder);
         } catch (ImportExportException e) {
             throw e;

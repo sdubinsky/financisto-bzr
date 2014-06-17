@@ -8,11 +8,8 @@
 
 package ru.orangesoftware.financisto.export.docs;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
+import java.io.IOException;
+
 import ru.orangesoftware.financisto.R;
 import ru.orangesoftware.financisto.activity.MainActivity;
 import ru.orangesoftware.financisto.backup.DatabaseImport;
@@ -20,8 +17,13 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTask;
 import ru.orangesoftware.financisto.export.ImportExportAsyncTaskListener;
 import ru.orangesoftware.financisto.export.ImportExportException;
+import ru.orangesoftware.financisto.utils.MyPreferences;
+import android.app.ProgressDialog;
+import android.content.Context;
 
-import java.io.IOException;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
 
 /**
  * Created by IntelliJ IDEA.
@@ -46,7 +48,8 @@ public class DriveRestoreTask extends ImportExportAsyncTask {
     @Override
     protected Object work(Context context, DatabaseAdapter db, String... params) throws Exception {
         try {
-            Drive drive = GoogleDriveClient.create(context);
+            String googleDriveAccount = MyPreferences.getGoogleDriveAccount(context);        	
+            Drive drive = GoogleDriveClient.create(context,googleDriveAccount);
             DatabaseImport.createFromGoogleDriveBackup(context, db, drive, entry).importDatabase();
         } catch (ImportExportException e) {
             throw e;
