@@ -13,3 +13,7 @@ tests/coverage.em
 tests/coverage
 robotium_tests/local.properties
 google-play-services_lib/gen
+out
+lib
+Financisto.iml
+*.iml

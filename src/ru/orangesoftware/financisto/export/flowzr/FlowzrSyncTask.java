@@ -66,7 +66,20 @@ public class FlowzrSyncTask extends AsyncTask<String, String, Object> {
     	this.http_client = new DefaultHttpClient(cm, params);
     	this.dba=new DatabaseAdapter(context);
     }
-    
+
+    public static android.accounts.Account getAndroidAccount(Context context) {
+        String accountName=MyPreferences.getFlowzrAccount(context);
+        AccountManager accountManager = AccountManager.get(context);
+        android.accounts.Account[] accounts = accountManager.getAccountsByType("com.google");
+        Account useCredential = null;
+        for (int i = 0; i < accounts.length; i++) {
+            if (accountName.equals(((android.accounts.Account) accounts[i]).name)) {
+                return accounts[i];
+            }
+        }
+        return null;
+    }
+
     protected Object work(Context context, DatabaseAdapter dba, String... params) throws ImportExportException {    	
 
     	AccountManager accountManager = AccountManager.get(context);
