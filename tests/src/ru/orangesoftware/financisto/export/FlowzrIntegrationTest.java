@@ -29,9 +29,12 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncEngine;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncTask;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.model.*;
+import ru.orangesoftware.financisto.test.AccountBuilder;
 import ru.orangesoftware.financisto.test.CategoryBuilder;
 import ru.orangesoftware.financisto.test.CurrencyBuilder;
+import ru.orangesoftware.financisto.test.DateTime;
 import ru.orangesoftware.financisto.utils.MyPreferences;
 import ru.orangesoftware.orb.EntityManager;
 
@@ -40,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -49,7 +53,7 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
 
     //dev_appserver on this configuration doest not support 127.1 !
     private final static String LAN_IP="10.42.0.32";
-    private final static String TEST_ACCOUNT = "test@example.com";
+    private final static String TEST_ACCOUNT = "colmedis@gmail.com";
 
     protected Context context;
     public static DefaultHttpClient http_client;
@@ -80,7 +84,7 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
 
         FlowzrSyncEngine.http_client = this.http_client;
 
-        FlowzrSyncEngine.last_sync_ts = 0;
+        FlowzrSyncEngine.last_sync_ts = 1;
         FlowzrSyncEngine.resetLastTime(context);
         FlowzrSyncEngine.isCanceled = false;
         FlowzrSyncEngine.isRunning = false;
@@ -90,7 +94,7 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
 
     }
 
-    public void dtest_get_android_account() {
+    public void test_get_android_account() {
         MyPreferences.setFlowzrAccount(context, TEST_ACCOUNT);
         String accountName = MyPreferences.getFlowzrAccount(context);
         assertEquals(TEST_ACCOUNT, accountName);
@@ -147,14 +151,22 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
                         assertEquals(a.type,arr.getJSONObject(i).getString("type"));
                         assertEquals(a.currency.name,arr.getJSONObject(i).getString("currency_name"));
                         assertEquals(a.sortOrder,arr.getJSONObject(i).getInt("sort_order"));;
-                        assertEquals(a.cardIssuer,arr.getJSONObject(i).getString("card_issuer"));;
+                        if (a.cardIssuer!=null) {
+                            assertEquals(a.cardIssuer, arr.getJSONObject(i).getString("card_issuer"));
+                        }
                         assertEquals(a.closingDay,arr.getJSONObject(i).getInt("closing_day"));;
                         assertFalse(a.isActive == arr.getJSONObject(i).getBoolean("hidden"));
                         assertEquals(a.isIncludeIntoTotals,arr.getJSONObject(i).getBoolean("is_include_into_totals"));
-                        assertEquals(a.issuer,arr.getJSONObject(i).getString("issuer"));;
+                        if (a.issuer!=null) {
+                            assertEquals(a.issuer, arr.getJSONObject(i).getString("issuer"));
+                        }
                         assertEquals(a.limitAmount,arr.getJSONObject(i).getInt("total_limit"));
-                        assertEquals(a.note,arr.getJSONObject(i).getString("description"));;
-                        assertEquals(a.number,arr.getJSONObject(i).getString("code"));;
+                        if (a.note!=null) {
+                            assertEquals(a.note, arr.getJSONObject(i).getString("description"));
+                        }
+                        if (a.number!=null) {
+                            assertEquals(a.number, arr.getJSONObject(i).getString("code"));
+                        }
                         assertEquals(a.paymentDay,arr.getJSONObject(i).getInt("payment_day"));;
                         assertEquals(a.sortOrder,arr.getJSONObject(i).getInt("sort_order"));;
                         gotIt = true;
@@ -184,15 +196,23 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
             assertEquals(c.title, expect.getJSONObject(i).getString("name"));
             assertEquals(c.type,expect.getJSONObject(i).getString("type"));
             assertEquals(c.currency.name,expect.getJSONObject(i).getString("currency_name"));
-            assertEquals(c.sortOrder,expect.getJSONObject(i).getInt("sort_order"));;
-            assertEquals(c.cardIssuer,expect.getJSONObject(i).getString("card_issuer"));;
+            assertEquals(c.sortOrder,expect.getJSONObject(i).getInt("sort_order"));
+            if (expect.getJSONObject(i).has("card_issuer")) {
+                assertEquals(c.cardIssuer, expect.getJSONObject(i).getString("card_issuer"));
+            }
             assertEquals(c.closingDay,expect.getJSONObject(i).getInt("closing_day"));;
             assertFalse(c.isActive == expect.getJSONObject(i).getBoolean("hidden"));
             assertEquals(c.isIncludeIntoTotals,expect.getJSONObject(i).getBoolean("is_include_into_totals"));
-            assertEquals(c.issuer,expect.getJSONObject(i).getString("issuer"));;
+            if (expect.getJSONObject(i).has("issuer")) {
+                assertEquals(c.issuer, expect.getJSONObject(i).getString("issuer"));
+            }
             assertEquals(c.limitAmount,expect.getJSONObject(i).getInt("total_limit"));
-            assertEquals(c.note,expect.getJSONObject(i).getString("description"));;
-            assertEquals(c.number,expect.getJSONObject(i).getString("code"));;
+            if (expect.getJSONObject(i).has("description")) {
+                assertEquals(c.note, expect.getJSONObject(i).getString("description"));
+            }
+            if (expect.getJSONObject(i).has("code")) {
+                assertEquals(c.number, expect.getJSONObject(i).getString("code"));
+            }
             assertEquals(c.paymentDay,expect.getJSONObject(i).getInt("payment_day"));;
             assertEquals(c.sortOrder,expect.getJSONObject(i).getInt("sort_order"));;
         }
@@ -227,10 +247,10 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
                         assertEquals(c.name,arr.getJSONObject(i).getString("name"));
                         assertEquals(c.type,arr.getJSONObject(i).getInt("type"));
                         if (c.listValues!=null) {
-                            assertEquals(c.listValues, arr.getJSONObject(i).getInt("list_values"));
+                            assertEquals(c.listValues, arr.getJSONObject(i).getString("list_values"));
                         }
                         if (c.defaultValue!=null) {
-                            assertEquals(c.defaultValue, arr.getJSONObject(i).getInt("default_value"));
+                            assertEquals(c.defaultValue, arr.getJSONObject(i).getString("default_value"));
                         }
                         gotIt = true;
                     }
@@ -250,7 +270,7 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
             FlowzrSyncEngine.fixCreatedEntities();
         }
 
-        FlowzrSyncEngine.pushUpdate("attributes", Category.class);
+        FlowzrSyncEngine.pushUpdate("attributes", Attribute.class);
         FlowzrSyncEngine.pushUpdate("category", Category.class);
 
         JSONObject json = getJsonResponse(FlowzrSyncEngine.FLOWZR_API_URL + "admin_example.com/category/?last_sync_ts=0");
@@ -266,7 +286,7 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
                 boolean gotIt = false;
                 for (int i = 0; i < result.length(); i++) {
                     if (expect.remoteKey.equals(result.getJSONObject(i).getString("key"))) {
-                        Log.i("flowzr", "got it!");
+
                         assertEquals(expect.getTitle(), result.getJSONObject(i).getString("name"));
                         if (expect.getParentId() > 0) {
                             assertEquals(em.load(Category.class, expect.getParentId()).remoteKey, result.getJSONObject(i).getString("parentCategory"));
@@ -336,7 +356,87 @@ public class FlowzrIntegrationTest extends InstrumentationTestCase {
         }
     }
 
+
+    public void test_push_budgets() throws Exception {
+        Budget budgetOne;
+        if (dba.em().getAllBudgets(WhereFilter.empty()).size()==0) {
+            budgetOne=createBudget();
+        } else {
+            budgetOne=dba.em().getAllBudgets(WhereFilter.empty()).get(0);
+        }
+        FlowzrSyncEngine.fixCreatedEntities();
+        FlowzrSyncEngine.pushUpdate("currency", Currency.class);
+        FlowzrSyncEngine.pushUpdate("account", Account.class);
+        FlowzrSyncEngine.pushUpdate("project", Project.class);
+        FlowzrSyncEngine.pushUpdate("payee", Payee.class);
+        FlowzrSyncEngine.pushUpdate("category", Category.class);
+
+        FlowzrSyncEngine.pushUpdate(DatabaseHelper.BUDGET_TABLE, Budget.class);
+        Thread.sleep(2000);
+        JSONObject json = getJsonResponse(FlowzrSyncEngine.FLOWZR_API_URL + "test_example.com/budget/?last_sync_ts=0");
+        JSONArray result = json.getJSONArray("budget");
+
+        assertEquals(result.length(),dba.em().getAllBudgets(WhereFilter.empty()).size());
+
+
+        budgetOne.recur="WEEKLY,startDate=1403582400000,period=EXACTLY_TIMES,periodParam=4,days=TUE";
+        dba.em().insertBudget(budgetOne);
+        FlowzrSyncEngine.fixCreatedEntities();
+        FlowzrSyncEngine.pushDelete();
+        Thread.sleep(2000);
+
+        FlowzrSyncEngine.db=this.db;
+        FlowzrSyncEngine.pushUpdate(DatabaseHelper.BUDGET_TABLE, Budget.class);
+
+        Thread.sleep(2000);
+        json = getJsonResponse(FlowzrSyncEngine.FLOWZR_API_URL + "test_example.com/budget/?last_sync_ts=0");
+        result = json.getJSONArray("budget");
+        assertEquals(result.length(),dba.em().getAllBudgets(WhereFilter.empty()).size());
+
+
+    }
+
     /** Helper functions **/
+
+    private Budget createBudget() {
+        Account account;
+        Project project;
+        if (dba.em().getAllAccountsList().size()==0) {
+            account = AccountBuilder.createDefault(dba);
+        } else {
+            account=dba.em().getAllAccountsList().get(0);
+        }
+
+        Map<String,Category> categoriesMap;
+        if (dba.em().getAllCategoriesList(true).size()<=2) {
+            categoriesMap = CategoryBuilder.createDefaultHierarchy(dba);
+        } else {
+            categoriesMap = CategoryBuilder.allCategoriesAsMap(dba);
+        }
+
+        if ( MyEntity.asMap(dba.em().getAllProjectsList(true)).size()==0) {
+            project = new Project();
+            project.title = "P1";
+            em.saveOrUpdate(project);
+        } else {
+            project= dba.em().getAllProjectsList(true).get(0);
+        }
+
+        Budget budgetOne = new Budget();
+        budgetOne.currency = account.currency;
+        budgetOne.amount = 1000;
+        budgetOne.categories = String.valueOf(categoriesMap.get("A").id);
+        budgetOne.projects = String.valueOf(project.id);
+        budgetOne.expanded = true;
+        budgetOne.includeSubcategories = true;
+        budgetOne.startDate = DateTime.date(2011, 4, 1).atMidnight().asLong();
+        budgetOne.endDate = DateTime.date(2011, 4, 30).at(23, 59, 59, 999).asLong();
+        budgetOne.recur="WEEKLY,startDate=1403582400000,period=EXACTLY_TIMES,periodParam=12,days=TUE";
+        dba.em().insertBudget(budgetOne);
+        FlowzrSyncEngine.fixCreatedEntities();
+        return budgetOne;
+    }
+
 
     public JSONObject getJsonResponse(String url) throws URISyntaxException, IOException, JSONException {
 

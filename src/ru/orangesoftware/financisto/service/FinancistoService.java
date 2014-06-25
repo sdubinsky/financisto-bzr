@@ -66,7 +66,6 @@ public class FinancistoService extends WakefulIntentService {
         db = new DatabaseAdapter(this);
         db.open();
         scheduler = new RecurrenceScheduler(db);
-        Log.i(TAG, "Created Finacisto service ...");
     }
 
     @Override
@@ -74,7 +73,6 @@ public class FinancistoService extends WakefulIntentService {
         if (db != null) {
             db.close();
         }
-        Log.i(TAG, "Finacisto service ...");
         super.onDestroy();
     }
 

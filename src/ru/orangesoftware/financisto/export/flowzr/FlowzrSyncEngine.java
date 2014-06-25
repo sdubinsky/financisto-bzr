@@ -45,6 +45,7 @@ import ru.orangesoftware.financisto.db.DatabaseAdapter;
 import ru.orangesoftware.financisto.db.DatabaseHelper;
 import ru.orangesoftware.financisto.db.MyEntityManager;
 import ru.orangesoftware.financisto.export.flowzr.FlowzrSyncTask.GetAuthTokenCallback;
+import ru.orangesoftware.financisto.filter.WhereFilter;
 import ru.orangesoftware.financisto.model.Account;
 import ru.orangesoftware.financisto.model.Attribute;
 import ru.orangesoftware.financisto.model.Budget;
@@ -97,8 +98,8 @@ public class FlowzrSyncEngine  {
 
     private static Context context;
  
-    private static String[] tableNames= {"attributes","currency","project","payee","account","LOCATIONS","category","transactions",DatabaseHelper.BUDGET_TABLE, "currency_exchange_rate"};  
-	private static Class[] clazzArray = {Attribute.class,Currency.class,Project.class,Payee.class,Account.class,MyLocation.class,Category.class,Transaction.class,Budget.class,ExchangeRate.class};        
+    private static String[] tableNames= {"attributes","currency","project","payee","account","LOCATIONS","category","transactions",DatabaseHelper.BUDGET_TABLE, "currency_exchange_rate"};
+	private static Class[] clazzArray = {Attribute.class,Currency.class,Project.class,Payee.class,Account.class,MyLocation.class,Category.class,Transaction.class,Budget.class,ExchangeRate.class};
 	
 	private static int MAX_PULL_SIZE=50;
 	private static int MAX_PUSH_SIZE=20;
@@ -240,15 +241,19 @@ public class FlowzrSyncEngine  {
 	        try {
 				pushUpdate();
 			} catch (ClientProtocolException e) {
+                e.printStackTrace();
 				sendBackTrace(e);
 				recordSyncTime=false;
 			} catch (IOException e) {
+                e.printStackTrace();
 				sendBackTrace(e);
 				recordSyncTime=false;
 			} catch (JSONException e) {
+                e.printStackTrace();
 				sendBackTrace(e);
 				recordSyncTime=false;
 			} catch (Exception e) {
+                e.printStackTrace();
 				recordSyncTime=false;
 			}      
         }
@@ -417,20 +422,31 @@ public class FlowzrSyncEngine  {
         }      
     }
     
-	public static <T extends MyEntity> void pushUpdate(String tableName,Class<T> clazz) throws ClientProtocolException, IOException, JSONException, Exception  {
+	public static <T extends Object> void pushUpdate(String tableName,Class<T> clazz) throws ClientProtocolException, IOException, JSONException, Exception  {
 		SQLiteDatabase db2=dba.db();
 		Cursor cursorCursor;
 		String sql;
 		long total;
 
-		sql="select count(*) from " + tableName  + " where updated_on<0 or updated_on is null or (updated_on > " + last_sync_ts  + " and updated_on<" + startTimestamp + ")" ;
-        Log.i("flowzr",sql);
+		sql="select count(*) from " + tableName  + " where updated_on<=0 or remote_key is null or (updated_on > " + last_sync_ts  ;
+        if (!tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
+            sql=sql+ " and updated_on<" + startTimestamp + ")" ;
+        } else {
+            sql=sql+ ")";
+        }
+
 		cursorCursor=db.rawQuery(sql, null);
 		cursorCursor.moveToFirst();
 		total=cursorCursor.getLong(0);
-        Log.i("flowzr",String.valueOf(total));
-		sql="select * from " + tableName +  " where updated_on<0 or (updated_on > " + last_sync_ts +  " and updated_on<" + startTimestamp + ")";
-	
+
+
+        sql="select * from " + tableName +  " where updated_on<=0 or remote_key is null or (updated_on > " + last_sync_ts ;
+        if (!tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
+            sql=sql+ " and updated_on<" + startTimestamp + ")" ;
+        } else {
+            sql=sql+ ")";
+        }
+
 		if (tableName.equals(DatabaseHelper.TRANSACTION_TABLE)) {
 			sql+= " order by  parent_id asc,_id asc";	
 		} else 	if (tableName.equals(DatabaseHelper.BUDGET_TABLE)) {
@@ -443,7 +459,8 @@ public class FlowzrSyncEngine  {
 		JSONArray resultSet 	= new JSONArray();
 		
 		int i=0;
-		if (cursorCursor.moveToFirst() && isCanceled!=true) {			
+		if (cursorCursor.moveToFirst() && isCanceled!=true) {
+            Log.i("flowzr","pushing "  + tableName);
 			do {								 	
 				if (i%10==0) {					
 					//notifyUser(context.getString(R.string.flowzr_sync_sending) + " " + tableName, (int)(Math.round(i*100/total)));
@@ -467,8 +484,10 @@ public class FlowzrSyncEngine  {
 			String resp=makeRequest(tableName, resultSet.toString());
 			if (resp.equals(FLOWZR_MSG_NET_ERROR)) {
 				isCanceled=true;
+                Log.e("flowzr",resp);
 			}
 			if (isCanceled) {
+                Log.i("flowzr","sync canceled!");
 				return ;
 			}
 		}
@@ -483,10 +502,10 @@ public class FlowzrSyncEngine  {
 		String strResponse;
 
 	        HttpPost httpPost = new HttpPost(uri);
-            http_client.setCookieStore(new BasicCookieStore());
+
 	        httpPost.setEntity(new StringEntity(json,HTTP.UTF_8));
             httpPost.addHeader("Cookie","dev_appserver_login=test@example.com:False:18580476422013912411");
-	        httpPost.addHeader("Accept", "application/json");
+
 	        HttpResponse response =http_client.execute(httpPost);
 		    HttpEntity entity = response.getEntity();
 	        int code = response.getStatusLine().getStatusCode();
@@ -767,7 +786,7 @@ public class FlowzrSyncEngine  {
 		return null;
 	}
     
-    private static Object pushDelete() throws Exception {
+    public static Object pushDelete() throws Exception {
 		String sql="select count(*) from " + DatabaseHelper.DELETE_LOG_TABLE ;		
 		Cursor cursorCursor=db.rawQuery(sql, null);
 		cursorCursor.moveToFirst();
@@ -778,7 +797,7 @@ public class FlowzrSyncEngine  {
     	String del_list="";
     	if (cursor.moveToFirst()) {
     		do {
-				notifyUser("push delete",(int)(Math.round(i*100/total)));
+				//notifyUser("push delete",(int)(Math.round(i*100/total)));
 				del_list+=cursor.getString(1) + ";";
     			i++;
     		} while (cursor.moveToNext());
@@ -862,7 +881,7 @@ public class FlowzrSyncEngine  {
 	}
 
 	public static <T> Object saveOrUpdateCategoryFromJSON(long id,JSONObject jsonObjectEntity) {
-        Log.i("flowzr",jsonObjectEntity.toString());
+
 		if (!jsonObjectEntity.has("name")) {
 			return null;
 		}
@@ -878,7 +897,6 @@ public class FlowzrSyncEngine  {
 				try {			
 					int l=(int) getLocalKey(DatabaseHelper.CATEGORY_TABLE, jsonObjectEntity.getString("parentCategory"));
 					Category cParent=dba.getCategory(l);
-                    Log.i("flowzr", "setting " + cParent.title + " to " + tEntity.title + " (" + cParent.remoteKey + ")");
 					if (l!=KEY_CREATE) {
 						tEntity.parent=cParent;
 					}
@@ -904,7 +922,7 @@ public class FlowzrSyncEngine  {
 			}
 
             String r=tEntity.remoteKey;
-			Log.i("flowzr", "saviing " + r);
+
 			//left, right
 			dba.insertOrUpdate(tEntity, attributes);
             String sql="update category set remote_key='"+ r + "' where _id="+ tEntity.id ;
@@ -1626,19 +1644,15 @@ public class FlowzrSyncEngine  {
     		return 0;
     	}
 
-        Log.i("flowzr","entering getjsonfromurl");
         HttpGet httpGet = new HttpGet(url);
-        httpGet.removeHeaders("Accept-Encoding");
-        httpGet.addHeader("Accept-Encoding", "gzip;q=0,deflate");
         httpGet.addHeader("Cookie","dev_appserver_login=test@example.com:False:185804764220139124118");
     	HttpResponse httpResponse = http_client.execute(httpGet);
-        Log.i("flowzr", String.valueOf(httpResponse.getStatusLine().getStatusCode()) + " " + httpResponse.getStatusLine().getReasonPhrase());
 
         HttpEntity httpEntity = httpResponse.getEntity();
 
         // All the work is done for you here :)
         String jsonContent = EntityUtils.toString(httpEntity);
-        Log.i("flowzr",jsonContent);
+
         // Create a Reader from String
         Reader stringReader = new StringReader(jsonContent);
 
@@ -1666,10 +1680,10 @@ public class FlowzrSyncEngine  {
     public static <T> int readMessage(JsonReader reader,String tableName,Class<T> clazz,long last_sync_ts) throws IOException, JSONException,Exception {    
 		String n = null;
 		int i=0;
-        Log.i("flowzr","entering read message");
+
    		while (reader.hasNext()) {
    			JsonToken peek=reader.peek();
-            Log.i("flowzr",peek.name());
+
    			String v = null;
    			if (peek==JsonToken.BEGIN_OBJECT) {
    				reader.beginObject();
@@ -1765,7 +1779,7 @@ public class FlowzrSyncEngine  {
 				}
 				saveEntityFromJson(o, tableName, clazz,i);
 				if (i%10==0) {
-					notifyUser(context.getString(R.string.flowzr_sync_receiving) + " " + tableName + ". " + context.getString(R.string.hint_run_background), (int)(Math.round(j)));
+					//notifyUser(context.getString(R.string.flowzr_sync_receiving) + " " + tableName + ". " + context.getString(R.string.hint_run_background), (int)(Math.round(j)));
 				}
 			}
 		}

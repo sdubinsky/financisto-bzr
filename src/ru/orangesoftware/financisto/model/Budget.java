@@ -21,7 +21,7 @@ import static ru.orangesoftware.financisto.utils.Utils.isNotEmpty;
 
 @Entity
 @Table(name = "budget")
-public class Budget {
+public class Budget  {
 	
 	@Id
 	@Column(name = "_id")

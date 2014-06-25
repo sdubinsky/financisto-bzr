@@ -41,7 +41,7 @@ public class CategoryBuilder {
         return this;
     }
 
-    private static Map<String, Category> allCategoriesAsMap(DatabaseAdapter db) {
+    public static Map<String, Category> allCategoriesAsMap(DatabaseAdapter db) {
         HashMap<String, Category> map = new HashMap<String, Category>();
         List<Category> categories = db.getAllCategoriesList();
         for (Category category : categories) {
