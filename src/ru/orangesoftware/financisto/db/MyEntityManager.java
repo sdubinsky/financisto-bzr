@@ -412,6 +412,8 @@ public class MyEntityManager extends EntityManager {
 
 	public long insertBudget(Budget budget) {
         SQLiteDatabase db = db();
+        budget.remoteKey=null;
+
 		db.beginTransaction();
 		try {
 			if (budget.id > 0) {

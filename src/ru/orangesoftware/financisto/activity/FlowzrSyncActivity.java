@@ -187,18 +187,32 @@ public class FlowzrSyncActivity extends Activity  {
 			})
 			.show();
 		}
-		//radio crendentials
+        //checkbox
+        CheckBox chk=(CheckBox)findViewById(R.id.chk_sync_from_zero);
+        OnClickListener chk_listener = new OnClickListener() {
+            public void onClick(View v) {
+                lastSyncLocalTimestamp=0;
+                renderLastTime(0);
+                flowzrSyncEngine.resetLastTime(getApplicationContext());
+            }
+        };
+        chk.setOnClickListener(chk_listener);
+        //radio crendentials
 		RadioGroup radioGroupCredentials = (RadioGroup)findViewById(R.id.radioCredentials);
 		OnClickListener radio_listener = new OnClickListener() {
 		    public void onClick(View v) {
 		    	RadioButton radioButtonSelected = (RadioButton)findViewById(v.getId());
 	    	for (Account account: accounts) {
 		    		if (account.name==radioButtonSelected.getText()) {
-		    			useCredential=account;    			
+                        lastSyncLocalTimestamp=0;
+                        renderLastTime(0);
+                        flowzrSyncEngine.resetLastTime(getApplicationContext());
+                        useCredential=account;
 		    		}
 		    	}		    			    	
 		    }
-		};		
+		};
+        radioGroupCredentials.setOnClickListener(radio_listener);
 		//initialize value
 	     for (int i = 0; i < accounts.length; i++) {
 	    	 	RadioButton rb = new RadioButton(this);
